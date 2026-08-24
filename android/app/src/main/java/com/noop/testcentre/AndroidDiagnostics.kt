@@ -390,10 +390,12 @@ object AndroidDiagnostics {
     /** A coarse OEM-kill heuristic by manufacturer (the aggressive-background-kill vendors). Pure and
      *  internal so it unit-tests without a Context (the suite stays Robolectric-free). */
     internal fun oemKillHeuristic(manufacturer: String): String =
-        // Single source of truth for the aggressive-vendor set (#386): the same list the Settings
-        // "Keep NOOP alive overnight" row gates on, so the diagnostic and the fix never disagree.
+        // Single source of truth for the aggressive-vendor set (#386). The remedy is named as a system
+        // setting because it is only reachable there: the Settings row that used to offer it in-app was
+        // removed, since Android gives an app no way to hand the exemption back once granted.
         if (com.noop.ble.BackgroundHealth.isAggressiveVendor(manufacturer))
-            "aggressive vendor (${manufacturer.lowercase()}), whitelist NOOP to keep it alive"
+            "aggressive vendor (${manufacturer.lowercase()}), exempt NOOP from battery optimisation " +
+                "in Android settings to keep it alive"
         else "standard"
 
     /** Charging state from the sticky battery intent / BatteryManager. */

@@ -17,7 +17,11 @@ class AndroidDiagnosticsTest {
         for (vendor in listOf("Xiaomi", "OPPO", "vivo", "HUAWEI", "OnePlus", "realme", "Meizu")) {
             val text = AndroidDiagnostics.oemKillHeuristic(vendor)
             assertTrue("$vendor should flag as aggressive", text.startsWith("aggressive vendor"))
-            assertTrue("$vendor heuristic should advise whitelisting", text.contains("whitelist NOOP"))
+            // The flag has to carry a remedy, and the remedy has to say WHERE — the in-app row that
+            // used to offer it is gone (Android gives an app no way to hand the exemption back), so
+            // naming only the action would send the reader looking for a toggle that no longer exists.
+            assertTrue("$vendor heuristic should name the remedy", text.contains("battery optimisation"))
+            assertTrue("$vendor heuristic should say where", text.contains("Android settings"))
         }
     }
 
