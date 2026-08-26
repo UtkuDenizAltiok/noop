@@ -1036,6 +1036,37 @@ extension WhoopStore {
             try db.create(index: "idx_liftSet_session_ord", on: "liftSet",
                           columns: ["sessionId", "ord"], options: [.ifNotExists])
         }
+
+        // v43-lift-log-targets: two columns the first gym session showed were missing.
+        //
+        // `liftProgramItem.targetWeightKg` — a program line plans a WEIGHT, not just a rep range. The
+        // v42 shape carried `targetRepsLow`/`targetRepsHigh`/`targetRpe` (a literal reading of one
+        // user's planning spreadsheet) but no weight, which is the number actually written on a
+        // program. Rep range and target RPE stay as columns — dropping a shipped column would mean
+        // rebuilding the table, and they are harmless when unset — but the UI now plans ONE rep count
+        // and a weight, and records the rest as what ACTUALLY happened.
+        //
+        // `liftSession.sessionRpe` — session RPE was being appended to the session's free-text note,
+        // which is fine for a human to read and useless to compute with. Foster's session load is
+        // sRPE × duration, so the rating has to be a number in its own column or the metric cannot be
+        // derived at all. Nullable: a session whose rating was skipped simply has no session load.
+        //
+        // Both ALTERs are column-guarded for the same reason every create in `v42-lift-log` is
+        // `ifNotExists`: this was developed as `v41-lift-log-targets` before upstream took v41, so a device
+        // that already ran the old identifier will run this one again, and an unguarded
+        // ADD COLUMN fails the migrator on "duplicate column name" and takes the app's launch with it.
+        migrator.registerMigration("v43-lift-log-targets") { db in
+            if try !db.columns(in: "liftProgramItem").contains(where: { $0.name == "targetWeightKg" }) {
+                try db.alter(table: "liftProgramItem") { t in
+                    t.add(column: "targetWeightKg", .double)   // kilograms, like every stored weight
+                }
+            }
+            if try !db.columns(in: "liftSession").contains(where: { $0.name == "sessionRpe" }) {
+                try db.alter(table: "liftSession") { t in
+                    t.add(column: "sessionRpe", .double)       // 0-10 Borg CR10, as rated by the user
+                }
+            }
+        }
         return migrator
     }
 }
