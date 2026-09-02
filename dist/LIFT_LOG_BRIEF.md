@@ -96,7 +96,7 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 - `App/RootTabView.swift` — `MoreDestination.liftLog`, the `MoreRow("Lift Log", "dumbbell.fill", .liftLog)` in `moreSection("Body")`, the session bar via `.safeAreaInset(edge: .bottom)`, the session sheet, and the `.task` that resumes an interrupted session **as the bar, not as a sheet**.
 
 ### App-target tests — `StrandTests/`
-- `LiftSessionEngineTests.swift` — **29 tests**
+- `LiftSessionEngineTests.swift` — **32 tests**
 - `FrameRouterDoubleTapDedupTests.swift` — **4 tests**
 
 ## 4. Architecture and conventions you must follow
@@ -224,8 +224,8 @@ a207a447 store: add the v40 schema for the in-app strength log
 
 Both branches are pushed to the fork. Nothing has been sent to `ryanbr/noop`.
 
-**Test counts:** WhoopStore 460 · StrandAnalytics 1627 · StrandTests 1287 — 0 failures beyond the
-two locale-dependent `TodayCarryOverTests`.
+**Test counts:** WhoopStore 460 · StrandAnalytics 1627 · StrandTests 1290 — 0 failures beyond the
+two locale-dependent `TodayCarryOverTests`. All re-verified at `191386f5`.
 
 ## 9. Still outstanding
 
