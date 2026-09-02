@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
-**Maintained by Claude, from inside the repository. Last verified against the code on 2 Sep 2026,
-at commit `191386f5` on branch `lift-log-ui`.**
+**Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
+at commit `8fda1c9d` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -58,11 +58,11 @@ on the same screen. No composite "workout score".
 ### Storage — `Packages/WhoopStore`
 | File | What |
 |---|---|
-| `Sources/WhoopStore/Database.swift` | migrations **`v40-lift-log`** (five tables) and **`v41-lift-log-targets`** (adds `liftProgramItem.targetWeightKg`, `liftSession.sessionRpe`) |
+| `Sources/WhoopStore/Database.swift` | migrations **`v42-lift-log`** (five tables) and **`v43-lift-log-targets`** (adds `liftProgramItem.targetWeightKg`, `liftSession.sessionRpe`). They were v40/v41 until the 11.1.0 rebase — see §10 |
 | `Sources/WhoopStore/LiftMuscle.swift` | the closed **20-token** muscle vocabulary, 4 regions, and `directSetCredit` / `indirectSetCredit` |
 | `Sources/WhoopStore/LiftLogStore.swift` | row structs + CRUD + `liftSetCounts` / `liftRpeProfile`; `maxRememberedExercises = 500` |
 | `Sources/WhoopStore/DeviceRegistryStore.swift` | all five lift tables listed in `deviceScopedTables` |
-| `Tests/WhoopStoreTests/LiftLogStoreTests.swift` | **38 tests** |
+| `Tests/WhoopStoreTests/LiftLogStoreTests.swift` | **39 tests**, including the migration-rename pin (§10) |
 
 Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSet`.
 
@@ -121,7 +121,13 @@ python3 Tools/i18n_audit.py --ci main
 ```
 
 Add strings by appending to `Strand/Resources/Localizable.xcstrings` in its existing compact
-one-line-per-entry format — never reformat the file. Two traps found the hard way:
+format — never reformat the file. Note the file is **not sorted**: entries sit in insertion order,
+and both upstream and this branch append near the top, so it conflicts textually on almost every
+rebase even when the two sides touch disjoint keys. Resolving those markers by hand is a trap — the
+shared trailing `} },` counts as context and silently truncates the last entry into invalid JSON.
+Merge on KEYS instead; the 11.1.0 rebase used a throwaway script that took the base file verbatim
+plus every entry `theirs` added relative to the merge base (`git show :1:/:2:/:3:`), which also
+preserves upstream deletions instead of resurrecting them. Three traps found the hard way:
 - The catalog's existing **`"Rest"` key means NOOP's SLEEP metric** ("Erholung", "Riposo"). The rest timer uses its own `"Rest period"` string.
 - `String(localized:)` with interpolation produces `%@` / `%lld` keys; translations need positional `%1$@` / `%2$lld`.
 
@@ -134,10 +140,16 @@ xcodebuild -project Strand.xcodeproj -scheme Strand -destination 'platform=macOS
 python3 Tools/i18n_audit.py --ci main && python3 Tools/doc_comment_lint.py
 ```
 
-**Run the app tests with `-testLanguage en -testRegion US`** if you want a clean run: this machine is
-English-language/German-region, and `TodayCarryOverTests` (2 tests) compares against a US date
-format. **Those two failures are pre-existing and unrelated** — they fail identically on a clean
+**Expect exactly two failures, and do NOT try to silence them with a locale flag.** This machine is
+English-language/German-region, so `TodayCarryOverTests` (2 tests) compares "18. Jun" against the
+"Jun 18" it expects. Those two are pre-existing and unrelated — they fail identically on a clean
 checkout. Don't chase them.
+
+An earlier version of this file suggested `-testLanguage en -testRegion US` for a clean run. **That
+advice was wrong and has been removed:** the flag fixes those two but breaks
+`AppLanguageTests.testExplicitLanguageWritesAndSystemRemovesAppleOverride`, which reads back the
+`AppleLanguages` override the flag itself is setting. Two known failures beat one mystery. Run the
+suite with no locale flags.
 
 ### Getting a build onto his phone
 ```bash
@@ -209,23 +221,33 @@ hardware.**
 
 ## 8. Where it stands
 
-Eight commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the schema commit):
+**Base: upstream `v11.1.0`.** The branch was rebased onto `ryanbr/noop` `main` (2787d465) on
+3 Sep 2026 — 216 upstream commits, from the 10.6.1 staging point it was originally cut from.
+Nine commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the schema commit):
 
 ```
-191386f5 lift log: restore the warm-up marker
-cabfa8e4 lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
-5a87885c lift log: a workout sheet, and a session that outlives its screen
-c55b1c34 lift log: the metrics, and the session detail screen that shows them
-6eac1aeb lift log: fix the tap-anywhere mistake, and move set entry into the rest
-9728bb74 lift log: the session loop, the rest timer and strap double-tap
-24333f6f lift log: programs, the exercise vocabulary and muscle classification
-a207a447 store: add the v40 schema for the in-app strength log
+8fda1c9d lift log: pin the renumbered migrations against an existing database
+1c9243dc lift log: restore the warm-up marker
+7af4ef8e lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
+f84b5c4a lift log: a workout sheet, and a session that outlives its screen
+b3c0e861 lift log: the metrics, and the session detail screen that shows them
+60317f1c lift log: fix the tap-anywhere mistake, and move set entry into the rest
+70fb270a lift log: the session loop, the rest timer and strap double-tap
+49b71839 lift log: programs, the exercise vocabulary and muscle classification
+f1d0bf24 store: add the v42 schema for the in-app strength log
 ```
 
-Both branches are pushed to the fork. Nothing has been sent to `ryanbr/noop`.
+The pre-rebase tips are kept as tags in case anything needs to be read back:
+`backup/lift-log-ui-pre-11.1.0` (191386f5) and `backup/lift-log-schema-pre-11.1.0` (a207a447).
+Local `main` is now upstream `v11.1.0`.
 
-**Test counts:** WhoopStore 460 · StrandAnalytics 1627 · StrandTests 1290 — 0 failures beyond the
-two locale-dependent `TodayCarryOverTests`. All re-verified at `191386f5`.
+**Test counts at `8fda1c9d`:** WhoopStore **512** · StrandAnalytics **1756** · StrandTests **1510**
+— 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build
+(macOS `Strand` and iOS `NOOPiOS`); `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main`
+both pass, with all ten locales still covered.
+
+*(One test run out of five reported a third failure that did not reproduce and was never named in
+the output. If a third failure appears, it is not from this work — get its name before chasing it.)*
 
 ## 9. Still outstanding
 
@@ -235,9 +257,82 @@ two locale-dependent `TodayCarryOverTests`. All re-verified at `191386f5`.
    explicit yes before posting.** `ryanbr/noop` has issues enabled and the maintainer is active.
 2. **The feature has had almost no real gym use.** Two sessions: one partly simulated at home, one
    real. Everything below §5 is provisional against actual training.
-3. **No PR opened.** The plan is two PRs — schema, then UI. The fork's `main` is well behind
-   upstream; sync and rebase before submitting.
+3. **No PR opened.** The plan is two PRs — schema, then UI. The rebase onto `v11.1.0` is done, so
+   the branch is submittable as-is; nothing has been pushed to the fork yet since the rebase, and
+   the fork's `origin/*` refs still hold the pre-rebase history (a force-push will be needed).
+   Note the two-PR split is now blurred: `v43-lift-log-targets` lives on the **UI** branch, not the
+   schema branch, so a clean schema-only PR needs that migration moved down first.
 4. **The backlog lives in `dist/LIFT_LOG_REVIEW.md`** — read it. Item 2 (the weekly bar reading
    "done" at the 4-set floor) is the next thing worth fixing.
 5. **`dist/` is gitignored** (`.gitignore:96`). These notes live on disk and deliberately never
    reach a commit, so they cannot leak into an upstream PR.
+
+## 10. The 11.1.0 rebase, and the migration rename it forced
+
+The branch was cut from upstream 10.6.1 staging. Upstream then shipped 11.0.0 and 11.1.0, and
+**took v40 and v41 for its own migrations** — `v40-daily-skin-temp-absolute` (adds
+`dailyMetric.skinTempC`) and `v41-drop-raw-imu-sample` (drops the legacy `rawImuSample` cache). The
+lift log's `v40-lift-log` / `v41-lift-log-targets` therefore had to become **`v42-lift-log`** and
+**`v43-lift-log-targets`**.
+
+**Read this before touching either migration.** The rename is not a cosmetic renumber:
+
+- GRDB keys applied migrations by identifier, and `DatabaseMigrator.appliedMigrations` intersects
+  what the database has recorded with what the code has **registered**. An identifier it does not
+  recognise is simply dropped from that set — it does not error, and it does not stop the run.
+- So a phone that already ran `v40-lift-log` sees **`v42-lift-log` as unapplied and runs it again**,
+  over tables that already exist and already hold a training history.
+- An unguarded `CREATE TABLE` or `ADD COLUMN` there throws. **A migrator that throws makes the whole
+  database unopenable** — every screen, not just the Lift Log. That is a launch failure, not a
+  feature bug.
+
+What makes it survivable: **every statement in both migrations is idempotent.** All five tables and
+all seven indexes are created `ifNotExists`, and both `ADD COLUMN`s in v43 are guarded on
+`db.columns(in:)`. The indexes and the column guards were added *during* this rebase — the original
+v40 only had `ifNotExists` on the tables, which would not have been enough.
+
+`LiftLogStoreTests.testRenumberedLiftMigrationsReRunOverAnExistingDatabaseWithoutLosingData` pins
+all of it: it stores real rows, rewinds `grdb_migrations` to the old identifiers, re-runs the real
+migrator, and asserts the rows, the v43 column values and the unique indexes all survive. It was
+verified to go **red** when either guard is removed. If you touch these migrations, keep it green.
+
+**It was also confirmed end to end on a real database, not only in memory.** The iOS simulator still
+had the app data written by the pre-rebase build, so installing the rebased build over it ran exactly
+the upgrade path his phone will take. Afterwards `grdb_migrations` reads:
+
+```
+v40-lift-log            <- old, orphaned, inert
+v41-lift-log-targets    <- old, orphaned, inert
+v40-daily-skin-temp-absolute
+v41-drop-raw-imu-sample
+v42-lift-log            <- re-ran over the existing tables
+v43-lift-log-targets
+```
+
+and the data is intact: the "Upper A" program, its exercise line, the session with `sessionRpe` 8.0
+still set, four logged sets, and all seven `idx_lift*` indexes. Upstream's own two migrations also
+did their work (`dailyMetric.skinTempC` added, `rawImuSample` dropped). The Lift Log hub then opened
+and rendered the program and the weekly sets-per-muscle bars from that migrated data.
+
+**Note for his phone:** upstream's `v41-drop-raw-imu-sample` DROPS the `rawImuSample` table on
+upgrade. That is upstream's decision, not this branch's — the comment on the migration calls it a
+"bounded, write-only legacy cache" superseded by the file-backed store, so nothing read it.
+
+The two orphaned identifiers stay in `grdb_migrations` on his phone forever. They are inert — leave
+them; a migration that deleted rows from GRDB's own bookkeeping table would be far more dangerous
+than two unused strings.
+
+**Other things the rebase touched:**
+
+- `FrameRouter.swift` gained ~146 upstream lines (link epitaphs, clock diagnostics). The double-tap
+  de-duplication re-applied cleanly, and `state.onDoubleTap?()` still has exactly **one** call site
+  — inside `dispatchDoubleTapOnce`. Re-check that after any future FrameRouter merge: a new upstream
+  dispatch path that bypassed the dedup would silently reintroduce the phantom set.
+- `Localizable.xcstrings` conflicted on nearly every commit. See the merge note in §4.
+- Version numbers now come from upstream: `MARKETING_VERSION` 11.1.0, iOS build 299 (was 10.6.1 /
+  243). The build number went **up**, so an AltStore install still updates his existing app in place.
+- Upstream removed the string key `"Skin temperature +%@ °C"` in #1671. The merge correctly took
+  that deletion rather than resurrecting it.
+- No Android work was needed: the five tables stay pinned `ios_only` in both `schema_oracle.json`
+  copies, and the only edit to those files was adding `v42-lift-log` / `v43-lift-log-targets` to the
+  migration-id list. Both copies are still byte-identical.

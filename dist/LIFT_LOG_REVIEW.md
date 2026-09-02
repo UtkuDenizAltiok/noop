@@ -1,7 +1,11 @@
 # Lift Log — verified backlog
 
 **Maintained by Claude, from inside the repository. Every item below was checked against the code on
-2 Sep 2026 at commit `191386f5`.** Read `dist/LIFT_LOG_BRIEF.md` first.
+2 Sep 2026 at commit `191386f5`. After the rebase onto upstream `v11.1.0` on 3 Sep 2026 (commit
+`8fda1c9d`) items 2, 3, 7, 8, 9 and 10 were spot-checked against the rebased tree and all still hold,
+line references included; the rest were not individually re-read, but the rebase touched no Lift Log
+screen, so treat them as current unless something says otherwise.** Read `dist/LIFT_LOG_BRIEF.md`
+first — in particular §10, which covers the migration rename the rebase forced.
 
 An earlier version of this file was written from outside the repository, from screenshots and a
 partial read. Its code observations have now been verified one by one: most were correct and are
@@ -11,7 +15,7 @@ quietly rewrite it.** If you believe something there is wrong, say so explicitly
 
 ---
 
-## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5`
+## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5` (now `1c9243dc`)
 
 **Was:** the workout-sheet rewrite (`5a87885c`) dropped the warm-up toggle. `isWarmup` survived in
 the engine, the store and the metrics — only the way to SET it was gone. Since warm-ups are excluded
@@ -143,7 +147,7 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 
 ## 10. Smaller things, worth knowing
 
-- **`LiftFormat.duration` has no hours branch.** It formats `M:SS` above a minute, so a 75-minute session reads "75:23" rather than "1:15:23". Truthful but odd once a session passes an hour, which real ones do. `IntervalTimerView` already has the `H:MM:SS` idiom to copy.
+- **`LiftFormat.duration` has no hours branch.** It formats `M:SS` above a minute, so a 75-minute session reads "75:23" rather than "1:15:23". Truthful but odd once a session passes an hour, which real ones do. `IntervalTimerView` already has the `H:MM:SS` idiom to copy. **Now observed, not just read:** a stale simulator session displayed `1262:46` in the minimised bar where it meant 21 hours. On the session bar — the thing that sits on screen all workout — this is the most visible instance.
 
 - **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` issue one `lastLiftSets` query per exercise. Fine at 5–8 exercises; not fine if a session ever gets long. A single windowed query would do.
 - **`LiftRecordedSet` used as a value carrier.** `loadLastTime()` constructs one with `exerciseIndex: 0` purely to hold ghost values. It works, but the meaningless field is a smell — a small dedicated struct would read better.
@@ -167,9 +171,23 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 - Loading recommendations / re-examination of the repetition continuum (Schoenfeld & Grgic) — hypertrophy across a broad load span when close to failure; strength is load-specific.
 - Hypertrophy variables umbrella review (Frontiers, 2022) — volume as the variable with a clear dose-response; proximity to failure as the qualifier.
 
-## 13. Not code — but blocking
+## 13. New since the 11.1.0 rebase
+
+- **Nothing on this list was invalidated by the rebase.** The spot-check above covered the items
+  with concrete line references — `LiftLogView.swift:315`, `LiftSessionDetailSheet.swift:267`, the
+  `where m != s.primaryMuscle` guard at `LiftMetrics.swift:249`, the absent `addSet`, the zero app
+  call sites for `deleteLiftSession` / `deleteLiftSet` / `liftRpeProfile` / `liftExercisesLogged`,
+  and the missing hours branch in `LiftFormat.duration`. All still exactly as described.
+- **The two-PR plan needs a fix before submitting.** `v43-lift-log-targets` is added by the third UI
+  commit, not by the schema commit, so "schema PR then UI PR" would ship a schema PR that is missing
+  a migration the UI PR depends on. Move it down to the schema branch before opening anything.
+- **Upstream 11.0/11.1 added a Clock format setting (System / 12-hour / 24-hour, #1822).** The Lift
+  Log formats its own clocks in `LiftFormat` and does not consult it. Worth a look for consistency —
+  and it sits next to the missing hours branch already noted in §10 of this file.
+
+## 14. Not code — but blocking
 
 - **`dist/liftlog-issue.md` has never been posted to `ryanbr/noop`.** Written, current, held by the user's own decision until the feature has real gym use. **Public post in his name — explicit yes required.**
 - **Almost no real gym use.** Two sessions, one partly simulated. Every UI judgement here is provisional until that changes.
-- **The double-tap de-duplication (§7 of the brief) is unconfirmed on hardware.** If duplicate advances stop, the diagnosis was right. If they continue, the cause is elsewhere and the fix should be revisited rather than assumed.
+- **The double-tap de-duplication (§7 of the brief) is unconfirmed on hardware.** If duplicate advances stop, the diagnosis was right. If they continue, the cause is elsewhere and the fix should be revisited rather than assumed. It survived the 11.1.0 rebase unchanged, and `onDoubleTap` still has exactly one call site — but 11.0/11.1 reworked a lot of `FrameRouter`, so the first gym session on this build is also the first test of the fix against the new BLE code.
 - **Whether the confirmation buzz now feels immediate is unknown.** The app-side delay is gone; what remains is BLE round trip and the strap's haptic engine, which software cannot shorten.
