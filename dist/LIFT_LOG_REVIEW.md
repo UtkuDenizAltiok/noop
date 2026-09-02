@@ -2,7 +2,7 @@
 
 **Maintained by Claude, from inside the repository. Every item below was checked against the code on
 2 Sep 2026 at commit `191386f5`. After the rebase onto upstream `v11.1.0` on 3 Sep 2026 (commit
-`8fda1c9d`) items 2, 3, 7, 8, 9 and 10 were spot-checked against the rebased tree and all still hold,
+`ff3312bd`) items 2, 3, 7, 8, 9 and 10 were spot-checked against the rebased tree and all still hold,
 line references included; the rest were not individually re-read, but the rebase touched no Lift Log
 screen, so treat them as current unless something says otherwise.** Read `dist/LIFT_LOG_BRIEF.md`
 first — in particular §10, which covers the migration rename the rebase forced.
@@ -171,23 +171,32 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 - Loading recommendations / re-examination of the repetition continuum (Schoenfeld & Grgic) — hypertrophy across a broad load span when close to failure; strength is load-specific.
 - Hypertrophy variables umbrella review (Frontiers, 2022) — volume as the variable with a clear dose-response; proximity to failure as the qualifier.
 
-## 13. New since the 11.1.0 rebase
+## 13. Fixed on 3 Sep 2026, after the rebase
+
+- **The empty-state card described targets that do not exist.** It promised "working sets, rep
+  range, target RPE, rest and your own technique note"; the editor offers working sets, reps,
+  weight, rest and a note. Two named fields were gone since the tap-anywhere fix and the planned
+  weight was never mentioned. Corrected in all ten locales (`ff3312bd`). Worth noting as a class:
+  **UI copy written against an earlier design is not caught by any test or linter.** The i18n gate
+  checks that a string is translated, never that it is true.
+
+## 13b. Also new since the 11.1.0 rebase
 
 - **Nothing on this list was invalidated by the rebase.** The spot-check above covered the items
   with concrete line references — `LiftLogView.swift:315`, `LiftSessionDetailSheet.swift:267`, the
   `where m != s.primaryMuscle` guard at `LiftMetrics.swift:249`, the absent `addSet`, the zero app
   call sites for `deleteLiftSession` / `deleteLiftSet` / `liftRpeProfile` / `liftExercisesLogged`,
   and the missing hours branch in `LiftFormat.duration`. All still exactly as described.
-- **The two-PR plan needs a fix before submitting.** `v43-lift-log-targets` is added by the third UI
-  commit, not by the schema commit, so "schema PR then UI PR" would ship a schema PR that is missing
-  a migration the UI PR depends on. Move it down to the schema branch before opening anything.
+- **~~The two-PR plan needs a fix before submitting.~~ FIXED.** The follow-up migration was folded
+  into `v42-lift-log`, so the schema commit now creates the complete schema and stands alone.
 - **Upstream 11.0/11.1 added a Clock format setting (System / 12-hour / 24-hour, #1822).** The Lift
   Log formats its own clocks in `LiftFormat` and does not consult it. Worth a look for consistency —
   and it sits next to the missing hours branch already noted in §10 of this file.
 
 ## 14. Not code — but blocking
 
-- **`dist/liftlog-issue.md` has never been posted to `ryanbr/noop`.** Written, current, held by the user's own decision until the feature has real gym use. **Public post in his name — explicit yes required.**
-- **Almost no real gym use.** Two sessions, one partly simulated. Every UI judgement here is provisional until that changes.
+- **`dist/liftlog-issue.md` has never been posted to `ryanbr/noop`.** Offered 3 Sep 2026 and declined for now — he is not going upstream until he is happy with the feature. **Public post in his name — explicit yes required, and do not raise it again unprompted.** The text is also stale (says "three commits", predates the 11.1.0 rebase).
+- **Real gym use is now continuous**, but every UI judgement below was written before that started. Prefer what he reports from an actual session over anything inferred here.
+- **He wipes on every update** (removes the app, forgets the strap, fresh install). Schema changes are therefore free — prefer changing the stored shape over adding a migration to patch it.
 - **The double-tap de-duplication (§7 of the brief) is unconfirmed on hardware.** If duplicate advances stop, the diagnosis was right. If they continue, the cause is elsewhere and the fix should be revisited rather than assumed. It survived the 11.1.0 rebase unchanged, and `onDoubleTap` still has exactly one call site — but 11.0/11.1 reworked a lot of `FrameRouter`, so the first gym session on this build is also the first test of the fix against the new BLE code.
 - **Whether the confirmation buzz now feels immediate is unknown.** The app-side delay is gone; what remains is BLE round trip and the strap's haptic engine, which software cannot shorten.
