@@ -105,6 +105,113 @@ final class LiftLogStoreTests: XCTestCase {
                      "a skipped rating must stay nil — a 0 would read as 'effortless' and corrupt the load")
     }
 
+    // MARK: - Re-running the renumbered migrations over a database that already has the tables
+
+    /// The strength log was developed as `v40-lift-log` / `v41-lift-log-targets`. Upstream then took
+    /// v40 and v41 for `daily-skin-temp-absolute` and `drop-raw-imu-sample`, so these identifiers had
+    /// to move to v42/v43 — and that rename is not free.
+    ///
+    /// GRDB keys applied migrations by identifier and intersects the applied set with the REGISTERED
+    /// set (`DatabaseMigrator.appliedMigrations`), so an identifier it does not recognise is
+    /// indistinguishable from one that was never applied. A database written by a build that ran
+    /// `v40-lift-log` therefore sees `v42-lift-log` as UNAPPLIED and runs it again — over tables that
+    /// already exist and already hold the user's training history. An unguarded `CREATE TABLE` or
+    /// `ADD COLUMN` there fails the migrator, and a migrator that throws takes the app's launch with
+    /// it: the whole database, not just the lift log, becomes unopenable.
+    ///
+    /// That is survivable only because every statement in both migrations is idempotent — every
+    /// `create` is `ifNotExists` (tables AND indexes) and both `ADD COLUMN`s are column-guarded. This
+    /// test is the pin for that. It reproduces the state by removing the new identifiers from
+    /// `grdb_migrations` and writing the old ones in their place, then re-runs the real migrator over
+    /// a database with rows in it.
+    func testRenumberedLiftMigrationsReRunOverAnExistingDatabaseWithoutLosingData() async throws {
+        let store = try await WhoopStore.inMemory()
+        let dev = "dev"
+        let programId = "prog-1"
+        let sessionId = "sess-1"
+
+        _ = try await store.upsertLiftExercises([
+            LiftExerciseRow(id: "ex-1", deviceId: dev, name: "Back squat",
+                            primaryMuscle: .quads, secondaryMuscles: [.glutes],
+                            createdAt: 1_700_000_000, lastUsedTs: 1_700_000_000)
+        ])
+        _ = try await store.upsertLiftPrograms([
+            LiftProgramRow(id: programId, deviceId: dev, name: "Lower A", note: "belt from set 3",
+                           createdAt: 1_700_000_000, updatedAt: 1_700_000_000, archived: false)
+        ])
+        _ = try await store.replaceLiftProgramItems(programId: programId, items: [
+            LiftProgramItemRow(id: "item-1", deviceId: dev, programId: programId, ord: 0,
+                               exercise: "Back squat", targetSets: 5, targetRepsLow: 5,
+                               targetRepsHigh: nil, targetRpe: nil, targetWeightKg: 102.5,
+                               restSec: 180, note: nil)
+        ])
+        _ = try await store.upsertLiftSessions([
+            LiftSessionRow(id: sessionId, deviceId: dev, startTs: 1_700_000_000,
+                           endTs: 1_700_003_600, sport: "Strength Training",
+                           programId: programId, programName: "Lower A",
+                           sessionRpe: 7.5, note: nil)
+        ])
+        _ = try await store.upsertLiftSets([
+            LiftSetRow(id: "set-1", deviceId: dev, sessionId: sessionId, ord: 0,
+                       exercise: "Back squat", primaryMuscle: .quads, secondaryMuscles: [.glutes],
+                       setIndex: 1, weightKg: 102.5, reps: 5, rpe: 8, isWarmup: false,
+                       startTs: 1_700_000_100, endTs: 1_700_000_140, restSec: 180, note: nil)
+        ])
+
+        // Rewind to what a device that ran the OLD identifiers looks like to the current migrator.
+        let writer = store.registryWriter
+        try await writer.write { db in
+            try db.execute(sql: """
+                DELETE FROM grdb_migrations WHERE identifier IN ('v42-lift-log', 'v43-lift-log-targets')
+                """)
+            try db.execute(sql: """
+                INSERT INTO grdb_migrations (identifier) VALUES ('v40-lift-log'), ('v41-lift-log-targets')
+                """)
+        }
+
+        // The launch path. It must not throw, and must not disturb what is already stored.
+        try WhoopStore.makeMigrator().migrate(writer)
+
+        let exercises = try await store.liftExercises(deviceId: dev)
+        XCTAssertEqual(exercises.count, 1, "re-running v42 must not drop or duplicate the vocabulary")
+        XCTAssertEqual(exercises.first?.primaryMuscle, .quads)
+
+        let programs = try await store.liftPrograms(deviceId: dev)
+        XCTAssertEqual(programs.map(\.name), ["Lower A"])
+
+        let items = try await store.liftProgramItems(programId: programId)
+        XCTAssertEqual(items.count, 1)
+        XCTAssertEqual(items.first?.targetWeightKg, 102.5,
+                       "the v43 column and its value must both survive the re-run")
+
+        let session = try await store.liftSession(deviceId: dev, startTs: 1_700_000_000,
+                                                  sport: "Strength Training")
+        XCTAssertEqual(session?.sessionRpe, 7.5,
+                       "a guarded ADD COLUMN must not blank the rating it already holds")
+
+        let sets = try await store.liftSets(sessionId: sessionId)
+        XCTAssertEqual(sets.count, 1, "the logged set is the thing the user cannot get back")
+        XCTAssertEqual(sets.first?.weightKg, 102.5)
+        XCTAssertEqual(sets.first?.reps, 5)
+
+        // The unique indexes must still be enforcing, not silently skipped by ifNotExists.
+        let indexes = try await writer.read { db in
+            try String.fetchSet(db, sql: "SELECT name FROM sqlite_master WHERE type = 'index'")
+        }
+        XCTAssertTrue(indexes.contains("idx_liftExercise_natural"))
+        XCTAssertTrue(indexes.contains("idx_liftSession_natural"))
+        XCTAssertTrue(indexes.contains("idx_liftSet_session_ord"))
+
+        // The orphaned old identifiers stay in the table and stay inert.
+        let applied = try await writer.read { db in
+            try String.fetchSet(db, sql: "SELECT identifier FROM grdb_migrations")
+        }
+        XCTAssertTrue(applied.contains("v42-lift-log"))
+        XCTAssertTrue(applied.contains("v43-lift-log-targets"))
+        XCTAssertTrue(applied.contains("v40-lift-log"),
+                      "GRDB leaves an identifier it does not know alone rather than failing")
+    }
+
     // MARK: - The vocabulary cap
 
     func testAnExistingExerciseAlwaysUpdatesEvenAtTheCap() async throws {
