@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 2 Sep 2026,
-at commit `cabfa8e4` on branch `lift-log-ui`.**
+at commit `191386f5` on branch `lift-log-ui`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -209,9 +209,10 @@ hardware.**
 
 ## 8. Where it stands
 
-Seven commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the schema commit):
+Eight commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the schema commit):
 
 ```
+191386f5 lift log: restore the warm-up marker
 cabfa8e4 lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
 5a87885c lift log: a workout sheet, and a session that outlives its screen
 c55b1c34 lift log: the metrics, and the session detail screen that shows them
@@ -236,7 +237,7 @@ two locale-dependent `TodayCarryOverTests`.
    real. Everything below §5 is provisional against actual training.
 3. **No PR opened.** The plan is two PRs — schema, then UI. The fork's `main` is well behind
    upstream; sync and rebase before submitting.
-4. **The backlog lives in `dist/LIFT_LOG_REVIEW.md`** — read it. It contains a regression I
-   introduced and have not yet fixed.
+4. **The backlog lives in `dist/LIFT_LOG_REVIEW.md`** — read it. Item 2 (the weekly bar reading
+   "done" at the 4-set floor) is the next thing worth fixing.
 5. **`dist/` is gitignored** (`.gitignore:96`). These notes live on disk and deliberately never
    reach a commit, so they cannot leak into an upstream PR.

@@ -1,7 +1,7 @@
 # Lift Log — verified backlog
 
 **Maintained by Claude, from inside the repository. Every item below was checked against the code on
-2 Sep 2026 at commit `cabfa8e4`.** Read `dist/LIFT_LOG_BRIEF.md` first.
+2 Sep 2026 at commit `191386f5`.** Read `dist/LIFT_LOG_BRIEF.md` first.
 
 An earlier version of this file was written from outside the repository, from screenshots and a
 partial read. Its code observations have now been verified one by one: most were correct and are
@@ -11,21 +11,23 @@ quietly rewrite it.** If you believe something there is wrong, say so explicitly
 
 ---
 
-## 1. Warm-up sets can no longer be marked — REGRESSION, fix first
+## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5`
 
-**Verified:** `Strand/Screens/LiftSessionView.swift` has no warm-up control. `isWarmup` appears only
-where it is *preserved* (`write(_:)` passes `row.isWarmup` through) or read. The old wizard UI had a
-"Warm-up set" toggle; the workout-sheet rewrite (`5a87885c`) dropped it and I did not notice.
+**Was:** the workout-sheet rewrite (`5a87885c`) dropped the warm-up toggle. `isWarmup` survived in
+the engine, the store and the metrics — only the way to SET it was gone. Since warm-ups are excluded
+from volume *and* the per-muscle counts, every warm-up counted as a working set and inflated the one
+figure the whole design rests on.
 
-**Why it matters most.** Warm-ups are excluded from volume *and* from the per-muscle counts —
-`LiftMetrics.volumeLoadKg` and `muscleCounts` both filter `!isWarmup`, and the store's SQL counter
-has `AND s.isWarmup = 0`. With no way to mark one, **every warm-up now counts as a working set**,
-inflating the single figure the whole design rests on. A user warming up three times before a heavy
-squat gets three phantom quad sets per exercise.
+**Fix shipped:** the set NUMBER is the toggle — tapping it turns the row's `1` into an amber `W` and
+back. The mark can be made BEFORE the set is performed (which is when you know), held in
+`LiftSessionController.pendingWarmups` and applied the instant the set is recorded; an unperformed
+set has no record to carry the flag, and inventing one would create a set nobody did. State lives in
+the controller, so it survives the sheet being minimised and applies however the set was closed out.
+3 engine tests. Verified in the simulator: a completed warm-up renders `W` while the header reads
+"0 of 4 sets done".
 
-**Fix:** restore a per-row warm-up affordance on the sheet. A tap-and-hold on the set number, or a
-small "W" toggle in the row, matching how the reference app the user cited marks them. The engine
-and store already support it end to end — this is UI only.
+**Kept as a record** because it is the clearest example of what these documents are for: it was found
+by reading the code to write them, not by using the app.
 
 ## 2. The weekly bar tells the user to stop at the floor
 
@@ -140,6 +142,8 @@ supplies the RPE profile the UI actually uses. Either wire them up or delete the
 API on a store is a maintenance claim nobody is honouring, and it will be noticed in review.
 
 ## 10. Smaller things, worth knowing
+
+- **`LiftFormat.duration` has no hours branch.** It formats `M:SS` above a minute, so a 75-minute session reads "75:23" rather than "1:15:23". Truthful but odd once a session passes an hour, which real ones do. `IntervalTimerView` already has the `H:MM:SS` idiom to copy.
 
 - **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` issue one `lastLiftSets` query per exercise. Fine at 5–8 exercises; not fine if a session ever gets long. A single windowed query would do.
 - **`LiftRecordedSet` used as a value carrier.** `loadLastTime()` constructs one with `exerciseIndex: 0` purely to hold ghost values. It works, but the meaningless field is a smell — a small dedicated struct would read better.
