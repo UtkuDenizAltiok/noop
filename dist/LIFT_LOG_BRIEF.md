@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `507c1b24` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `e8e5839f` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -79,6 +79,34 @@ registered; three buzzes mean the rest is nearly up.
 
 **Metrics.** Six figures per session, every one arithmetic the user can redo by hand from the sets
 on the same screen. No composite "workout score".
+
+## 2b. The invariants — break these and the feature is wrong, not just different
+
+Everything here was either paid for with a real bug or settled deliberately. A change that violates
+one is a regression even if it compiles and the tests you ran passed.
+
+1. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
+   (SQL, the hub's weekly card) and `LiftMetrics.muscleCounts` (in memory, the session detail). Both
+   exclude a muscle listed as both primary and secondary. `LiftMetricsStoreAgreementTests` pins them
+   against EACH OTHER — keep it green, and if you add a third consumer, add it there too.
+2. **`advance` follows `slotAfter(_:)`, never `nextPendingSlot`.** Finish the exercise you are at,
+   then fall back to plan order. Plan order alone drags the user back to a machine they left.
+3. **A completed set records `carry(for:lastSession:)`** — the numbers the sheet was showing. Never
+   nil. And **RPE is never carried**: it is knowable only after the set, and carrying it would make
+   the RPE coverage card claim every set was rated.
+4. **Every readout on the session surfaces always renders, dashed when empty.** A readout that hides
+   itself is indistinguishable from a missing feature — that is how the HR gap was first reported.
+5. **Effort is never modified.** A session saves `strain: nil`; the engine fills it from measured HR.
+6. **Warm-ups are excluded** from volume and per-muscle counts, on both sides.
+7. **`LiftMuscle` raw values are a stored-data contract.** Never rename or remove a case. Adding one
+   is safe — but update `Tools/make_lift_program_template.py`'s `MUSCLES` too, or the new group is
+   importable by typing and missing from the template's dropdown.
+8. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
+   renders "Erholung" in German. The gym rest is `"Rest period"`. This has been reintroduced once
+   already; grep for it after any session-screen work.
+9. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
+   store APIs the program editor already used, adds no write path, and touches one button in the
+   hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
 
 ## 3. Where everything lives
 
@@ -283,10 +311,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits. Sixteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+upstream commits. Seventeen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+e8e5839f lift log: fix a divergent metric, and bound the import so it cannot hurt the app
 507c1b24 lift log: make the spreadsheet import survive a real user's file
 b84702b3 lift log: build a program from a spreadsheet
 eed0e743 lift log: keep the heart rate on screen even when it is not reading
@@ -311,7 +340,7 @@ schema-only PR stands alone.
 Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
 and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
 
-**Test counts at `507c1b24`:** WhoopStore **510** · StrandAnalytics **1756** · StrandImport **266** · StrandTests **1519**
+**Test counts at `e8e5839f`:** WhoopStore **510** · StrandAnalytics **1761** · StrandImport **270** · StrandTests **1519**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
@@ -322,6 +351,10 @@ a gym rather than simulated. It found two data-losing bugs, both fixed in `154d2
 round of requests answered in `93823f69` / `0dd807ae`; see §12b and §12c of the review. Treat further
 UI judgements the same way: ship, use, then fix what the session actually found — **nothing in the
 backlog predicted either data-losing bug.**
+
+**Audited on 9 Sep 2026** against "correct, efficient, error-free". What it found and fixed is in
+`e8e5839f`; what it found and did NOT fix is in §10 of the review — read that before optimising
+anything, because the remaining items are known and quantified rather than unnoticed.
 
 ## 9. Still outstanding
 
@@ -375,6 +408,30 @@ uses no `ALTER TABLE` at all: the schema is created complete, in one migration, 
 that ever changes** — if he stops wiping, or once this is public and real users carry databases —
 the re-run path becomes live again and wants a test before any renumber.
 
+**THE PROCEDURE, in order.** This has been done once (216 commits, 10.6.1 → 11.1.0) and these are
+the steps that worked:
+
+```bash
+git fetch upstream --tags
+git log --oneline $(git merge-base lift-log-ui upstream/main)..upstream/main | wc -l   # how far behind
+git tag backup/lift-log-ui-pre-<version> lift-log-ui                                   # always
+git rebase upstream/main            # on lift-log-schema first, then --onto for lift-log-ui
+```
+
+1. **Check the migration numbers FIRST**: `grep 'registerMigration("v4' Packages/WhoopStore/Sources/WhoopStore/Database.swift`
+   on both sides. If upstream took ours, renumber — it is one line, and `SchemaOracleTest` enforces
+   that a migration's number matches its registration order, so there is no dodging it.
+2. **Resolve `Localizable.xcstrings` on KEYS, not markers** (see §4).
+3. **Both `schema_oracle.json` copies** must stay byte-identical; the only lift entries are the
+   migration id and the five `ios_only` tables.
+4. **Verify in this order** — cheapest first, and the last two are what no CI covers:
+   `swift test` in WhoopStore / StrandAnalytics / StrandImport → `xcodegen generate` →
+   **build BOTH app targets** → `xcodebuild … test` (expect exactly the 2 `TodayCarryOverTests`) →
+   `doc_comment_lint.py` → `i18n_audit.py --ci upstream/main` → run **Android CI** on the branch
+   (that, not the testing build, is what exercises `SchemaOracleTest`).
+5. **Compare tree hashes** if you rewrote history and only meant to change history:
+   `git rev-parse HEAD^{tree}` before and after must be identical.
+
 **Other things to know when you next sync:**
 
 - `FrameRouter.swift` gained ~146 upstream lines in 11.0/11.1 (link epitaphs, clock diagnostics).
@@ -389,6 +446,32 @@ the re-run path becomes live again and wants a test before any renumber.
 - No Android work was needed. The five tables stay pinned `ios_only` in both `schema_oracle.json`
   copies, and the only edit to those files was the migration-id list plus the two folded columns.
   Both copies are still byte-identical, and Android CI passes on the branch.
+
+## 11. What it takes to go upstream, when he says so
+
+He will not open a PR until he is happy with the feature (§1). When he does, this is the shape:
+
+**Ready now**
+- The schema commit is self-contained: one migration creating the complete schema, so a schema-only
+  PR stands alone.
+- The branch rebases onto upstream cleanly by the §10 procedure.
+- Every gate CI runs is green, including Android CI.
+
+**Must be decided first — `dist/liftlog-issue.md` asks these, and has never been posted**
+- **The Android position is the risk.** The five tables are pinned `ios_only`. `CLAUDE.md` calls
+  cross-platform parity "the #1 rule", so a required Room twin is a large piece of work. Everything
+  else is small next to this. Do not build more UI on the assumption it is fine.
+- Storage shape, screen placement, and the `source: "manual"` workout token.
+
+**Would need doing before submission**
+- `dist/` is gitignored and must stay out of the PR. `dist/liftlog-issue.md` is stale (says "three
+  commits", predates the rebase) — refresh before it is ever used.
+- The commit series is honest but long; upstream may want it squashed into the two-PR split
+  (schema, then UI).
+- The template's dropdowns are English-only (settled as fine for him — see the review — but a
+  10-locale project may want them localized).
+- `Tools/make_lift_program_template.py` and `docs/lift-log-program-template.xlsx` are a committed
+  build artifact plus its generator; upstream may have an opinion about binaries in the repo.
 
 **A git lesson from this rebase, learned the hard way.** At a conflicted commit during
 `git rebase -i`, `git commit --amend` amends the PREVIOUS commit — the conflicted one has not been

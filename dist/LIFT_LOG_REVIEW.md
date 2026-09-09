@@ -2,7 +2,7 @@
 
 **Maintained by Claude, from inside the repository. Every item below was checked against the code on
 2 Sep 2026 at commit `191386f5`. After the rebase onto upstream `v11.1.0` on 3 Sep 2026 (commit
-`ff3312bd`) items 2, 3, 7, 8, 9 and 10 were spot-checked against the rebased tree and all still hold,
+`e8e5839f`) the whole feature was audited on 9 Sep 2026; items 2, 3, 7, 8, 9 and 10 were checked against the rebased tree and all still hold,
 line references included; the rest were not individually re-read, but the rebase touched no Lift Log
 screen, so treat them as current unless something says otherwise.** Read `dist/LIFT_LOG_BRIEF.md`
 first — in particular §10, which covers the migration rename the rebase forced.
@@ -14,6 +14,23 @@ kept with the verification noted; the parts that were superseded by later work h
 quietly rewrite it.** If you believe something there is wrong, say so explicitly and flag it.
 
 ---
+
+## What to do first
+
+Ordered by value, after the 9 Sep 2026 audit. Items 1-2 are things a real session will hit; 3-5 are
+correctness of what is displayed; the rest is polish.
+
+| # | Item | Why it is where it is |
+|---|---|---|
+| 1 | §7 — cannot log an unplanned set | No workaround exists. Five sets when the program says four is ordinary, and the fifth is simply lost. |
+| 2 | §8 — cannot delete a logged session or set | The store functions exist with zero call sites. One phantom double-tap is permanent. |
+| 3 | §2 — the weekly bar reads "done" at the 4-set floor | It tells the user to stop at the point growth *starts*. A correctness problem dressed as a colour. |
+| 4 | §5 — RPE coverage is invisible where it matters | Counts deliberately are not filtered by RPE, so coverage has to be shown, or the number's meaning is unknown. |
+| 5 | §10b — `LiftFormat.duration` has no hours branch | A session past an hour reads "75:23". Visible on the bar, the sheet and the Lock Screen. |
+| 6 | §4 — no cross-session strength trend | The reason to keep a log book at all. Large, and it needs history to build against. |
+| 7 | §6, §9 | Copy and dead API. |
+
+**Do not start with §4 or §6.** They are the interesting ones and the least urgent.
 
 ## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5` (now `1c9243dc`)
 
@@ -50,7 +67,7 @@ feature, which says a muscle at 9 sets "is not 225% complete".
 - Drop the success-green. There is no success point, so no colour should imply one — use the normal accent, muted below the floor.
 - Reword the caption as a floor: "About 4 sets a week is where growth becomes detectable. More helps, with strongly diminishing returns."
 
-## 3. Two implementations of the fractional count, and they already differ
+## 3. ~~Two implementations of the fractional count, and they already differ~~ — FIXED in `e8e5839f`
 
 **Verified.** The load-bearing metric is computed twice:
 - `WhoopStore.liftSetCounts` (SQL) — used by the hub's 7-day view, `LiftLogView.swift:315`
@@ -64,10 +81,16 @@ before storing. So this is a **latent** divergence, not a live bug — but it me
 or one future writer that forgets to exclude, makes two screens report different numbers for the
 same data, with no test catching it.
 
-**Fix:** make one the single implementation. Simplest is to have the store fetch rows and delegate
-the arithmetic to `LiftMetrics`, deleting the SQL aggregation — the windows involved are small. If
-the SQL version is kept for performance, add the exclusion guard and a shared test that runs both
-over the same fixture and asserts they agree, including a row that wrongly lists its primary.
+**Fixed the second way:** the SQL version keeps its aggregation (the read is indexed and the window
+small) and now carries the same exclusion guard, and `LiftMetricsStoreAgreementTests` runs BOTH over
+the same fixtures and asserts they agree — including a malformed row written with raw SQL, because
+the public API cannot produce one. Verified it fails as intended: removing the guard turns four of
+its five tests red with 1.5 against 1.0.
+
+**Kept as a record** because the mechanism recurs: the divergence was invisible only because the
+write path happened to clean every row. "No current writer triggers it" is a coincidence, not a
+guarantee — and adding the spreadsheet importer added exactly such a writer. **If you add a third
+consumer of the set count, add it to that test.**
 
 ## 4. Build the strength trend across sessions
 
@@ -145,7 +168,27 @@ confirmation.
 supplies the RPE profile the UI actually uses. Either wire them up or delete them — an unused public
 API on a store is a maintenance claim nobody is honouring, and it will be noticed in review.
 
-## 10. Smaller things, worth knowing
+## 10. Known costs, measured — NOT unnoticed
+
+Audited 9 Sep 2026. These are deliberate positions with numbers attached, not oversights. Re-derive
+before "optimising" any of them.
+
+- **The session snapshot is JSON-encoded into UserDefaults on every keystroke.** `persist()` runs on
+  advance, `updateSet`, warm-up toggles, start, undo and finish, and encodes the WHOLE snapshot each
+  time. That is deliberate — a crash mid-rest keeps what was typed — and it is fine at real sizes: a
+  19-set session is a few KB. It becomes O(n) typing cost only for an absurd program, which is part
+  of why the importer caps a program at 200 lines. **If sessions ever get genuinely large, this is
+  the first thing to change**, and the change is to write sets incrementally rather than to drop the
+  durability.
+- **`loadLastTime` issues one store query per DISTINCT exercise** (deduplicated in `e8e5839f`; it was
+  per plan line). ~8 indexed queries for a real program, off the main thread, once when the sheet
+  opens. Fine. A single windowed query would be fewer round trips and is the obvious follow-up if a
+  program ever gets long.
+- **The importer's bounds** — 8 MB file, 64 MB per decompressed part, 5000 rows, 50 programs, 200
+  lines each, 50 warnings — are all far above any real sheet and far below anything that could hurt.
+  They are pinned by tests; change them together with those tests.
+
+## 10b. Smaller things, worth knowing
 
 - **Still open from the 9 Sep session: no way to log an unplanned set.** See §7 — it did not come up
   as a complaint that session, but the gap is unchanged.
@@ -194,6 +237,27 @@ found were real; the other two are below in §13b and §14.
 - **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
   "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
 
+## 12c. Second round, 9 Sep 2026
+
+- **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of
+  tinting the finished set's row. Green is untouched.
+- **Live HR** on the sheet's control bar, the minimised bar and the Lock Screen.
+  **A design rule came out of this, the hard way:** the bar and the Lock Screen first hid the HR
+  readout whenever there was no value, to save width on a crowded capsule. It was immediately
+  reported as "there is no HR in the minimised tab" — the strap just was not streaming. *An absent
+  readout is indistinguishable from an absent feature*, and mid-workout the difference is
+  actionable: a dash says the strap stopped reading. All three surfaces now always render, greyed
+  with a dash when empty. Apply the same rule to anything else added to these surfaces.
+- **The minimised bar shows reps x weight.**
+- **A Lock Screen Live Activity** carries the same four things (see brief §3). Not yet checked on
+  real hardware — the seconds digits render as "--" in simulator screenshots, which is how the
+  simulator captures a system-drawn live timer, but confirm it on a real Lock Screen.
+- **Found while in there: the gym rest clock was labelled with the SLEEP metric's string.**
+  `String(localized: "Rest")` resolves to the catalog's sleep key, so the label read "Erholung"
+  (recovery) in German and "Riposo" in Italian. Fixed to "Rest period". **This is worth generalising:
+  the trap is documented in CLAUDE.md and in this brief, and it was still reintroduced by a later
+  commit.** Grep for `String(localized: "Rest")` after any session-screen work.
+
 ## 12d. Spreadsheet import, 9 Sep 2026
 
 Programs can now be built in Excel/Numbers/Sheets and imported (`.xlsx` or `.csv`). See brief §3 and
@@ -226,27 +290,6 @@ Programs can now be built in Excel/Numbers/Sheets and imported (`.xlsx` or `.csv
   distinguishable errors.
 - **Not implemented on purpose:** exporting a program back OUT to a spreadsheet. Easy follow-up; not
   asked for.
-
-## 12c. Second round, 9 Sep 2026
-
-- **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of
-  tinting the finished set's row. Green is untouched.
-- **Live HR** on the sheet's control bar, the minimised bar and the Lock Screen.
-  **A design rule came out of this, the hard way:** the bar and the Lock Screen first hid the HR
-  readout whenever there was no value, to save width on a crowded capsule. It was immediately
-  reported as "there is no HR in the minimised tab" — the strap just was not streaming. *An absent
-  readout is indistinguishable from an absent feature*, and mid-workout the difference is
-  actionable: a dash says the strap stopped reading. All three surfaces now always render, greyed
-  with a dash when empty. Apply the same rule to anything else added to these surfaces.
-- **The minimised bar shows reps x weight.**
-- **A Lock Screen Live Activity** carries the same four things (see brief §3). Not yet checked on
-  real hardware — the seconds digits render as "--" in simulator screenshots, which is how the
-  simulator captures a system-drawn live timer, but confirm it on a real Lock Screen.
-- **Found while in there: the gym rest clock was labelled with the SLEEP metric's string.**
-  `String(localized: "Rest")` resolves to the catalog's sleep key, so the label read "Erholung"
-  (recovery) in German and "Riposo" in Italian. Fixed to "Rest period". **This is worth generalising:
-  the trap is documented in CLAUDE.md and in this brief, and it was still reintroduced by a later
-  commit.** Grep for `String(localized: "Rest")` after any session-screen work.
 
 ## 13. Fixed on 3 Sep 2026, after the rebase
 
