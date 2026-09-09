@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `e8e5839f` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `11c0d0a1` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -85,6 +85,8 @@ on the same screen. No composite "workout score".
 Everything here was either paid for with a real bug or settled deliberately. A change that violates
 one is a regression even if it compiles and the tests you ran passed.
 
+0. **The migration is `v45-lift-log`.** It has moved twice (v40 → v42 → v45) because upstream keeps
+   taking the numbers. Expect to move it again; §10 has the procedure.
 1. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
    (SQL, the hub's weekly card) and `LiftMetrics.muscleCounts` (in memory, the session detail). Both
    exclude a muscle listed as both primary and secondary. `LiftMetricsStoreAgreementTests` pins them
@@ -113,7 +115,7 @@ one is a regression even if it compiles and the tests you ran passed.
 ### Storage — `Packages/WhoopStore`
 | File | What |
 |---|---|
-| `Sources/WhoopStore/Database.swift` | ONE migration, **`v42-lift-log`** — five tables, seven indexes, complete schema. It was v40 plus a v41 follow-up until the 11.1.0 rebase; see §10 |
+| `Sources/WhoopStore/Database.swift` | ONE migration, **`v45-lift-log`** — five tables, seven indexes, complete schema. It has been v40, then v42, now v45: upstream takes the numbers every cycle. See §10 |
 | `Sources/WhoopStore/LiftMuscle.swift` | the closed **20-token** muscle vocabulary, 4 regions, and `directSetCredit` / `indirectSetCredit` |
 | `Sources/WhoopStore/LiftLogStore.swift` | row structs + CRUD + `liftSetCounts` / `liftRpeProfile`; `maxRememberedExercises = 500` |
 | `Sources/WhoopStore/DeviceRegistryStore.swift` | all five lift tables listed in `deviceScopedTables` |
@@ -207,9 +209,17 @@ format — never reformat the file. Note the file is **not sorted**: entries sit
 and both upstream and this branch append near the top, so it conflicts textually on almost every
 rebase even when the two sides touch disjoint keys. Resolving those markers by hand is a trap — the
 shared trailing `} },` counts as context and silently truncates the last entry into invalid JSON.
-Merge on KEYS instead; the 11.1.0 rebase used a throwaway script that took the base file verbatim
-plus every entry `theirs` added relative to the merge base (`git show :1:/:2:/:3:`), which also
-preserves upstream deletions instead of resurrecting them. Three traps found the hard way:
+Merge on KEYS instead: take the base file verbatim, plus every entry `theirs` added relative to the
+merge base (`git show :1:/:2:/:3:`), which also preserves upstream deletions rather than
+resurrecting them.
+
+**The script must not assume the formatting.** By 11.5.0 the catalog mixes the compact
+one-line-per-entry style with Xcode's expanded style at a DIFFERENT indent, and it contains a
+genuinely duplicated key (`"%lld of %lld nights"` — JSON tolerates it, last wins). So: take the key
+list from `json.loads`, find each key's own line with a regex that accepts any leading whitespace and
+decodes the escaped key, and treat the last occurrence of a duplicate as authoritative. An
+indent-based parser silently mis-attributes entries and produces invalid JSON. Four traps found the
+hard way:
 - The catalog's existing **`"Rest"` key means NOOP's SLEEP metric** ("Erholung", "Riposo"). The rest timer uses its own `"Rest period"` string.
 - `String(localized:)` with interpolation produces `%@` / `%lld` keys; translations need positional `%1$@` / `%2$lld`.
 
@@ -310,37 +320,38 @@ loaded bar is a real event, not a replay.
 
 ## 8. Where it stands
 
-**Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits. Seventeen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+**Base: upstream `v11.5.0`.** Rebased onto `ryanbr/noop` `main` (9f786fa4) — 206 upstream commits,
+the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Seventeen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
-e8e5839f lift log: fix a divergent metric, and bound the import so it cannot hurt the app
-507c1b24 lift log: make the spreadsheet import survive a real user's file
-b84702b3 lift log: build a program from a spreadsheet
-eed0e743 lift log: keep the heart rate on screen even when it is not reading
-0dd807ae lift log: put the running session on the Lock Screen
-93823f69 lift log: draw the rest between the sets, and put HR on the bar
-48f9da72 lift log: fix the wrapped Set heading, and show HR and the set's numbers
-154d2a7e lift log: keep the session on the machine you're at, and record what it showed
-ff3312bd lift log: describe the targets the editor actually has
-921a3d6e lift log: restore the warm-up marker
-7e425399 lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
-b2e23bd3 lift log: a workout sheet, and a session that outlives its screen
-9f9241e5 lift log: the metrics, and the session detail screen that shows them
-9e2c5df2 lift log: fix the tap-anywhere mistake, and move set entry into the rest
-cd07cf5e lift log: the session loop, the rest timer and strap double-tap
-e21c4c33 lift log: programs, the exercise vocabulary and muscle classification
-405de03b store: add the v42 schema for the in-app strength log
+11c0d0a1 lift log: fix a divergent metric, and bound the import so it cannot hurt the app
+c21d68f6 lift log: make the spreadsheet import survive a real user's file
+53336a57 lift log: build a program from a spreadsheet
+18bb63a1 lift log: keep the heart rate on screen even when it is not reading
+0d163dd4 lift log: put the running session on the Lock Screen
+470f01e5 lift log: draw the rest between the sets, and put HR on the bar
+8c721f49 lift log: fix the wrapped Set heading, and show HR and the set's numbers
+0c90825e lift log: keep the session on the machine you're at, and record what it showed
+cf62bb97 lift log: describe the targets the editor actually has
+479ef465 lift log: restore the warm-up marker
+82b275df lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
+874556b7 lift log: a workout sheet, and a session that outlives its screen
+ce0395fd lift log: the metrics, and the session detail screen that shows them
+6d463d88 lift log: fix the tap-anywhere mistake, and move set entry into the rest
+1089aa06 lift log: the session loop, the rest timer and strap double-tap
+ff835072 lift log: programs, the exercise vocabulary and muscle classification
+2c1a0180 store: add the v45 schema for the in-app strength log
 ```
 
 The schema commit is **self-contained** — it creates the complete schema in one migration, so a
 schema-only PR stands alone.
 
-Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
-and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
+Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most recent, and
+`backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
+`backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `e8e5839f`:** WhoopStore **510** · StrandAnalytics **1761** · StrandImport **270** · StrandTests **1519**
+**Test counts at `11c0d0a1`:** WhoopStore **564** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1686**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
@@ -431,6 +442,26 @@ git rebase upstream/main            # on lift-log-schema first, then --onto for 
    (that, not the testing build, is what exercises `SchemaOracleTest`).
 5. **Compare tree hashes** if you rewrote history and only meant to change history:
    `git rev-parse HEAD^{tree}` before and after must be identical.
+
+**Done twice now.** 10.6.1 → 11.1.0 (216 commits) and 11.1.0 → 11.5.0 (206 commits). The second was
+routine because of the first; these are the additions it produced:
+
+- **Upstream takes migration numbers every cycle.** v40/v41 the first time, v42/v43/v44 the second.
+  The lift log has been v40, then v42, now **v45**. Renumber and move on — it is one line plus the
+  two `schema_oracle.json` copies plus the `testV**` test names.
+- **`Localizable.xcstrings` cannot be merged by indentation.** Upstream now mixes the compact
+  one-line style with Xcode's expanded style, at a DIFFERENT indent, and the catalog currently
+  contains a genuinely duplicated key (`"%lld of %lld nights"`, which JSON tolerates — last wins).
+  A merge script must take the key list from `json.loads` and locate each key's own line, not assume
+  a 4-space indent. The working script is described in §4; rebuild it that way if it is gone.
+- **Conflicts outside the store are trivial but real.** Both syncs produced one or two: a property
+  added at the same spot in `RootTabView`, and both sides appending to `NOOPWidgetBundle`. Keep both
+  sides; do not choose.
+- **Check the tab wiring by grep after a `RootTabView` conflict.** A build will not catch a lost
+  `MoreRow` or a dropped `.sheet`. Grep for `liftLog`, `LiftSessionBar`, `LiftSessionView`.
+- **Confirm the feature code was untouched:**
+  `git diff --stat backup/<tag>..lift-log-ui -- 'Strand/Screens/Lift*' 'Strand/Data/Lift*'` should be
+  EMPTY. Both syncs left it byte-identical; anything else means a conflict was resolved wrongly.
 
 **Other things to know when you next sync:**
 

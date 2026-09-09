@@ -2,7 +2,7 @@
 
 **Maintained by Claude, from inside the repository. Every item below was checked against the code on
 2 Sep 2026 at commit `191386f5`. After the rebase onto upstream `v11.1.0` on 3 Sep 2026 (commit
-`e8e5839f`) the whole feature was audited on 9 Sep 2026; items 2, 3, 7, 8, 9 and 10 were checked against the rebased tree and all still hold,
+`11c0d0a1`, on upstream `v11.5.0`) the whole feature was audited on 9 Sep 2026; items 2, 3, 7, 8, 9 and 10 were checked against the rebased tree and all still hold,
 line references included; the rest were not individually re-read, but the rebase touched no Lift Log
 screen, so treat them as current unless something says otherwise.** Read `dist/LIFT_LOG_BRIEF.md`
 first — in particular §10, which covers the migration rename the rebase forced.
@@ -14,6 +14,12 @@ kept with the verification noted; the parts that were superseded by later work h
 quietly rewrite it.** If you believe something there is wrong, say so explicitly and flag it.
 
 ---
+
+## Base
+
+Rebased onto upstream **`v11.5.0`** — the second sync, and routine. The lift migration is now
+**`v45-lift-log`** (was v40, then v42). Nothing in this backlog was affected: the feature's own
+source files came through the rebase byte-identical.
 
 ## What to do first
 
