@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `48f9da72` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `0dd807ae` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -103,7 +103,7 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 | File | What |
 |---|---|
 | `Data/LiftSessionEngine.swift` | the **slot-based state machine**. Pure; time enters as a parameter |
-| `Data/LiftSessionController.swift` | `@MainActor ObservableObject` owning the engine, the 1-second tick, buzz gating, persistence and the strap claim |
+| `Data/LiftSessionController.swift` | `@MainActor ObservableObject` owning the engine, the 1-second tick, buzz gating, persistence, the strap claim, and `presentation(system:)` — the ONE resolution of the session's wording and numbers, rendered by both the minimised bar and the Lock Screen activity |
 | `Data/LiftSessionPersistence.swift` | crash-safe `Codable` snapshot in UserDefaults (`noop.activeLiftSession`) |
 | `Data/LiftMuscleNames.swift` | app-layer localized display names (WhoopStore holds no UI strings) |
 | `Data/LiftFormat.swift` | kg/lb conversion + number and duration formatting |
@@ -112,11 +112,21 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 | `Screens/LiftProgramEditorSheet.swift` | program name/note + ordered exercise lines |
 | `Screens/LiftProgramItemSheet.swift` | one line: exercise picker (with forget), muscle classification, targets |
 | `Screens/LiftSessionView.swift` | the workout sheet + control bar + finish sheet |
-| `Screens/LiftSessionBar.swift` | the minimised session bar — shows the current set's reps x weight |
+| `Screens/LiftSessionBar.swift` | the minimised session bar — reps x weight and live HR |
 | `Screens/LiftSessionDetailSheet.swift` | a finished session read back in full |
 | `Screens/KeyboardDismiss.swift` | `dismissesKeyboardOnTap` helper |
 | `BLE/FrameRouter.swift` | **double-tap de-duplication** (see §6) |
 | `App/AppModel.swift` | `strapDoubleTapOverride` |
+
+### Lock Screen — the session Live Activity
+| File | What |
+|---|---|
+| `StrandiOSShared/LiftActivityAttributes.swift` | `ActivityAttributes`; times are carried as DATES so the widget's clock ticks on its own |
+| `StrandiOSWidgets/LiftLiveActivity.swift` | the Lock Screen + Dynamic Island rendering. **The extension ships no string catalog** — every word it draws must arrive pre-localized from the app |
+| `StrandiOS/Widgets/LiftLiveActivityController.swift` | starts/updates/ends it; pushes only on content change, plus HR at most every 10 s |
+
+Separate activity type from the live-HR one (`NOOPActivityAttributes`); the app suppresses that one
+while a session runs rather than stacking two banners. Both share the existing Live Activity opt-out.
 
 ### iOS shell — `StrandiOS/`
 - `App/StrandiOSApp.swift` — creates `LiftSessionController` (injecting buzz + strap claim), injects it as an environment object.
@@ -256,10 +266,12 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits. Eleven commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+upstream commits. Thirteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+0dd807ae lift log: put the running session on the Lock Screen
+93823f69 lift log: draw the rest between the sets, and put HR on the bar
 48f9da72 lift log: fix the wrapped Set heading, and show HR and the set's numbers
 154d2a7e lift log: keep the session on the machine you're at, and record what it showed
 ff3312bd lift log: describe the targets the editor actually has
@@ -279,15 +291,17 @@ schema-only PR stands alone.
 Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
 and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
 
-**Test counts at `48f9da72`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1519**
+**Test counts at `0dd807ae`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1519**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
 whose Android job only compiles APKs).
 
 **The feature has now had a full real gym session** (9 Sep 2026) — the whole sheet tapped through in
-a gym rather than simulated. It found two data-losing bugs, both fixed in `154d2a7e`; see §12b of the
-review. Treat further UI judgements the same way: ship, use, then fix what the session actually found.
+a gym rather than simulated. It found two data-losing bugs, both fixed in `154d2a7e`, and a second
+round of requests answered in `93823f69` / `0dd807ae`; see §12b and §12c of the review. Treat further
+UI judgements the same way: ship, use, then fix what the session actually found — **nothing in the
+backlog predicted either data-losing bug.**
 
 ## 9. Still outstanding
 

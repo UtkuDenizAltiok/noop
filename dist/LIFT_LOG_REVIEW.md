@@ -194,6 +194,21 @@ found were real; the other two are below in §13b and §14.
 - **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
   "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
 
+## 12c. Second round, 9 Sep 2026
+
+- **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of
+  tinting the finished set's row. Green is untouched.
+- **Live HR** on the sheet's control bar and on the minimised bar.
+- **The minimised bar shows reps x weight.**
+- **A Lock Screen Live Activity** carries the same four things (see brief §3). Not yet checked on
+  real hardware — the seconds digits render as "--" in simulator screenshots, which is how the
+  simulator captures a system-drawn live timer, but confirm it on a real Lock Screen.
+- **Found while in there: the gym rest clock was labelled with the SLEEP metric's string.**
+  `String(localized: "Rest")` resolves to the catalog's sleep key, so the label read "Erholung"
+  (recovery) in German and "Riposo" in Italian. Fixed to "Rest period". **This is worth generalising:
+  the trap is documented in CLAUDE.md and in this brief, and it was still reintroduced by a later
+  commit.** Grep for `String(localized: "Rest")` after any session-screen work.
+
 ## 13. Fixed on 3 Sep 2026, after the rebase
 
 - **The empty-state card described targets that do not exist.** It promised "working sets, rep
