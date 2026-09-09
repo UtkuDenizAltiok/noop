@@ -459,6 +459,12 @@ routine because of the first; these are the additions it produced:
   sides; do not choose.
 - **Check the tab wiring by grep after a `RootTabView` conflict.** A build will not catch a lost
   `MoreRow` or a dropped `.sheet`. Grep for `liftLog`, `LiftSessionBar`, `LiftSessionView`.
+- **`xcodegen generate` dirties `StrandiOS/Resources/Info.plist` — that is UPSTREAM's drift, not
+  yours.** As of 11.5.0 their `project.yml` declares `NSMicrophoneUsageDescription` and
+  `NSSpeechRecognitionUsageDescription` (the Coach voice feature) while their committed plist does
+  not, so regenerating adds them. `git checkout --` it. Committing it would put an unrelated upstream
+  fix in this branch and guarantee a conflict next sync. CI regenerates the plist itself, so the
+  built app is unaffected.
 - **Confirm the feature code was untouched:**
   `git diff --stat backup/<tag>..lift-log-ui -- 'Strand/Screens/Lift*' 'Strand/Data/Lift*'` should be
   EMPTY. Both syncs left it byte-identical; anything else means a conflict was resolved wrongly.
