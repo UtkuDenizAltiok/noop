@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `b84702b3` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `507c1b24` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -98,7 +98,7 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 |---|---|
 | `Sources/StrandImport/LiftProgramSheetImporter.swift` | parses a filled template into programs + warnings. **Writes nothing** — the caller decides |
 | `Sources/StrandImport/XlsxSheet.swift` | a deliberately small `.xlsx` reader (first worksheet, as text) on ZIPFoundation + XMLParser |
-| `Tests/StrandImportTests/LiftProgramSheetImporterTests.swift` | **15 tests**, including one that parses the SHIPPED template |
+| `Tests/StrandImportTests/LiftProgramSheetImporterTests.swift` | **17 tests**, including two that read the SHIPPED template — its columns, and that it locks column edits |
 | `Tools/make_lift_program_template.py` | generates `docs/lift-log-program-template.xlsx`; no Python dependencies |
 | `Strand/Screens/LiftProgramImportSheet.swift` | the picker, the preview, and the write |
 
@@ -283,10 +283,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits. Fifteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+upstream commits. Sixteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+507c1b24 lift log: make the spreadsheet import survive a real user's file
 b84702b3 lift log: build a program from a spreadsheet
 eed0e743 lift log: keep the heart rate on screen even when it is not reading
 0dd807ae lift log: put the running session on the Lock Screen
@@ -310,7 +311,7 @@ schema-only PR stands alone.
 Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
 and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
 
-**Test counts at `b84702b3`:** WhoopStore **510** · StrandAnalytics **1756** · StrandImport **264** · StrandTests **1519**
+**Test counts at `507c1b24`:** WhoopStore **510** · StrandAnalytics **1756** · StrandImport **266** · StrandTests **1519**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,

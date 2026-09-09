@@ -199,20 +199,33 @@ found were real; the other two are below in §13b and §14.
 Programs can now be built in Excel/Numbers/Sheets and imported (`.xlsx` or `.csv`). See brief §3 and
 `docs/LIFT_LOG_PROGRAM_IMPORT.md`.
 
+**Settled by the user on 9 Sep 2026 — do NOT reopen these:**
+- **The template's dropdowns stay English-only.** Asked about; his answer was that the sheet is an
+  external file filled in on a computer and non-English speakers are not a concern for it. The
+  importer accepts the stored tokens and is case/space/hyphen-insensitive regardless.
+- **A re-import creating a SECOND program is fine.** Programs have a "Delete program" action with a
+  confirmation in `LiftProgramEditorSheet` (verified, not assumed), so a duplicate is cheap to clear.
+  His priority for the import is that it be *reliable*, not that it merge. Do not build merge-by-name
+  or update-in-place unless asked.
+
 **Things a later session should know:**
 - **The template is a committed build artifact.** Regenerate with
   `python3 Tools/make_lift_program_template.py` if the columns or the muscle vocabulary change.
   `LiftProgramSheetImporterTests` parses the shipped file, so a dropped column fails the suite rather
   than a user's import — but the test cannot notice a template that no longer matches a NEW column.
-- **The template's dropdowns are English only.** The importer accepts stored tokens and is
-  case/space/hyphen-insensitive, but a German user still sees English muscle names in the sheet.
-  Worth localising if this ever ships upstream.
+- **`sheetProtection` flags read backwards.** Each one answers "is this PREVENTED", and they default
+  to TRUE once the sheet is protected, so `insertColumns="0"` ALLOWS inserting columns. The template
+  shipped that way once and permitted exactly the edit that breaks the column mapping. A test now
+  asserts columns stay locked and rows stay editable.
 - **Adding a `LiftMuscle` case means updating the generator's `MUSCLES` list too**, or the new group
   is importable-by-typing but missing from the dropdown. `testEveryMuscleInTheVocabularyIsReachable…`
   catches the parser half; nothing catches the template half.
-- **Not implemented on purpose:** exporting a program back OUT to a spreadsheet, and updating an
-  existing program from a file (every import creates NEW programs). Both are easy follow-ups; neither
-  was asked for.
+- **The importer reads EVERY sheet in tab order and takes the first that has an exercise column** —
+  not "the first tab", and not `sheet1.xml`, which is a stable id rather than a position. Headers are
+  tracked separately from rows so "not a program sheet" and "template not filled in yet" stay
+  distinguishable errors.
+- **Not implemented on purpose:** exporting a program back OUT to a spreadsheet. Easy follow-up; not
+  asked for.
 
 ## 12c. Second round, 9 Sep 2026
 
