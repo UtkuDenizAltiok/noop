@@ -198,7 +198,13 @@ found were real; the other two are below in §13b and §14.
 
 - **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of
   tinting the finished set's row. Green is untouched.
-- **Live HR** on the sheet's control bar and on the minimised bar.
+- **Live HR** on the sheet's control bar, the minimised bar and the Lock Screen.
+  **A design rule came out of this, the hard way:** the bar and the Lock Screen first hid the HR
+  readout whenever there was no value, to save width on a crowded capsule. It was immediately
+  reported as "there is no HR in the minimised tab" — the strap just was not streaming. *An absent
+  readout is indistinguishable from an absent feature*, and mid-workout the difference is
+  actionable: a dash says the strap stopped reading. All three surfaces now always render, greyed
+  with a dash when empty. Apply the same rule to anything else added to these surfaces.
 - **The minimised bar shows reps x weight.**
 - **A Lock Screen Live Activity** carries the same four things (see brief §3). Not yet checked on
   real hardware — the seconds digits render as "--" in simulator screenshots, which is how the

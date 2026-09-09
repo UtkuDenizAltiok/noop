@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `0dd807ae` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `eed0e743` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -127,6 +127,10 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 
 Separate activity type from the live-HR one (`NOOPActivityAttributes`); the app suppresses that one
 while a session runs rather than stacking two banners. Both share the existing Live Activity opt-out.
+
+**Every readout on these surfaces always renders, with a dash when it has no value** — never hidden.
+Hiding the heart rate when the strap was not streaming was read as the feature being missing, which
+is a worse failure than a dash: mid-workout, "the strap stopped reading" is something to act on.
 
 ### iOS shell — `StrandiOS/`
 - `App/StrandiOSApp.swift` — creates `LiftSessionController` (injecting buzz + strap claim), injects it as an environment object.
@@ -266,10 +270,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits. Thirteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+upstream commits. Fourteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+eed0e743 lift log: keep the heart rate on screen even when it is not reading
 0dd807ae lift log: put the running session on the Lock Screen
 93823f69 lift log: draw the rest between the sets, and put HR on the bar
 48f9da72 lift log: fix the wrapped Set heading, and show HR and the set's numbers
@@ -291,7 +296,7 @@ schema-only PR stands alone.
 Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
 and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
 
-**Test counts at `0dd807ae`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1519**
+**Test counts at `eed0e743`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1519**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
