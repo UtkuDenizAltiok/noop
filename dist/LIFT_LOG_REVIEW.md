@@ -147,6 +147,8 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 
 ## 10. Smaller things, worth knowing
 
+- **Still open from the 9 Sep session: no way to log an unplanned set.** See §7 — it did not come up
+  as a complaint that session, but the gap is unchanged.
 - **`LiftFormat.duration` has no hours branch.** It formats `M:SS` above a minute, so a 75-minute session reads "75:23" rather than "1:15:23". Truthful but odd once a session passes an hour, which real ones do. `IntervalTimerView` already has the `H:MM:SS` idiom to copy. **Now observed, not just read:** a stale simulator session displayed `1262:46` in the minimised bar where it meant 21 hours. On the session bar — the thing that sits on screen all workout — this is the most visible instance.
 
 - **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` issue one `lastLiftSets` query per exercise. Fine at 5–8 exercises; not fine if a session ever gets long. A single windowed query would do.
@@ -170,6 +172,27 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 - Resistance training dose-response meta-regression (Sports Medicine, 2025) — the set-counting method comparison, the ~4/week hypertrophy floor, the ~1/week and ~4/week strength figures, and the negligible independent effect of frequency.
 - Loading recommendations / re-examination of the repetition continuum (Schoenfeld & Grgic) — hypertrophy across a broad load span when close to failure; strength is load-specific.
 - Hypertrophy variables umbrella review (Frontiers, 2022) — volume as the variable with a clear dose-response; proximity to failure as the qualifier.
+
+## 12b. Fixed on 9 Sep 2026, from the first full gym session
+
+The first session where the whole sheet was tapped through in a real gym. Four of the six things it
+found were real; the other two are below in §13b and §14.
+
+- **The session walked back to a machine the user had left.** `advance` followed `nextPendingSlot`
+  (first uncompleted in PLAN order), so skipping a busy exercise and starting a later one meant every
+  subsequent set jumped back to the skipped one. Now `slotAfter(_:)` finishes the current exercise
+  first. **This is the single most important behavioural rule in the engine — do not "simplify" it
+  back to plan order.**
+- **A completed set recorded nothing.** The sheet showed "50 x 10" in grey and stored weight and reps
+  as NIL. Nineteen sets came back with no numbers and a session volume of zero. Sets now record
+  `carry(for:lastSession:)` — the same numbers the sheet was showing, in the same order of
+  preference. RPE is deliberately never carried (it would make the RPE coverage card report full
+  coverage for unrated sets). **Keep the ghost chain in `LiftSessionView` and the carry chain in the
+  engine in step** — a ghost that does not match what completing the set records is worse than none.
+- **The "SET" heading wrapped to "SE / T".** 26pt column against ALL-CAPS +1.4 tracking. Now 34pt, a
+  shared constant, centred, with `lineLimit(1)` on the heading row.
+- **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
+  "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
 
 ## 13. Fixed on 3 Sep 2026, after the rebase
 
@@ -198,5 +221,5 @@ API on a store is a maintenance claim nobody is honouring, and it will be notice
 - **`dist/liftlog-issue.md` has never been posted to `ryanbr/noop`.** Offered 3 Sep 2026 and declined for now — he is not going upstream until he is happy with the feature. **Public post in his name — explicit yes required, and do not raise it again unprompted.** The text is also stale (says "three commits", predates the 11.1.0 rebase).
 - **Real gym use is now continuous**, but every UI judgement below was written before that started. Prefer what he reports from an actual session over anything inferred here.
 - **He wipes on every update** (removes the app, forgets the strap, fresh install). Schema changes are therefore free — prefer changing the stored shape over adding a migration to patch it.
-- **The double-tap de-duplication (§7 of the brief) is unconfirmed on hardware.** If duplicate advances stop, the diagnosis was right. If they continue, the cause is elsewhere and the fix should be revisited rather than assumed. It survived the 11.1.0 rebase unchanged, and `onDoubleTap` still has exactly one call site — but 11.0/11.1 reworked a lot of `FrameRouter`, so the first gym session on this build is also the first test of the fix against the new BLE code.
+- **The double-tap de-duplication (§7 of the brief) is still unconfirmed on hardware — and now has one ambiguous data point.** Over a full session on 9 Sep 2026 a phantom advance happened **once**. That is neither a pass nor a fail: before the fix it was reliable enough to be reported as a defect, so once in a session is a large improvement, but it is not zero. **Do not close this, and do not "fix" it further on one observation.** The next step is evidence, not a change: if it recurs, get whether the strap was mid-offload at the time. A second, unrelated cause is plausible — `AppModel.handleDoubleTap`'s 1.2 s debounce is still the only guard against two genuine taps being read as one gesture, and a bumped strap is a real event, not a replay.
 - **Whether the confirmation buzz now feels immediate is unknown.** The app-side delay is gone; what remains is BLE round trip and the strap's haptic engine, which software cannot shorten.

@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `ff3312bd` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
+at commit `48f9da72` on branch `lift-log-ui`, rebased onto upstream `v11.1.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -58,6 +58,18 @@ set can be started at any time (a gym is not a queue — machines get occupied).
 being worked, amber the rest that follows, a check marks a completed set with the numbers you
 entered. Clocks and the one action are pinned to the bottom and never scroll away.
 
+**The session stays on the machine you are at.** Any pending set can be started at any time, so
+skipping a busy exercise leaves an EARLIER slot uncompleted. Finishing a set therefore moves to the
+next set of the SAME exercise, and only falls back to plan order once that exercise is done
+(`LiftSessionEngine.slotAfter`). Plan order alone sent the user back to the machine they had walked
+away from after every set. **Do not simplify this back.**
+
+**A completed set records the numbers it was showing.** The grey values on a pending row are a plan —
+this exercise earlier in the session, then last session, then the program's target — and completing
+the set commits exactly those (`carry(for:lastSession:)`), rendered as a real entry. A set you did
+not do is corrected to 0. **RPE is never carried**: it is knowable only after the set, and inventing
+it would make the RPE coverage card report every set as rated.
+
 **The session outlives its screen.** Swiping the sheet down *minimises* to a bar above the tab bar,
 reachable from every tab; the clock, the strap gesture and the buzzes keep running.
 
@@ -100,7 +112,7 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 | `Screens/LiftProgramEditorSheet.swift` | program name/note + ordered exercise lines |
 | `Screens/LiftProgramItemSheet.swift` | one line: exercise picker (with forget), muscle classification, targets |
 | `Screens/LiftSessionView.swift` | the workout sheet + control bar + finish sheet |
-| `Screens/LiftSessionBar.swift` | the minimised session bar |
+| `Screens/LiftSessionBar.swift` | the minimised session bar — shows the current set's reps x weight |
 | `Screens/LiftSessionDetailSheet.swift` | a finished session read back in full |
 | `Screens/KeyboardDismiss.swift` | `dismissesKeyboardOnTap` helper |
 | `BLE/FrameRouter.swift` | **double-tap de-duplication** (see §6) |
@@ -111,7 +123,7 @@ Tables: `liftExercise`, `liftProgram`, `liftProgramItem`, `liftSession`, `liftSe
 - `App/RootTabView.swift` — `MoreDestination.liftLog`, the `MoreRow("Lift Log", "dumbbell.fill", .liftLog)` in `moreSection("Body")`, the session bar via `.safeAreaInset(edge: .bottom)`, the session sheet, and the `.task` that resumes an interrupted session **as the bar, not as a sheet**.
 
 ### App-target tests — `StrandTests/`
-- `LiftSessionEngineTests.swift` — **32 tests**
+- `LiftSessionEngineTests.swift` — **41 tests**
 - `FrameRouterDoubleTapDedupTests.swift` — **4 tests**
 
 ## 4. Architecture and conventions you must follow
@@ -231,16 +243,25 @@ catch a replay that lands seconds later. With the Lift Log claiming the gesture,
 silently advanced the session and cost a logged set.
 
 This is **read-side only** — no new writes, no change to the connection path or the window. It
-affects every double-tap consumer, not just the Lift Log. **It has not yet been confirmed on real
-hardware.**
+affects every double-tap consumer, not just the Lift Log.
+
+**Status after the 9 Sep 2026 session: one phantom advance in a full session.** Not a pass and not a
+fail. Before the fix it was frequent enough to be reported as a defect, so once is a large
+improvement — but it is not zero, and one observation is not a diagnosis. **Do not change this code
+again on the strength of it.** Get evidence first: whether the strap was mid-offload when it
+happened. A second, unrelated cause is entirely plausible — `AppModel.handleDoubleTap`'s 1.2 s
+debounce is still all that separates two genuine taps from one gesture, and a knock against a
+loaded bar is a real event, not a replay.
 
 ## 8. Where it stands
 
 **Base: upstream `v11.1.0`.** Rebased onto `ryanbr/noop` `main` (2787d465) on 3 Sep 2026 — 216
-upstream commits, from the 10.6.1 staging point it was cut from. Nine commits on `lift-log-ui`
-(branched off `lift-log-schema`, which holds the schema commit):
+upstream commits. Eleven commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+schema commit):
 
 ```
+48f9da72 lift log: fix the wrapped Set heading, and show HR and the set's numbers
+154d2a7e lift log: keep the session on the machine you're at, and record what it showed
 ff3312bd lift log: describe the targets the editor actually has
 921a3d6e lift log: restore the warm-up marker
 7e425399 lift log: forget an exercise, dismiss the keyboard, and stop phantom double-taps
@@ -252,22 +273,21 @@ e21c4c33 lift log: programs, the exercise vocabulary and muscle classification
 405de03b store: add the v42 schema for the in-app strength log
 ```
 
-The schema commit is **self-contained** — it creates the complete schema including
-`targetWeightKg` and `sessionRpe`, so a schema-only PR stands alone. (Those two arrived as a second
-migration during development; folding them in was safe because nothing has shipped and Utku wipes
-on every update.)
+The schema commit is **self-contained** — it creates the complete schema in one migration, so a
+schema-only PR stands alone.
 
 Pre-rebase tips are kept as tags: `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0`
 and `backup/lift-log-ui-before-fold`. Local `main` is upstream `v11.1.0`.
 
-**Test counts at `ff3312bd`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1510**
+**Test counts at `48f9da72`:** WhoopStore **510** · StrandAnalytics **1756** · StrandTests **1519**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
 whose Android job only compiles APKs).
 
-Verified on a fresh install in the simulator: one migration applied, all five tables, column order
-matching the row structs, and the Lift Log hub rendering its empty state correctly.
+**The feature has now had a full real gym session** (9 Sep 2026) — the whole sheet tapped through in
+a gym rather than simulated. It found two data-losing bugs, both fixed in `154d2a7e`; see §12b of the
+review. Treat further UI judgements the same way: ship, use, then fix what the session actually found.
 
 ## 9. Still outstanding
 
@@ -278,9 +298,11 @@ matching the row structs, and the Lift Log hub rendering its empty state correct
    upstream until he is happy with the feature. **Do not post it.** It is a public post in his name
    and needs an explicit yes. Note the text is stale — it says "three commits" and predates the
    rebase — so refresh it before it is ever used.
-2. **Real gym use is now happening continuously** (see §1), but the UI judgements in
-   `LIFT_LOG_REVIEW.md` were written before that. Ask him what actually went wrong in a session
-   rather than assuming the backlog's guesses still describe the problems.
+2. **Real gym use is happening continuously** (see §1). The 9 Sep 2026 session is the first full
+   one; its findings are in §12b of the review. Ask him what actually went wrong in a session rather
+   than assuming the backlog's remaining guesses still describe the problems — two of the six things
+   that session raised were not what the backlog predicted, and one backlog item (§7, logging an
+   unplanned set) did not come up at all.
 3. **No PR opened, and that is deliberate.** He will not publish until he is happy with the
    feature. The rebase onto `v11.1.0` is done and the schema commit is self-contained, so the
    two-PR split (schema, then UI) is ready whenever he decides. Nothing is blocking on code.
