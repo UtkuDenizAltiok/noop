@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `11c0d0a1` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
+at commit `6099fe94` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -87,26 +87,31 @@ one is a regression even if it compiles and the tests you ran passed.
 
 0. **The migration is `v45-lift-log`.** It has moved twice (v40 → v42 → v45) because upstream keeps
    taking the numbers. Expect to move it again; §10 has the procedure.
-1. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
+1. **The store READS rows; `LiftMetrics` COMPUTES.** One exception, deliberate:
+   `WhoopStore.liftSetCounts` aggregates in SQL so the hub's 7-day card does not load every set.
+   Every other store function is a plain read, and every metric has exactly ONE implementation.
+   Adding a second implementation of any figure is how both of this feature's metric bugs happened —
+   don't.
+2. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
    (SQL, the hub's weekly card) and `LiftMetrics.muscleCounts` (in memory, the session detail). Both
    exclude a muscle listed as both primary and secondary. `LiftMetricsStoreAgreementTests` pins them
    against EACH OTHER — keep it green, and if you add a third consumer, add it there too.
-2. **`advance` follows `slotAfter(_:)`, never `nextPendingSlot`.** Finish the exercise you are at,
+3. **`advance` follows `slotAfter(_:)`, never `nextPendingSlot`.** Finish the exercise you are at,
    then fall back to plan order. Plan order alone drags the user back to a machine they left.
-3. **A completed set records `carry(for:lastSession:)`** — the numbers the sheet was showing. Never
+4. **A completed set records `carry(for:lastSession:)`** — the numbers the sheet was showing. Never
    nil. And **RPE is never carried**: it is knowable only after the set, and carrying it would make
    the RPE coverage card claim every set was rated.
-4. **Every readout on the session surfaces always renders, dashed when empty.** A readout that hides
+5. **Every readout on the session surfaces always renders, dashed when empty.** A readout that hides
    itself is indistinguishable from a missing feature — that is how the HR gap was first reported.
-5. **Effort is never modified.** A session saves `strain: nil`; the engine fills it from measured HR.
-6. **Warm-ups are excluded** from volume and per-muscle counts, on both sides.
-7. **`LiftMuscle` raw values are a stored-data contract.** Never rename or remove a case. Adding one
+6. **Effort is never modified.** A session saves `strain: nil`; the engine fills it from measured HR.
+7. **Warm-ups are excluded** from volume and per-muscle counts, on both sides.
+8. **`LiftMuscle` raw values are a stored-data contract.** Never rename or remove a case. Adding one
    is safe — but update `Tools/make_lift_program_template.py`'s `MUSCLES` too, or the new group is
    importable by typing and missing from the template's dropdown.
-8. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
+9. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
    renders "Erholung" in German. The gym rest is `"Rest period"`. This has been reintroduced once
    already; grep for it after any session-screen work.
-9. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
+10. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
    store APIs the program editor already used, adds no write path, and touches one button in the
    hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
 
@@ -321,10 +326,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.5.0`.** Rebased onto `ryanbr/noop` `main` (9f786fa4) — 206 upstream commits,
-the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Seventeen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Eighteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+6099fe94 lift log: delete dead store API, leaving one computed read in the store
 11c0d0a1 lift log: fix a divergent metric, and bound the import so it cannot hurt the app
 c21d68f6 lift log: make the spreadsheet import survive a real user's file
 53336a57 lift log: build a program from a spreadsheet
@@ -351,7 +357,7 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `11c0d0a1`:** WhoopStore **564** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1686**
+**Test counts at `6099fe94`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1686**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,

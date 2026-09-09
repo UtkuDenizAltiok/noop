@@ -168,11 +168,33 @@ A mis-logged session — one started by a phantom double-tap, say — is permane
 **not** remove the paired `workout` row; decide deliberately whether it should, and say so in the
 confirmation.
 
-## 9. Unused store surface
+## 9. ~~Unused store surface~~ — FIXED in `6099fe94`
 
-**Verified:** `liftRpeProfile` and `liftExercisesLogged` have zero app call sites. `LiftMetrics`
-supplies the RPE profile the UI actually uses. Either wire them up or delete them — an unused public
-API on a store is a maintenance claim nobody is honouring, and it will be noticed in review.
+**Deleted, with their three tests.** `liftRpeProfile` was not merely unused — it was a SECOND
+implementation of a metric `LiftMetrics.rpeProfile` already computes, i.e. the same shape as the
+set-count divergence in §3, invisible only because nothing called it.
+
+**The rule that came out of it, now invariant §1 in the brief: the store READS rows, `LiftMetrics`
+COMPUTES.** The one deliberate exception is `liftSetCounts`, and it is pinned against its twin.
+Both of this feature's metric bugs were second implementations; do not add a third.
+
+## 9b. Upstream findings — real, but deliberately NOT changed
+
+Looked at during the 11.5.0 audit. Each is real; none is worth carrying a permanent local diff for,
+because **every line we change in upstream code is a line we re-merge on every sync**. These are PR
+candidates for later, not edits to make now.
+
+- **`Localizable.xcstrings` contains a duplicated key** (`"%lld of %lld nights"`). Checked: both
+  copies are byte-identical, so no translation is lost and JSON's last-wins gives the same result.
+  Hygiene, ~30 wasted lines, and it confuses naive tooling — it broke our merge script until that was
+  made format-independent. Harmless today; a divergence risk if someone edits one copy.
+- **`xcodegen generate` dirties `StrandiOS/Resources/Info.plist`.** Upstream's `project.yml` declares
+  `NSMicrophoneUsageDescription` / `NSSpeechRecognitionUsageDescription` that their committed plist
+  lacks. Reproduces on a clean upstream checkout. Anyone building from source gets a modified file.
+- **`v42-daily-sleep-hr-only` uses `.boolean`** where newer migrations use `.integer` for
+  cross-platform affinity. **Checked and NOT a bug**: it joins the documented `grdb-boolean-affinity`
+  divergence class in the schema oracle, Android CI passes, and both sides store bit-identical
+  integers. Recorded so nobody "fixes" it twice.
 
 ## 10. Known costs, measured — NOT unnoticed
 
