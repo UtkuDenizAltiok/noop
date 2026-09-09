@@ -265,6 +265,28 @@ found were real; the other two are below in §13b and §14.
 - **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
   "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
 
+## 12e. Third gym round, 10 Sep 2026 — decimal weights
+
+**A decimal weight could not be entered, and the attempt produced a WRONG NUMBER.** Every numeric
+field read its text back out of the engine, so each keystroke round-tripped through `LiftFormat` and
+was replaced by the canonical rendering of the parsed value. Typing "45." parsed to 45, re-rendered
+as "45", the point vanished as it was typed, and the next keystroke made "455". 45.5 kg silently
+became 455 kg.
+
+**The rule this produced, now brief invariant §11: a text field must never be rewritten from the
+model while the user is typing in it.** Fields hold a draft while focused and fall back to canonical
+formatting on blur. Applied to weight, reps and RPE — all three shared the binding shape.
+
+Also: `trim` used `%.1f`, so 12.25 became "12.3" and — via that same read-back — replaced what was
+typed. Now up to two decimals. And a typed "," is normalised to "." on the way in, because iOS
+labels the `.decimalPad` separator key from the DEVICE region and an app cannot relabel it; the field
+now always reads back in the notation the screen displays.
+
+**Worth generalising:** this is the THIRD silent-wrong-data bug in this feature (sets recording nil,
+the divergent set count, now this). All three passed every test and every build. The pattern is a
+value that looks right on screen while being wrong underneath — which is exactly what a gym session
+catches and a test suite does not.
+
 ## 12c. Second round, 9 Sep 2026
 
 - **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of

@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `6099fe94` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
+at commit `38b915fb` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -111,6 +111,12 @@ one is a regression even if it compiles and the tests you ran passed.
 9. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
    renders "Erholung" in German. The gym rest is `"Rest period"`. This has been reintroduced once
    already; grep for it after any session-screen work.
+11. **A text field must never be rewritten from the model while the user is typing in it.** Every
+    numeric field holds a DRAFT while focused (`LiftSessionView.draft`) and only falls back to the
+    canonical rendering on blur. A binding that reads its text back out of the engine cannot accept
+    a decimal at all: "45." parses to 45, re-renders as "45", and the next keystroke makes "455".
+12. **Weights and RPE carry up to TWO decimals** (`LiftFormat.trim`), and a typed "," is normalised
+    to "." — iOS labels the decimal-pad separator from the DEVICE region and an app cannot change it.
 10. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
    store APIs the program editor already used, adds no write path, and touches one button in the
    hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
@@ -330,6 +336,8 @@ the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Eighteen commits
 schema commit):
 
 ```
+38b915fb lift log: let a decimal weight be typed, and keep two decimals
+91b39043 ci: ship the Lift Log program template with every testing build
 6099fe94 lift log: delete dead store API, leaving one computed read in the store
 11c0d0a1 lift log: fix a divergent metric, and bound the import so it cannot hurt the app
 c21d68f6 lift log: make the spreadsheet import survive a real user's file
@@ -357,7 +365,7 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `6099fe94`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1686**
+**Test counts at `38b915fb`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1641**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
