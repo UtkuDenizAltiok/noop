@@ -194,6 +194,26 @@ found were real; the other two are below in §13b and §14.
 - **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
   "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
 
+## 12d. Spreadsheet import, 9 Sep 2026
+
+Programs can now be built in Excel/Numbers/Sheets and imported (`.xlsx` or `.csv`). See brief §3 and
+`docs/LIFT_LOG_PROGRAM_IMPORT.md`.
+
+**Things a later session should know:**
+- **The template is a committed build artifact.** Regenerate with
+  `python3 Tools/make_lift_program_template.py` if the columns or the muscle vocabulary change.
+  `LiftProgramSheetImporterTests` parses the shipped file, so a dropped column fails the suite rather
+  than a user's import — but the test cannot notice a template that no longer matches a NEW column.
+- **The template's dropdowns are English only.** The importer accepts stored tokens and is
+  case/space/hyphen-insensitive, but a German user still sees English muscle names in the sheet.
+  Worth localising if this ever ships upstream.
+- **Adding a `LiftMuscle` case means updating the generator's `MUSCLES` list too**, or the new group
+  is importable-by-typing but missing from the dropdown. `testEveryMuscleInTheVocabularyIsReachable…`
+  catches the parser half; nothing catches the template half.
+- **Not implemented on purpose:** exporting a program back OUT to a spreadsheet, and updating an
+  existing program from a file (every import creates NEW programs). Both are easy follow-ups; neither
+  was asked for.
+
 ## 12c. Second round, 9 Sep 2026
 
 - **The rest is drawn BETWEEN two set rows**, as an amber band with the countdown, instead of
