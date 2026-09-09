@@ -184,13 +184,13 @@ Looked at during the 11.5.0 audit. Each is real; none is worth carrying a perman
 because **every line we change in upstream code is a line we re-merge on every sync**. These are PR
 candidates for later, not edits to make now.
 
-- **`Localizable.xcstrings` contains a duplicated key** (`"%lld of %lld nights"`). Checked: both
-  copies are byte-identical, so no translation is lost and JSON's last-wins gives the same result.
-  Hygiene, ~30 wasted lines, and it confuses naive tooling — it broke our merge script until that was
-  made format-independent. Harmless today; a divergence risk if someone edits one copy.
-- **`xcodegen generate` dirties `StrandiOS/Resources/Info.plist`.** Upstream's `project.yml` declares
-  `NSMicrophoneUsageDescription` / `NSSpeechRecognitionUsageDescription` that their committed plist
-  lacks. Reproduces on a clean upstream checkout. Anyone building from source gets a modified file.
+- **~~Duplicated string key~~ and ~~`Info.plist` drift~~ — BOTH FIXED UPSTREAM**, in
+  [ryanbr/noop#2029](https://github.com/ryanbr/noop/pull/2029) (branch `upstream-hygiene`, cut from
+  `upstream/main`, no Lift Log code in it).
+  **Correction worth keeping:** an earlier note here said the two copies of `"%lld of %lld nights"`
+  were byte-identical. That was measured on OUR merged branch. On upstream's own tree they **differ**
+  — the French diverged (`%lld de %lld nuits` vs `%lld nuits sur %lld`), so one translation was
+  silently dead. Measure findings on the tree you intend to fix, not on a merge of it.
 - **`v42-daily-sleep-hr-only` uses `.boolean`** where newer migrations use `.integer` for
   cross-platform affinity. **Checked and NOT a bug**: it joins the documented `grdb-boolean-affinity`
   divergence class in the schema oracle, Android CI passes, and both sides store bit-identical

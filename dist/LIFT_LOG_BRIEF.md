@@ -490,6 +490,35 @@ routine because of the first; these are the additions it produced:
   copies, and the only edit to those files was the migration-id list plus the two folded columns.
   Both copies are still byte-identical, and Android CI passes on the branch.
 
+## 10b. Android — the position, decided 9 Sep 2026
+
+He has no Android device and cannot test one. His instruction: **prioritise iOS; do Android if it
+can be done; if not, say so upstream and let someone else take it.** Deciding, not asking:
+
+**What is verifiable without a device.** There is no JDK and no Android SDK on this machine
+(checked: `java -version` fails, `ANDROID_HOME` unset, no `android/local.properties`). But **Android
+CI runs on GitHub** — `assembleFullDebug` + `testFullDebugUnitTest` on ubuntu — so Kotlin can be
+written here, pushed, and compiled/tested there. That is the same authority the project itself uses,
+and it is what makes a storage twin possible at all. `SchemaOracleTest` exists precisely to verify
+that a Room schema matches the GRDB one, so the feedback is exact rather than guesswork.
+
+**What is realistically doable that way**
+- Room entities + DAO + a Room migration for the five tables, and removing the `ios_only` pins from
+  both `schema_oracle.json` copies. Verified end-to-end by `SchemaOracleTest`.
+- A Kotlin twin of `LiftMetrics`, with the oracle idiom `CLAUDE.md` documents: compile the Swift
+  helper standalone, paste its stdout verbatim as the Kotlin expectation.
+
+**What is NOT responsibly doable here**
+- The Compose UI. It is a second app's worth of screens whose entire value is ergonomics in a gym —
+  a workout sheet you tap between sets, with the phone face-down. Writing it blind and never seeing
+  it run would produce something that compiles and is bad to use. Every UI decision this feature got
+  right came from a real session (the occupied-machine bug, the carried numbers, the rest band). **If
+  the Android UI is required, say so upstream and let an Android user take it.**
+
+**Sequencing.** Do it AFTER the iOS feature settles, not before: a twin tracks the schema, and
+twinning a schema that is still moving is rework. The remaining backlog items (§7 add a set, §8
+delete a session) look schema-neutral, so the window may open soon.
+
 ## 11. What it takes to go upstream, when he says so
 
 He will not open a PR until he is happy with the feature (§1). When he does, this is the shape:
@@ -499,6 +528,11 @@ He will not open a PR until he is happy with the feature (§1). When he does, th
   PR stands alone.
 - The branch rebases onto upstream cleanly by the §10 procedure.
 - Every gate CI runs is green, including Android CI.
+
+**A first contact already exists.** [ryanbr/noop#2029](https://github.com/ryanbr/noop/pull/2029) —
+two upstream fixes found while auditing (a duplicate string key with divergent French, and an
+`Info.plist` drifted from `project.yml`). Small, independent of the Lift Log, opened 9 Sep 2026.
+How it is received is useful information about how a feature PR would go.
 
 **Must be decided first — `dist/liftlog-issue.md` asks these, and has never been posted**
 - **The Android position is the risk.** The five tables are pinned `ios_only`. `CLAUDE.md` calls
