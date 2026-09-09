@@ -47,6 +47,8 @@ jobs:
           - **macOS** — \`NOOP-macos-v${VER}.zip\` — unzip, then **right-click → Open** (ad-hoc signed, not notarized; Gatekeeper warns once). If it says *\"damaged\"*, run \`xattr -dr com.apple.quarantine /Applications/NOOP.app\`.
           - **iOS** — \`NOOP-ios-unsigned-v${VER}.ipa\` — sideload via **AltStore / Sideloadly** (re-signs on-device); embedded watch app stripped, widget extension retained for Home/Lock-Screen widgets and Live Activities.
 
+          - **Lift Log program template** — \`lift-log-program-template.xlsx\` — fill it in on a computer (Excel / Numbers / Sheets / LibreOffice), then **Lift Log → Import** on the phone. Headers are locked and the muscle columns are dropdowns. \`.csv\` works too.
+
           Base app version ${VER} · built ${DATE} · \`${SHA}\`."
           # Belt-and-braces: a rolling tag is deleted with --cleanup-tag and recreated seconds later, and
           # that recreate has come back as a DRAFT — the 9.2.1 staging build did, and a draft release does
@@ -56,6 +58,14 @@ jobs:
           gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease
           DRAFT=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json isDraft -q .isDraft)
           [ "$DRAFT" = "false" ] || { echo "::error::$TAG is still a draft — testers cannot download it."; exit 1; }
+          # Ship the Lift Log program template beside the builds. It is a committed artifact rather
+          # than a build product, but this is where a tester already is — and it lives on a feature
+          # branch, so it is otherwise invisible from the fork's default branch. Non-fatal: a missing
+          # template must never fail a build that is otherwise good.
+          if [ -f docs/lift-log-program-template.xlsx ]; then
+            gh release upload "$TAG" docs/lift-log-program-template.xlsx \
+              --repo "$GITHUB_REPOSITORY" --clobber || true
+          fi
 
   android:
     needs: meta
