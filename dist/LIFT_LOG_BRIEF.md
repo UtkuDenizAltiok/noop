@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`503bf2d0`, branch `lift-log-ui`, on upstream `v11.5.0`.**
+`8017691a`, branch `lift-log-ui`, on upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -87,6 +87,11 @@ set can be started at any time (a gym is not a queue — machines get occupied).
 being worked, amber the rest that follows, a check marks a completed set with the numbers you
 entered. Clocks and the one action are pinned to the bottom and never scroll away.
 
+**The plan bends during the session.** Each exercise ends in an "Add set" row — a plus that appends a
+set and a minus that drops the last planned one — and **both rewrite the program's line**, because a
+program is a plan for next time and the sets actually chosen are the better plan. The minus only ever
+removes a PENDING last set (invariant 17).
+
 **The session stays on the machine you are at.** Any pending set can be started at any time, so
 skipping a busy exercise leaves an EARLIER slot uncompleted. Finishing a set therefore moves to the
 next set of the SAME exercise, and only falls back to plan order once that exercise is done
@@ -159,6 +164,14 @@ one is a regression even if it compiles and the tests you ran passed.
 16. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
    store APIs the program editor already used, adds no write path, and touches one button in the
    hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
+17. **The minus only ever drops a PENDING last set.** Set numbers are POSITIONS — the sheet draws
+    `1...targetSets` — so removing from the middle would renumber what was already recorded, and a
+    completed set is data rather than a plan. The set being worked or rested from is excluded for the
+    same reason. Both cases DIM the control (invariant 6: a control that vanishes reads as broken).
+18. **The plan travels in the undo snapshot**, with the stage and the sets, and is restored with them.
+    A stage saved under one set count is only meaningful under that count: undoing past a removed set
+    would otherwise leave the session working a slot the sheet no longer draws, and completing it
+    would write a set nobody could see. This is why `plan` is `private(set) var`, not `let`.
 
 ## 3. Where everything lives
 
@@ -195,7 +208,7 @@ the muscle vocabulary change, and note the test parses it, so dropping a column 
 ### App layer — `Strand/` (compiles into **both** macOS `Strand` and iOS `NOOPiOS`)
 | File | What |
 |---|---|
-| `Data/LiftSessionEngine.swift` | the **slot-based state machine**. Pure; time enters as a parameter |
+| `Data/LiftSessionEngine.swift` | the **slot-based state machine**. Pure; time enters as a parameter. `addSet` / `removeSet` / `canRemoveSet` move a line's set count, bounded by `maxSetsPerExercise` (20) |
 | `Data/LiftSessionController.swift` | `@MainActor ObservableObject` owning the engine, the 1-second tick, buzz gating, persistence, the strap claim, and `presentation(system:)` — the ONE resolution of the session's wording and numbers, rendered by both the minimised bar and the Lock Screen activity |
 | `Data/LiftSessionPersistence.swift` | crash-safe `Codable` snapshot in UserDefaults (`noop.activeLiftSession`) |
 | `Data/LiftMuscleNames.swift` | app-layer localized display names (WhoopStore holds no UI strings) |
@@ -230,7 +243,7 @@ is a worse failure than a dash: mid-workout, "the strap stopped reading" is some
 - `App/RootTabView.swift` — `MoreDestination.liftLog`, the `MoreRow("Lift Log", "dumbbell.fill", .liftLog)` in `moreSection("Body")`, the session bar via `.safeAreaInset(edge: .bottom)`, the session sheet, and the `.task` that resumes an interrupted session **as the bar, not as a sheet**.
 
 ### App-target tests — `StrandTests/`
-- `LiftSessionEngineTests.swift` — **41 tests**
+- `LiftSessionEngineTests.swift` — **52 tests**
 - `FrameRouterDoubleTapDedupTests.swift` — **4 tests**
 
 ## 4. Architecture and conventions you must follow
@@ -376,10 +389,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.5.0`.** Rebased onto `ryanbr/noop` `main` (9f786fa4) — 206 upstream commits,
-the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Eighteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Nineteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+8017691a lift log: add or drop a set mid-session, and keep the program in step
 503bf2d0 lift log: stop the weekly bar saying "done" at the floor, and lengthen the notes
 8c5802f7 lift log: let a session be discarded or deleted, and bound the note lengths
 38b915fb lift log: let a decimal weight be typed, and keep two decimals
@@ -411,8 +425,8 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `503bf2d0`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
-StrandAnalytics **1988** · StrandImport **284** · StrandTests **1696**. Zero failures anywhere except
+**Test counts at `8017691a`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
+StrandAnalytics **1988** · StrandImport **284** · StrandTests **1707**. Zero failures anywhere except
 the two locale-dependent `TodayCarryOverTests`, which fail identically on a clean upstream checkout
 (this machine is English-language/German-region) — **do not chase them, and do not "fix" them with
 `-testLanguage`**, which trades them for a different failure (see §4).
@@ -435,16 +449,17 @@ were silent wrong data rather than anything that looked broken** — see the rev
 
 ## 9. Still outstanding
 
-1. **One real gap remains: §7 of the review — you cannot log a set the program did not plan.** If the
-   program says four sets and you do five, the fifth cannot be recorded. It has NOT come up across
-   four gym sessions, so **ask before building it**: either he does what the program says and it is a
-   non-issue, or he has been working around it without registering it. The review's "What to do
-   first" table has the rest, all quality rather than gaps.
+1. **No known gaps remain.** §7 of the review — logging a set the program did not plan — was the last
+   one and is FIXED in `8017691a`: a plus/minus row at the end of each exercise, which also rewrites
+   the program's line. He asked for it directly on 10 Sep 2026, so the backlog's "confirm it bites
+   first" note is spent. **It has not yet been used in a real gym session** — that is the next thing
+   worth asking about. The review's "What to do first" table is now all quality rather than gaps.
 
 2. **Ask what actually happened in a session; do not infer from the backlog.** Four sessions have now
    produced findings, and the backlog predicted almost none of them — the occupied-machine bug, sets
    recording nothing, decimal weights, and the wrapped header were all found by using it. Meanwhile
-   §7, the item the backlog ranked first, has never once come up.
+   §7, the item the backlog ranked first, never came up in a session — it was asked for directly
+   instead. The plus/minus row that answers it has not been used in a gym yet either: ask.
 
 3. **No FEATURE PR, deliberately.** He will not publish the Lift Log until he is happy with it. The
    schema commit is self-contained and the branch rebases cleanly, so the two-PR split (schema, then
@@ -594,8 +609,9 @@ that a Room schema matches the GRDB one, so the feedback is exact rather than gu
   the Android UI is required, say so upstream and let an Android user take it.**
 
 **Sequencing.** Do it AFTER the iOS feature settles, not before: a twin tracks the schema, and
-twinning a schema that is still moving is rework. The remaining backlog items (§7 add a set, §8
-delete a session) look schema-neutral, so the window may open soon.
+twinning a schema that is still moving is rework. Both of the items that were outstanding here —
+§7 add a set and §8 delete a session — have now landed WITHOUT touching the schema, so the window is
+as open as it has been.
 
 ## 11. What it takes to go upstream, when he says so
 

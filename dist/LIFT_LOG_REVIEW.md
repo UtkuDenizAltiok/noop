@@ -1,6 +1,6 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `503bf2d0`, branch
+**Maintained by Claude, from inside the repository. Current at commit `8017691a`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
@@ -14,8 +14,9 @@ FIXED are kept rather than deleted, because the reasoning behind a fix is what s
   counting, why counts are not filtered by RPE, the 4-set floor and its sources (§12). Do not
   quietly rewrite it. If you think something is wrong, say so explicitly and flag it.
 - **This backlog has a poor record of predicting what actually matters.** Four gym sessions produced
-  findings; the backlog predicted almost none of them, while §7 — the item it ranked first — has
-  never once come up. Prefer what the user reports from a real session over anything inferred here.
+  findings; the backlog predicted almost none of them. §7, the item it ranked first, never came up in
+  a session either — it was asked for directly instead, on 10 Sep 2026, and is now built. Prefer what
+  the user reports from a real session over anything inferred here.
 
 ---
 
@@ -27,19 +28,20 @@ hand-off `upstream/main` was 3 commits ahead, none touching an integration point
 
 ## What to do first
 
-Ordered by value, after the 10 Sep 2026 sessions. Items 2, 3, 8 and 9 are now fixed — what remains
-is genuinely quality, not gaps.
+Ordered by value. Items 2, 3, 7, 8 and 9 are now fixed — **nothing left here is a gap**, only quality.
 
 | # | Item | Why it is where it is |
 |---|---|---|
-| 1 | §7 — cannot log an unplanned set | **The last true gap.** Five sets when the program says four is ordinary, and the fifth is simply lost. It has not come up across four gym sessions, so confirm it actually bites before building it. |
-| 2 | §5 — RPE coverage is invisible where it matters | Counts deliberately are not filtered by RPE, so coverage has to be shown, or the number's meaning is unknown. |
-| 3 | §4 — no cross-session strength trend | The reason to keep a log book at all. Large — and now genuinely buildable, because real history survives updates. |
-| 4 | §10b — `LiftFormat.duration` has no hours branch | A session past an hour reads "75:23". Visible on the bar, the sheet and the Lock Screen. |
-| 5 | §6 | Say what each number answers. Copy only. |
-| 6 | §8 (remainder) — deleting a single SET | Lower value now a whole session can be deleted, and a mis-logged set can be typed over. |
+| 1 | §5 — RPE coverage is invisible where it matters | Counts deliberately are not filtered by RPE, so coverage has to be shown, or the number's meaning is unknown. |
+| 2 | §4 — no cross-session strength trend | The reason to keep a log book at all. Large — and now genuinely buildable, because real history survives updates. |
+| 3 | §10b — `LiftFormat.duration` has no hours branch | A session past an hour reads "75:23". Visible on the bar, the sheet and the Lock Screen. |
+| 4 | §6 | Say what each number answers. Copy only. |
+| 5 | §8 (remainder) — deleting a single SET | Lower value now a whole session can be deleted, and a mis-logged set can be typed over. |
 
 **Do not start with §4.** It is the interesting one and the least urgent.
+
+**The first thing to ask him instead:** the plus/minus row (§7) has not yet been used in a real gym
+session. That, not this table, is where the next finding comes from.
 
 ## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5` (now `1c9243dc`)
 
@@ -155,15 +157,44 @@ rated sets, suppress the mean and show coverage instead. `LiftMetrics.RpeProfile
 - Best set / estimated 1RM — "Whether you are getting stronger."
 - Effort — "Measured from your heart, not from the weights."
 
-## 7. You cannot log an unplanned set
+## 7. ~~You cannot log an unplanned set~~ — FIXED in `8017691a`
 
-**Verified:** `LiftSessionEngine.slots(forExercise:)` returns exactly `1...targetSets`, and there is
-no `addSet`. If the program says four sets and you do five, **the fifth cannot be recorded.** That is
-a common, ordinary thing to do in a gym.
+**Was:** `LiftSessionEngine.slots(forExercise:)` returned exactly `1...targetSets` and there was no
+`addSet`. If the program said four sets and you did five, the fifth could not be recorded — a common,
+ordinary thing to do in a gym, and the last true gap in the feature.
 
-**Fix:** an "add set" affordance per exercise, appending a slot beyond `targetSets`. The engine needs
-a per-exercise extra-set count; `LiftSlot` already keys everything by `setIndex`, so the change is
-contained. Consider the same for adding an exercise not in the program.
+**Fix shipped.** Each exercise ends in a row carrying a plus ("Add set") and a minus in the tick
+column. The plus appends a set; the minus drops the last planned one. `plan` became
+`private(set) var` and gained `addSet` / `removeSet` / `canRemoveSet`, bounded by
+`maxSetsPerExercise` (20 — a bound against a stuck finger, not a recommendation).
+
+**Both also rewrite the program's line** (`targetSets` only, on the `liftProgramItem` the plan line
+was flattened from — `LiftPlanItem.programItemId`, new, and carried in the crash snapshot). He asked
+for that explicitly: a program is a plan for NEXT time, and the sets actually chosen are the better
+plan. The write-back re-reads the lines first and skips one that has since been deleted, so a program
+edited elsewhere mid-session keeps every other change; it writes nothing when no count differs,
+because `replaceLiftProgramItems` replaces the lines wholesale.
+
+**Three rules the fix rests on**, now brief invariants 17 and 18:
+- The minus only ever drops a PENDING last set. Set numbers are POSITIONS, so removing from the
+  middle renumbers what was recorded; and a completed set is data, not a plan.
+- The set being worked or rested from is excluded for the same reason. Both cases DIM the control
+  rather than hiding it.
+- The plan travels in the UNDO snapshot. Without that, undoing past a removed set restores a stage
+  pointing at a slot the sheet no longer draws — and completing it would write a set nobody could
+  see. It also means undo takes an added set back off the program, through the same funnel.
+
+**Verified:** 11 engine tests (52 in the file), each watched fail with its guard removed — the
+completed-set test needed rewriting when it turned out to pass with the guard gone, because the
+session was still resting on that set and a different guard was covering it. Then end to end in the
+simulator against the sqlite file: an unplanned third set saved with its numbers and its measured
+rest, and the program moved 2 → 3 → 4 → 3 (add, add, undo) with reps/weight/rest untouched.
+
+**One edge deliberately left:** discarding a session does NOT take back a program edit made during
+it. The edit was a separate deliberate act, and unwinding it would need the pre-session counts kept
+somewhere just to undo an act the user meant.
+
+**Still open, and separate:** adding an EXERCISE the program does not have. Not asked for.
 
 ## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 
@@ -233,8 +264,9 @@ before "optimising" any of them.
 
 ## 10b. Smaller things, worth knowing
 
-- **Still open from the 9 Sep session: no way to log an unplanned set.** See §7 — it did not come up
-  as a complaint that session, but the gap is unchanged.
+- ~~**Still open from the 9 Sep session: no way to log an unplanned set.**~~ Fixed in `8017691a`; see
+  §7. Worth keeping the observation that it never came up as a complaint in any of the four sessions —
+  it was asked for directly instead, on 10 Sep 2026.
 - **`LiftFormat.duration` has no hours branch.** It formats `M:SS` above a minute, so a 75-minute session reads "75:23" rather than "1:15:23". Truthful but odd once a session passes an hour, which real ones do. `IntervalTimerView` already has the `H:MM:SS` idiom to copy. **Now observed, not just read:** a stale simulator session displayed `1262:46` in the minimised bar where it meant 21 hours. On the session bar — the thing that sits on screen all workout — this is the most visible instance.
 
 - **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` issue one `lastLiftSets` query per exercise. Fine at 5–8 exercises; not fine if a session ever gets long. A single windowed query would do.
