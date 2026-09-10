@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`8017691a`, branch `lift-log-ui`, on upstream `v11.5.0`.**
+`3704a4ca`, branch `lift-log-ui`, on upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -58,8 +58,12 @@ Fork: `github.com/UtkuDenizAltiok/noop`. Clone: `~/Developer/noop`.
 previous session ran the testing build itself after any change, so the new `.ipa` was waiting on the
 fork's releases page without him asking. **He does not use the terminal — giving him a command to run
 is not delivery.** So the last step of any change to the feature is: commit, push, run the build (§4),
-and tell him the release now shows the new commit hash. Do it without being asked. The one time to
-ask first is when the branch is knowingly half-finished.
+and tell him the release now shows the new commit hash — **and whether this one needs a WIPE or is
+just an update** (§4 has the rule; decide it, never leave it to him).
+
+**Never ship a broken build.** His words, 10 Sep 2026. Both app targets must build and the suites must
+be green before the workflow is dispatched; a knowingly half-finished branch is the one case where you
+ask first instead.
 
 **How he actually runs it — this changes what you need to protect (stated 3 Sep 2026):**
 - He **uses it at the gym continuously**, as his own app. It is not shelf-ware waiting to be
@@ -251,6 +255,10 @@ is a worse failure than a dash: mid-workout, "the strap stopped reading" is some
 
 ### App-target tests — `StrandTests/`
 - `LiftSessionEngineTests.swift` — **52 tests**
+- `LiftSessionPersistenceTests.swift` — **3 tests**. Small, and load-bearing for something no other
+  test answers: whether a snapshot written by the PREVIOUS build still reads, which is what decides
+  wipe-or-update (§4). Written as literal JSON on purpose — encoding with today's `Snapshot` would
+  only prove the build can read itself.
 - `FrameRouterDoubleTapDedupTests.swift` — **4 tests**
 
 ## 4. Architecture and conventions you must follow
@@ -332,6 +340,37 @@ the URL never changes and the assets are replaced in place —
 `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest`. He can also start a build from
 the web UI himself: **Actions → "Testing build (fork)" → Run workflow → branch `lift-log-ui`**.
 
+### Wipe, or just update? Say which, with every build
+Asked for on 10 Sep 2026. He had been wiping on EVERY update out of caution — removing AltStore and
+NOOP, forgetting the strap, deleting its recorded data, then re-pairing — which costs him a re-pair
+and his history every single time. Most updates do not need it. **Decide, and tell him in one line.**
+
+**Just update** (install over the top; data and pairing are kept) when nothing already on his phone
+changes meaning. The bundle id `com.noopapp.noop` is unchanged, so AltStore updates in place:
+- UI, app-layer logic, analytics computation, new screens;
+- a field ADDED to the UserDefaults session snapshot as OPTIONAL — it decodes as nil
+  (`LiftSessionPersistenceTests` pins exactly this, by decoding literal JSON written the old way);
+- anything under `Packages/` that only computes.
+
+**Wipe** when data already stored cannot be trusted to read the same way:
+- the **migration was renumbered** (every upstream sync so far has taken our number: v40 → v42 → v45).
+  GRDB keys applied migrations by identifier, so the old id is unrecognised and the migration RE-RUNS
+  over tables that already exist. Today every create is `ifNotExists` and it is a harmless no-op — but
+  the moment one is not, the migrator throws, `Repository.ensureStore()` returns nothing, and **NOOP
+  opens as an empty shell on every launch until reinstalled** (§10). That failure is not confined to
+  the Lift Log;
+- a shipped migration was EDITED rather than added (never do this);
+- a stored column changed shape or meaning — this project deliberately changes shape rather than
+  writing a migration *because* he wipes, so those changes are exactly the ones that require it;
+- a row struct gained a field old rows do not carry.
+
+**When in doubt, say wipe.** A wipe costs a re-pair; the thing it prevents is the app not opening.
+
+**Worked example — `8017691a` (add/drop a set): just an update.** No schema change (nothing under
+`Packages/`), and the only persisted-shape change was the optional `programItemId` on the in-flight
+session snapshot. A session running when he installs even resumes, minus the program write-back for
+that one session. Verified, not assumed: three tests decode a snapshot written the old way.
+
 ## 5. Decisions that are settled
 
 **Effort is never modified.** NOOP's strain is HR-derived (Karvonen %HRR → Edwards TRIMP,
@@ -406,10 +445,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.5.0`.** Rebased onto `ryanbr/noop` `main` (9f786fa4) — 206 upstream commits,
-the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Nineteen commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Twenty commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+3704a4ca lift log: pin that the previous build's in-flight session still reads
 8017691a lift log: add or drop a set mid-session, and keep the program in step
 503bf2d0 lift log: stop the weekly bar saying "done" at the floor, and lengthen the notes
 8c5802f7 lift log: let a session be discarded or deleted, and bound the note lengths
@@ -442,8 +482,8 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `8017691a`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
-StrandAnalytics **1988** · StrandImport **284** · StrandTests **1707**. Zero failures anywhere except
+**Test counts at `3704a4ca`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
+StrandAnalytics **1988** · StrandImport **284** · StrandTests **1710**. Zero failures anywhere except
 the two locale-dependent `TodayCarryOverTests`, which fail identically on a clean upstream checkout
 (this machine is English-language/German-region) — **do not chase them, and do not "fix" them with
 `-testLanguage`**, which trades them for a different failure (see §4).
