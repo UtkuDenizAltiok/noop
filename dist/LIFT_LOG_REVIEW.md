@@ -23,20 +23,19 @@ source files came through the rebase byte-identical.
 
 ## What to do first
 
-Ordered by value, after the 9 Sep 2026 audit. Items 1-2 are things a real session will hit; 3-5 are
-correctness of what is displayed; the rest is polish.
+Ordered by value, after the 10 Sep 2026 sessions. Items 2, 3, 8 and 9 are now fixed — what remains
+is genuinely quality, not gaps.
 
 | # | Item | Why it is where it is |
 |---|---|---|
-| 1 | §7 — cannot log an unplanned set | No workaround exists. Five sets when the program says four is ordinary, and the fifth is simply lost. |
-| 2 | §8 — cannot delete a logged session or set | The store functions exist with zero call sites. One phantom double-tap is permanent. |
-| 3 | §2 — the weekly bar reads "done" at the 4-set floor | It tells the user to stop at the point growth *starts*. A correctness problem dressed as a colour. |
-| 4 | §5 — RPE coverage is invisible where it matters | Counts deliberately are not filtered by RPE, so coverage has to be shown, or the number's meaning is unknown. |
-| 5 | §10b — `LiftFormat.duration` has no hours branch | A session past an hour reads "75:23". Visible on the bar, the sheet and the Lock Screen. |
-| 6 | §4 — no cross-session strength trend | The reason to keep a log book at all. Large, and it needs history to build against. |
-| 7 | §6, §9 | Copy and dead API. |
+| 1 | §7 — cannot log an unplanned set | **The last true gap.** Five sets when the program says four is ordinary, and the fifth is simply lost. It has not come up across four gym sessions, so confirm it actually bites before building it. |
+| 2 | §5 — RPE coverage is invisible where it matters | Counts deliberately are not filtered by RPE, so coverage has to be shown, or the number's meaning is unknown. |
+| 3 | §4 — no cross-session strength trend | The reason to keep a log book at all. Large — and now genuinely buildable, because real history survives updates. |
+| 4 | §10b — `LiftFormat.duration` has no hours branch | A session past an hour reads "75:23". Visible on the bar, the sheet and the Lock Screen. |
+| 5 | §6 | Say what each number answers. Copy only. |
+| 6 | §8 (remainder) — deleting a single SET | Lower value now a whole session can be deleted, and a mis-logged set can be typed over. |
 
-**Do not start with §4 or §6.** They are the interesting ones and the least urgent.
+**Do not start with §4.** It is the interesting one and the least urgent.
 
 ## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5` (now `1c9243dc`)
 
@@ -56,7 +55,7 @@ the controller, so it survives the sheet being minimised and applies however the
 **Kept as a record** because it is the clearest example of what these documents are for: it was found
 by reading the code to write them, not by using the app.
 
-## 2. The weekly bar tells the user to stop at the floor
+## 2. ~~The weekly bar tells the user to stop at the floor~~ — FIXED in `503bf2d0`
 
 **Verified:** `LiftLogView.muscleBar` uses `ReferenceDose.fractionOfHypertrophyMinimum(sets)`, which
 clamps to 1.0 at 4 sets, and `met = sets >= 4` switches the bar and the number to
@@ -67,11 +66,14 @@ detected — and the same meta-regression found gains continuing well above it w
 Full + green reads as "done". This also directly contradicts the design note written for this
 feature, which says a muscle at 9 sets "is not 225% complete".
 
-**Fix:**
-- Scale the bar across a realistic span (roughly 0–20 fractional sets), not 0–4.
-- Draw 4 as a **threshold tick**, not as the end of the bar.
-- Drop the success-green. There is no success point, so no colour should imply one — use the normal accent, muted below the floor.
-- Reword the caption as a floor: "About 4 sets a week is where growth becomes detectable. More helps, with strongly diminishing returns."
+**Fixed as planned**, all four points: a 20-set span, four sets drawn as a TICK, no success-green
+anywhere (bar or number), muted fill below the floor, and the caption now says "the tick marks".
+
+**The rule worth carrying: nothing in this feature may render as COMPLETE, because nothing about the
+dose is.** The evidence gives a floor and no ceiling for hypertrophy. The 20-set span is a drawing
+choice, commented as one in `LiftLogView.weeklySetsBarSpan` — it is not a dose and a count past it
+fills the bar while the number keeps counting. If a future change wants a "full" state here, that is
+a science question, not a design one.
 
 ## 3. ~~Two implementations of the fractional count, and they already differ~~ — FIXED in `e8e5839f`
 

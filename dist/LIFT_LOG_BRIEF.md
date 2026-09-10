@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `8c5802f7` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
+at commit `503bf2d0` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work:
 no memory of it, no context beyond this repository. Read it fully, then read
@@ -120,9 +120,13 @@ one is a regression even if it compiles and the tests you ran passed.
 13. **Deleting a lift session deletes the paired `workout` row too.** The session created it, the
     engine fills its strain from measured HR, and leaving it would keep that day's Effort inflated by
     a session the user just deleted — a delete that looks like it worked and did not.
-14. **Note lengths are bounded by what is VISIBLE**: program note 100 (the hub shows two caption
-    lines), exercise note 140 (~3 lines, and it renders above the set rows). Enforced at entry, on
-    import, and again with `lineLimit(3)` in the session card.
+14. **Note lengths are bounded by what is VISIBLE**: program note 120 (`lineLimit(3)` on the hub),
+    exercise note 200 (`lineLimit(4)`, and it renders above the set rows). Enforced at entry, on
+    import, and again in layout. Both are a MAXIMUM, not a target.
+15. **Nothing in this feature may render as COMPLETE.** The evidence gives a hypertrophy floor
+    (4 sets/week) and NO ceiling, so a full bar or a success-green is a claim the science does not
+    support. The weekly bar draws the floor as a tick a fifth along a 20-set span; that span is a
+    drawing choice (`LiftLogView.weeklySetsBarSpan`), not a dose.
 10. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
    store APIs the program editor already used, adds no write path, and touches one button in the
    hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
@@ -342,6 +346,7 @@ the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Eighteen commits
 schema commit):
 
 ```
+503bf2d0 lift log: stop the weekly bar saying "done" at the floor, and lengthen the notes
 8c5802f7 lift log: let a session be discarded or deleted, and bound the note lengths
 38b915fb lift log: let a decimal weight be typed, and keep two decimals
 91b39043 ci: ship the Lift Log program template with every testing build
@@ -372,7 +377,7 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `8c5802f7`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1696**
+**Test counts at `503bf2d0`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1696**
 — 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
 `doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
 passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
