@@ -1,25 +1,29 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Every item below was checked against the code on
-2 Sep 2026 at commit `191386f5`. After the rebase onto upstream `v11.1.0` on 3 Sep 2026 (commit
-`11c0d0a1`, on upstream `v11.5.0`) the whole feature was audited on 9 Sep 2026; items 2, 3, 7, 8, 9 and 10 were checked against the rebased tree and all still hold,
-line references included; the rest were not individually re-read, but the rebase touched no Lift Log
-screen, so treat them as current unless something says otherwise.** Read `dist/LIFT_LOG_BRIEF.md`
-first — in particular §10, which covers the migration rename the rebase forced.
+**Maintained by Claude, from inside the repository. Current at commit `503bf2d0`, branch
+`lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
+the cold-start orientation and its §2b holds the invariants.
 
-An earlier version of this file was written from outside the repository, from screenshots and a
-partial read. Its code observations have now been verified one by one: most were correct and are
-kept with the verification noted; the parts that were superseded by later work have been removed.
-**The scientific reasoning in §5 was researched against the literature and is settled — do not
-quietly rewrite it.** If you believe something there is wrong, say so explicitly and flag it.
+**What this file is.** Every item was checked against the actual code, not inferred. Items marked
+FIXED are kept rather than deleted, because the reasoning behind a fix is what stops it being undone
+— several of them record a rule that is now a brief invariant.
+
+**Two standing warnings:**
+
+- **The scientific reasoning was researched against the literature and is settled** — fractional set
+  counting, why counts are not filtered by RPE, the 4-set floor and its sources (§12). Do not
+  quietly rewrite it. If you think something is wrong, say so explicitly and flag it.
+- **This backlog has a poor record of predicting what actually matters.** Four gym sessions produced
+  findings; the backlog predicted almost none of them, while §7 — the item it ranked first — has
+  never once come up. Prefer what the user reports from a real session over anything inferred here.
 
 ---
 
 ## Base
 
-Rebased onto upstream **`v11.5.0`** — the second sync, and routine. The lift migration is now
-**`v45-lift-log`** (was v40, then v42). Nothing in this backlog was affected: the feature's own
-source files came through the rebase byte-identical.
+Upstream **`v11.5.0`**, migration **`v45-lift-log`**. Two upstream syncs done (10.6.1 → 11.1.0, then
+11.1.0 → 11.5.0), both routine; the feature's own source came through both byte-identical. At
+hand-off `upstream/main` was 3 commits ahead, none touching an integration point.
 
 ## What to do first
 
@@ -185,7 +189,7 @@ whole session can go, and a mis-logged set can already be corrected by typing ov
 implementation of a metric `LiftMetrics.rpeProfile` already computes, i.e. the same shape as the
 set-count divergence in §3, invisible only because nothing called it.
 
-**The rule that came out of it, now invariant §1 in the brief: the store READS rows, `LiftMetrics`
+**The rule that came out of it, now invariant 2 in the brief's §2b: the store READS rows, `LiftMetrics`
 COMPUTES.** The one deliberate exception is `liftSetCounts`, and it is pinned against its twin.
 Both of this feature's metric bugs were second implementations; do not add a third.
 
@@ -286,7 +290,7 @@ resolved-enough and do not touch the BLE code on that evidence** — the next us
 the strap had just synced, not another change.
 
 Added in `8c5802f7`: discard an active session, delete a recorded one, and note-length caps (see §8
-and the brief's §2b invariants 13-14).
+and the brief's §2b invariants 13-14, which are the delete and note-length rules).
 
 ## 12e. Third gym round, 10 Sep 2026 — decimal weights
 
@@ -296,7 +300,7 @@ was replaced by the canonical rendering of the parsed value. Typing "45." parsed
 as "45", the point vanished as it was typed, and the next keystroke made "455". 45.5 kg silently
 became 455 kg.
 
-**The rule this produced, now brief invariant §11: a text field must never be rewritten from the
+**The rule this produced, now invariant 11 in the brief's §2b: a text field must never be rewritten from the
 model while the user is typing in it.** Fields hold a draft while focused and fall back to canonical
 formatting on blur. Applied to weight, reps and RPE — all three shared the binding shape.
 

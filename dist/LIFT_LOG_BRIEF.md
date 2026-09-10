@@ -1,15 +1,44 @@
 # Lift Log — the handover brief
 
-**Maintained by Claude, from inside the repository. Last verified against the code on 3 Sep 2026,
-at commit `503bf2d0` on branch `lift-log-ui`, rebased onto upstream `v11.5.0`.**
+**Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
+`503bf2d0`, branch `lift-log-ui`, on upstream `v11.5.0`.**
 
-This file is the single thing a fresh session needs. It assumes you know nothing about this work:
-no memory of it, no context beyond this repository. Read it fully, then read
-`dist/LIFT_LOG_REVIEW.md` for the prioritised backlog.
+This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
+memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
+for the prioritised backlog.
 
 If you change the feature, **update both files before your context runs low.** They are the only
 thing standing between the next session and a re-derivation from scratch. Treat that as part of
 finishing the work, not as an extra.
+
+---
+
+## 0. Start here
+
+**The state is good.** Everything is committed, pushed and green (§8). Nothing is half-finished and
+nothing needs rescuing. If the user asks for something new, just do it.
+
+**Before you touch the feature, read §2b — the invariants.** Fifteen rules, nearly all of them paid
+for with a real bug. A change that violates one is a regression even if it compiles and every test
+passes, which has happened three times.
+
+**The four things most likely to catch you out:**
+
+1. **No CI compiles the app targets.** `swift test` passing means nothing about whether the app
+   builds. Build BOTH `Strand` (macOS) and `NOOPiOS` yourself — the macOS build has caught real
+   errors the iOS one missed. Run `xcodegen generate` first if you switched branches.
+2. **Exactly two tests fail, always**, and they are not yours: `TodayCarryOverTests` (2), which
+   compare a US date format on an English-language/German-region machine. They fail identically on a
+   clean upstream checkout. Do not chase them; do not "fix" them with `-testLanguage` (§4).
+3. **Every new on-screen string needs all nine translations** or `i18n-coverage.yml` fails. Budget
+   for it — it is a real part of every UI change here.
+4. **This feature's bugs are silent wrong data, not crashes.** Sets recording nothing, a metric
+   computed two ways, 45.5 kg stored as 455. All three passed every test and every build. **Run the
+   app and look**, and when you write a test for a fix, break the fix first and watch the test go
+   red (see [[lift-log-verify-before-claiming]]).
+
+**How the user works:** he is not a programmer, tests at the gym, wipes and reinstalls on most
+updates, and his reports are precise and worth taking literally. See §1.
 
 ---
 
@@ -85,30 +114,30 @@ on the same screen. No composite "workout score".
 Everything here was either paid for with a real bug or settled deliberately. A change that violates
 one is a regression even if it compiles and the tests you ran passed.
 
-0. **The migration is `v45-lift-log`.** It has moved twice (v40 → v42 → v45) because upstream keeps
+1. **The migration is `v45-lift-log`.** It has moved twice (v40 → v42 → v45) because upstream keeps
    taking the numbers. Expect to move it again; §10 has the procedure.
-1. **The store READS rows; `LiftMetrics` COMPUTES.** One exception, deliberate:
+2. **The store READS rows; `LiftMetrics` COMPUTES.** One exception, deliberate:
    `WhoopStore.liftSetCounts` aggregates in SQL so the hub's 7-day card does not load every set.
    Every other store function is a plain read, and every metric has exactly ONE implementation.
    Adding a second implementation of any figure is how both of this feature's metric bugs happened —
    don't.
-2. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
+3. **Sets-per-muscle is computed in TWO places and they must agree.** `WhoopStore.liftSetCounts`
    (SQL, the hub's weekly card) and `LiftMetrics.muscleCounts` (in memory, the session detail). Both
    exclude a muscle listed as both primary and secondary. `LiftMetricsStoreAgreementTests` pins them
    against EACH OTHER — keep it green, and if you add a third consumer, add it there too.
-3. **`advance` follows `slotAfter(_:)`, never `nextPendingSlot`.** Finish the exercise you are at,
+4. **`advance` follows `slotAfter(_:)`, never `nextPendingSlot`.** Finish the exercise you are at,
    then fall back to plan order. Plan order alone drags the user back to a machine they left.
-4. **A completed set records `carry(for:lastSession:)`** — the numbers the sheet was showing. Never
+5. **A completed set records `carry(for:lastSession:)`** — the numbers the sheet was showing. Never
    nil. And **RPE is never carried**: it is knowable only after the set, and carrying it would make
    the RPE coverage card claim every set was rated.
-5. **Every readout on the session surfaces always renders, dashed when empty.** A readout that hides
+6. **Every readout on the session surfaces always renders, dashed when empty.** A readout that hides
    itself is indistinguishable from a missing feature — that is how the HR gap was first reported.
-6. **Effort is never modified.** A session saves `strain: nil`; the engine fills it from measured HR.
-7. **Warm-ups are excluded** from volume and per-muscle counts, on both sides.
-8. **`LiftMuscle` raw values are a stored-data contract.** Never rename or remove a case. Adding one
+7. **Effort is never modified.** A session saves `strain: nil`; the engine fills it from measured HR.
+8. **Warm-ups are excluded** from volume and per-muscle counts, on both sides.
+9. **`LiftMuscle` raw values are a stored-data contract.** Never rename or remove a case. Adding one
    is safe — but update `Tools/make_lift_program_template.py`'s `MUSCLES` too, or the new group is
    importable by typing and missing from the template's dropdown.
-9. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
+10. **Never use `String(localized: "Rest")` on this screen.** That key is NOOP's SLEEP metric and
    renders "Erholung" in German. The gym rest is `"Rest period"`. This has been reintroduced once
    already; grep for it after any session-screen work.
 11. **A text field must never be rewritten from the model while the user is typing in it.** Every
@@ -127,7 +156,7 @@ one is a regression even if it compiles and the tests you ran passed.
     (4 sets/week) and NO ceiling, so a full bar or a success-green is a claim the science does not
     support. The weekly bar draws the floor as a tick a fifth along a 20-set span; that span is a
     drawing choice (`LiftLogView.weeklySetsBarSpan`), not a dose.
-10. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
+16. **The spreadsheet import is a convenience, not part of the feature.** It calls only the three
    store APIs the program editor already used, adds no write path, and touches one button in the
    hub. If it ever conflicts with the core, the core wins and the import can be deleted whole.
 
@@ -331,8 +360,13 @@ silently advanced the session and cost a logged set.
 This is **read-side only** — no new writes, no change to the connection path or the window. It
 affects every double-tap consumer, not just the Lift Log.
 
-**Status after the 9 Sep 2026 session: one phantom advance in a full session.** Not a pass and not a
-fail. Before the fix it was frequent enough to be reported as a defect, so once is a large
+**Status after two full sessions (9 and 10 Sep 2026): effectively resolved.** One phantom advance in
+the first, and "a few, might be physical" in the second — against something that was previously
+frequent enough to be reported as a defect. **Do not change this code on that evidence.** The next
+useful datum is whether the strap had just synced when one happened, not another edit. What follows
+is the original diagnosis, kept because it is the reasoning any future change has to engage with.
+
+Not a pass and not a Before the fix it was frequent enough to be reported as a defect, so once is a large
 improvement — but it is not zero, and one observation is not a diagnosis. **Do not change this code
 again on the strength of it.** Get evidence first: whether the strap was mid-offload when it
 happened. A second, unrelated cause is entirely plausible — `AppModel.handleDoubleTap`'s 1.2 s
@@ -377,49 +411,73 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `503bf2d0`:** WhoopStore **561** · StrandAnalytics **1988** · StrandImport **284** · StrandTests **1696**
-— 0 failures beyond the two locale-dependent `TodayCarryOverTests`. Both app targets build;
-`doc_comment_lint.py` and `i18n_audit.py --ci upstream/main` pass with all ten locales; Android CI
-passes on the branch (that is what exercises `SchemaOracleTest`, NOT the testing-build workflow,
-whose Android job only compiles APKs).
+**Test counts at `503bf2d0`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
+StrandAnalytics **1988** · StrandImport **284** · StrandTests **1696**. Zero failures anywhere except
+the two locale-dependent `TodayCarryOverTests`, which fail identically on a clean upstream checkout
+(this machine is English-language/German-region) — **do not chase them, and do not "fix" them with
+`-testLanguage`**, which trades them for a different failure (see §4).
 
-**The feature has now had a full real gym session** (9 Sep 2026) — the whole sheet tapped through in
-a gym rather than simulated. It found two data-losing bugs, both fixed in `154d2a7e`, and a second
-round of requests answered in `93823f69` / `0dd807ae`; see §12b and §12c of the review. Treat further
-UI judgements the same way: ship, use, then fix what the session actually found — **nothing in the
-backlog predicted either data-losing bug.**
+Both app targets build with **no warnings from any Lift Log file**; `doc_comment_lint.py` and
+`i18n_audit.py --ci upstream/main` pass with all ten locales; both `schema_oracle.json` copies are
+byte-identical; Android CI passes on the branch.
 
-**Audited on 9 Sep 2026** against "correct, efficient, error-free". What it found and fixed is in
-`e8e5839f`; what it found and did NOT fix is in §10 of the review — read that before optimising
-anything, because the remaining items are known and quantified rather than unnoticed.
+**Upstream position at hand-off:** `upstream/main` is **3 commits ahead** (sleep-session deviceId,
+Today HR min/max, an l10n accent fix). **None touches an integration point** — not `Database.swift`,
+not `Localizable.xcstrings`, not `RootTabView`, not the widget bundle, not either oracle — and
+upstream's newest migration is still v44, so v45 stays free. The next sync should be close to
+trivial; follow §10 anyway.
+
+**Four real gym sessions have now been run on this feature** (9-10 Sep 2026), and everything that
+could only be tested with a strap is confirmed working: the Lock Screen activity with HR and
+reps x weight and ticking seconds, ghost values carrying across sessions, and the spreadsheet import
+on a real device. Every one of the four sessions found something, and **three of the four findings
+were silent wrong data rather than anything that looked broken** — see the review's §12b-§12f.
 
 ## 9. Still outstanding
 
-1. **`dist/liftlog-issue.md` has never been posted upstream.** It asks ryanbr about storage shape,
-   the `ios_only` Android position, placement and the source token — question 3 is the risky one,
-   since `CLAUDE.md` calls cross-platform parity "the #1 rule" and a required Room twin would be a
-   large piece of work. It was offered on 3 Sep 2026 and he declined for now: he is not going
-   upstream until he is happy with the feature. **Do not post it.** It is a public post in his name
-   and needs an explicit yes. Note the text is stale — it says "three commits" and predates the
-   rebase — so refresh it before it is ever used.
-2. **Real gym use is happening continuously** (see §1). The 9 Sep 2026 session is the first full
-   one; its findings are in §12b of the review. Ask him what actually went wrong in a session rather
-   than assuming the backlog's remaining guesses still describe the problems — two of the six things
-   that session raised were not what the backlog predicted, and one backlog item (§7, logging an
-   unplanned set) did not come up at all.
-3. **No PR opened, and that is deliberate.** He will not publish until he is happy with the
-   feature. The rebase onto `v11.1.0` is done and the schema commit is self-contained, so the
-   two-PR split (schema, then UI) is ready whenever he decides. Nothing is blocking on code.
-4. **The backlog lives in `dist/LIFT_LOG_REVIEW.md`** — read it. Item 2 (the weekly bar reading
-   "done" at the 4-set floor) is the next thing worth fixing.
-5. **`dist/` is gitignored** (`.gitignore:96`). These notes live on disk and deliberately never
-   reach a commit, so they cannot leak into an upstream PR.
+1. **One real gap remains: §7 of the review — you cannot log a set the program did not plan.** If the
+   program says four sets and you do five, the fifth cannot be recorded. It has NOT come up across
+   four gym sessions, so **ask before building it**: either he does what the program says and it is a
+   non-issue, or he has been working around it without registering it. The review's "What to do
+   first" table has the rest, all quality rather than gaps.
+
+2. **Ask what actually happened in a session; do not infer from the backlog.** Four sessions have now
+   produced findings, and the backlog predicted almost none of them — the occupied-machine bug, sets
+   recording nothing, decimal weights, and the wrapped header were all found by using it. Meanwhile
+   §7, the item the backlog ranked first, has never once come up.
+
+3. **No FEATURE PR, deliberately.** He will not publish the Lift Log until he is happy with it. The
+   schema commit is self-contained and the branch rebases cleanly, so the two-PR split (schema, then
+   UI) is ready whenever he decides. §11 is what going upstream actually requires.
+
+4. **One upstream PR IS open and unrelated to the feature:**
+   [ryanbr/noop#2029](https://github.com/ryanbr/noop/pull/2029) — a duplicate string key with
+   divergent French, and an `Info.plist` drifted from `project.yml`. Opened 10 Sep 2026, no response
+   yet. How it is received is useful information about how a feature PR would go.
+
+5. **`dist/liftlog-issue.md` has never been posted, and must not be without an explicit yes.** It is
+   a public post in his name asking ryanbr four design questions; question 3 (the `ios_only` Android
+   position) is the one that could force a large rework, since `CLAUDE.md` calls cross-platform
+   parity "the #1 rule". Offered 3 Sep 2026 and declined for now. The text is also stale — it says
+   "three commits" and predates both rebases — so refresh it before it is ever used.
+
+6. **`dist/` is gitignored** (`.gitignore:96`). These notes live on disk and deliberately never reach
+   a commit on `lift-log-ui`, so they cannot leak into an upstream PR. They ARE versioned on the
+   orphan branch `lift-log-notes` — see [[lift-log-docs-are-mine]] for how to commit there WITHOUT
+   switching branches, which would clobber them.
 
 ## 10. Syncing with upstream — the routine, and the one trap
 
-The branch was cut from upstream 10.6.1 staging. Upstream shipped 11.0.0 and 11.1.0 on top of that,
-and **took v40 and v41 for its own migrations** — `v40-daily-skin-temp-absolute` and
-`v41-drop-raw-imu-sample`. The lift log's migration moved to **`v42-lift-log`**.
+The branch was cut from upstream 10.6.1 staging. **Upstream has taken the lift log's migration
+number on every sync so far**, so it has been v40, then v42, and is now **`v45-lift-log`**:
+
+| Sync | Upstream took | Ours became |
+|---|---|---|
+| 10.6.1 → 11.1.0 | v40 skin-temp, v41 drop-rawImuSample | `v42-lift-log` |
+| 11.1.0 → 11.5.0 | v42 sleep-hr-only, v43 coach-messages, v44 ppg-waveform | `v45-lift-log` |
+
+As of 10 Sep 2026 upstream's newest migration is still **v44**, so v45 remains free and the next sync
+starts from a clean collision check.
 
 **Expect this on every upstream sync.** There is no way to sidestep it: `SchemaOracleTest` asserts
 that a migration's number matches its position in registration order, so the lift log cannot park
