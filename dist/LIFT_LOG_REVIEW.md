@@ -159,14 +159,23 @@ a common, ordinary thing to do in a gym.
 a per-exercise extra-set count; `LiftSlot` already keys everything by `setIndex`, so the change is
 contained. Consider the same for adding an exercise not in the program.
 
-## 8. You cannot delete a logged session or set
+## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 
 **Verified:** `deleteLiftSession` and `deleteLiftSet` exist in the store with **zero app call sites.**
 A mis-logged session — one started by a phantom double-tap, say — is permanent from the UI.
 
-**Fix:** a destructive action on `LiftSessionDetailSheet`. Note that deleting the lift session does
-**not** remove the paired `workout` row; decide deliberately whether it should, and say so in the
-confirmation.
+**Fixed for SESSIONS.** `LiftSessionDetailSheet` has a destructive "Delete session", and a session
+can also be **discarded before it is ever saved** from the finish sheet — until then every route off
+that screen saved, because "Skip" skips the RPE question rather than the session.
+
+**The workout question, decided: deleting a lift session DELETES the paired `workout` row too.** A
+lift session writes one so the training lands in Workouts and Today, and the engine fills its strain
+from the HR measured over that window. Removing the sets but leaving the workout would keep the day's
+Effort inflated by a session the user just said did not happen — worse than no delete at all, because
+it would look like the delete worked. The confirmation says so.
+
+**Still open: deleting an individual SET.** `deleteLiftSet` remains unused. Lower value now that a
+whole session can go, and a mis-logged set can already be corrected by typing over it.
 
 ## 9. ~~Unused store surface~~ — FIXED in `6099fe94`
 
@@ -264,6 +273,18 @@ found were real; the other two are below in §13b and §14.
   shared constant, centred, with `lineLimit(1)` on the heading row.
 - **Live HR** now sits on the control bar beside the clocks; **the minimised bar** now reads
   "Set 2 — 8 x 30 kg" instead of "Set 2 — working".
+
+## 12f. Fourth gym round, 10 Sep 2026 — everything strap-dependent confirmed
+
+**The four things that had never been verified against a real strap all work**: the Lock Screen
+activity shows HR and reps x weight with seconds ticking, ghost values carried across sessions, and
+the spreadsheet import worked on a real device. Phantom double-taps: "a few, might be physical" over
+a whole session, against something previously frequent enough to report as a defect. **Treat that as
+resolved-enough and do not touch the BLE code on that evidence** — the next useful datum is whether
+the strap had just synced, not another change.
+
+Added in `8c5802f7`: discard an active session, delete a recorded one, and note-length caps (see §8
+and the brief's §2b invariants 13-14).
 
 ## 12e. Third gym round, 10 Sep 2026 — decimal weights
 
