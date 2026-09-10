@@ -54,6 +54,13 @@ as the thing he is relying on.
 Goal: a gym log book inside NOOP, eventually merged upstream into `ryanbr/noop`.
 Fork: `github.com/UtkuDenizAltiok/noop`. Clone: `~/Developer/noop`.
 
+**Finishing a change means SHIPPING it, not offering to.** Stated plainly on 10 Sep 2026: every
+previous session ran the testing build itself after any change, so the new `.ipa` was waiting on the
+fork's releases page without him asking. **He does not use the terminal — giving him a command to run
+is not delivery.** So the last step of any change to the feature is: commit, push, run the build (§4),
+and tell him the release now shows the new commit hash. Do it without being asked. The one time to
+ask first is when the branch is knowingly half-finished.
+
 **How he actually runs it — this changes what you need to protect (stated 3 Sep 2026):**
 - He **uses it at the gym continuously**, as his own app. It is not shelf-ware waiting to be
   finished; real sessions are happening on it now.
@@ -293,6 +300,7 @@ cd Packages/StrandAnalytics && swift test
 xcodegen generate && xcodebuild -project Strand.xcodeproj -scheme NOOPiOS -configuration Debug -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build
 xcodebuild -project Strand.xcodeproj -scheme Strand -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO test
 python3 Tools/i18n_audit.py --ci main && python3 Tools/doc_comment_lint.py
+# then, always: commit, push, and RUN THE TESTING BUILD (below) so the .ipa is on his releases page
 ```
 
 **Expect exactly two failures, and do NOT try to silence them with a locale flag.** This machine is
@@ -306,14 +314,23 @@ advice was wrong and has been removed:** the flag fixes those two but breaks
 `AppleLanguages` override the flag itself is setting. Two known failures beat one mystery. Run the
 suite with no locale flags.
 
-### Getting a build onto his phone
+### Getting a build onto his phone — RUN THIS YOURSELF, every time
+Not optional, and not something to offer: he does not use the terminal, and pushing code does not
+build anything. Until this runs, the releases page still holds the PREVIOUS build.
 ```bash
 gh workflow run "Testing build (fork)" --repo UtkuDenizAltiok/noop --ref lift-log-ui
+gh run watch <id> --repo UtkuDenizAltiok/noop --exit-status    # ~13 min
 ```
 The `.ipa` lands at the fork's rolling `testing-latest` release. He installs with AltStore. The iOS
 bundle id is `com.noopapp.noop` — the same as his existing sideload, so it **updates in place and
 keeps his data**. If a run fails in ~2 minutes with a dependency-clone error, that's the runner's
 network, not the code: **re-run it.**
+
+**Tell him how to verify he has the right build:** the release title ends in the commit hash it was
+built from (`NOOP Staging — base 11.5.0 · <date> · 8017691`). The tag is always `testing-latest`, so
+the URL never changes and the assets are replaced in place —
+`https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest`. He can also start a build from
+the web UI himself: **Actions → "Testing build (fork)" → Run workflow → branch `lift-log-ui`**.
 
 ## 5. Decisions that are settled
 
