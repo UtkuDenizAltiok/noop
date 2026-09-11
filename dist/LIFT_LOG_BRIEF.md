@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`42af9002`, branch `lift-log-ui`, rebased onto upstream `main`. **Both upstream PRs are OPEN.**
+`8a3d775e`, branch `lift-log-ui`. **Both upstream PRs are OPEN and one round of review is answered.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -213,6 +213,18 @@ one is a regression even if it compiles and the tests you ran passed.
     Chinese and "Вперёд" (forward) in Russian. The muscle-picker regions are therefore
     `"Push muscles"` / `"Pull muscles"` / `"Leg muscles"` / `"Trunk muscles"` — the same escape
     `"Rest period"` took. Grep the catalog for any bare one-word key before using it.
+22. **A de-duplication memory must be a SET, not a slot.** `FrameRouter`'s double-tap de-dup kept
+    only the last dispatched `event_timestamp`, which suppresses a replay only when the replayed
+    event is the most recent one dispatched. Two taps interleaved with their replays measured FOUR
+    dispatches; three taps across an offload that re-walks its log measured TWELVE. Bounded by
+    `liveGestureWindowSeconds` plus a hard cap. Any future "have I already seen this?" guard on the
+    BLE path wants the same shape — a batch replays in whatever order it likes.
+23. **Say what a number IS, next to numbers that are measured.** Fractional set counts and the
+    4-sets-a-week tick are MODELLED, and they sit beside "Effort — measured from heart rate". Both
+    per-muscle cards carry `· estimated`, both explainers name the user's own classification as the
+    source, and the tick is framed as a research reference across GROUPS, not a personal target. The
+    work-vs-rest caption said "under load" when the figure is set start to set end — now "in sets".
+    The rule: a caption may not imply a measurement the app did not take.
 ## 3. Where everything lives
 
 ### Storage — `Packages/WhoopStore`
@@ -690,42 +702,69 @@ twinning a schema that is still moving is rework. Both of the items that were ou
 §7 add a set and §8 delete a session — have now landed WITHOUT touching the schema, so the window is
 as open as it has been.
 
-## 11. Upstream — BOTH PRs ARE OPEN (11 Sep 2026)
-
-He said "go get it" on 11 Sep 2026 and they were opened the same day, after the §8 audit and the
-Room twin.
+## 11. Upstream — both PRs open, ROUND ONE OF REVIEW ANSWERED (11 Sep 2026)
 
 | PR | What | Branch |
 |---|---|---|
-| [ryanbr/noop#2098](https://github.com/ryanbr/noop/pull/2098) | the `v46-lift-log` schema **and its Room twin** | `lift-log-schema` (2 commits) |
-| [ryanbr/noop#2099](https://github.com/ryanbr/noop/pull/2099) | the app: hub, program editor, session sheet, Live Activity, import | `lift-log-ui` (25 commits on top) |
+| [#2098](https://github.com/ryanbr/noop/pull/2098) | the `v46-lift-log` schema, its Room twin, and the Android delete/re-key set | `lift-log-schema` (3 commits) |
+| [#2099](https://github.com/ryanbr/noop/pull/2099) | the app | `lift-log-ui` (28 commits on top) |
 
-**#2099 depends on #2098** and says so; #2098 must be taken first.
+**#2099 depends on #2098**, which must be taken first — the maintainer said so explicitly.
+**Upstream CI runs MORE than the fork's:** `app-build.yml` is disabled on the fork but compiles both
+app targets on an upstream PR. Build both locally before pushing to either branch.
 
-**What to do now: nothing, until there is a reply.** Do not push, rebase or "improve" either branch
-while review is pending — a force-push mid-review is how you lose a reviewer's place. If upstream
-comments, answer the comment; if they ask for a change, make exactly that change.
+### What review asked for, and what was done
 
-**Upstream's CI runs MORE than the fork's.** `app-build.yml` is disabled on the fork but **runs on
-upstream PRs** — the `build (NOOPiOS …)` and `build (Strand …)` jobs compile both app targets, which
-nothing on the fork does. So an upstream PR is the first time app-target code is machine-checked.
-Build both locally before pushing anything to these branches.
+**ryanbr on #2098 — the Android delete list did not move with the Swift one.** Correct, fixed in
+`203b2b82`: five DELETEs, five re-key twins, three hand-written DAO fakes updated, the explicit
+`expectedTables` set extended. `deleteDeviceDataCallsEveryDaoDeleteMethod` cannot catch this class —
+a table with NO method is absent from `declaredMethods`, so the count it compares is short on both
+sides and balances.
+
+**Its rationale was corrected, politely, in the reply.** The cited v38 precedent says a `.noopbak`
+restored FROM iOS carries the rows. It cannot: `DataBackup.importFrom` is the only restore entry
+point, classifies anything carrying `grdb_migrations` as `BackupOrigin.MAC`, and rejects it. That
+landed 2026-06-27; the v38 comment reasoning from it landed 2026-08-18, and the MAC branch has no
+test. **Verify a stated mechanism before building on it — that is twice now**, the same claim having
+nearly reached the PR earlier as a benefit.
+
+**ryanbr on #2099 — the double-tap de-dup only caught consecutive duplicates.** Real, and worse than
+reported: measured FOUR dispatches for two interleaved taps and TWELVE for three across a re-walked
+offload, before any fix. Now invariant 22. The test needed a second gesture on ONE router, so the
+fixture frame is minted with a rewritten `event_timestamp` and recomputed CRC32, guarded by a test
+that the mint actually parses.
+
+**ryanbr — `LiftMetrics` has no Kotlin twin.** Accepted as a stated gap, written into the PR body.
+Deliberately not done there: the presentation layer moved in the same push, and porting a layer whose
+shape is still moving is how platforms drift. Pure functions; it can follow via the `CLAUDE.md` oracle
+idiom.
+
+**ryanbr — the CI workflow commit.** Dropped (second concern, and it edited a workflow for a feature
+not on the default branch). Kept reachable on the fork as the tag `fork/ships-template` — cherry-pick
+it if his testing builds should carry the `.xlsx` again.
+
+**Community review (Discord) — estimates dressed as measurements.** The strongest criticism anyone has
+made of this feature, and acted on: now invariant 23. Note what was NOT done — no metric was removed.
+The reviewer suggested simplifying the analysis layer; the diagnosis (rough models looking precise) was
+right, the remedy (delete) was not the only one, and labelling is cheaper and more honest.
+
+**Community review — StrandDesign.** Fair: the box should not have been ticked without measuring.
+Colours and text styles were already 100% tokens. 22 raw spacing literals that exactly equalled a
+`NoopMetrics` value now use it — identical rendering, so the hardware testing still stands. The rest is
+micro-spacing with no token, measured per-kloc against `TodayView`, `WorkoutsView`, `SleepView` and
+`LiveView`, and at the same density. **Measure against the codebase before accepting a style
+criticism**: the claim was directionally right and quantitatively overstated.
+
+### Still to do
+
+- **Rebase #2099 onto #2098 once that lands**, so the diff reads as the UI PR it is meant to be.
+- Answer whatever comes back. Do not force-push either branch except in response to review.
 
 ### The Android position, as landed
 
-The twin is IN #2098: five Room entities, migration 39 → 40, and both oracle copies moved from
-`ios_only` to **`both`**. Android CI verifies it against Room's KSP-exported schema, and it passes.
-So the parity objection is closed by the project's own oracle rather than by argument.
-
-**Deliberately not done: the DAO and the Compose screens.** Stated plainly in both PRs. A gym log
-book is worth what it feels like to tap through between sets, and screens written with no device to
-try them on would compile and be bad to use. If upstream insists, that is the point to say an Android
-user should take it — not to write it blind.
-
-**A claim that was checked and turned out FALSE, recorded so nobody re-derives it:** the twin does
-NOT give backup parity. `DataBackup.importFrom` explicitly REJECTS a Mac/iOS `.noopbak` on Android
-("it carries that platform's migration bookkeeping") and points at the WHOOP CSV export instead. It
-nearly went into the PR as a benefit. Check before claiming.
+The storage twin is IN #2098 and Android CI verifies it, so parity is closed by the project's own
+oracle rather than by argument. The DAO, the Compose screens and the Kotlin `LiftMetrics` are stated
+gaps in the PR bodies, for an Android user to take.
 
 ### `MuscleGroups` (#1968) — the argument used
 

@@ -1,6 +1,6 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `42af9002`, branch
+**Maintained by Claude, from inside the repository. Current at commit `8a3d775e`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
@@ -8,7 +8,7 @@ the cold-start orientation and its §2b holds the invariants.
 FIXED are kept rather than deleted, because the reasoning behind a fix is what stops it being undone
 — several of them record a rule that is now a brief invariant.
 
-**Status, 11 Sep 2026: both upstream PRs are OPEN** —
+**Status, 11 Sep 2026: both upstream PRs are OPEN and round one of review is answered** —
 [#2098](https://github.com/ryanbr/noop/pull/2098) (schema + Room twin) and
 [#2099](https://github.com/ryanbr/noop/pull/2099) (the app). Nothing in this backlog should be worked
 on while they are in review: a force-push mid-review loses the reviewer's place. See the brief's §11.
@@ -267,6 +267,35 @@ against the catalog. A regex over the source misses call shapes; this does not.
 **Verified** in the built bundle and by running the app in German: the hub reads Trainingsbuch /
 Sätze pro Muskel, the picker reads Brust / Vordere Schulter / Trizeps. A whole-catalog sweep for
 specifier mismatches found two more, both pre-existing upstream Russian strings, deliberately left.
+
+## 7d. Review round one — what was accepted, and what was argued back
+
+Both PRs drew a detailed maintainer review plus a community review in the Discord. Everything real was
+fixed; two things were pushed back on with evidence. The brief's §11 has the full account — recorded
+here because the SHAPE of the responses is the reusable part.
+
+**Accepted and fixed without argument**, because they were right:
+- the Android delete/re-key list did not move with the Swift one (#2098);
+- the double-tap de-dup only suppressed CONSECUTIVE duplicates — measured four dispatches for two
+  interleaved taps, twelve for three across a re-walked offload;
+- estimates sat unlabelled beside a measurement ("Effort — measured from heart rate");
+- the StrandDesign checklist box was ticked without measuring;
+- the CI workflow commit was a second concern in a feature PR.
+
+**Argued back, with evidence, and the work done anyway:** the #2098 rationale said an iOS `.noopbak`
+carries rows onto Android. It cannot — one restore entry point, `BackupOrigin.MAC`, hard reject, and
+the rejection predates the comment reasoning from it by two months. The change is still right on
+parity and future-writer grounds, which is what the reply and the code comment now say.
+
+**Argued back and NOT done as proposed:** the community review suggested simplifying the analysis
+layer — dropping or reducing fractional muscle counts, the 4-set reference and work/rest. The
+diagnosis was right (rough models reading as precision) and the remedy was not the only one. Labelling
+each figure as estimated, naming its source as the user's own classification, and correcting "under
+load" to "in sets" addresses the criticism without deleting figures that are useful once honest. Said
+so in the reply, and invited the counter-argument.
+
+**The lesson worth keeping:** a review that is right about a problem is not automatically right about
+the fix. Check the mechanism, measure the claim, then decide.
 
 ## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 
