@@ -1,6 +1,6 @@
 {
   "_readme": "SHARED Room<->GRDB SCHEMA ORACLE (#775). Two byte-identical copies: Packages/WhoopStore/Tests/WhoopStoreTests/Resources/schema_oracle.json and android/app/src/test/resources/schema_oracle.json. SchemaOracleTests.swift compares GRDB's PRAGMA table_info/index_list against it; SchemaOracleTest.kt compares Room's exported schema JSON against it. `columns` is the iOS/GRDB shape in GRDB column order (macOS is the reference implementation); every way Android differs is spelled out in an `android` / `iosAbsent` / `androidColumnOrder` override naming a key in `divergenceReasons`. Adding a column, reordering one, or changing a type/nullability on one platform only fails both suites until it is either fixed or written down here.",
-  "roomVersion": 39,
+  "roomVersion": 40,
   "grdbMigrations": [
     "v1",
     "v2",
@@ -882,14 +882,17 @@
       ]
     },
     "liftExercise": {
-      "platform": "ios_only",
-      "reason": "The in-app strength log (v46): saved programs and the sessions run from them. Landed on Apple first so the schema can settle against real gym use before it is frozen into a Room twin; the Kotlin side is a tracked follow-up, not a divergence. Nothing here feeds a score, so a device without these tables computes identical metrics.",
+      "platform": "both",
       "columns": [
         {
           "name": "id",
           "affinity": "TEXT",
           "notNull": false,
-          "default": null
+          "default": null,
+          "android": {
+            "notNull": true
+          },
+          "divergence": "sqlite-text-pk-nullable"
         },
         {
           "name": "deviceId",
@@ -943,14 +946,17 @@
       ]
     },
     "liftProgram": {
-      "platform": "ios_only",
-      "reason": "The in-app strength log (v46): saved programs and the sessions run from them. Landed on Apple first so the schema can settle against real gym use before it is frozen into a Room twin; the Kotlin side is a tracked follow-up, not a divergence. Nothing here feeds a score, so a device without these tables computes identical metrics.",
+      "platform": "both",
       "columns": [
         {
           "name": "id",
           "affinity": "TEXT",
           "notNull": false,
-          "default": null
+          "default": null,
+          "android": {
+            "notNull": true
+          },
+          "divergence": "sqlite-text-pk-nullable"
         },
         {
           "name": "deviceId",
@@ -1004,14 +1010,17 @@
       ]
     },
     "liftProgramItem": {
-      "platform": "ios_only",
-      "reason": "The in-app strength log (v46): saved programs and the sessions run from them. Landed on Apple first so the schema can settle against real gym use before it is frozen into a Room twin; the Kotlin side is a tracked follow-up, not a divergence. Nothing here feeds a score, so a device without these tables computes identical metrics.",
+      "platform": "both",
       "columns": [
         {
           "name": "id",
           "affinity": "TEXT",
           "notNull": false,
-          "default": null
+          "default": null,
+          "android": {
+            "notNull": true
+          },
+          "divergence": "sqlite-text-pk-nullable"
         },
         {
           "name": "deviceId",
@@ -1102,14 +1111,17 @@
       ]
     },
     "liftSession": {
-      "platform": "ios_only",
-      "reason": "The in-app strength log (v46): saved programs and the sessions run from them. Landed on Apple first so the schema can settle against real gym use before it is frozen into a Room twin; the Kotlin side is a tracked follow-up, not a divergence. Nothing here feeds a score, so a device without these tables computes identical metrics.",
+      "platform": "both",
       "columns": [
         {
           "name": "id",
           "affinity": "TEXT",
           "notNull": false,
-          "default": null
+          "default": null,
+          "android": {
+            "notNull": true
+          },
+          "divergence": "sqlite-text-pk-nullable"
         },
         {
           "name": "deviceId",
@@ -1176,14 +1188,17 @@
       ]
     },
     "liftSet": {
-      "platform": "ios_only",
-      "reason": "The in-app strength log (v46): saved programs and the sessions run from them. Landed on Apple first so the schema can settle against real gym use before it is frozen into a Room twin; the Kotlin side is a tracked follow-up, not a divergence. Nothing here feeds a score, so a device without these tables computes identical metrics.",
+      "platform": "both",
       "columns": [
         {
           "name": "id",
           "affinity": "TEXT",
           "notNull": false,
-          "default": null
+          "default": null,
+          "android": {
+            "notNull": true
+          },
+          "divergence": "sqlite-text-pk-nullable"
         },
         {
           "name": "deviceId",
