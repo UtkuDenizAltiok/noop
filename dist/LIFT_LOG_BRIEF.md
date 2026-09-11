@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`04d9c1a0`, branch `lift-log-ui`, rebased onto upstream `main` (57 commits past v11.5.0).**
+`42af9002`, branch `lift-log-ui`, rebased onto upstream `main`. **Both upstream PRs are OPEN.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -539,9 +539,9 @@ you are not doing has been used in a gym yet.
    §7, the item the backlog ranked first, never came up in a session — it was asked for directly
    instead. The plus/minus row that answers it has not been used in a gym yet either: ask.
 
-3. **The feature PRs are WRITTEN but NOT OPENED.** He asked for them on 11 Sep 2026 and the audit
-   that had to come first is done (§8). Both bodies are drafted; the branch is rebased, green, and
-   pushed. **Do not open either without an explicit yes** — see §11.
+3. **BOTH PRs ARE OPEN** — [#2098](https://github.com/ryanbr/noop/pull/2098) (schema + Room twin)
+   and [#2099](https://github.com/ryanbr/noop/pull/2099) (the app). Opened 11 Sep 2026. **Do not
+   touch either branch while review is pending**; see §11.
 
 4. **[ryanbr/noop#2029](https://github.com/ryanbr/noop/pull/2029) was MERGED** on 10 Sep 2026,
    within a day, with one review — the hygiene PR (a duplicate string key with divergent French, and
@@ -549,9 +549,8 @@ you are not doing has been used in a gym yet.
    received, and it is encouraging. It also fixed the plist drift, so `xcodegen generate` no longer
    dirties the tree.
 
-5. **`dist/liftlog-issue.md` has never been posted and is now probably dead.** It was going to ask
-   ryanbr four design questions; the drafted PR bodies answer all four in the open instead. Still
-   must not be posted without an explicit yes, and it is badly stale.
+5. **`dist/liftlog-issue.md` is now dead.** It was going to ask ryanbr four design questions; the two
+   PRs answer all four in the open. Do not post it.
 
 6. **`dist/` is gitignored** (`.gitignore:96`). These notes live on disk and deliberately never reach
    a commit on `lift-log-ui`, so they cannot leak into an upstream PR. They ARE versioned on the
@@ -661,7 +660,7 @@ routine because of the first; these are the additions it produced:
   copies, and the only edit to those files was the migration-id list plus the two folded columns.
   Both copies are still byte-identical, and Android CI passes on the branch.
 
-## 10b. Android — the position, decided 9 Sep 2026
+## 10b. Android — SUPERSEDED by §11; the storage twin shipped in #2098
 
 He has no Android device and cannot test one. His instruction: **prioritise iOS; do Android if it
 can be done; if not, say so upstream and let someone else take it.** Deciding, not asking:
@@ -691,59 +690,55 @@ twinning a schema that is still moving is rework. Both of the items that were ou
 §7 add a set and §8 delete a session — have now landed WITHOUT touching the schema, so the window is
 as open as it has been.
 
-## 11. Going upstream — the PRs are written and the branch is ready
+## 11. Upstream — BOTH PRs ARE OPEN (11 Sep 2026)
 
-The audit in §8 was the blocker and it is done. Both PR bodies are drafted (see §11b). Nothing is
-open yet: **do not open either without an explicit yes.**
+He said "go get it" on 11 Sep 2026 and they were opened the same day, after the §8 audit and the
+Room twin.
 
-**The shape:** two PRs, schema then UI, in that order. The schema commit stands alone and the UI
-branch sits on top of it.
+| PR | What | Branch |
+|---|---|---|
+| [ryanbr/noop#2098](https://github.com/ryanbr/noop/pull/2098) | the `v46-lift-log` schema **and its Room twin** | `lift-log-schema` (2 commits) |
+| [ryanbr/noop#2099](https://github.com/ryanbr/noop/pull/2099) | the app: hub, program editor, session sheet, Live Activity, import | `lift-log-ui` (25 commits on top) |
 
-**The one decision that could force real work — Android.** `CLAUDE.md` calls cross-platform parity
-"the #1 rule", and the five tables are pinned `ios_only`. The honest position, and the one the PR
-takes: the storage twin and a Kotlin `LiftMetrics` are both writable here and verifiable by CI
-(`SchemaOracleTest` is exactly the oracle for it), but **the Compose UI is not** — it is a second
-app's worth of screens whose entire value is ergonomics in a gym, and writing it blind would produce
-something that compiles and is bad to use. The PR says so and offers the split rather than waiting to
-be asked. See §10b.
+**#2099 depends on #2098** and says so; #2098 must be taken first.
 
-**`MuscleGroups` (#1968) is the other thing the PR must address**, and the argument is already
-written into it: #1968's own header says "published attribution wins where a source provides it and
-this matcher is the fallback for the sources that do not". The Lift Log **is** a source that provides
-it — the user assigns the classification once per exercise and it is snapshotted onto every set — so
-the two do not compete. The lossy 20→13 bridge that #1968 says "waits for a consumer" is a judgement
-call and belongs in its own PR.
+**What to do now: nothing, until there is a reply.** Do not push, rebase or "improve" either branch
+while review is pending — a force-push mid-review is how you lose a reviewer's place. If upstream
+comments, answer the comment; if they ask for a change, make exactly that change.
 
-**Encouraging evidence:** [#2029](https://github.com/ryanbr/noop/pull/2029) was merged within a day
-with one review. Small and unrelated, but it is the only datum there is.
+**Upstream's CI runs MORE than the fork's.** `app-build.yml` is disabled on the fork but **runs on
+upstream PRs** — the `build (NOOPiOS …)` and `build (Strand …)` jobs compile both app targets, which
+nothing on the fork does. So an upstream PR is the first time app-target code is machine-checked.
+Build both locally before pushing anything to these branches.
 
-**Still to do before submitting**
-- `dist/` is gitignored and must stay out of the PR (it is on the orphan branch `lift-log-notes`).
-- `dist/liftlog-issue.md` is stale and has still never been posted. The PR bodies now cover the
-  questions it was going to ask, so it is probably dead — delete rather than refresh it.
-- Upstream may want the 26 commits squashed. The two-PR split is the natural seam.
-- The `.xlsx` template is a committed build artifact plus its generator; upstream may have a view on
-  binaries in the repo.
+### The Android position, as landed
 
-## 11b. The drafted PR bodies
+The twin is IN #2098: five Room entities, migration 39 → 40, and both oracle copies moved from
+`ios_only` to **`both`**. Android CI verifies it against Room's KSP-exported schema, and it passes.
+So the parity objection is closed by the project's own oracle rather than by argument.
 
-Written 11 Sep 2026, from inside the repo, after the audit. They live in the scratchpad rather than
-here because they are long; **if they are gone, rewrite them from §2, §5, §6 and §8** — that is where
-every argument in them comes from. The essentials each one must carry:
+**Deliberately not done: the DAO and the Compose screens.** Stated plainly in both PRs. A gym log
+book is worth what it feels like to tap through between sets, and screens written with no device to
+try them on would compile and be bad to use. If upstream insists, that is the point to say an Android
+user should take it — not to write it blind.
 
-**Schema PR.** Five tables under one migration; `liftSet` is rows not a blob because "what did I lift
-last time" must be answerable by an index; `sessionRpe` is a NUMBER because Foster's load is sRPE ×
-duration; Effort is untouched and no strain column is added anywhere; fractional set counting with
-its source named; every create `ifNotExists`; all five tables device-scoped including the children;
-`ios_only` pinned with the reason in the file, and an explicit invitation to be told if the Room twin
-gates the merge.
+**A claim that was checked and turned out FALSE, recorded so nobody re-derives it:** the twin does
+NOT give backup parity. `DataBackup.importFrom` explicitly REJECTS a Mac/iOS `.noopbak` on Android
+("it carries that platform's migration bookkeeping") and points at the WHOOP CSV export instead. It
+nearly went into the PR as a benefit. Check before claiming.
 
-**UI PR.** Why it belongs in NOOP rather than a standalone app — the strap MEASURES the session, the
-band is an input device, and it stays offline; the sheet-not-wizard decision and the occupied-machine
-rule, both paid for in a real gym; carried values, and the 19 sets that recorded nothing before them;
-six honest figures and no composite score; the `MuscleGroups` reconciliation above; what is
-deliberately absent (ACWR, frequency score, anything rendering as COMPLETE); and the BLE de-dup
-commit flagged as read-side only.
+### `MuscleGroups` (#1968) — the argument used
 
-**The strongest single line for either PR:** four real gym sessions went in, and three of the four
-findings were silent wrong data rather than anything that looked broken.
+Upstream landed a name-derived matcher over 13 groups while this branch was out. Its own header says
+"published attribution wins where a source provides it and this matcher is the fallback for the
+sources that do not". **The Lift Log is a source that provides it** — the user assigns the
+classification and it is snapshotted onto every set — so the two do not compete: stored attribution
+wins for sets logged in NOOP, the matcher stays the fallback for Hevy/Liftosaur imports. The lossy
+20→13 bridge is offered as a separate PR, not smuggled in.
+
+### If they ask for changes
+
+- **Squash.** 25 commits is a lot; the two-PR split is already the natural seam. Offer it.
+- **The `.xlsx` template** is a committed build artifact plus its generator — they may object to a
+  binary in the repo. The import is a convenience (invariant 16) and can be dropped whole.
+- **`dist/` is gitignored** and stayed out of both PRs. Verified: `git diff --stat` shows no `dist/`.

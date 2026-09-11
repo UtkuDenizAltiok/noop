@@ -1,12 +1,17 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `04d9c1a0`, branch
+**Maintained by Claude, from inside the repository. Current at commit `42af9002`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
 **What this file is.** Every item was checked against the actual code, not inferred. Items marked
 FIXED are kept rather than deleted, because the reasoning behind a fix is what stops it being undone
 — several of them record a rule that is now a brief invariant.
+
+**Status, 11 Sep 2026: both upstream PRs are OPEN** —
+[#2098](https://github.com/ryanbr/noop/pull/2098) (schema + Room twin) and
+[#2099](https://github.com/ryanbr/noop/pull/2099) (the app). Nothing in this backlog should be worked
+on while they are in review: a force-push mid-review loses the reviewer's place. See the brief's §11.
 
 **Two standing warnings:**
 
