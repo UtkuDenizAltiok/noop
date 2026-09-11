@@ -372,6 +372,26 @@ advice was wrong and has been removed:** the flag fixes those two but breaks
 `AppleLanguages` override the flag itself is setting. Two known failures beat one mystery. Run the
 suite with no locale flags.
 
+### The fork's branches, after the 11 Sep 2026 cleanup
+
+Five stale branches were investigated by CONTENT (not by merge status — a squash-merge changes the
+sha, so `--merged` lies) and three were deleted:
+
+| branch | verdict |
+|---|---|
+| `upstream-hygiene` | became PR #2029, merged. Verified: the duplicate `"%lld of %lld nights"` key is down to ONE occurrence upstream and both `Info.plist` keys are present. **Deleted.** |
+| `feat/whoop5-serial-identity` | #1303 phase 1. `WhoopSerialIdentity.swift` AND `.kt` are both upstream and identical; `onSerialIdentityAdopted` / `adoptWhoopSerialIdentity` are in upstream's `BLEManager`. Every file, zero unique symbols. **Deleted.** |
+| `remove/keep-alive-overnight-row` | zero unique symbols across 13 files. **Deleted.** |
+| `prototype-scroll-navbar` | **KEPT.** The merged part (#354, #410) is upstream — upstream carries the test split as `BottomBarAutoHideTest` + `BottomBarStyleTest`. But `BottomBarPrefs` and the floating-tab-bar `Theme.kt` symbols never landed: real unmerged prototype work. |
+| `prototype-weather-backgrounds` | **KEPT.** Holds a `weather_rain.png` asset in three copies plus `docs/WEATHER_ASSETS.md`, none of it upstream. An abandoned visual experiment, but the image is content that cannot be regenerated from code. |
+
+**Everything is tagged `archive/<name>` on the fork before deletion**, so all five are recoverable
+forever: `git checkout archive/upstream-hygiene`. Deleting a branch that is tagged costs nothing.
+
+**The method, worth reusing:** for each file the branch touched, extract the identifiers it ADDED and
+check each against upstream's copy of that file. A branch with zero absent symbols is superseded
+regardless of what the sha history says.
+
 ### TWO branches now: `lift-log-ui` is the PR, `lift-log-ui-fork` is what he installs
 
 `lift-log-ui-fork` is `lift-log-ui` plus ONE commit (`fork/ships-template`) that uploads
