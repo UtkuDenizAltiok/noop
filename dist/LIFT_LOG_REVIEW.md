@@ -1,6 +1,6 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `8a3d775e`, branch
+**Maintained by Claude, from inside the repository. Current at commit `251a1978`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
@@ -294,8 +294,26 @@ each figure as estimated, naming its source as the user's own classification, an
 load" to "in sets" addresses the criticism without deleting figures that are useful once honest. Said
 so in the reply, and invited the counter-argument.
 
-**The lesson worth keeping:** a review that is right about a problem is not automatically right about
-the fix. Check the mechanism, measure the claim, then decide.
+**Then Utku overruled the half-measure, correctly.** His question: if a figure is not reliable enough
+to trust, labelling it still leaves it on screen adding complexity — why keep it? That is a better
+argument than the one given, and it produced invariant 24 and a real deletion.
+
+**Re-audited each figure against one test: can a reader ACT on it, and can they be seriously misled?**
+
+| figure | verdict |
+|---|---|
+| per-set history | the core read. Keep. |
+| per-exercise volume + delta vs last time | the valid use of tonnage — same exercise over time. Keep. |
+| e1RM (Epley) | already capped at 12 reps, and 1 rep returns the weight rather than the formula's +3.3% artefact. Keep. |
+| session load (Foster sRPE x duration) | validated across resistance AND endurance; the only figure that puts a leg day and a run on one scale. Keep. |
+| Effort | measured from HR, not ours, and the honest anchor the others are read against. Keep. |
+| sets per muscle | the ORDINAL signal is robust ("quads 14, hamstrings 2") even though the cardinal number is modelled. Keep, labelled estimated. |
+| session-total volume | exact, but comparable only against the same program repeated. Keep WITH the condition in the caption. |
+| **work vs rest** | **DELETED.** Numerator is set start to set end — unracking and setup included, so not time under tension, and the caption said "under load". And no decision follows: intended rest is in the program, actual rest is on each set row. `LiftMetrics.workRest` + `WorkRest` + 3 tests went with it. |
+
+**Two lessons, both cheap to re-learn the hard way:** a review that is right about a problem is not
+automatically right about the fix — check the mechanism, measure the claim. And labelling is not a
+substitute for deletion when a number informs nothing.
 
 ## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 

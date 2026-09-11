@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`8a3d775e`, branch `lift-log-ui`. **Both upstream PRs are OPEN and one round of review is answered.**
+`251a1978`, branch `lift-log-ui`. **Both upstream PRs are OPEN; two rounds of review answered.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -225,6 +225,12 @@ one is a regression even if it compiles and the tests you ran passed.
     source, and the tick is framed as a research reference across GROUPS, not a personal target. The
     work-vs-rest caption said "under load" when the figure is set start to set end — now "in sets".
     The rule: a caption may not imply a measurement the app did not take.
+24. **A figure earns its place only if a reader can ACT on it.** Honest labelling is not a licence to
+    keep a number that informs nothing — that was the correction Utku made on 11 Sep 2026, and he was
+    right. Work-vs-rest was deleted under it: its numerator was set start to set end (unracking and
+    setup included, so not time under tension), and no decision followed from the ratio, because the
+    intended rest is in the program and the actual rest is on each set row. `LiftMetrics.workRest`
+    went with it. Apply the test to anything added: what would the reader DO differently?
 ## 3. Where everything lives
 
 ### Storage — `Packages/WhoopStore`
@@ -365,6 +371,26 @@ advice was wrong and has been removed:** the flag fixes those two but breaks
 `AppLanguageTests.testExplicitLanguageWritesAndSystemRemovesAppleOverride`, which reads back the
 `AppleLanguages` override the flag itself is setting. Two known failures beat one mystery. Run the
 suite with no locale flags.
+
+### TWO branches now: `lift-log-ui` is the PR, `lift-log-ui-fork` is what he installs
+
+`lift-log-ui-fork` is `lift-log-ui` plus ONE commit (`fork/ships-template`) that uploads
+`docs/lift-log-program-template.xlsx` to the fork's release beside the `.ipa`. That commit edits
+`fork-testing-build.yml`, which the maintainer correctly refused in a feature PR — it is fork
+convenience for a feature not on the default branch.
+
+**The spreadsheet import FEATURE is in the PR and always was** — importer, import sheet, generator and
+the committed `.xlsx`, 843 lines. Only the release-asset upload is fork-only. Do not confuse the two:
+he asked for "the template thing" to be kept and meant the feature, which was never at risk.
+
+**After every change to `lift-log-ui`, refresh the fork branch before building:**
+```bash
+git branch -f lift-log-ui-fork lift-log-ui
+git checkout lift-log-ui-fork && git cherry-pick fork/ships-template && git checkout lift-log-ui
+git push --force-with-lease origin lift-log-ui-fork
+gh workflow run "Testing build (fork)" --repo UtkuDenizAltiok/noop --ref lift-log-ui-fork
+```
+**Build from `lift-log-ui-fork`, never from `lift-log-ui`** — the latter no longer ships the template.
 
 ### Getting a build onto his phone — RUN THIS YOURSELF, every time
 Not optional, and not something to offer: he does not use the terminal, and pushing code does not
