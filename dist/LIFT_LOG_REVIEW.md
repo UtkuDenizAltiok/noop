@@ -1,6 +1,6 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `6de83e1b`, branch
+**Maintained by Claude, from inside the repository. Current at commit `04d9c1a0`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
@@ -23,9 +23,9 @@ FIXED are kept rather than deleted, because the reasoning behind a fix is what s
 
 ## Base
 
-Upstream **`v11.5.0`**, migration **`v45-lift-log`**. Two upstream syncs done (10.6.1 → 11.1.0, then
-11.1.0 → 11.5.0), both routine; the feature's own source came through both byte-identical. At
-hand-off `upstream/main` was 3 commits ahead, none touching an integration point.
+Upstream **`main`** (57 commits past `v11.5.0`), migration **`v46-lift-log`**. Three syncs done; the
+feature's own source came through all three byte-identical. The third was part of the pre-PR audit —
+see the brief's §8 for its six findings, four of which no CI job could have caught.
 
 ## What to do first
 
@@ -230,6 +230,38 @@ previous build resumes with nothing pending instead of failing to read.
 Then in the simulator: 62.5 typed into set 3 while set 1 was active survived the keyboard being
 dismissed, and the saved row read `62.5 x 10` — the typed weight over the carried 45, reps still
 carried.
+
+## 7c. ~~Fifty-one strings rendered English in nine locales~~ — FIXED in `cd586f49`
+
+**Found by the pre-PR audit, 11 Sep 2026 — not by CI, and CI could not have found it.**
+`i18n-coverage.yml` is diff-scoped over the string CATALOG, so a `String(localized:)` whose key never
+reached `Localizable.xcstrings` has nothing in the diff to fail on. It simply renders the key, which
+is the English. Four gym sessions never revealed it either, because he runs the app in English.
+
+**Scale:** of the 205 localizable strings the feature ships, **51 were affected** — all 20 muscle
+names, 3 of 4 region names, 28 further screen strings including every title and button on the session
+and program screens, and 3 keys that existed in the catalog under a spelling the compiler never
+emits.
+
+**The method that found it, and the one to reuse:** the compiler is the authority, not a grep. Every
+build writes a `.stringsdata` per source file listing the keys it extracted
+(`Build/Intermediates.noindex/Strand.build/…/Objects-normal/arm64/Lift*.stringsdata`). Diff that set
+against the catalog. A regex over the source misses call shapes; this does not.
+
+**Three distinct faults, now brief invariants 20 and 21:**
+- Absent entirely — the muscle picker and the weekly per-muscle card drew English inside a German app.
+- Key-spelling mismatch — Swift interpolation emits `%@` / `%lld` KEYS, and the positional `%1$@`
+  form belongs only in the VALUES. `"%1$@: %2$@ sets, …"` and `"%lld reps"` sat in the catalog fully
+  translated and never once matched a lookup. Note `%@ reps` and `%lld reps` are BOTH needed: two
+  call sites pass a String and an Int, and a value whose specifier disagrees with its key is worse
+  than an untranslated one.
+- Key collision, the `"Rest"` trap again — the bare `"Push"` key is the TODAY screen's readiness
+  nudge, rendering 推送 (push NOTIFICATION) in Chinese and "Вперёд" (forward) in Russian. The regions
+  are now `"Push muscles"` / `"Pull muscles"` / `"Leg muscles"` / `"Trunk muscles"`.
+
+**Verified** in the built bundle and by running the app in German: the hub reads Trainingsbuch /
+Sätze pro Muskel, the picker reads Brust / Vordere Schulter / Trizeps. A whole-catalog sweep for
+specifier mismatches found two more, both pre-existing upstream Russian strings, deliberately left.
 
 ## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 
