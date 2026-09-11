@@ -1,6 +1,6 @@
 # Lift Log — verified backlog
 
-**Maintained by Claude, from inside the repository. Current at commit `8017691a`, branch
+**Maintained by Claude, from inside the repository. Current at commit `6de83e1b`, branch
 `lift-log-ui`, on upstream `v11.5.0`, 10 Sep 2026.** Read `dist/LIFT_LOG_BRIEF.md` first — its §0 is
 the cold-start orientation and its §2b holds the invariants.
 
@@ -15,8 +15,9 @@ FIXED are kept rather than deleted, because the reasoning behind a fix is what s
   quietly rewrite it. If you think something is wrong, say so explicitly and flag it.
 - **This backlog has a poor record of predicting what actually matters.** Four gym sessions produced
   findings; the backlog predicted almost none of them. §7, the item it ranked first, never came up in
-  a session either — it was asked for directly instead, on 10 Sep 2026, and is now built. Prefer what
-  the user reports from a real session over anything inferred here.
+  a session either — it was asked for directly instead, on 10 Sep 2026. §7b, a keystroke-level bug
+  that had been there the whole time, was never in this file at all until he hit it on 11 Sep 2026.
+  Prefer what the user reports from a real session over anything inferred here.
 
 ---
 
@@ -40,8 +41,9 @@ Ordered by value. Items 2, 3, 7, 8 and 9 are now fixed — **nothing left here i
 
 **Do not start with §4.** It is the interesting one and the least urgent.
 
-**The first thing to ask him instead:** the plus/minus row (§7) has not yet been used in a real gym
-session. That, not this table, is where the next finding comes from.
+**The first thing to ask him instead:** neither the plus/minus row (§7) nor typing into a set you are
+not doing (§7b) has been used in a real gym session yet. That, not this table, is where the next
+finding comes from — five of the last six came that way, none of them from here.
 
 ## 1. ~~Warm-up sets can no longer be marked~~ — FIXED in `191386f5` (now `1c9243dc`)
 
@@ -195,6 +197,39 @@ it. The edit was a separate deliberate act, and unwinding it would need the pre-
 somewhere just to undo an act the user meant.
 
 **Still open, and separate:** adding an EXERCISE the program does not have. Not asked for.
+
+## 7b. ~~Typing into a set you are not doing is silently discarded~~ — FIXED in `6de83e1b`
+
+**Reported 11 Sep 2026**, and the fifth finding in a row that came from using the app rather than from
+this backlog: *"you can't edit the numbers of other sets while in an active set — when I type
+something during an active set to other sets it refreshes to the empty."*
+
+**Was:** `LiftSessionView.write` opened with `guard var row = engine?.recordedSet(for: slot) else
+{ return }`. A set that had not been performed has no record, so **every keystroke into it was
+dropped**. The focused draft held the text, so the field looked like it had accepted the value right
+up until focus left, when it fell back to the empty canonical rendering. The comment immediately above
+the bindings asserted the opposite — that typing into an unperformed set "is held until the set is
+recorded" — which is a large part of why it survived four gym sessions unnoticed.
+
+**Fix shipped.** `LiftSessionController.pendingValues` holds numbers typed for a set that has not
+happened, exactly as `pendingWarmups` already held a warm-up marked in advance, and
+`LiftSessionController.updateSet` became the single place that decides whether a value edits the
+engine or is held. On recording, the held value is applied and BEATS `carry(for:lastSession:)` — a
+number typed for this set outranks the sheet's guess — while a field nobody touched still carries.
+The entry is consumed, so a redo shows the ghosts again.
+
+**The engine rule did not move**, and must not: typing never appends a set
+(`testTypingNeverInventsASet`, and the older `testTypingIntoASetThatWasNeverPerformedInventsNothing`).
+Now brief invariant 19.
+
+**Also now persisted.** Held values and advance warm-up marks travel in the crash snapshot — losing
+them to a relaunch would be the same bug with extra steps. Both are optional, so a snapshot from the
+previous build resumes with nothing pending instead of failing to read.
+
+**Verified:** 9 controller tests plus 2 persistence tests, each watched fail with the fix removed.
+Then in the simulator: 62.5 typed into set 3 while set 1 was active survived the keyboard being
+dismissed, and the saved row read `62.5 x 10` — the typed weight over the carried 45, reps still
+carried.
 
 ## 8. ~~You cannot delete a logged session or set~~ — SESSION DELETE FIXED in `8c5802f7`
 

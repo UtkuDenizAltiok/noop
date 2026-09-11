@@ -1,7 +1,7 @@
 # Lift Log — the handover brief
 
 **Maintained by Claude, from inside the repository. Fully re-verified on 10 Sep 2026 at commit
-`3704a4ca`, branch `lift-log-ui`, on upstream `v11.5.0`.**
+`6de83e1b`, branch `lift-log-ui`, on upstream `v11.5.0`.**
 
 This file is the single thing a fresh session needs. It assumes you know nothing about this work: no
 memory of it, no context beyond this repository. Read it fully, then read `dist/LIFT_LOG_REVIEW.md`
@@ -109,6 +109,11 @@ next set of the SAME exercise, and only falls back to plan order once that exerc
 (`LiftSessionEngine.slotAfter`). Plan order alone sent the user back to the machine they had walked
 away from after every set. **Do not simplify this back.**
 
+**Any set's numbers can be typed at any time.** A set that has been performed is edited in place; one
+that has not is held in `LiftSessionController.pendingValues` and applied the instant it is recorded,
+where it BEATS the carried plan. Being mid-set on one machine is not a reason to refuse a correction
+to another row — see invariant 19.
+
 **A completed set records the numbers it was showing.** The grey values on a pending row are a plan —
 this exercise earlier in the session, then last session, then the program's target — and completing
 the set commits exactly those (`carry(for:lastSession:)`), rendered as a real entry. A set you did
@@ -183,6 +188,14 @@ one is a regression even if it compiles and the tests you ran passed.
     A stage saved under one set count is only meaningful under that count: undoing past a removed set
     would otherwise leave the session working a slot the sheet no longer draws, and completing it
     would write a set nobody could see. This is why `plan` is `private(set) var`, not `let`.
+19. **Typing is never refused, but typing never CREATES a set.** Both halves are load-bearing and
+    they used to be in conflict: `write` could only edit a set that already had a record, so every
+    keystroke into a pending row was silently dropped ("it refreshes to the empty", 11 Sep 2026). The
+    engine rule stays — appending on a keystroke would make a set nobody performed into data — so the
+    numbers are HELD in the controller and applied when the set is recorded, beating the carry, with
+    untouched fields still carrying. The entry is consumed, so a redo shows ghosts again. If you ever
+    add another way to enter a number, route it through `LiftSessionController.updateSet`, which is
+    the single place that decides where a value lands.
 
 ## 3. Where everything lives
 
@@ -255,7 +268,10 @@ is a worse failure than a dash: mid-workout, "the strap stopped reading" is some
 
 ### App-target tests — `StrandTests/`
 - `LiftSessionEngineTests.swift` — **52 tests**
-- `LiftSessionPersistenceTests.swift` — **3 tests**. Small, and load-bearing for something no other
+- `LiftSessionPendingInputTests.swift` — **9 tests**. The controller seam: typing into a set you are
+  not currently doing. Drive the controller directly (`@MainActor`), since the bug lived between the
+  view and the engine and neither alone could catch it.
+- `LiftSessionPersistenceTests.swift` — **5 tests**. Small, and load-bearing for something no other
   test answers: whether a snapshot written by the PREVIOUS build still reads, which is what decides
   wipe-or-update (§4). Written as literal JSON on purpose — encoding with today's `Snapshot` would
   only prove the build can read itself.
@@ -407,7 +423,8 @@ telling the truth), and **never auto-advances**.
 **No tap-anywhere-to-advance.** An early build had it; real gym use killed it. Do not reintroduce.
 
 **Set values are entered during the REST, not during the set.** You cannot type a weight with a bar
-in your hands.
+in your hands. That is a statement about WHEN it is convenient, not a restriction: since 11 Sep 2026
+any set's numbers can be typed at any time, including a set that has not happened yet (invariant 19).
 
 ## 6. Things that are deliberately NOT done
 
@@ -445,10 +462,11 @@ loaded bar is a real event, not a replay.
 ## 8. Where it stands
 
 **Base: upstream `v11.5.0`.** Rebased onto `ryanbr/noop` `main` (9f786fa4) — 206 upstream commits,
-the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Twenty commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
+the second sync (the first was 10.6.1 → 11.1.0, 216 commits). Twenty-one commits on `lift-log-ui` (branched off `lift-log-schema`, which holds the
 schema commit):
 
 ```
+6de83e1b lift log: let any set's numbers be typed at any time
 3704a4ca lift log: pin that the previous build's in-flight session still reads
 8017691a lift log: add or drop a set mid-session, and keep the program in step
 503bf2d0 lift log: stop the weekly bar saying "done" at the floor, and lengthen the notes
@@ -482,8 +500,8 @@ Pre-rebase tips are kept as tags — `backup/lift-log-ui-pre-11.5.0` is the most
 `backup/lift-log-ui-pre-11.1.0`, `backup/lift-log-schema-pre-11.1.0` and
 `backup/lift-log-ui-before-fold` are still there. Local `main` is upstream `v11.5.0`.
 
-**Test counts at `3704a4ca`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
-StrandAnalytics **1988** · StrandImport **284** · StrandTests **1710**. Zero failures anywhere except
+**Test counts at `6de83e1b`, all re-run 10 Sep 2026:** WhoopProtocol **12** · WhoopStore **561** ·
+StrandAnalytics **1988** · StrandImport **284** · StrandTests **1721**. Zero failures anywhere except
 the two locale-dependent `TodayCarryOverTests`, which fail identically on a clean upstream checkout
 (this machine is English-language/German-region) — **do not chase them, and do not "fix" them with
 `-testLanguage`**, which trades them for a different failure (see §4).
