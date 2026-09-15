@@ -1,0 +1,48 @@
+# Backlog
+
+Verified against the code at `lift-log-discard-and-edit` (`a7f2ad08`, 15 Sep 2026). The open follow-up
+(`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — six gym
+sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
+
+## Open, ordered by value
+
+1. **A strength trend across sessions.** Per session there is best set, e1RM and volume "vs last time", but no
+   view across sessions — the reason to keep a log book. Per exercise over time: working weight, best set, e1RM
+   (labelled estimated, ≤ 12 reps). `idx_liftSet_device_exercise` already serves the read;
+   `lastLiftSets(deviceId:exercise:before:)` is the one-session version. Any new figure needs its Kotlin twin.
+
+   | question | number | weight involved? |
+   |---|---|---|
+   | Is this muscle getting enough to grow? | sets per muscle | no, deliberately |
+   | Am I getting stronger? | best set, e1RM over time | yes |
+   | Did I do more work than last time? | volume | yes |
+
+2. **RPE coverage where the counts are.** The RPE card says how many working sets were rated. Still open: the
+   sets-per-muscle card shows no coverage, and a mean from one or two ratings is drawn at full weight (below ~3
+   rated sets, show coverage instead). Display only; counting must not change.
+3. **`LiftFormat.duration` has no hours branch** — 75 minutes reads "75:23" on the bar, sheet and Lock Screen.
+   Copy the `H:MM:SS` idiom from `Strand/App/ActiveWorkoutClock.swift`; consider upstream's clock-format
+   setting (#1822).
+4. **Android screens.** The Kotlin figures exist (#2232); Compose screens and a DAO reading lift sets do not
+   (so `liftSetCounts` / `lastLiftSets` have no Kotlin twin). Best done by someone who runs Android.
+5. **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` query `lastLiftSets` once
+   per exercise. Fine at 5–8 exercises; a single windowed query if programs grow.
+6. **Small smells.** `LiftSessionBar` puts a button inside a tappable bar (fine in the simulator; watch on
+   device). The session bar is iOS-only, so a session started on macOS is invisible once its sheet closes.
+7. **A tap from one field into another may be lost** (simulator only, 15 Sep): with a field focused, tapping
+   another left nothing focused; a second tap worked. Likely `dismissesKeyboardOnTap`'s `simultaneousGesture`.
+   Ask Utku whether weight → reps takes two taps on the phone before changing anything; a fix must keep
+   tap-outside dismissal, which came from the gym.
+
+**Not asked for — do not build unprompted:** adding an exercise mid-session; exporting a program to a
+spreadsheet; merge-by-name on re-import. **Only if the maintainer asks:** split the spreadsheet import into its
+own PR; trim comments; squash.
+
+## Known costs, measured — not oversights
+
+- **The session snapshot is JSON-encoded into UserDefaults on every change**, keystrokes included. Deliberate (a
+  crash mid-rest keeps what was typed); a few KB per session. If sessions grow, write sets incrementally rather
+  than dropping durability. The importer's 200-line cap is part of this bound.
+- **`loadLastTime` issues one indexed query per distinct exercise**, off the main thread, once per open.
+- **Importer bounds** — 8 MB file, 64 MB per decompressed part, 5000 rows, 50 programs, 200 lines each, 50
+  warnings — are pinned by tests; change them together.

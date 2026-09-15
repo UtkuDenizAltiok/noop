@@ -1,0 +1,141 @@
+# Workflow
+
+How work on the Lift Log is done. The app repo's own `CLAUDE.md` and `docs/CONTRIBUTING.md` still apply; this
+adds what this feature and this fork need. Commands run from the app repo root; tools live in `dist/tools/`.
+
+## 1. Working with Utku
+
+Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) is **not a programmer**: he does not read code or use the
+terminal, installs builds from the fork's Releases page with AltStore, and tests at the gym on a WHOOP 5.0.
+Whoever works here writes the code, runs the tools and explains in plain language. His product judgement has
+corrected the engineering several times — treat it as authoritative. He wants technical questions decided,
+reviewers verified rather than obeyed, and this implementation kept unless a change is truly worth it.
+
+- **Finishing a change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line.
+  Never ship a broken build.
+- **Nothing public without his yes**: opening a PR, a comment in his name, an issue.
+- **Never delete** his things without asking; **never touch** his own comments.
+
+## 2. Session routine
+
+- **Start:** `STATE.md` → `RULES.md` → `bash dist/tools/upstream-check.sh` (our PRs, upstream commits touching
+  Lift Log files on either platform, merge conflicts, open threads). The maintainers push to and merge our
+  branches, and add twins of our code, within hours.
+- **End:** replace `STATE.md`'s content with the truth, update any file the work changed, then
+  `bash dist/tools/backup.sh "what changed"`. Drafts belong in `NEXT_PR.md`, never only in a scratch folder.
+
+## 3. Verification
+
+`bash dist/tools/verify.sh` runs the whole loop, cheapest first, and names each log: package tests
+(WhoopStore, StrandAnalytics, StrandImport), doc-comment lint, i18n gate against `upstream/main`, parity ledger,
+parity ratchet, parity governance tests, `xcodegen`, macOS tests, iOS build. `--quick` skips the Xcode app
+targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref <branch>`.
+
+- **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region). They fail on
+  clean `main` too. Do not pass `-testLanguage`. `verify.sh` treats only those two as known.
+- **Build both app targets locally.** Upstream's App build CI builds the PR merged into `main`, and nothing else
+  compiles app-target Swift.
+- **A new test must be seen to fail.** Break the fix, watch the test go red, restore, compare sha256.
+- **Run the app.** Simulator walkthroughs caught a wrapped header, stale copy, a missing reload, "0" + "60" = "600".
+  Read the simulator's database to confirm what was stored:
+  `find ~/Library/Developer/CoreSimulator/Devices/<id>/data/Containers -name whoop.sqlite -path '*OpenWhoop*'`.
+- **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
+- **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
+- **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
+
+## 4. Cross-platform parity
+
+Android is an independent reimplementation; analytics and stored data must be byte-identical (`CLAUDE.md`).
+
+- **Kotlin twin of the figures** (`RULES.md` 33): change `LiftMetrics.kt` with `LiftMetrics.swift`, extend the
+  oracle fixture for the new edge, run `bash dist/tools/oracle/run.sh`, paste its stdout as the expected block
+  of `LiftMetricsParityOracleTest`, and keep `tools/oracle/main.swift` in step with the test's `render()`.
+  Sections the change cannot affect must come back byte-identical — that is the harness's proof.
+- **Ledger** (`python3 Tools/parity_ledger.py`): no finding beyond the checked-in baseline and no scan error.
+  To see what a branch adds, run `--no-baseline` in a worktree of `upstream/main` and here, normalise
+  `:<line>:` and call counts, and diff.
+- **Ratchet** (`python3 Tools/parity_ratchet.py --base upstream/main --offline`): no new one-sided declaration.
+  A new unpaired function under `Packages/**` or `android/**` is debt; per #2163 a disposition cannot settle
+  `add-unpaired-function`, so prefer not adding the identity, else implement the twin.
+- **Governance tests** (in `verify.sh`): they run upstream only when parity tooling changes, so a product PR can
+  leave them red on `main` without anyone seeing (#2229 — ours did). Compare with `upstream/main`; they need
+  Python 3.12 to be meaningful (3.9 adds environment errors).
+- Twin claims pair by name and arity: keep one function per twin name. Never refresh the authority unasked.
+
+## 5. GitHub etiquette and PRs
+
+- **One concern per PR**; show the verification in the description; follow the repo's PR template.
+- **A comment on GitHub** gets ONE concise reply posted after it, covering only its points, citing commits.
+- **A change found by us or heard off GitHub** goes into an EDIT of the description (or of our own post it
+  concerns), never a new "update" comment. The description describes the PR as it is now, not a changelog.
+- **Before working on an open PR branch**, `gh pr view` it: the maintainer may have pushed to it or merged it.
+- **After a squash merge**, prove the squash equals the PR head per file, delete the branch from the fork, and
+  start the next branch from `upstream/main`.
+- **Release-note credits** and version numbers are upstream's; never bump versions on a feature branch.
+
+## 6. Builds for Utku's phone
+
+`bash dist/tools/ship-build.sh` — requires the work branch pushed. It rebuilds `lift-log-build` as the work
+branch + `fork/ships-template` (the commit that uploads the `.xlsx`, kept out of PRs), force-pushes it with a
+pinned lease, runs "Testing build (fork)", waits, and verifies the release: target commit, the `.ipa` and the
+template. The workflow recreates `testing-latest` BEFORE building, so a failed run leaves an EMPTY release —
+never trust a title or an exit code, only the assets. On an HTTP 5xx or a ~2-minute clone failure, rerun.
+Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`).
+
+**Just update or wipe:** just update for UI, logic, analytics or a new OPTIONAL snapshot field (pinned by
+`LiftSessionPersistenceTests`); wipe only for an edited shipped migration, a stored column changing shape or
+meaning, or a non-optional snapshot field. Since #2098 schema changes are new migrations, so wipes should not
+recur. When in doubt, say wipe.
+
+## 7. Syncing with upstream
+
+```bash
+bash dist/tools/upstream-check.sh                     # what moved; does the work branch still merge
+git tag backup/pre-rebase <work-branch>               # LOCAL safety tag — never push tags wholesale
+git rebase upstream/main
+bash dist/tools/verify.sh                             # then prove the content (below)
+bash -c 'B=<work-branch>; OLD=$(git rev-parse origin/$B); git push --force-with-lease=$B:"$OLD" origin $B'
+git tag -d backup/pre-rebase
+git push origin upstream/main:refs/heads/main         # keep the fork's main a mirror (fast-forward only)
+```
+- **Prove the rebase kept the content:** `git diff backup/pre-rebase HEAD -- <the branch's files>` shows only
+  upstream's lines and intended edits.
+- **Unstaged edits** make `git rebase --continue` fail with a misleading "edit all merge conflicts": stash just
+  those paths, continue, pop.
+- **Conflicts seen:** `Localizable.xcstrings` — merge on KEYS with `python3 dist/tools/xcmerge.py BASE HEAD
+  INCOMING OUT` (`git show :1:/:2:/:3:`), never on markers; `LiftMetrics.swift` doc comments — keep both texts,
+  including "The Kotlin twin is" lines; `RootTabView`, `NOOPWidgetBundle` — keep both.
+- **After a stacked PR is squash-merged:** `git rebase --onto upstream/main <old-dependency-tip> <branch>`.
+- Syncing the fork's `main` runs Parity Governance CI on the fork when parity tooling moved; a failure there
+  mirrors `main` upstream, not our branch.
+
+## 8. Git and fork hygiene
+
+- **The fork holds exactly:** `main` (mirror), the work branch, `lift-log-build`, `lift-log-handbook`; tags
+  `fork/ships-template` and `testing-latest` (plus upstream's version tags). Nothing else.
+- **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
+- **Backup tags stay local** and are deleted after the push is verified. Retired refs go into a bundle outside
+  the repo (`git bundle create`), not onto GitHub.
+- **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go
+  in `dist/private/` (ignored). Never commit `dist/` to a work branch.
+- **zsh** does not word-split `$VAR` and expands globs like `--include=*.kt`: run such commands via `bash -c`
+  with arrays. `origin/origin` is `origin/HEAD`, not a branch.
+
+## 9. Conventions and traps
+
+- **Design tokens only** (`StrandPalette`, `StrandFont`, `NoopMetrics`); warnings use `statusWarning`.
+- **A disabled `.noopPrimary` button does not dim itself**: add `.opacity(… NoopButtonMetrics.disabledOpacity)`.
+- **Row structs take no default parameter values**, so a new column is a compile error at every call site.
+- **Booleans are `.integer` 0/1**; any `deviceId` table goes in `deviceScopedTables`.
+- **`Localizable.xcstrings` is hand-formatted**: insert a new key as text next to its neighbours in all ten
+  locales and validate the JSON; re-serialising the 6 MB file reformats it.
+- **`onChange(of:perform:)`** stays single-parameter (the macOS 13 target); its iOS deprecation warning is known.
+- **`dismissesKeyboardOnTap`** clears focus on every tap; watch field-to-field taps on device (`BACKLOG.md` 7).
+- **App-target Swift is validated only by local builds** (`CLAUDE.md`); BLE behaviour only on a real strap.
+
+## 10. Maintaining this handbook
+
+- Keep `STATE.md` true at the end of every session; move finished events into `HISTORY.md` as one line.
+- Rules keep their numbers. Settled science is not rewritten silently.
+- `bash dist/tools/backup.sh "what changed"` copies Claude Code's memory into `memory/`, commits and pushes;
+  `--restore-memory` copies it back on a new machine.
