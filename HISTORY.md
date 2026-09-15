@@ -23,6 +23,8 @@ trustworthy — keep it.
 - **15 Sep** — #2229 reported that #2099 left parity governance red on `main` (files added without an authority
   refresh; the check never runs on product PRs); #2233 repaired it. Governance tests added to `verify.sh`.
 - **15 Sep** — fork cleaned to its exact layout; notes restructured into this handbook.
+- **15 Sep** — Utku asked for a target max RPE per program line, as a safety ceiling shown grey in the session
+  and imported from the template; built on `lift-log-target-rpe` (stacked on the follow-up).
 
 ## What found what
 

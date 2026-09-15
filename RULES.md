@@ -80,6 +80,11 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 33. **`LiftMetrics.swift` and `LiftMetrics.kt` move together.** Any change to the Swift figures changes the Kotlin
     twin in the same PR and regenerates `LiftMetricsParityOracleTest`'s expected block from the REAL packages
     (`tools/oracle/run.sh`) — never by hand. Sections the change cannot affect must come back byte-identical.
+34. **Max RPE is a ceiling the session SHOWS, never a rating it records.** A program line's max RPE (1–10,
+    stored in `liftProgramItem.targetRpe`) is typed in the line editor or imported from the template's
+    `Target max RPE` column, and appears in the session's RPE field as grey "≤8". Only a typed rating is saved:
+    a set done without one, or completed at finish, saves no RPE (`testAMaxRpeIsNeverSavedAsASetsRating`).
+    Outside 1–10 is refused — the editor will not save it, the importer warns and leaves it blank.
 
 ## Settled decisions
 
@@ -97,6 +102,8 @@ and flag it.
 - **Sets are rows, not JSON; weight stored in kg.** Rest is an absolute end instant, never auto-advancing.
   **No tap-anywhere-to-advance** (killed by real gym use).
 - **A discard keeps zeros rather than deleting** (Utku, 15 Sep): a mistaken discard must be recoverable.
+- **Max RPE is a safety ceiling, not planned effort** (Utku, 15 Sep): it tells the lifter where to hold back
+  to avoid injury. How hard a set actually felt is still only known afterwards and recorded per set.
 - **Spreadsheet import (Utku, 9 Sep):** template dropdowns stay English-only (tokens are matched case-, space-
   and hyphen-insensitively); re-importing creates a second program; a new column or muscle means regenerating
   the template.

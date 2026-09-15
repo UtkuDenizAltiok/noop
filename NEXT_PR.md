@@ -1,4 +1,17 @@
-# Next PR — ready to open
+# Next PRs — ready to open
+
+Two PRs, in order: **1. the follow-up** (below, ready) and **2. target max RPE** (at the end, drafted).
+Open the second only after the first merges, rebased `--onto upstream/main`.
+
+**What Utku checks at the gym first** (both are in the testing build):
+- one Save button on the finish screen;
+- Finish → "Discard them" for sets with no numbers → those sets are hidden in the summary but show as 0 / 0
+  under Edit sets, and typing into a 0 replaces it;
+- adding and removing sets under Edit sets;
+- a session where he types NO numbers at all, then Finish → "Discard them": an orange line under that choice
+  says nothing will be saved (the separate "Discard session" button is unchanged);
+- typing: with the keyboard open in the KG box, one tap on the REPS box should start typing there;
+- a program line with a max RPE shows "≤8" in grey in the RPE box, and it is not saved unless he types a rating.
 
 **Maintained with the handbook.** The follow-up to #2099: branch `lift-log-discard-and-edit` on `UtkuDenizAltiok/noop`.
 Nothing here is posted until Utku says yes, after a gym session on the testing build.
@@ -9,7 +22,11 @@ Nothing here is posted until Utku says yes, after a gym session on the testing b
    with what it showed; a problem found there is fixed, verified and re-shipped first.
 2. `bash dist/tools/upstream-check.sh` — if `main` moved, rebase (`WORKFLOW.md` §7), then `bash dist/tools/verify.sh`,
    which includes ledger, ratchet and governance; if `LiftMetrics.swift` changed, regenerate the Kotlin oracle.
-3. **Parity governance must be green, not just the ledger.** #2229: #2099 left `parity-governance` red on `main`
+3. **Parity authority:** the new `isPerformed` twin pair moves `Tools/parity_twin_map.json`
+   (`twin-map-authority-drift|function_pairs`). Run the guarded refresh with Python 3.12 —
+   `python3.12 Tools/parity_ledger.py --refresh-derived --base origin/main`, then `Tools/parity_ledger.py` and
+   `Tools/parity_ratchet.py --base origin/main --offline` — and commit the refreshed JSON in this PR.
+   **Parity governance must be green, not just the ledger.** #2229: #2099 left `parity-governance` red on `main`
    (new files, authority not refreshed), and the check never runs on ordinary PRs. Wait for #2233 (the
    maintainers' fix), rebase, then run the job with Python 3.12 — `gh workflow run "Parity Governance CI"
    --ref lift-log-discard-and-edit` on the fork, or the unittest command in `parity-governance.yml` locally
@@ -89,4 +106,30 @@ The second gym session (15 Sep, on `af27d0a1`) ran before I saw your comment:
 - 3 taps did not register. The new log lines show the strap never reported them, while all 16 taps it did report were acted on and buzzed within 3 s, so those were on the strap side.
 
 That session also asked for a change that meets your question from the other side: a discard made by mistake should be recoverable. #FOLLOWUP keeps discarded sets as 0 kg × 0 reps, which every figure leaves out and Edit sets can fill back in. Your guard stays, reading "no set counts" rather than "no set saved": a face-down session with nothing typed, then discarded, still files no session, sets or workout, and the finish sheet now says so before Save. It also keeps #2232's Kotlin twin in step, with the oracle regenerated from the Swift packages.
+```
+
+## PR 2 — target max RPE (open after the follow-up merges)
+
+Title: `lift log: a max RPE per exercise, shown grey in the session and read from the template`
+
+```markdown
+## What this PR does
+
+A max RPE (1–10) for each program line: the hardest a set should feel, so a lifter knows where to hold back and avoid injury. Asked for after real gym sessions.
+
+- **Program editor:** a "Max RPE (1–10)" field on each exercise line, refused outside the scale; the program list shows "max RPE 8".
+- **Session:** the RPE field shows the ceiling in grey as "≤8" (before, the previous set's rating). It is a reminder, never a value: only a typed rating is saved, so the RPE coverage card still counts only real ratings.
+- **Spreadsheet import:** the template gains a `Target max RPE` column that only accepts 1–10; the importer also reads `Max RPE` and `RPE`, and a value outside the scale imports without a ceiling and a warning naming the row. The import preview and guide show it.
+- **No schema change:** `liftProgramItem.targetRpe` already existed on both platforms and nothing filled it; its description now says what it holds. No Kotlin logic reads it yet.
+
+## How it was tested
+
+- **Hardware — WHOOP 5.0:** HARDWARE_LINE
+- `swift test`: StrandImport N_SI (new: the column and its spellings, out-of-range warnings, the shipped template's header and 1–10 validation); the out-of-range test was seen to fail without the range check.
+- `xcodebuild test` (macOS): N_MAC; `testAMaxRpeIsNeverSavedAsASetsRating` pins that the ceiling never becomes a rating.
+- Template regenerated with `Tools/make_lift_program_template.py`. Both app targets build; four new strings in all ten locales.
+
+Follows #FOLLOWUP.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```

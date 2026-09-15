@@ -2,8 +2,8 @@
 
 ## What it does
 
-- **Programs** — a name plus ordered exercise lines: working sets, one rep count, weight, rest, note. Built in
-  the editor or imported from the committed `.xlsx` template (`.csv` also works).
+- **Programs** — a name plus ordered exercise lines: working sets, one rep count, weight, max RPE (a ceiling,
+  1–10), rest, note. Built in the editor or imported from the committed `.xlsx` template (`.csv` also works).
 - **No catalogue.** Users name exercises and assign muscles; NOOP ships no exercise list and no
   exercise→muscle mapping.
 - **The session is a sheet**: every set of every exercise is a row. Any pending set can be started at any time
@@ -14,7 +14,8 @@
 - **Any set's numbers can be typed at any time.** A recorded set is edited in place; a pending one is held and
   applied when recorded.
 - **Grey numbers stay grey** — this exercise earlier in the session, else last session, else the program
-  target — until something is typed. RPE is never carried.
+  target — until something is typed. RPE is never carried: its field shows the line's max RPE as grey "≤8"
+  (else the previous set's own rating), and only a typed rating is saved.
 - **Finishing asks, never assumes** (one Save button, disabled until answered): sets with no typed numbers are
   **completed** with their grey numbers or **discarded** — saved as 0 kg × 0 reps, out of every figure,
   fillable later under Edit sets; if a set count changed, whether the program keeps it. A discard that would
@@ -59,8 +60,8 @@ sat within 9 s of an already-dispatched tap: misses are the strap not sensing th
 ### Spreadsheet import — `Packages/StrandImport` and tooling
 | file | what |
 |---|---|
-| `Sources/StrandImport/LiftProgramSheetImporter.swift` · `XlsxSheet.swift` | parses a filled template; bounded `.xlsx` reader (`rawPart` is test support) |
-| `Tests/StrandImportTests/LiftProgramSheetImporterTests.swift` | 21 tests, two read the SHIPPED template |
+| `Sources/StrandImport/LiftProgramSheetImporter.swift` · `XlsxSheet.swift` | parses a filled template (incl. `Target max RPE`, 1–10); bounded `.xlsx` reader (`rawPart` is test support) |
+| `Tests/StrandImportTests/LiftProgramSheetImporterTests.swift` | 24 tests, three read the SHIPPED template |
 | `Tools/make_lift_program_template.py` → `docs/lift-log-program-template.xlsx` · `docs/LIFT_LOG_PROGRAM_IMPORT.md` | template generator and committed template · user guide |
 
 ### App — `Strand/` (compiles into BOTH macOS `Strand` and iOS `NOOPiOS`)

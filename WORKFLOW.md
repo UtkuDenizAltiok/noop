@@ -51,9 +51,14 @@ Android is an independent reimplementation; analytics and stored data must be by
   oracle fixture for the new edge, run `bash dist/tools/oracle/run.sh`, paste its stdout as the expected block
   of `LiftMetricsParityOracleTest`, and keep `tools/oracle/main.swift` in step with the test's `render()`.
   Sections the change cannot affect must come back byte-identical — that is the harness's proof.
-- **Ledger** (`python3 Tools/parity_ledger.py`): no finding beyond the checked-in baseline and no scan error.
-  To see what a branch adds, run `--no-baseline` in a worktree of `upstream/main` and here, normalise
-  `:<line>:` and call counts, and diff.
+- **Python 3.12+** runs the parity tools (CI's version). Xcode's 3.9 cannot materialize the base (no tarfile
+  extraction filter), so the ratchet, governance tests and the base comparison fail locally for that reason
+  alone; `verify.sh` marks them skipped rather than guessing.
+- **Ledger** (`python3.12 Tools/parity_ledger.py`): no finding beyond the checked-in baseline and no scan error.
+  `--no-baseline` diffs against a worktree of `upstream/main` show added findings but NOT authority drift: a
+  new twin pair (15 Sep, `isPerformed`) moves `function_pairs` in `Tools/parity_twin_map.json`, which only the
+  default run reports. The PR then carries the guarded refresh
+  (`--refresh-derived --base origin/main`) — never a hand edit.
 - **Ratchet** (`python3 Tools/parity_ratchet.py --base upstream/main --offline`): no new one-sided declaration.
   A new unpaired function under `Packages/**` or `android/**` is debt; per #2163 a disposition cannot settle
   `add-unpaired-function`, so prefer not adding the identity, else implement the twin.
