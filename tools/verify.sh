@@ -48,7 +48,9 @@ step doc-lint          "$PY" Tools/doc_comment_lint.py
 step i18n              "$PY" Tools/i18n_audit.py --ci upstream/main
 step parity-ledger     "$PY" Tools/parity_ledger.py
 if modern_python; then
-  step parity-ratchet    "$PY" Tools/parity_ratchet.py --base upstream/main --offline
+  # The branch's OWN base, not the moving tip: against a newer main, upstream's own changes read as
+  # debt of ours (16 Sep: an Oura constant removed upstream).
+  step parity-ratchet    "$PY" Tools/parity_ratchet.py --base "$(git merge-base HEAD upstream/main)" --offline
   step parity-governance governance
 else
   echo "  parity-ratchet      SKIPPED — needs Python 3.12+ ($("$PY" --version 2>&1)); not verified"

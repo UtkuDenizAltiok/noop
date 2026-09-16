@@ -25,6 +25,14 @@ trustworthy — keep it.
 - **15 Sep** — fork cleaned to its exact layout; notes restructured into this handbook.
 - **15 Sep** — Utku asked for a target max RPE per program line, as a safety ceiling shown grey in the session
   and imported from the template; built on `lift-log-target-rpe` (stacked on the follow-up).
+- **16 Sep** — he then asked for grey to mean the same for RPE as for weight and reps: a set left unrated saves
+  the line's max RPE. Accepted with its cost stated (a stored rating no longer proves he rated that set).
+- **16 Sep** — adding a method to the Room DAO interface broke three Kotlin test doubles. The fork's testing
+  build stayed green (its Android job assembles the app; it does not compile or run the unit tests), and only
+  Android CI caught it — run it on every branch that touches `android/**`.
+- **16 Sep** — Python 3.12 installed, so the parity ratchet ran for the first time. It named three new one-sided
+  Swift declarations; two were avoidable (a helper and a constant, both inlined) and `deleteLiftSets` got its
+  Kotlin twin ported ahead of its consumer. Ratchet errors: 0.
 
 ## What found what
 

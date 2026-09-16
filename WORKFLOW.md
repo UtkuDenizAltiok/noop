@@ -31,6 +31,8 @@ reviewers verified rather than obeyed, and this implementation kept unless a cha
 parity ratchet, parity governance tests, `xcodegen`, macOS tests, iOS build. `--quick` skips the Xcode app
 targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref <branch>`.
 
+- **Anything under `android/**` needs Android CI**, a DAO signature included: the fork's testing build only
+  assembles the Android app, so a broken Kotlin test double still ships green (16 Sep).
 - **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region). They fail on
   clean `main` too. Do not pass `-testLanguage`. `verify.sh` treats only those two as known.
 - **Build both app targets locally.** Upstream's App build CI builds the PR merged into `main`, and nothing else
@@ -59,7 +61,9 @@ Android is an independent reimplementation; analytics and stored data must be by
   new twin pair (15 Sep, `isPerformed`) moves `function_pairs` in `Tools/parity_twin_map.json`, which only the
   default run reports. The PR then carries the guarded refresh
   (`--refresh-derived --base origin/main`) — never a hand edit.
-- **Ratchet** (`python3 Tools/parity_ratchet.py --base upstream/main --offline`): no new one-sided declaration.
+- **Ratchet** (`--base "$(git merge-base HEAD upstream/main)" --offline`): no new one-sided declaration. Compare
+  against the branch's OWN base: against a newer tip, upstream's own changes read as debt of ours (16 Sep: an
+  Oura constant removed upstream).
   A new unpaired function under `Packages/**` or `android/**` is debt; per #2163 a disposition cannot settle
   `add-unpaired-function`, so prefer not adding the identity, else implement the twin.
 - **Governance tests** (in `verify.sh`): they run upstream only when parity tooling changes, so a product PR can

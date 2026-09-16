@@ -11,7 +11,7 @@ Open the second only after the first merges, rebased `--onto upstream/main`.
 - a session where he types NO numbers at all, then Finish → "Discard them": an orange line under that choice
   says nothing will be saved (the separate "Discard session" button is unchanged);
 - typing: with the keyboard open in the KG box, one tap on the REPS box should start typing there;
-- a program line with a max RPE shows "≤8" in grey in the RPE box, and it is not saved unless he types a rating.
+- a program line with a max RPE shows "8" in grey in the RPE box, and a set he leaves unrated saves that 8.
 
 **Maintained with the handbook.** The follow-up to #2099: branch `lift-log-discard-and-edit` on `UtkuDenizAltiok/noop`.
 Nothing here is posted until Utku says yes, after a gym session on the testing build.
@@ -22,11 +22,12 @@ Nothing here is posted until Utku says yes, after a gym session on the testing b
    with what it showed; a problem found there is fixed, verified and re-shipped first.
 2. `bash dist/tools/upstream-check.sh` — if `main` moved, rebase (`WORKFLOW.md` §7), then `bash dist/tools/verify.sh`,
    which includes ledger, ratchet and governance; if `LiftMetrics.swift` changed, regenerate the Kotlin oracle.
-3. **Parity authority:** the new `isPerformed` twin pair moves `Tools/parity_twin_map.json`
-   (`twin-map-authority-drift|function_pairs`). Run the guarded refresh with Python 3.12 —
-   `python3.12 Tools/parity_ledger.py --refresh-derived --base origin/main`, then `Tools/parity_ledger.py` and
-   `Tools/parity_ratchet.py --base origin/main --offline` — and commit the refreshed JSON in this PR.
-   **Parity governance must be green, not just the ledger.** #2229: #2099 left `parity-governance` red on `main`
+3. **Parity, in this order** (Python 3.12): rebase onto the latest `upstream/main` FIRST, then
+   `Tools/parity_ledger.py --refresh-derived --base "$(git merge-base HEAD upstream/main)"`, then the ledger, the
+   ratchet (same base) and the governance tests — all three must be green — and commit the two refreshed JSONs in
+   the PR. Verified on 16 Sep that this works (governance 124 tests OK). Refresh only AFTER the rebase: a snapshot
+   taken against an older base goes stale immediately, and on 16 Sep `main`'s own authority did not reproduce
+   (#2240), so an unrebased refresh would also miss upstream's drift. #2229: #2099 left `parity-governance` red on `main`
    (new files, authority not refreshed), and the check never runs on ordinary PRs. Wait for #2233 (the
    maintainers' fix), rebase, then run the job with Python 3.12 — `gh workflow run "Parity Governance CI"
    --ref lift-log-discard-and-edit` on the fork, or the unittest command in `parity-governance.yml` locally
@@ -55,6 +56,7 @@ Follow-up to #2099, from a gym session on its last build (15 Sep) that ran short
 - **The empty-session guard from #2099 is kept** and now reads "no set counts" (`LiftSessionController.anyPerformed`), since a discard no longer leaves an empty list. A session run face-down with nothing typed, then discarded, still files no session, sets or workout, and the finish sheet now says so before Save.
 - **Edit sets can add and remove sets.** An added set takes the exercise's muscles and no timing; the last set can be removed (each exercise keeps one), set numbers are renumbered on Save, and removed rows go through the new `deleteLiftSets`. Only that session changes, never the program. A field holding 0 empties when focused, so typing replaces the 0.
 - **The session summary shows only performed sets**, and says so when there are none.
+- **`deleteLiftSets` has its Kotlin twin.** `DeviceRegistryDao` already holds the lift tables' delete queries, so the by-id delete joins them, ported ahead of its consumer as #2232 did for the figures. With it the ratchet reports no error and the ledger no new finding, so this PR touches neither `parity_twin_map.json` nor `parity_ledger_baseline.json`.
 - **Android parity.** `LiftMetrics.kt` (#2232) follows in its own commit: `isPerformed` is `reps != 0` on both platforms, one function each so the ledger pairs them unambiguously. The oracle fixture gains a bench set at 0 reps that carries muscles and an RPE, so skipping the rule in `muscleCounts` or `rpeProfile` would show as an extra chest set or rating. The expected block is the stdout of the real `StrandAnalytics` and `WhoopStore` packages; every section this change cannot affect came back identical to the previous oracle. Android has no DAO reading lift sets, so the SQL rule has no Kotlin twin to change.
 
 No schema change.
@@ -75,7 +77,7 @@ No schema change.
 - `xcodebuild test` (macOS): N_MAC tests; only the two locale-dependent `TodayCarryOverTests` fail, identically on `main` on this machine.
 - Android CI (assemble + unit tests, the regenerated oracle included): green on the fork (no local Android SDK).
 - iOS simulator walkthrough, checked against the database: discard → the summary hides the zeros and says nothing was performed → Edit sets shows them as 0 / 0 → add, fill in, remove, save (rows renumbered, the removed one deleted, the program unchanged). A session with nothing typed, then discarded, shows the warning and files no session, sets or workout.
-- Parity ledger (`--no-baseline`) on this branch against `main`: no finding added.
+- Parity, with Python 3.12: the ledger reports no new finding and the ratchet no error against this branch's base. The one-sided declarations it named were resolved rather than declared as debt — two inlined, and `deleteLiftSets` given its Kotlin twin. The branch deliberately leaves `parity_twin_map.json` and `parity_ledger_baseline.json` untouched: `main`'s own authority does not currently reproduce (the two `RepositoryBaselineTests` fail on clean `main` after #2240), and refreshing here would adopt that drift into this PR.
 - Both app targets build. Every new string has all ten locales.
 
 ## Checklist
@@ -118,7 +120,7 @@ Title: `lift log: a max RPE per exercise, shown grey in the session and read fro
 A max RPE (1–10) for each program line: the hardest a set should feel, so a lifter knows where to hold back and avoid injury. Asked for after real gym sessions.
 
 - **Program editor:** a "Max RPE (1–10)" field on each exercise line, refused outside the scale; the program list shows "max RPE 8".
-- **Session:** the RPE field shows the ceiling in grey as "≤8" (before, the previous set's rating). It is a reminder, never a value: only a typed rating is saved, so the RPE coverage card still counts only real ratings.
+- **Session:** the RPE field shows the ceiling as a grey number (before, the previous set's rating), and grey means the same here as for weight and reps: a set the session keeps and nobody rated saves it, a typed rating wins, a discarded set saves none, and a previous set's rating is never copied onto another set. The trade is stated plainly: a stored rating no longer proves the lifter rated that set.
 - **Spreadsheet import:** the template gains a `Target max RPE` column that only accepts 1–10; the importer also reads `Max RPE` and `RPE`, and a value outside the scale imports without a ceiling and a warning naming the row. The import preview and guide show it.
 - **No schema change:** `liftProgramItem.targetRpe` already existed on both platforms and nothing filled it; its description now says what it holds. No Kotlin logic reads it yet.
 
@@ -126,7 +128,7 @@ A max RPE (1–10) for each program line: the hardest a set should feel, so a li
 
 - **Hardware — WHOOP 5.0:** HARDWARE_LINE
 - `swift test`: StrandImport N_SI (new: the column and its spellings, out-of-range warnings, the shipped template's header and 1–10 validation); the out-of-range test was seen to fail without the range check.
-- `xcodebuild test` (macOS): N_MAC; `testAMaxRpeIsNeverSavedAsASetsRating` pins that the ceiling never becomes a rating.
+- `xcodebuild test` (macOS): N_MAC; `testAMaxRpeFillsAnEmptyRatingLikeEveryOtherGreyNumber` and `testADiscardedSetTakesNoMaxRpe` pin where the plan's number does and does not reach a set.
 - Template regenerated with `Tools/make_lift_program_template.py`. Both app targets build; four new strings in all ten locales.
 
 Follows #FOLLOWUP.

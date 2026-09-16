@@ -14,8 +14,8 @@
 - **Any set's numbers can be typed at any time.** A recorded set is edited in place; a pending one is held and
   applied when recorded.
 - **Grey numbers stay grey** — this exercise earlier in the session, else last session, else the program
-  target — until something is typed. RPE is never carried: its field shows the line's max RPE as grey "≤8"
-  (else the previous set's own rating), and only a typed rating is saved.
+  target — until something is typed. The RPE field shows the line's max RPE grey, and a set left unrated saves
+  it; a previous set's rating is only ever shown, never saved onto another set.
 - **Finishing asks, never assumes** (one Save button, disabled until answered): sets with no typed numbers are
   **completed** with their grey numbers or **discarded** — saved as 0 kg × 0 reps, out of every figure,
   fillable later under Edit sets; if a set count changed, whether the program keeps it. A discard that would
@@ -83,6 +83,6 @@ More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShar
 `StrandiOS/Widgets/LiftLiveActivityController.swift`.
 
 ### App tests — `StrandTests/`
-`LiftSessionEngineTests` 54 · `LiftSessionPendingInputTests` 10 · `LiftSessionFinishTests` 12 ·
+`LiftSessionEngineTests` 54 · `LiftSessionPendingInputTests` 10 · `LiftSessionFinishTests` 14 ·
 `LiftSessionEditTests` 8 · `LiftSessionPersistenceTests` 5 (old-format JSON: decides wipe or update) ·
 `FrameRouterDoubleTapDedupTests` 9 · `LiftFormatNumberTests` 10.

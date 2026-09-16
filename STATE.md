@@ -17,39 +17,46 @@ after the follow-up opens, with Utku's yes.
 
 ## Open work — two PRs, in this order
 
-1. **Follow-up** — branch `lift-log-discard-and-edit` @ `0a55bc8c` on `upstream/main` `c430ca0b` (pushed): one
-   Save; discarded sets kept as 0 × 0 (hidden from every figure, fillable in Edit sets); add/remove sets in Edit
-   sets; the guard reads "no set counts" with a warning before Save; SQL mirrors `reps != 0`; Kotlin twin and
-   oracle in step.
-2. **Target max RPE** — branch `lift-log-target-rpe` @ `8f6c8f3d`, stacked on the follow-up (pushed): a max RPE
-   (1–10) per program line, typed in the line editor or imported from the template's `Target max RPE` column,
-   shown grey "≤8" in the session, never saved as a rating (`RULES.md` 34). No schema change.
+1. **Follow-up** — `lift-log-discard-and-edit` @ `1564578a` on `upstream/main` `c430ca0b`: one Save; discarded
+   sets kept as 0 × 0 (hidden from every figure, fillable in Edit sets); add/remove sets in Edit sets; the guard
+   reads "no set counts" with a warning before Save; SQL mirrors `reps != 0`; the Kotlin `LiftMetrics` twin in
+   step; and `deleteLiftSets` now has its Kotlin twin in `DeviceRegistryDao`, ported ahead of its consumer.
+2. **Target max RPE** — `lift-log-target-rpe` @ `858b8678`, stacked on it: a max RPE (1–10) per program line,
+   typed in the line editor or imported from the template's `Target max RPE` column, shown grey in the session;
+   a set the session keeps and nobody rated saves it (`RULES.md` 34). No schema change.
 
 - **Work branch:** `lift-log-target-rpe`
-- **Testing build on Utku's phone:** `f854fa5d` (both PRs). Just update, no wipe. Not yet gym-tested.
+- **Testing build on Utku's phone:** `4fda4266` — both PRs, max RPE included. Just update, no wipe. Not yet gym-tested.
 
-## Verified (`8f6c8f3d`, Xcode 27)
+## Verified
 
-WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · StrandTests 1896 (only the two locale-dependent
-`TodayCarryOverTests` fail) · iOS build · doc lint · i18n · Android CI green · fail-first seen for the max-RPE
-range check and the "never saved as a rating" rule. Only the known `onChange(of:perform:)` warnings.
-
-**Not verified: parity.** The default ledger reports checked-in authority drift — `function_pairs` (the new
-`isPerformed` twin pair, follow-up) and `constants` (max-RPE branch). Both PRs must carry the guarded refresh
-(`python3.12 Tools/parity_ledger.py --refresh-derived --base origin/main`, then ledger and ratchet), or `main`
-goes red after merge exactly as in #2229. Ratchet and governance tests need Python 3.12 too.
-
-## Blocked
-
-- **Python 3.12+ is not installed** (only Xcode's 3.9, which lacks tarfile's extraction filter). Needs Utku's yes
-  to `brew install python@3.12`.
+- `8f6c8f3d` (max RPE, pre-rebase): WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · StrandTests 1896
+  (only the two locale-dependent `TodayCarryOverTests`) · iOS build · doc lint · i18n · Android CI green.
+- The RPE-fills-a-blank rule: macOS Lift Log tests 86, incl. `testAMaxRpeFillsAnEmptyRatingLikeEveryOtherGreyNumber`
+  and `testADiscardedSetTakesNoMaxRpe`. Importer fail-first seen for the 1–10 range check.
+- **Parity, with Python 3.12 (`/opt/homebrew/bin/python3.12`): ledger has no new finding and the ratchet no
+  error against the branch's own base, WITHOUT touching `parity_twin_map.json` or `parity_ledger_baseline.json`.**
+  The three one-sided declarations the ratchet named were resolved rather than declared as debt: a private helper
+  and a constant inlined, and `deleteLiftSets` given its Kotlin twin.
+- **`main` itself is red again (16 Sep).** On clean `upstream/main` `6ce9a0d7` the two `RepositoryBaselineTests`
+  fail and the ratchet says the base authority cannot be reproduced — upstream's own #2240 drifted the authority
+  without refreshing it (#2229's pattern, not ours).
+- **The authority refresh is verified to work on our side:** run against our base it made all three green
+  (governance 124 tests OK). It is deliberately NOT committed yet — it goes in right after the PR-time rebase
+  (`NEXT_PR.md` step 3), because a snapshot against an older base is stale on arrival.
+- **Upstream moved to `6ce9a0d7`** (Oura, rescore, coach and i18n fixes; only #2250 touches the shared catalog).
+  Both branches still merge cleanly, so the rebase happens at PR time rather than costing another full run.
+- **Full `verify.sh` on `39b5f56e`** (the same Swift as the tips): WhoopStore 600 · StrandAnalytics 2021 ·
+  StrandImport 322 · StrandTests 1897 (only the two `TodayCarryOverTests`) · iOS build · doc lint · i18n ·
+  ledger OK. The only change after it was Android test code, covered by **Android CI, green on both branches**.
+- **A DAO method breaks its Kotlin test doubles** (16 Sep): three fakes implement `DeviceRegistryDao`, and the
+  fork's testing build assembles Android without compiling its tests, so only Android CI caught it.
 
 ## Next
 
-1. With Python 3.12: guarded authority refresh on the follow-up (commit it there), then rebase the max-RPE branch
-   onto it and refresh again for its own drift; ratchet and governance tests on both; answer the `deleteLiftSets`
-   question (a new Swift-only function — prefer not adding the identity, else a Kotlin twin; #2163).
-2. Utku's gym session on `f854fa5d` (`NEXT_PR.md` lists what to watch, in plain words).
+1. When `verify.sh` is green: push both branches, `Android CI` on each, `bash dist/tools/ship-build.sh
+   lift-log-target-rpe`, and tell Utku "just update".
+2. Utku's gym session on that build (`NEXT_PR.md` lists what to watch, in plain words).
 3. With his yes: open the follow-up and reply on #2099; after it merges, rebase the max-RPE branch
    `--onto upstream/main` and open it.
 

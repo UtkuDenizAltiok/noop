@@ -20,8 +20,8 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 5. **Grey stays grey, and nothing saves silently empty.** `advance` records timing only; a set's own numbers
    are only what was typed; `LiftSessionEngine.carry(for:lastSession:)` is the ONE grey chain every surface
    reads. `LiftSessionController.setsToSave` saves a set with anything typed (blank fields take grey values)
-   and completes or zeroes the rest by the user's one choice. **RPE is never carried** (it would fake the
-   coverage card).
+   and completes or zeroes the rest by the user's one choice. **RPE is never carried between sets** — only the
+   line's own max RPE fills a blank rating (34).
 6. **Every readout on the session surfaces always renders, dashed when empty.**
 7. **Effort is never modified.** Sessions save `strain: nil`; strain comes from measured heart rate.
 8. **Warm-ups are excluded** from volume and per-muscle counts, on every implementation.
@@ -53,8 +53,11 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 25. **Parity: a PR adds no ledger finding, no ratchet debt, and no scan error.** Twin claims ("The Kotlin twin
     is `LiftMetrics.x`") pair by name and arity; two same-arity overloads of one name are an ambiguous claim —
     keep one function per twin. A new unpaired function under `Packages/**` or `android/**` is governance debt.
-    Never refresh the authority unasked (the maintainers' reviewed flow, `Tools/PARITY_GOVERNANCE.md`), and
-    never let a merge leave the governance tests red on `main` (#2229).
+    Resolve it by porting the Kotlin twin ahead of its consumer — as #2232 did for the figures and
+    `deleteLiftSets` did on 16 Sep 2026 — not by leaving debt for the maintainers; two of three findings that
+    day were avoidable (a private helper and a constant, both inlined). A PR that legitimately adds a twin pair
+    also carries the guarded authority refresh (`--refresh-derived --base origin/main`, Python 3.12) and its
+    regenerated JSON — never a hand edit — and never leaves the governance tests red on `main` (#2229).
 26. **Removing a set removes what was entered for it** (held numbers and warm-up mark,
     `LiftSessionController.removeSet`).
 27. **The program changes only when the user says so, at finish** (`setCountChanges` / `applying`, which moves
@@ -80,11 +83,15 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 33. **`LiftMetrics.swift` and `LiftMetrics.kt` move together.** Any change to the Swift figures changes the Kotlin
     twin in the same PR and regenerates `LiftMetricsParityOracleTest`'s expected block from the REAL packages
     (`tools/oracle/run.sh`) — never by hand. Sections the change cannot affect must come back byte-identical.
-34. **Max RPE is a ceiling the session SHOWS, never a rating it records.** A program line's max RPE (1–10,
-    stored in `liftProgramItem.targetRpe`) is typed in the line editor or imported from the template's
-    `Target max RPE` column, and appears in the session's RPE field as grey "≤8". Only a typed rating is saved:
-    a set done without one, or completed at finish, saves no RPE (`testAMaxRpeIsNeverSavedAsASetsRating`).
-    Outside 1–10 is refused — the editor will not save it, the importer warns and leaves it blank.
+34. **Max RPE is a plan number shown grey, and grey fills a blank — RPE included.** A program line's max RPE
+    (1–10, stored in `liftProgramItem.targetRpe`) is typed in the line editor or imported from the template's
+    `Target max RPE` column, and shows in the session's RPE field as a grey number. A set the session keeps and
+    nobody rated saves it (`testAMaxRpeFillsAnEmptyRatingLikeEveryOtherGreyNumber`); a typed rating always wins;
+    a discarded set saves zeros and no rating (`testADiscardedSetTakesNoMaxRpe`); a previous set's own rating is
+    shown when the plan sets no maximum but is NEVER saved onto another set. Outside 1–10 is refused — the editor
+    will not save it, the importer warns and leaves it blank. **Known cost, accepted by Utku on 16 Sep 2026:** a
+    stored rating no longer proves the lifter rated that set, so the session's RPE card can report the plan.
+    Say so plainly if the card is ever reworked.
 
 ## Settled decisions
 
