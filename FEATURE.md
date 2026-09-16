@@ -38,6 +38,21 @@ event's own timestamp, read-side only (the macOS Automations gesture shares the 
 15 Sep log all 16 taps the strap reported were dispatched and buzzed within 3 s, and all 14 held-back replays
 sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap.
 
+## Size and shape (measured 16 Sep 2026)
+
+38 files the Lift Log owns: **6,933 code lines + 1,876 comment lines**, of which **~2,900 are tests** (42%).
+Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' `LiftMetrics.kt`.
+
+- Biggest files: `LiftSessionView.swift` 860, `LiftLogStore.swift` 749, `LiftSessionEngineTests.swift` 651,
+  `LiftLogStoreTests.swift` 629, `LiftSessionController.swift` 528, `LiftProgramItemSheet.swift` 481.
+- **The one optional block** is the spreadsheet import — `LiftProgramSheetImporter` + `XlsxSheet` + the template
+  generator and their tests, roughly 1,500 lines, a fifth of the feature. It uses only the store APIs the editor
+  uses and adds no write path (`RULES.md` 16), so it can be split into its own PR or dropped whole without
+  touching the core. The maintainer has offered the split twice; take it only if asked.
+- Everything else earns its place: no dead symbols (checked), no second implementation of a figure
+  (`RULES.md` 2), and the comment ratio is the house style — comments say WHY, and several exist because a real
+  gym session proved the alternative wrong.
+
 ## Where everything lives
 
 ### Storage — `Packages/WhoopStore`
