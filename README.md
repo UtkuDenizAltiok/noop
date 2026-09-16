@@ -30,10 +30,14 @@ git clone https://github.com/UtkuDenizAltiok/noop.git ~/Developer/noop && cd ~/D
 git remote add upstream https://github.com/ryanbr/noop.git && git fetch --all
 git worktree add dist lift-log-handbook     # this handbook, in the app repo's gitignored dist/
 bash dist/tools/backup.sh --restore-memory  # Claude Code only
-git checkout "$(sed -n 's/^- \*\*Work branch:\*\* `\([^`]*\)`.*/\1/p' dist/STATE.md)"
+git checkout lift-log-target-rpe            # or whatever STATE.md's "Work branch" says
 ```
 Requires Xcode with its license accepted (after every Xcode update: open Xcode once and agree),
-`brew install xcodegen gh`, `gh auth login`. No Android SDK is needed: Android runs in the fork's CI.
+`brew install xcodegen gh python@3.12`, `gh auth login`. Python 3.12 is what the parity tools need; macOS ships
+3.9, which cannot run them. No Android SDK is needed: Android runs in the fork's CI.
+
+Verified 16 Sep 2026: a fresh clone of `lift-log-handbook` carries all eight pages, the four tools and the
+memory backup — 300 KB, nothing else needed to pick the work up.
 
 ## Every session
 

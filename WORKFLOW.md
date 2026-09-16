@@ -53,7 +53,7 @@ Android is an independent reimplementation; analytics and stored data must be by
   oracle fixture for the new edge, run `bash dist/tools/oracle/run.sh`, paste its stdout as the expected block
   of `LiftMetricsParityOracleTest`, and keep `tools/oracle/main.swift` in step with the test's `render()`.
   Sections the change cannot affect must come back byte-identical — that is the harness's proof.
-- **Python 3.12+** runs the parity tools (CI's version). Xcode's 3.9 cannot materialize the base (no tarfile
+- **Python 3.12+** runs the parity tools (CI's version; `brew install python@3.12`). Xcode's 3.9 cannot materialize the base (no tarfile
   extraction filter), so the ratchet, governance tests and the base comparison fail locally for that reason
   alone; `verify.sh` marks them skipped rather than guessing.
 - **Ledger** (`python3.12 Tools/parity_ledger.py`): no finding beyond the checked-in baseline and no scan error.

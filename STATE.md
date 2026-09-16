@@ -52,18 +52,29 @@ after the follow-up opens, with Utku's yes.
 - **A DAO method breaks its Kotlin test doubles** (16 Sep): three fakes implement `DeviceRegistryDao`, and the
   fork's testing build assembles Android without compiling its tests, so only Android CI caught it.
 
+## Nothing is blocked
+
+Python 3.12 is installed (`/opt/homebrew/bin/python3.12`), Xcode 27's licence is accepted, and both branches are
+pushed and green. Two "Android CI failed" emails from 16 Sep name `cc34a27c` and `39b5f56e` — superseded commits,
+already fixed and re-run green on `1564578a` / `858b8678`. Nothing to investigate there.
+
 ## Next
 
-1. When `verify.sh` is green: push both branches, `Android CI` on each, `bash dist/tools/ship-build.sh
-   lift-log-target-rpe`, and tell Utku "just update".
-2. Utku's gym session on that build (`NEXT_PR.md` lists what to watch, in plain words).
-3. With his yes: open the follow-up and reply on #2099; after it merges, rebase the max-RPE branch
-   `--onto upstream/main` and open it.
+1. **Utku's gym session on build `4fda4266`.** What to watch is listed in plain words at the top of
+   `NEXT_PR.md`; the max-RPE items are new this round.
+2. **Fix whatever the session finds**, verify (`bash dist/tools/verify.sh`), ship
+   (`bash dist/tools/ship-build.sh lift-log-target-rpe`), and tell him "just update" or "wipe".
+3. **Only with his yes, and in this order:** rebase the follow-up onto the latest `upstream/main`, run the parity
+   refresh and all three checks (`NEXT_PR.md` step 3), open the follow-up PR, then post the one reply to
+   ryanbr's 15 Sep 04:07 comment on #2099. After it merges, rebase the max-RPE branch `--onto upstream/main`,
+   refresh again, and open the second PR.
+4. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 
 - Branches: `main` (mirror of `upstream/main`, `c430ca0b`), `lift-log-discard-and-edit`, `lift-log-target-rpe`,
   `lift-log-build`, `lift-log-handbook`.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags.
-- Retired refs removed 15 Sep are in `~/Developer/noop-retired/noop-retired-refs-2026-09-15.bundle`
-  (Utku may delete it any time).
+- Retired refs removed 15 Sep sit in `~/Developer/noop-retired/noop-retired-refs-2026-09-15.bundle`, LOCAL ONLY:
+  it disappears with a machine format, and nothing in it is needed — that content is either merged upstream
+  (#2098/#2099 pre-squash history) or the maintainers' own old prototypes.
