@@ -20,4 +20,8 @@ run once left him an empty release that looked new.
 workflow and checks the release's target commit, `.ipa` and template. Just update for logic/UI/analytics or an
 optional snapshot field; wipe only for an edited migration or a changed stored shape (see `dist/WORKFLOW.md` §6).
 
+**Every update must be on his GitHub releases page** (Utku, 17 Sep 2026) — it is where he downloads. The
+testing release is `testing-latest`, marked Pre-release, titled "NOOP Staging — base … · <date> · <7-char id>".
+After shipping, give him the link and the id to look for in the title, so he can tell the new build from the last.
+
 See [[noop-lift-log-project]], [[lift-log-verify-before-claiming]].

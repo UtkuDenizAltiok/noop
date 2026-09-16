@@ -9,9 +9,10 @@ session** (both at the end, drafted). Open each only after the one before merges
   ordinary taps should buzz promptly, including while the strap is syncing;
 - Lock Screen: the rest clock stops at 0:00; the bottom line reads "Next: Set 2 · Lat pulldown", and at the last
   set of an exercise it names the next exercise; the bar inside the app shows the same line;
-- with the phone locked and dark, a double-tap lights the screen — and does the phone vibrate or make a sound?
+- with the phone locked and dark, a double-tap lights the screen and nothing else (it goes dark again on the
+  phone's own timer); it does not light while the phone is unlocked. Does the phone vibrate with it?
 - numbers typed into the set being lifted show on the bar and the Lock Screen;
-- export the strap log straight after the session (it keeps only ~50 minutes).
+- save the strap log after the session as usual.
 
 **Confirmed on 16 Sep** (third gym session, build `4fda4266`): everything PR 1 and PR 2 below change — one Save,
 discarded sets as 0 / 0 in Edit sets, adding and removing sets there, the warning before an empty Save, and the

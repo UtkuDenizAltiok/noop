@@ -17,9 +17,9 @@ that must survive if the handbook is missing (16 Sep 2026):
 - Three stacked, unopened branches, one PR each, in order: `lift-log-discard-and-edit` @ `1564578a` (one Save,
   discards as zeros, add/remove in Edit sets, Kotlin twins of `LiftMetrics` and `deleteLiftSets`),
   `lift-log-target-rpe` @ `858b8678` (max RPE; a set left unrated saves it) — both hardware-confirmed at the gym
-  on 16 Sep — and `lift-log-gym-round-3` @ `7b993bd5` (one-tap field focus, strap knock guard under 8 s, buzz
-  before the sync kick, next-set line, 0:00 rest clock, typed numbers on the bar, Lock Screen lights on a strap
-  step), shipped to his phone and not yet gym-tested.
+  on 16 Sep — and `lift-log-gym-round-3` @ `3de2ad29` (one-tap field focus, strap knock guard under 8 s, buzz
+  before the sync kick, next-set line, 0:00 rest clock, typed numbers on the bar, a locked Lock Screen lights on
+  a strap step), shipped as `3854dc5f` and not yet gym-tested.
 - 16 Sep evening: `upstream/main` `8576a2dd` is green on its own again. A test merge of the max-RPE branch into it
   passed the full `verify.sh` once `Tools/parity_ledger.py --refresh-derived` was applied. Without that refresh,
   each branch fails the ledger (`twin-map-authority-drift`) and two `RepositoryBaselineTests`, so **the follow-up

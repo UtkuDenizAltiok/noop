@@ -1,6 +1,6 @@
 # Backlog
 
-Verified against the code at `lift-log-gym-round-3` (`7b993bd5`, 16 Sep 2026). The open follow-up
+Verified against the code at `lift-log-gym-round-3` (`3de2ad29`, 17 Sep 2026). The open follow-up
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — six gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
@@ -29,12 +29,7 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
    per exercise. Fine at 5–8 exercises; a single windowed query if programs grow.
 6. **Small smells.** `LiftSessionBar` puts a button inside a tappable bar (fine in the simulator; watch on
    device). The session bar is iOS-only, so a session started on macOS is invisible once its sheet closes.
-7. **The strap log holds ~50 minutes of a gym session.** Upstream's `standard-hr transport host-received` line
-   (#1767, `Collector.ingestStandardHR`) is written once a second, always on, so the 5,000-line buffer lost the
-   first half hour of the 16 Sep session's taps. Upstream's diagnostic, not ours: raising it upstream (an issue
-   asking to gate it behind a Test Centre domain, or to sample it) needs Utku's yes. Until then: export right
-   after the session.
-8. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
+7. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
    Android has no Lift Log, so only its buzz-back and other double-tap actions would gain; unmeasured there.
    Say so in the PR rather than changing Kotlin BLE code nobody can test on a strap here.
 

@@ -24,31 +24,33 @@ and governance all pass on it. The fork's `main` mirrors it. Nothing open upstre
    remove sets in Edit sets; the guard reads "no set counts"; SQL mirrors `reps != 0`; Kotlin twins of
    `LiftMetrics` and `deleteLiftSets`. **Hardware-confirmed 16 Sep.**
 2. **Target max RPE** — `lift-log-target-rpe` @ `858b8678`, stacked on it (`RULES.md` 34). **Hardware-confirmed 16 Sep.**
-3. **Gym round 3** — `lift-log-gym-round-3` @ `7b993bd5`, stacked on 2, three commits: one tap moves between
+3. **Gym round 3** — `lift-log-gym-round-3` @ `3de2ad29`, stacked on 2, four commits: one tap moves between
    fields; a strap knock under 8 s is held back and the buzz goes out before the sync (`RULES.md` 35, 36); the
    next set on the bar and Lock Screen, a rest clock that stops at 0:00, typed numbers on the bar, and the Lock
-   Screen lights on a strap step (37–39). App-target Swift only — nothing under `Packages/**` or `android/**`.
+   Screen lights on a strap step (37–39); then the light-up narrowed to a locked phone, one update sent at once
+   (Utku, 17 Sep). App-target Swift only — nothing under `Packages/**` or `android/**`.
 
 - **Work branch:** `lift-log-gym-round-3`
-- **Testing build on Utku's phone:** `496dbc3b` = round 3 (`7b993bd5`) + the template commit, shipped and verified
-  17 Sep (release points at it; `.ipa` and template present). Just update, no wipe (no stored shape changed; the
-  Live Activity state is not persisted). Not yet gym-tested.
+- **Testing build on Utku's phone:** `3854dc5f` = `3de2ad29` + the template commit, on the releases page as
+  "NOOP Staging — base 11.7.0 · 2026-09-16 · 3854dc5" (Pre-release; the date is UTC), `.ipa` uploaded 01:23 on
+  17 Sep, verified. Just update, no wipe. Not yet gym-tested.
 
 ## Verified
 
-- **Round 3, full `verify.sh` on `7b993bd5`:** WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · doc lint ·
-  i18n · ledger · ratchet · macOS tests 1906 (only the two `TodayCarryOverTests`) · iOS build. Governance: ONE
+- **Round 3, full `verify.sh` on `3de2ad29`:** WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · doc lint ·
+  i18n · ledger · ratchet · macOS tests 1907 (only the two `TodayCarryOverTests`) · iOS build. Governance: ONE
   failure, `test_checked_metadata_is_compact_v3_and_expands_losslessly` (functions 4404 → 4408), identical on
   `858b8678` — the known twin-pair drift the PR-time refresh fixes. A second failure seen in place was build
-  output under `Packages/*/.build` (this base predates #2259); `verify.sh` now runs governance on a clean checkout.
+  output under `Packages/*/.build` (this base predates #2259); `verify.sh` now runs governance on a clean checkout,
+  and on `3de2ad29` it showed only the known one.
 - **Tests seen to fail without their fix:** the knock guard, the synchronous buzz, the tap-before-sync order, the
-  two next-set engine tests, typed numbers on the bar.
+  two next-set engine tests, typed numbers on the bar, the one light-up signal per strap step.
 - **Simulator, before/after builds:** typing — the old build lost the digit after one tap on REPS, the new one
   takes it (also in Edit sets); a button tap with the keyboard open dismisses and acts. Lock Screen — after the
   rest ended and the "Ready" push re-rendered it, the old clock read "2:--" and climbing, the new one 0:00. The
   "Next: Set 2 · Bench press" line on the bar and the Lock Screen. **Not verifiable in the simulator:** the
   Lock Screen lighting, whether the phone vibrates with it, and buzz latency on a real strap.
-- **The 16 Sep strap log** (21:54–22:26 only; the first half hour had rolled out): 22 double-taps sensed by the
+- **The 16 Sep strap log** (the file's app lines jump from 21:15:05 to 21:54:01, lines 1654–1656): 22 double-taps sensed by the
   strap, 22 acted on; knocks at +3 s and +4 s; the four 1.0–2.8 s buzzes were the taps whose event kicked a sync.
 - **PRs 1 and 2 on `8576a2dd`** (test merge, parity refresh applied): full `verify.sh` green; the refresh changes
   only what their two twin pairs add (`NEXT_PR.md` step 3). Android CI green on `1564578a` / `858b8678`.
@@ -66,9 +68,7 @@ The round-3 branch waits only on a gym session. PRs 1 and 2 wait only on Utku's 
    update" or "wipe".
 3. **Only with his yes, in order:** rebase PR 1 onto the latest `upstream/main`, commit the parity refresh, run
    everything and Android CI, open it, post the reply on #2099. Then PR 2, then PR 3 (`NEXT_PR.md`).
-4. **Ask Utku** whether to raise upstream's once-a-second heart-rate log line, which fills the strap log in
-   ~50 minutes (`BACKLOG.md` 7). Public, so his yes first.
-5. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
+4. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 

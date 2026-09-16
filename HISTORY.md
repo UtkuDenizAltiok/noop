@@ -41,9 +41,13 @@ trustworthy — keep it.
   left blank, one Save, discarded sets as 0 / 0 in Edit sets, adding and removing sets there, the orange warning.
   Found: weight → reps still took two taps; one double-tap "skipped two things" and 3–4 did not register; buzzes
   sometimes slightly late; the Lock Screen rest clock counted up past zero. Asked for: the Lock Screen to light on
-  a strap step, and the next set instead of "0 of 16 sets". The strap log held only 21:54 onward; in it the strap
+  a strap step, and the next set instead of "0 of 16 sets". The exported log has the session from 21:54 on; in it the strap
   sensed 22 double-taps and all 22 were acted on, two of them knocks 3–4 s after a tap. All six built on
   `lift-log-gym-round-3` the same night, plus typed numbers missing from the bar (found in the simulator).
+- **17 Sep** — Utku narrowed the light-up to "just light up" a dark Lock Screen (now: locked phone only, one
+  update, sent at once) and ruled out any change to logging. He read the log as covering 13:08–22:44; the
+  exported file's app lines jump from 21:15:05 (line 1654) to a new "current app session" at 21:54:01
+  (line 1656) — the app restarted at 21:20, and that session's first half hour is not in the file.
 
 ## What found what
 

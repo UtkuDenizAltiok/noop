@@ -27,7 +27,7 @@
   after the last one acted on is taken as a knock: no buzz, nothing moves, one log line.
 - **The session outlives its screen**: minimise to a bar above the tab bar; a Lock Screen Live Activity shows
   state, exercise, reps × weight, live HR, the clock and the next set ("Next: Set 2 · Lat pulldown"). A finished
-  rest reads 0:00 everywhere. A strap step lights the Lock Screen (a silent ActivityKit alert). Crash-safe
+  rest reads 0:00 everywhere. A strap step lights a locked, dark Lock Screen and nothing more (a silent ActivityKit alert on the step's one update). Crash-safe
   snapshot in UserDefaults.
 - **Typing moves with one tap**: with the keyboard open, a tap on another field puts the cursor there; a tap
   anywhere else puts the keyboard away and still does what it was aimed at.
@@ -41,8 +41,8 @@
 log; the 1.2 s debounce cannot catch that, and each phantom silently skipped a set. It is de-duplicated on the
 event's own timestamp, read-side only (the macOS Automations gesture shares the path and was verified). In the
 15 Sep log all 16 taps the strap reported were dispatched and buzzed within 3 s, and all 14 held-back replays
-sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap. In the 16 Sep log (its
-last 32 minutes; the rest had rolled out) the strap's own console reported 22 double-taps and all 22 were acted
+sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap. In the 16 Sep log (the
+file has the session from 21:54 on) the strap's own console reported 22 double-taps and all 22 were acted
 on. Two of them came 3 s and 4 s after the tap that started a set — knocks the strap reported as taps — which is
 why a strap tap under 8 s after the last acted-on one is held back. The same log showed the four slowest buzzes
 (1.0–2.8 s) were the taps whose event also kicked a sync, so the tap is now handed on, and buzzed, first.

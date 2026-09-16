@@ -70,8 +70,8 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 29. **Every silent drop of a double-tap leaves a log line** (suppressed replay, late sync arrival up to 600 s,
     1.2 s debounce, a knock held back by 35). A reported miss with none of these lines was never sent by the
     strap; its console lines (`IMU double tap detected`) show what its sensor sensed. Utku exports the log:
-    More → Test Centre → Strap log → Save… It holds 5,000 lines, about 50 minutes of a gym session, so export
-    soon after the session ends; the start of a longer one is already gone (16 Sep 2026).
+    More → Test Centre → Strap log → Save… It keeps 5,000 entries per app session; in the 16 Sep export the
+    first half hour after a 21:20 app restart was not in the file (line 1654 is 21:15:05, line 1656 21:54:01).
 30. **Editing a finished session writes only what changed** (`LiftSessionEditSheet.applying`/`changes`). Fields
     are text parsed on Save; an untouched field is not re-parsed (a pound round trip would nudge kilograms); a
     blank field clears; an existing set's timing and order never move. Added sets take the exercise's muscles,
@@ -116,9 +116,11 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 38. **A finished rest reads 0:00 on every surface and waits** — the sheet, the bar and the Lock Screen. The Live
     Activity's countdown range starts at the REST'S start; a range ending "now" re-rendered after the end would
     otherwise switch to counting up.
-39. **The Lock Screen lights only for a strap step**, through an ActivityKit alert on that push, never while the
-    app is on screen, with a bundled silent sound (`lift-step-silence.caf`). Whether iOS also vibrates the phone
-    is iOS's decision.
+39. **A strap step lights a LOCKED screen, and does nothing else** (Utku, 17 Sep 2026: "just light up", then dark
+    again on the phone's own timer). One ActivityKit alert on the update the step sends first
+    (`LiftSessionController.strapStepTaken`, fired straight after the stage moves), skipped unless the phone is
+    locked (`isProtectedDataAvailable` false) and the app is off screen, with a bundled silent sound
+    (`lift-step-silence.caf`). No extra updates, no delay, no notification. ActivityKit has no vibration switch.
 
 ## Settled decisions
 
@@ -141,6 +143,8 @@ and flag it.
 - **Spreadsheet import (Utku, 9 Sep):** template dropdowns stay English-only (tokens are matched case-, space-
   and hyphen-insensitively); re-importing creates a second program; a new column or muscle means regenerating
   the template.
+- **Upstream's logging is not the Lift Log's to change** (Utku, 17 Sep 2026) — not its content, rate or buffer.
+  The Lift Log adds only its own drop lines (29).
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;
   a frequency score; a composite workout score.
 

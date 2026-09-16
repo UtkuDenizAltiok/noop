@@ -4,3 +4,4 @@
 - [Ship the build](lift-log-ship-the-build.md) — `dist/tools/ship-build.sh` after every change; trust the verified assets; say "just update" or "wipe".
 - [Verify before claiming](lift-log-verify-before-claiming.md) — `dist/tools/verify.sh`, tests seen to fail, reviewer claims and rebases proven, odd tool results rechecked on a clean checkout.
 - [The handbook is mine](lift-log-docs-are-mine.md) — keep `dist/STATE.md` true and run `dist/tools/backup.sh` before a session ends.
+- [Utku's scope](lift-log-utku-scope.md) — no changes to upstream fundamentals (logging); build requests as narrow as worded; show line numbers when evidence is disputed.
