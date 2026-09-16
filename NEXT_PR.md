@@ -24,15 +24,16 @@ Nothing here is posted until Utku says yes, after a gym session on the testing b
    which includes ledger, ratchet and governance; if `LiftMetrics.swift` changed, regenerate the Kotlin oracle.
 3. **Parity, in this order** (Python 3.12): rebase onto the latest `upstream/main` FIRST, then
    `Tools/parity_ledger.py --refresh-derived --base "$(git merge-base HEAD upstream/main)"`, then the ledger, the
-   ratchet (same base) and the governance tests — all three must be green — and commit the two refreshed JSONs in
-   the PR. Verified on 16 Sep that this works (governance 124 tests OK). Refresh only AFTER the rebase: a snapshot
-   taken against an older base goes stale immediately, and on 16 Sep `main`'s own authority did not reproduce
-   (#2240), so an unrebased refresh would also miss upstream's drift. #2229: #2099 left `parity-governance` red on `main`
-   (new files, authority not refreshed), and the check never runs on ordinary PRs. Wait for #2233 (the
-   maintainers' fix), rebase, then run the job with Python 3.12 — `gh workflow run "Parity Governance CI"
-   --ref lift-log-discard-and-edit` on the fork, or the unittest command in `parity-governance.yml` locally
-   (this Mac's Python 3.9 adds 15 environment errors, identical on `main`). If our new twin pair
-   (`isPerformed`) moves the authority, include the reviewed refresh `Tools/PARITY_GOVERNANCE.md` describes.
+   ratchet (same base) and the governance tests — all must be green — and commit the refreshed
+   `Tools/parity_twin_map.json` in the PR, in its own commit. Never hand-edit it.
+   **The refresh is required, not optional.** The branch adds two twin pairs (`isPerformed`, `deleteLiftSets`),
+   which move the authority: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2. Without the
+   refresh the ledger reports `twin-map-authority-drift|function_pairs` and two `RepositoryBaselineTests` fail —
+   exactly how #2099 left `main` red (#2229), and the check never runs on ordinary PRs.
+   Verified 16 Sep on test merges with `upstream/main` `8576a2dd` (green on its own again after #2259/#2267 and
+   upstream's re-derived maps): for EACH branch the refresh changes only those four counts, leaves
+   `parity_ledger_baseline.json` untouched, and doc lint, i18n, ledger, ratchet and governance (124 tests) pass.
+   Refresh only AFTER the rebase: a snapshot taken against an older base is stale on arrival.
 4. Fill the counts and the CI lines from those runs. Re-read the diff once more as a reviewer.
 5. Open it and post the reply (below), in that order:
    ```bash
@@ -56,7 +57,7 @@ Follow-up to #2099, from a gym session on its last build (15 Sep) that ran short
 - **The empty-session guard from #2099 is kept** and now reads "no set counts" (`LiftSessionController.anyPerformed`), since a discard no longer leaves an empty list. A session run face-down with nothing typed, then discarded, still files no session, sets or workout, and the finish sheet now says so before Save.
 - **Edit sets can add and remove sets.** An added set takes the exercise's muscles and no timing; the last set can be removed (each exercise keeps one), set numbers are renumbered on Save, and removed rows go through the new `deleteLiftSets`. Only that session changes, never the program. A field holding 0 empties when focused, so typing replaces the 0.
 - **The session summary shows only performed sets**, and says so when there are none.
-- **`deleteLiftSets` has its Kotlin twin.** `DeviceRegistryDao` already holds the lift tables' delete queries, so the by-id delete joins them, ported ahead of its consumer as #2232 did for the figures. With it the ratchet reports no error and the ledger no new finding, so this PR touches neither `parity_twin_map.json` nor `parity_ledger_baseline.json`.
+- **`deleteLiftSets` has its Kotlin twin.** `DeviceRegistryDao` already holds the lift tables' delete queries, so the by-id delete joins them, ported ahead of its consumer as #2232 did for the figures. With it the ratchet reports no error and the ledger no new finding. The two new twin pairs (`isPerformed`, `deleteLiftSets`) move the parity authority, so the PR carries the guarded refresh of `Tools/parity_twin_map.json` (`--refresh-derived`, not a hand edit); `parity_ledger_baseline.json` is unchanged.
 - **Android parity.** `LiftMetrics.kt` (#2232) follows in its own commit: `isPerformed` is `reps != 0` on both platforms, one function each so the ledger pairs them unambiguously. The oracle fixture gains a bench set at 0 reps that carries muscles and an RPE, so skipping the rule in `muscleCounts` or `rpeProfile` would show as an extra chest set or rating. The expected block is the stdout of the real `StrandAnalytics` and `WhoopStore` packages; every section this change cannot affect came back identical to the previous oracle. Android has no DAO reading lift sets, so the SQL rule has no Kotlin twin to change.
 
 No schema change.
@@ -77,7 +78,7 @@ No schema change.
 - `xcodebuild test` (macOS): N_MAC tests; only the two locale-dependent `TodayCarryOverTests` fail, identically on `main` on this machine.
 - Android CI (assemble + unit tests, the regenerated oracle included): green on the fork (no local Android SDK).
 - iOS simulator walkthrough, checked against the database: discard → the summary hides the zeros and says nothing was performed → Edit sets shows them as 0 / 0 → add, fill in, remove, save (rows renumbered, the removed one deleted, the program unchanged). A session with nothing typed, then discarded, shows the warning and files no session, sets or workout.
-- Parity, with Python 3.12: the ledger reports no new finding and the ratchet no error against this branch's base. The one-sided declarations it named were resolved rather than declared as debt — two inlined, and `deleteLiftSets` given its Kotlin twin. The branch deliberately leaves `parity_twin_map.json` and `parity_ledger_baseline.json` untouched: `main`'s own authority does not currently reproduce (the two `RepositoryBaselineTests` fail on clean `main` after #2240), and refreshing here would adopt that drift into this PR.
+- Parity, with Python 3.12, against this branch's base: the ledger reports no new finding, the ratchet no error, and the governance tests pass (N_GOV) with the refreshed twin map, which changes only the counts the two new pairs account for. The one-sided declarations the ratchet named were resolved rather than declared as debt — two inlined, and `deleteLiftSets` given its Kotlin twin.
 - Both app targets build. Every new string has all ten locales.
 
 ## Checklist

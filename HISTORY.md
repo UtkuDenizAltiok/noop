@@ -33,6 +33,10 @@ trustworthy — keep it.
 - **16 Sep** — Python 3.12 installed, so the parity ratchet ran for the first time. It named three new one-sided
   Swift declarations; two were avoidable (a helper and a constant, both inlined) and `deleteLiftSets` got its
   Kotlin twin ported ahead of its consumer. Ratchet errors: 0.
+- **16 Sep, later** — upstream's `main` went green again (`8576a2dd`: #2259/#2267 parity-scan fixes, twin maps
+  re-derived). On a test merge each branch then failed exactly one way — `twin-map-authority-drift` from its two
+  new twin pairs — and the guarded refresh fixed it touching nothing else. So the PR carries that refresh; the
+  earlier "leave the JSONs alone" plan only held while `main` itself did not reproduce.
 
 ## What found what
 
