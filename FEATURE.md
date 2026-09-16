@@ -48,8 +48,9 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 - **The largest single block** is the spreadsheet import — `LiftProgramSheetImporter` + `XlsxSheet` + the
   template generator and their tests, roughly 1,500 lines, a fifth of the feature. **Utku uses it and wants it
   kept** (16 Sep 2026): it is how he builds programs on a computer instead of typing them on a phone. It is
-  self-contained (only the store APIs the editor uses, no write path of its own), so if the maintainer ever asks
-  it can move into a PR of its OWN — as a separate change, still shipped. Never remove it.
+  self-contained (only the store APIs the editor uses, no write path of its own). **Settled:** ryanbr twice
+  offered to review it as a separate PR — a review-workload question, never a code-quality one — and then merged
+  it inside #2099 anyway, so it already ships upstream. Do not re-open the split, and never remove it.
 - Everything else earns its place: no dead symbols (checked), no second implementation of a figure
   (`RULES.md` 2), and the comment ratio is the house style — comments say WHY, and several exist because a real
   gym session proved the alternative wrong.
