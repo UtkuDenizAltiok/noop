@@ -15,11 +15,14 @@ Stated 17 Sep 2026 after a gym session.
 - **When his reading of evidence differs from mine**, re-read it fully first, then show him the exact line
   numbers and a search he can do himself; he reads the files and pushes back hard when a claim looks wrong.
   (17 Sep: he read the strap log as 13:08–22:44 complete; the file jumps from line 1654 at 21:15:05 to line 1656
-  at 21:54:01.)
+  at 21:54:01. The cause, traced in `LiveState`: an app restart at 21:20:24 plus the running app's 5,000-entry
+  cap — `dist/tools/strap-log.py` shows it. He then asked for every finding to live in the handbook so anyone,
+  on any machine or AI tool, can continue.)
 
 **Why:** he owns the product, tests on the phone, and wants the fork to stay close to upstream so the PRs merge.
 
-**How to apply:** before adding anything outside `Lift*` files, ask whether it changes upstream behaviour; if it
-does, only do it when he asked for exactly that.
+**How to apply:** before changing anything outside the Lift Log's own files, ask whether it changes upstream
+behaviour; do it only when it answers something he reported, and say so (the one such change so far: `FrameRouter`
+hands a double-tap on before its sync kick, for his late buzzes — `dist/RULES.md` 36).
 
 See [[noop-lift-log-project]], [[lift-log-verify-before-claiming]].

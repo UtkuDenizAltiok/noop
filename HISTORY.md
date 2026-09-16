@@ -45,9 +45,12 @@ trustworthy — keep it.
   sensed 22 double-taps and all 22 were acted on, two of them knocks 3–4 s after a tap. All six built on
   `lift-log-gym-round-3` the same night, plus typed numbers missing from the bar (found in the simulator).
 - **17 Sep** — Utku narrowed the light-up to "just light up" a dark Lock Screen (now: locked phone only, one
-  update, sent at once) and ruled out any change to logging. He read the log as covering 13:08–22:44; the
-  exported file's app lines jump from 21:15:05 (line 1654) to a new "current app session" at 21:54:01
-  (line 1656) — the app restarted at 21:20, and that session's first half hour is not in the file.
+  update, sent at once) and ruled out any change to logging. He asked why the log had nothing from 21:15 to
+  21:54, exactly his workout. Traced through `LiveState`: the app run started at 21:14:45 stopped logging at
+  21:15:05 (its last ≤31 unsaved lines never written), a new run started at 21:20:24 as he began, and by the
+  22:44 export that run's first half hour had been trimmed from its 5,000-entry log — 58% of it upstream's
+  once-a-second heart-rate line, 44 entries the Lift Log's. Not a Lift Log fault; `tools/strap-log.py` now
+  reports it. Open: why the 21:14:45 run stopped (closed by him, by iOS, or a crash).
 
 ## What found what
 
@@ -92,7 +95,7 @@ trustworthy — keep it.
 | the Lock Screen rest clock counted up past zero | gym | 38 |
 | "0 of 16 sets done" told a lifter nothing to act on | Utku asked | 37 |
 | the bar showed the grey plan for a set whose numbers were typed | simulator | 5 |
-| an exported strap log had lost the first half hour of the session | log analysis | 29 |
+| an exported strap log had lost the first half hour of the session | log analysis, Utku asked why | 29, `tools/strap-log.py` |
 
 **Confirmed on hardware:** Lock Screen activity (HR, reps × weight, ticking seconds), carried values across
 sessions, spreadsheet import on device, double-tap with confirm and rest buzzes; and on 16 Sep the max RPE grey

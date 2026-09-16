@@ -47,7 +47,7 @@ on. Two of them came 3 s and 4 s after the tap that started a set — knocks the
 why a strap tap under 8 s after the last acted-on one is held back. The same log showed the four slowest buzzes
 (1.0–2.8 s) were the taps whose event also kicked a sync, so the tap is now handed on, and buzzed, first.
 
-## Size and shape (measured 16 Sep 2026)
+## Size and shape (measured 16 Sep 2026, before gym round 3)
 
 38 files the Lift Log owns: **6,933 code lines + 1,876 comment lines**, of which **~2,900 are tests** (42%).
 Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' `LiftMetrics.kt`.
@@ -106,9 +106,10 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller; `StrandiOS/App/RootTabView.swift` adds
 More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShared/LiftActivityAttributes.swift`,
 `StrandiOSWidgets/LiftLiveActivity.swift` (no catalog: words arrive pre-localized),
-`StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert), `StrandiOS/Resources/lift-step-silence.caf`.
+`StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert, locked phone only),
+`StrandiOS/Resources/lift-step-silence.caf`. The activity's attributes carry nothing; everything shown is content state.
 
 ### App tests — `StrandTests/`
 `LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 14 ·
 `LiftSessionEditTests` 8 · `LiftSessionPersistenceTests` 5 (old-format JSON: decides wipe or update) ·
-`LiftSessionStrapTapTests` 5 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.
+`LiftSessionStrapTapTests` 6 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.

@@ -70,8 +70,8 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 29. **Every silent drop of a double-tap leaves a log line** (suppressed replay, late sync arrival up to 600 s,
     1.2 s debounce, a knock held back by 35). A reported miss with none of these lines was never sent by the
     strap; its console lines (`IMU double tap detected`) show what its sensor sensed. Utku exports the log:
-    More → Test Centre → Strap log → Save… It keeps 5,000 entries per app session; in the 16 Sep export the
-    first half hour after a 21:20 app restart was not in the file (line 1654 is 21:15:05, line 1656 21:54:01).
+    More → Test Centre → Strap log → Save…, and `tools/strap-log.py` reads it (`WORKFLOW.md` §3: a running app keeps
+    its newest 5,000 entries, so a long session's start can be trimmed before the export).
 30. **Editing a finished session writes only what changed** (`LiftSessionEditSheet.applying`/`changes`). Fields
     are text parsed on Save; an untouched field is not re-parsed (a pound round trip would nudge kilograms); a
     blank field clears; an existing set's timing and order never move. Added sets take the exercise's muscles,

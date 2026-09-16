@@ -14,6 +14,13 @@ reviewers verified rather than obeyed, and this implementation kept unless a cha
 - **Finishing a change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line.
   Never ship a broken build.
 - **Nothing public without his yes**: opening a PR, a comment in his name, an issue.
+- **Every build lands on his releases page** (`https://github.com/UtkuDenizAltiok/noop/releases`) — it is where
+  he installs from. Tell him the link and the 7-character id that ends the release title.
+- **Scope is his.** Keep changes inside the Lift Log; upstream's fundamentals (the strap log's content, rate or
+  buffer included) are not changed for it. Build a request exactly as narrow as he words it — the Lock Screen
+  light-up is "just light up", nothing more.
+- **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
+  show him line numbers and a search he can repeat.
 - **Never delete** his things without asking; **never touch** his own comments.
 
 ## 2. Session routine
@@ -44,6 +51,24 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 - **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
+
+### Reading a strap log
+
+Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and
+device data: read it locally, quote only what a finding needs, and never commit it — this handbook is public.
+
+`python3 dist/tools/strap-log.py <log.txt>` prints two reports.
+- **runs** — the export is several app PROCESSES: up to three saved tails of earlier runs ("previous app
+  session", each at most 1,000 lines and only as current as its last 32-line save), then the running one
+  ("current app session", its newest 5,000 entries plus up to 256 slack). A run whose first line is not
+  "Central state: …" lost its beginning. A header's "rolled at <UTC>" is when the NEXT run started. On 16 Sep
+  this is what hid 21:15–21:54: the run started at 21:14:45 stopped logging at 21:15:05, the next started at
+  21:20:24, and by the 22:44 export its first half hour had been trimmed (58% of its entries are upstream's
+  once-a-second heart-rate line; 44 of 5,180 were the Lift Log's).
+- **taps** — the strap's own console (`IMU double tap detected`, `Command Run haptics`, `Command Send Historical
+  Data`, millisecond ticks) against the app's lines: how many double-taps the strap sensed, what the app did with
+  each, tap-to-buzz delay, taps under 8 s apart (knocks, `RULES.md` 35), and buzzes that queued behind a sync
+  (36). A tap Utku felt but the strap never sensed cannot be fixed in the app.
 
 ## 4. Cross-platform parity
 
