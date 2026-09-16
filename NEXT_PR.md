@@ -144,8 +144,8 @@ Follows #FOLLOWUP.
 
 ## PR 3 — from the third gym session (open after PR 2 merges)
 
-Branch `lift-log-gym-round-3`, stacked on `lift-log-target-rpe`, three commits that map onto separate PRs if the
-maintainers prefer small ones:
+Branch `lift-log-gym-round-3`, stacked on `lift-log-target-rpe`, four commits that map onto separate PRs if the
+maintainers prefer small ones (the fourth belongs with the third):
 
 1. `d83e9c79` **one tap moves between fields** — `KeyboardDismiss.swift` only.
 2. `236b4a2b` **a strap knock is held back, and the buzz goes out before the sync** — `LiftSessionController`
@@ -154,6 +154,7 @@ maintainers prefer small ones:
    Android is unchanged (no Lift Log there; its buzz-back would gain but is unmeasured).
 3. `7b993bd5` **the next set, a rest clock that stops at 0:00, typed numbers on the bar, the Lock Screen lights
    on a strap step** — engine `upcomingSlot`, `nextLine`, `setNumbers`, bar, Live Activity, alert, strings.
+4. `3de2ad29` **the light-up narrowed** (Utku, 17 Sep): a locked phone only, on the first update the step sends.
 
 Evidence to quote: the 16 Sep strap log (22 of 22 sensed double-taps acted on; knocks at +3 s and +4 s; the four
 1.0–2.8 s buzzes were the taps that kicked a sync), the simulator before/after for typing and the 0:00 clock, and
