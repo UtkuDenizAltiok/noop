@@ -21,7 +21,8 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
    are only what was typed; `LiftSessionEngine.carry(for:lastSession:)` is the ONE grey chain every surface
    reads. `LiftSessionController.setsToSave` saves a set with anything typed (blank fields take grey values)
    and completes or zeroes the rest by the user's one choice. **RPE is never carried between sets** — only the
-   line's own max RPE fills a blank rating (34).
+   line's own max RPE fills a blank rating (34). The bar and the Lock Screen show a set with the numbers its row
+   shows, including numbers typed before the set is recorded (`LiftSessionController.setNumbers`).
 6. **Every readout on the session surfaces always renders, dashed when empty.**
 7. **Effort is never modified.** Sessions save `strain: nil`; strain comes from measured heart rate.
 8. **Warm-ups are excluded** from volume and per-muscle counts, on every implementation.
@@ -67,8 +68,10 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 28. **Saving never decides for the user.** One Save button, disabled and dimmed until each question is answered.
     No Skip. "Unfinished" is `LiftSessionEngine.unenteredSlots`: never performed, or performed with nothing typed.
 29. **Every silent drop of a double-tap leaves a log line** (suppressed replay, late sync arrival up to 600 s,
-    1.2 s debounce). A reported miss with none of these lines was never sent by the strap. Utku exports the
-    log: More → Test Centre → Strap log → Save…
+    1.2 s debounce, a knock held back by 35). A reported miss with none of these lines was never sent by the
+    strap; its console lines (`IMU double tap detected`) show what its sensor sensed. Utku exports the log:
+    More → Test Centre → Strap log → Save… It holds 5,000 lines, about 50 minutes of a gym session, so export
+    soon after the session ends; the start of a longer one is already gone (16 Sep 2026).
 30. **Editing a finished session writes only what changed** (`LiftSessionEditSheet.applying`/`changes`). Fields
     are text parsed on Save; an untouched field is not re-parsed (a pound round trip would nudge kilograms); a
     blank field clears; an existing set's timing and order never move. Added sets take the exercise's muscles,
@@ -94,6 +97,28 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     will not save it, the importer warns and leaves it blank. **Known cost, accepted by Utku on 16 Sep 2026:** a
     stored rating no longer proves the lifter rated that set, so the session's RPE card can report the plan.
     Say so plainly if the card is ever reworked.
+
+35. **A strap double-tap under 8 s after the last one the session acted on is a knock, not a tap** (16 Sep 2026:
+    the strap's sensor reported two double-taps 3 s and 4 s after the one that started a set, and each finished
+    it). `LiftSessionController.isKnock` holds it back with no buzz and one log line — unless a rest that is
+    already over is waiting (a line planned with no rest). Only strap taps are judged; the on-screen button never
+    is. The window is time since the last ACTED-ON strap tap, not stage age, so a session started on the phone
+    takes its first strap tap at once.
+36. **The confirming buzz is written before anything else the tap triggers.** A DOUBLE_TAP event also kicks a
+    sync; `FrameRouter` hands the tap on BEFORE `onSyncTrigger`, and the session's strap handler runs
+    synchronously (no `Task` hop). Otherwise the strap starts the history transfer first and the buzz lands
+    1–2.8 s late. Pinned by `testADoubleTapIsHandedOnBeforeItsEventKicksASync` and
+    `testTheStrapHandlerBuzzesBeforeItReturns`.
+37. **"Next" is always a set, never the rest before it**, and it is where the taps go:
+    `LiftSessionEngine.upcomingSlot` is `slotAfter` with the current set counted as done. The bar and the Lock
+    Screen show `LiftSessionController.nextLine` ("Next: Set 2 · Lat pulldown" — set number first, so a narrow
+    line cuts the name; "Last set"; "All sets done"). The sheet's header keeps "N of M sets done".
+38. **A finished rest reads 0:00 on every surface and waits** — the sheet, the bar and the Lock Screen. The Live
+    Activity's countdown range starts at the REST'S start; a range ending "now" re-rendered after the end would
+    otherwise switch to counting up.
+39. **The Lock Screen lights only for a strap step**, through an ActivityKit alert on that push, never while the
+    app is on screen, with a bundled silent sound (`lift-step-silence.caf`). Whether iOS also vibrates the phone
+    is iOS's decision.
 
 ## Settled decisions
 

@@ -41,5 +41,12 @@ including the maintainer — have been wrong in ways that sounded authoritative.
 - **An oracle harness proves itself**: the sections a change cannot affect must reproduce the old
   expected block byte-for-byte before its new output is trusted.
 - **A rule mirrored in SQL must match exactly** (`<> 0`, not `> 0`), pinned by a test on the edge.
+- **A tool result that differs between two branches is checked on a clean checkout before it is blamed on
+  code.** 16 Sep: governance showed an extra finding on the new branch only because `swift test` had left
+  `Packages/*/.build` for the scanner to read. The same day a "break the fix" run silently tested unbroken code
+  because zsh did not split a file list — run such scripts with bash and check the break landed (`git diff`).
+- **A strap log is evidence, read to the millisecond.** The strap's console lines (`IMU double tap detected`,
+  `Command Run haptics`) carry its own ms ticks; mapping them to event timestamps separated knocks from taps
+  and showed which buzzes queued behind a sync.
 
 See [[noop-lift-log-project]], [[lift-log-docs-are-mine]].

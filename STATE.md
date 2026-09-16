@@ -1,7 +1,7 @@
 # State
 
-**Updated 16 Sep 2026 (evening).** The only file that changes every session. Replace, don't append — history goes
-in `HISTORY.md`.
+**Updated 17 Sep 2026 (just after midnight).** The only file that changes every session. Replace, don't append —
+history goes in `HISTORY.md`.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -15,66 +15,65 @@ in `HISTORY.md`.
 **Unanswered:** ryanbr's 15 Sep 04:07 comment on #2099. The reply is drafted in `NEXT_PR.md`; it goes out right
 after the follow-up opens, with Utku's yes.
 
-**`upstream/main` is `8576a2dd`** and green on its own again: doc lint, i18n, ledger, ratchet and governance all
-pass on it (#2259/#2267 fixed the parity scan; the twin maps were re-derived). The fork's `main` mirrors it.
-Nothing open upstream about the Lift Log. Upstream touched `FrameRouter` (#1985: every frame now passes one
-integrity gate, the double-tap replay path included), `RootTabView`/`AppModel` (coach switch, rescore) and the
-catalog — none of it conflicts with ours.
+**`upstream/main` is `8576a2dd`** (checked 16 Sep evening) and green on its own: doc lint, i18n, ledger, ratchet
+and governance all pass on it. The fork's `main` mirrors it. Nothing open upstream about the Lift Log.
 
-## Open work — two PRs, in this order
+## Open work — three stacked branches, three PRs, in this order
 
-1. **Follow-up** — `lift-log-discard-and-edit` @ `1564578a` on `c430ca0b`: one Save; discarded sets kept as
-   0 × 0 (hidden from every figure, fillable in Edit sets); add/remove sets in Edit sets; the guard reads "no set
-   counts" with a warning before Save; SQL mirrors `reps != 0`; the Kotlin `LiftMetrics` twin in step; and
-   `deleteLiftSets` has its Kotlin twin in `DeviceRegistryDao`.
-2. **Target max RPE** — `lift-log-target-rpe` @ `858b8678`, stacked on it: a max RPE (1–10) per program line,
-   typed in the line editor or imported from the template's `Target max RPE` column, shown grey in the session;
-   a set the session keeps and nobody rated saves it (`RULES.md` 34). No schema change.
+1. **Follow-up** — `lift-log-discard-and-edit` @ `1564578a` on `c430ca0b`: one Save; discards kept as 0 × 0; add /
+   remove sets in Edit sets; the guard reads "no set counts"; SQL mirrors `reps != 0`; Kotlin twins of
+   `LiftMetrics` and `deleteLiftSets`. **Hardware-confirmed 16 Sep.**
+2. **Target max RPE** — `lift-log-target-rpe` @ `858b8678`, stacked on it (`RULES.md` 34). **Hardware-confirmed 16 Sep.**
+3. **Gym round 3** — `lift-log-gym-round-3` @ `7b993bd5`, stacked on 2, three commits: one tap moves between
+   fields; a strap knock under 8 s is held back and the buzz goes out before the sync (`RULES.md` 35, 36); the
+   next set on the bar and Lock Screen, a rest clock that stops at 0:00, typed numbers on the bar, and the Lock
+   Screen lights on a strap step (37–39). App-target Swift only — nothing under `Packages/**` or `android/**`.
 
-- **Work branch:** `lift-log-target-rpe` (not rebased — rebase happens at PR time, `NEXT_PR.md`)
-- **Testing build on Utku's phone:** `4fda4266` — both PRs, max RPE included. Just update, no wipe. Not yet gym-tested.
+- **Work branch:** `lift-log-gym-round-3`
+- **Testing build on Utku's phone:** `496dbc3b` = round 3 (`7b993bd5`) + the template commit, shipped and verified
+  17 Sep (release points at it; `.ipa` and template present). Just update, no wipe (no stored shape changed; the
+  Live Activity state is not persisted). Not yet gym-tested.
 
 ## Verified
 
-- **On a test merge of `lift-log-target-rpe` into `8576a2dd`, with the parity refresh applied** (16 Sep, full
-  `verify.sh`): WhoopStore 609 · StrandAnalytics 2024 · StrandImport 322 · doc lint · i18n (now also gating format
-  specifiers in every locale) · ledger · ratchet · governance 124 · macOS tests 1956 (only the two
-  `TodayCarryOverTests`; every Lift Log suite passed) · iOS build. So the PR-time rebase should cost only its own
-  re-run.
-- **The parity refresh is now REQUIRED in the follow-up PR.** Without it, each branch merged onto `8576a2dd` fails
-  the ledger (`twin-map-authority-drift|function_pairs`) and two `RepositoryBaselineTests` — the #2229 pattern.
-  `--refresh-derived --base upstream/main` fixes it and changes only what our two twin pairs add (functions +4,
-  function_pairs +2, file_pairs +1, unpaired_files −2); `parity_ledger_baseline.json` is untouched. The refresh
-  is identical for both branches, so the max-RPE branch adds no pair of its own and PR 2 should need none.
-  (The earlier "leave the JSONs alone" plan held only while `main`'s own authority did not reproduce.)
-- **Not run on the merge: Android.** No Android file is touched by both sides, and upstream added no new
-  `DeviceRegistryDao` fake (still the three that already implement `deleteLiftSets`). Android CI runs at PR time.
-- **Branch tips as they stand** (on `c430ca0b`): full `verify.sh` on `39b5f56e`, the same Swift as both tips, green
-  apart from the two `TodayCarryOverTests`; Android CI green on `1564578a` and `858b8678`. The RPE-fills-a-blank rule is pinned by
-  `testAMaxRpeFillsAnEmptyRatingLikeEveryOtherGreyNumber` and `testADiscardedSetTakesNoMaxRpe`; the importer's
-  1–10 range check was seen to fail first.
+- **Round 3, full `verify.sh` on `7b993bd5`:** WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · doc lint ·
+  i18n · ledger · ratchet · macOS tests 1906 (only the two `TodayCarryOverTests`) · iOS build. Governance: ONE
+  failure, `test_checked_metadata_is_compact_v3_and_expands_losslessly` (functions 4404 → 4408), identical on
+  `858b8678` — the known twin-pair drift the PR-time refresh fixes. A second failure seen in place was build
+  output under `Packages/*/.build` (this base predates #2259); `verify.sh` now runs governance on a clean checkout.
+- **Tests seen to fail without their fix:** the knock guard, the synchronous buzz, the tap-before-sync order, the
+  two next-set engine tests, typed numbers on the bar.
+- **Simulator, before/after builds:** typing — the old build lost the digit after one tap on REPS, the new one
+  takes it (also in Edit sets); a button tap with the keyboard open dismisses and acts. Lock Screen — after the
+  rest ended and the "Ready" push re-rendered it, the old clock read "2:--" and climbing, the new one 0:00. The
+  "Next: Set 2 · Bench press" line on the bar and the Lock Screen. **Not verifiable in the simulator:** the
+  Lock Screen lighting, whether the phone vibrates with it, and buzz latency on a real strap.
+- **The 16 Sep strap log** (21:54–22:26 only; the first half hour had rolled out): 22 double-taps sensed by the
+  strap, 22 acted on; knocks at +3 s and +4 s; the four 1.0–2.8 s buzzes were the taps whose event kicked a sync.
+- **PRs 1 and 2 on `8576a2dd`** (test merge, parity refresh applied): full `verify.sh` green; the refresh changes
+  only what their two twin pairs add (`NEXT_PR.md` step 3). Android CI green on `1564578a` / `858b8678`.
 
 ## Nothing is blocked
 
-Python 3.12 is at `/opt/homebrew/bin/python3.12`, Xcode 27's licence is accepted, both branches are pushed and
-green. Two "Android CI failed" emails from 16 Sep name superseded commits (`cc34a27c`, `39b5f56e`), already fixed.
+The round-3 branch waits only on a gym session. PRs 1 and 2 wait only on Utku's yes to open.
 
 ## Next
 
-1. **Utku's gym session on build `4fda4266`.** What to watch is listed in plain words at the top of
-   `NEXT_PR.md`; the max-RPE items are new this round.
-2. **Fix whatever the session finds**, verify (`bash dist/tools/verify.sh`), ship
-   (`bash dist/tools/ship-build.sh lift-log-target-rpe`), and tell him "just update" or "wipe".
-3. **Only with his yes, and in this order:** rebase the follow-up onto the latest `upstream/main`, commit the
-   parity refresh and run all checks (`NEXT_PR.md` step 3), run Android CI, open the follow-up PR, then post the
-   one reply to ryanbr's 15 Sep 04:07 comment on #2099. After it merges, rebase the max-RPE branch
-   `--onto upstream/main`, re-run the checks (a refresh should not be needed), and open the second PR.
-4. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
+1. **Utku's next gym session on the round-3 build.** The checklist is at the top of `NEXT_PR.md` (typing, knocks,
+   buzz speed, 0:00, the next-set line, the Lock Screen lighting — and whether it vibrates or sounds). Ask him
+   to export the strap log straight after.
+2. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh lift-log-gym-round-3`), say "just
+   update" or "wipe".
+3. **Only with his yes, in order:** rebase PR 1 onto the latest `upstream/main`, commit the parity refresh, run
+   everything and Android CI, open it, post the reply on #2099. Then PR 2, then PR 3 (`NEXT_PR.md`).
+4. **Ask Utku** whether to raise upstream's once-a-second heart-rate log line, which fills the strap log in
+   ~50 minutes (`BACKLOG.md` 7). Public, so his yes first.
+5. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 
 - Branches: `main` (mirror of `upstream/main`, `8576a2dd`), `lift-log-discard-and-edit`, `lift-log-target-rpe`,
-  `lift-log-build`, `lift-log-handbook`.
+  `lift-log-gym-round-3`, `lift-log-build`, `lift-log-handbook`.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags.
 - Retired refs removed 15 Sep sit in `~/Developer/noop-retired/noop-retired-refs-2026-09-15.bundle`, LOCAL ONLY:
   it disappears with a machine format, and nothing in it is needed — that content is either merged upstream

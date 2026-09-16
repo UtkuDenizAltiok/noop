@@ -1,6 +1,6 @@
 # Backlog
 
-Verified against the code at `lift-log-discard-and-edit` (`a7f2ad08`, 15 Sep 2026). The open follow-up
+Verified against the code at `lift-log-gym-round-3` (`7b993bd5`, 16 Sep 2026). The open follow-up
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — six gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
@@ -29,10 +29,14 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
    per exercise. Fine at 5–8 exercises; a single windowed query if programs grow.
 6. **Small smells.** `LiftSessionBar` puts a button inside a tappable bar (fine in the simulator; watch on
    device). The session bar is iOS-only, so a session started on macOS is invisible once its sheet closes.
-7. **A tap from one field into another may be lost** (simulator only, 15 Sep): with a field focused, tapping
-   another left nothing focused; a second tap worked. Likely `dismissesKeyboardOnTap`'s `simultaneousGesture`.
-   Ask Utku whether weight → reps takes two taps on the phone before changing anything; a fix must keep
-   tap-outside dismissal, which came from the gym.
+7. **The strap log holds ~50 minutes of a gym session.** Upstream's `standard-hr transport host-received` line
+   (#1767, `Collector.ingestStandardHR`) is written once a second, always on, so the 5,000-line buffer lost the
+   first half hour of the 16 Sep session's taps. Upstream's diagnostic, not ours: raising it upstream (an issue
+   asking to gate it behind a Test Centre domain, or to sample it) needs Utku's yes. Until then: export right
+   after the session.
+8. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
+   Android has no Lift Log, so only its buzz-back and other double-tap actions would gain; unmeasured there.
+   Say so in the PR rather than changing Kotlin BLE code nobody can test on a strap here.
 
 **Not asked for — do not build unprompted:** adding an exercise mid-session; exporting a program to a
 spreadsheet; merge-by-name on re-import. **Only if the maintainer asks:** split the spreadsheet import into its

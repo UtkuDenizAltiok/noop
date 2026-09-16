@@ -23,9 +23,14 @@
 - **A finished session can be edited** ("Edit sets"): weights, reps, RPE, warm-up marks, session RPE, sets added
   or removed. Only that session changes, never the program. Zeros show only here.
 - **Two inputs advance**: the on-screen button, or a **double-tap on the strap**. One buzz confirms the tap;
-  three mean the rest is nearly over. The phone can stay face-down all session.
+  three mean the rest is nearly over. The phone can stay face-down all session. A strap double-tap under 8 s
+  after the last one acted on is taken as a knock: no buzz, nothing moves, one log line.
 - **The session outlives its screen**: minimise to a bar above the tab bar; a Lock Screen Live Activity shows
-  state, exercise, reps × weight, live HR and the clock. Crash-safe snapshot in UserDefaults.
+  state, exercise, reps × weight, live HR, the clock and the next set ("Next: Set 2 · Lat pulldown"). A finished
+  rest reads 0:00 everywhere. A strap step lights the Lock Screen (a silent ActivityKit alert). Crash-safe
+  snapshot in UserDefaults.
+- **Typing moves with one tap**: with the keyboard open, a tap on another field puts the cursor there; a tap
+  anywhere else puts the keyboard away and still does what it was aimed at.
 - **Saved as a normal `workout`** (`source "manual"`, sport "Strength Training", `strain: nil`), so the engine
   fills strain from the heart rate the strap measured. Deleting a session deletes that workout.
 - **Figures** (session detail + hub): volume (per exercise with "vs last time", session total with its
@@ -36,7 +41,11 @@
 log; the 1.2 s debounce cannot catch that, and each phantom silently skipped a set. It is de-duplicated on the
 event's own timestamp, read-side only (the macOS Automations gesture shares the path and was verified). In the
 15 Sep log all 16 taps the strap reported were dispatched and buzzed within 3 s, and all 14 held-back replays
-sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap.
+sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap. In the 16 Sep log (its
+last 32 minutes; the rest had rolled out) the strap's own console reported 22 double-taps and all 22 were acted
+on. Two of them came 3 s and 4 s after the tap that started a set — knocks the strap reported as taps — which is
+why a strap tap under 8 s after the last acted-on one is held back. The same log showed the four slowest buzzes
+(1.0–2.8 s) were the taps whose event also kicked a sync, so the tap is now handed on, and buzzed, first.
 
 ## Size and shape (measured 16 Sep 2026)
 
@@ -91,15 +100,15 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 | `Screens/LiftLogView.swift` | hub: programs, weekly sets per muscle, history |
 | `Screens/LiftProgramEditorSheet.swift` · `LiftProgramItemSheet.swift` · `LiftProgramImportSheet.swift` | program editor · one line · import |
 | `Screens/LiftSessionView.swift` | the session sheet, ⊕/⊖, control bar, finish sheet (questions, warning) and `save()` |
-| `Screens/LiftSessionBar.swift` · `LiftSessionDetailSheet.swift` · `LiftSessionEditSheet.swift` · `KeyboardDismiss.swift` | bar · finished session (performed sets only) · its editor · keyboard helper |
-| `BLE/FrameRouter.swift` · `App/AppModel.swift` | double-tap de-duplication and drop logs · gesture claim and debounce log |
+| `Screens/LiftSessionBar.swift` · `LiftSessionDetailSheet.swift` · `LiftSessionEditSheet.swift` · `KeyboardDismiss.swift` | bar (with the next set) · finished session (performed sets only) · its editor · tap-outside keyboard helper (a UIKit window recognizer that stands aside for text inputs) |
+| `BLE/FrameRouter.swift` · `App/AppModel.swift` | double-tap de-duplication, drop logs, tap handed on before the sync kick · gesture claim (synchronous) and debounce log |
 
 iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller; `StrandiOS/App/RootTabView.swift` adds
 More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShared/LiftActivityAttributes.swift`,
 `StrandiOSWidgets/LiftLiveActivity.swift` (no catalog: words arrive pre-localized),
-`StrandiOS/Widgets/LiftLiveActivityController.swift`.
+`StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert), `StrandiOS/Resources/lift-step-silence.caf`.
 
 ### App tests — `StrandTests/`
-`LiftSessionEngineTests` 54 · `LiftSessionPendingInputTests` 10 · `LiftSessionFinishTests` 14 ·
+`LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 14 ·
 `LiftSessionEditTests` 8 · `LiftSessionPersistenceTests` 5 (old-format JSON: decides wipe or update) ·
-`FrameRouterDoubleTapDedupTests` 9 · `LiftFormatNumberTests` 10.
+`LiftSessionStrapTapTests` 5 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.

@@ -66,8 +66,10 @@ Android is an independent reimplementation; analytics and stored data must be by
   Oura constant removed upstream).
   A new unpaired function under `Packages/**` or `android/**` is debt; per #2163 a disposition cannot settle
   `add-unpaired-function`, so prefer not adding the identity, else implement the twin.
-- **Governance tests** (in `verify.sh`): they run upstream only when parity tooling changes, so a product PR can
-  leave them red on `main` without anyone seeing (#2229 — ours did). Compare with `upstream/main`; they need
+- **Governance tests** (in `verify.sh`, on a clean checkout of HEAD when the tree is clean): they run upstream only
+  when parity tooling changes, so a product PR can leave them red on `main` without anyone seeing (#2229 — ours
+  did). Run in place on a base older than #2259, they also scan `Packages/*/.build` left by `swift test` and
+  report findings the branch does not have (16 Sep). Compare with `upstream/main`; they need
   Python 3.12 to be meaningful (3.9 adds environment errors).
 - Twin claims pair by name and arity: keep one function per twin name. Never refresh the authority unasked.
 
@@ -120,7 +122,8 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 ## 8. Git and fork hygiene
 
-- **The fork holds exactly:** `main` (mirror), the work branch, `lift-log-build`, `lift-log-handbook`; tags
+- **The fork holds exactly:** `main` (mirror), the work branches (stacked, one per upcoming PR, listed in
+  `STATE.md`), `lift-log-build`, `lift-log-handbook`; tags
   `fork/ships-template` and `testing-latest` (plus upstream's version tags). Nothing else.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
 - **Backup tags stay local** and are deleted after the push is verified. Retired refs go into a bundle outside
@@ -139,7 +142,10 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 - **`Localizable.xcstrings` is hand-formatted**: insert a new key as text next to its neighbours in all ten
   locales and validate the JSON; re-serialising the 6 MB file reformats it.
 - **`onChange(of:perform:)`** stays single-parameter (the macOS 13 target); its iOS deprecation warning is known.
-- **`dismissesKeyboardOnTap`** clears focus on every tap; watch field-to-field taps on device (`BACKLOG.md` 7).
+- **`dismissesKeyboardOnTap`** is a UIKit window recognizer that stands aside for text inputs: a SwiftUI tap
+  gesture fired for taps in fields too, and weight → reps took two taps on the phone (fixed 16 Sep).
+- **Simulator coordinates:** take them from a screenshot of the SETTLED screen. A tap placed from a
+  mid-keyboard-animation screenshot misses and looks like a bug (16 Sep).
 - **App-target Swift is validated only by local builds** (`CLAUDE.md`); BLE behaviour only on a real strap.
 
 ## 10. Maintaining this handbook

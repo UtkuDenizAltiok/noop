@@ -12,7 +12,7 @@ NOOP (`~/Developer/noop`; fork `UtkuDenizAltiok/noop`, upstream `ryanbr/noop`) i
 companion app. The Lift Log is a gym log book built in it for Utku Deniz Altiok: programs, a set-by-set
 session sheet, strap double-tap to finish a set, a Lock Screen Live Activity, and a few honest figures.
 Its storage was merged upstream as #2098 on 14 Sep 2026 and the app as #2099 on 15 Sep 2026; later
-changes go in follow-up PRs, currently branch `lift-log-discard-and-edit`.
+changes go in follow-up PRs, on stacked branches listed in `dist/STATE.md`.
 
 **Start every session with the handbook in `dist/`** (a worktree of the public branch `lift-log-handbook`):
 `dist/README.md`, `dist/STATE.md`, `dist/RULES.md`, then `bash dist/tools/upstream-check.sh` and `dist/WORKFLOW.md`.

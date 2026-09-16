@@ -37,6 +37,13 @@ trustworthy — keep it.
   re-derived). On a test merge each branch then failed exactly one way — `twin-map-authority-drift` from its two
   new twin pairs — and the guarded refresh fixed it touching nothing else. So the PR carries that refresh; the
   earlier "leave the JSONs alone" plan only held while `main` itself did not reproduce.
+- **16 Sep, 21:20–22:26** — third gym session, on build `4fda4266` (16 sets). Worked: the grey max RPE saved when
+  left blank, one Save, discarded sets as 0 / 0 in Edit sets, adding and removing sets there, the orange warning.
+  Found: weight → reps still took two taps; one double-tap "skipped two things" and 3–4 did not register; buzzes
+  sometimes slightly late; the Lock Screen rest clock counted up past zero. Asked for: the Lock Screen to light on
+  a strap step, and the next set instead of "0 of 16 sets". The strap log held only 21:54 onward; in it the strap
+  sensed 22 double-taps and all 22 were acted on, two of them knocks 3–4 s after a tap. All six built on
+  `lift-log-gym-round-3` the same night, plus typed numbers missing from the bar (found in the simulator).
 
 ## What found what
 
@@ -75,9 +82,18 @@ trustworthy — keep it.
 | two same-arity `isPerformed` overloads made the twin claim ambiguous | parity ledger | 25 |
 | a Swift figure change without its Kotlin twin, once #2232 landed | upstream moving | 33 |
 | a product PR left parity governance red on `main` | maintainers (#2229) | 25 |
+| weight → reps took two taps: the tap-outside gesture took back the focus it had just given | gym | `KeyboardDismiss` |
+| a knock 3–4 s after a tap finished a set seconds old | gym, strap console log | 35 |
+| the confirming buzz came 1–2.8 s late when the tap's event also kicked a sync | strap log | 36 |
+| the Lock Screen rest clock counted up past zero | gym | 38 |
+| "0 of 16 sets done" told a lifter nothing to act on | Utku asked | 37 |
+| the bar showed the grey plan for a set whose numbers were typed | simulator | 5 |
+| an exported strap log had lost the first half hour of the session | log analysis | 29 |
 
 **Confirmed on hardware:** Lock Screen activity (HR, reps × weight, ticking seconds), carried values across
-sessions, spreadsheet import on device, double-tap with confirm and rest buzzes.
+sessions, spreadsheet import on device, double-tap with confirm and rest buzzes; and on 16 Sep the max RPE grey
+fill, one Save, discards as 0 / 0 in Edit sets, adding and removing sets there, and the warning before an empty
+Save.
 
 **The pattern worth remembering:** the bugs that mattered were silent wrong data that passed every test and
 build — a value that looks right on screen while being wrong underneath. A real session catches that; a suite

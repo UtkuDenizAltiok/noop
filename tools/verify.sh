@@ -32,8 +32,19 @@ ios_build() {
 }
 
 governance() (   # a subshell, so the cd cannot leak into the steps that follow
-  cd Tools && "$PY" -m unittest tests.test_parity_ledger tests.test_parity_governance_acceptance \
+  cd "${1:-.}/Tools" && "$PY" -m unittest tests.test_parity_ledger tests.test_parity_governance_acceptance \
     tests.test_rr_legacy_preservation_contract tests.test_parity_disposition_kinds
+)
+
+# The same tests on a fresh checkout of HEAD. The swift steps above leave Packages/*/.build behind, and a base
+# older than upstream #2259 scans build output: on 16 Sep that added a `test-only-callsite|Packages/StrandAnalytics`
+# failure the branch did not have.
+governance_clean() (
+  W="$(mktemp -d)/governance"
+  git worktree add -q --detach "$W" HEAD || exit 1
+  governance "$W"; rc=$?
+  git worktree remove --force "$W"
+  exit $rc
 )
 
 # The parity tools need Python 3.12+ (CI's version; 3.9 lacks tarfile's extraction filter).
@@ -51,7 +62,12 @@ if modern_python; then
   # The branch's OWN base, not the moving tip: against a newer main, upstream's own changes read as
   # debt of ours (16 Sep: an Oura constant removed upstream).
   step parity-ratchet    "$PY" Tools/parity_ratchet.py --base "$(git merge-base HEAD upstream/main)" --offline
-  step parity-governance governance
+  if [ -z "$(git status --porcelain)" ]; then
+    step parity-governance governance_clean
+  else
+    echo "  (uncommitted changes: governance runs in place and can read build output under Packages/*/.build)"
+    step parity-governance governance
+  fi
 else
   echo "  parity-ratchet      SKIPPED — needs Python 3.12+ ($("$PY" --version 2>&1)); not verified"
   echo "  parity-governance   SKIPPED — needs Python 3.12+; not verified"

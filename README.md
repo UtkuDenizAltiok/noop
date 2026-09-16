@@ -30,7 +30,7 @@ git clone https://github.com/UtkuDenizAltiok/noop.git ~/Developer/noop && cd ~/D
 git remote add upstream https://github.com/ryanbr/noop.git && git fetch --all
 git worktree add dist lift-log-handbook     # this handbook, in the app repo's gitignored dist/
 bash dist/tools/backup.sh --restore-memory  # Claude Code only
-git checkout lift-log-target-rpe            # or whatever STATE.md's "Work branch" says
+git checkout lift-log-gym-round-3           # or whatever STATE.md's "Work branch" says
 ```
 Requires Xcode with its license accepted (after every Xcode update: open Xcode once and agree),
 `brew install xcodegen gh python@3.12`, `gh auth login`. Python 3.12 is what the parity tools need; macOS ships
@@ -68,5 +68,5 @@ Paste this as the first message:
   ledger, ratchet and governance are run, not assumed (`WORKFLOW.md` §3–4).
 - **Real gym sessions find the bugs that matter.** Ship a build after every change and ask what happened
   before trusting any list (`HISTORY.md`).
-- **The fork stays exact** — a mirror `main`, one work branch, the build branch, this handbook — and this
+- **The fork stays exact** — a mirror `main`, the stacked work branches, the build branch, this handbook — and this
   branch is public: nothing personal, no unapproved drafts (`WORKFLOW.md` §8).

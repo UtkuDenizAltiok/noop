@@ -1,17 +1,21 @@
 # Next PRs — ready to open
 
-Two PRs, in order: **1. the follow-up** (below, ready) and **2. target max RPE** (at the end, drafted).
-Open the second only after the first merges, rebased `--onto upstream/main`.
+Three PRs, in order: **1. the follow-up** (below, ready), **2. target max RPE** and **3. from the third gym
+session** (both at the end, drafted). Open each only after the one before merges, rebased `--onto upstream/main`.
 
-**What Utku checks at the gym first** (both are in the testing build):
-- one Save button on the finish screen;
-- Finish → "Discard them" for sets with no numbers → those sets are hidden in the summary but show as 0 / 0
-  under Edit sets, and typing into a 0 replaces it;
-- adding and removing sets under Edit sets;
-- a session where he types NO numbers at all, then Finish → "Discard them": an orange line under that choice
-  says nothing will be saved (the separate "Discard session" button is unchanged);
-- typing: with the keyboard open in the KG box, one tap on the REPS box should start typing there;
-- a program line with a max RPE shows "8" in grey in the RPE box, and a set he leaves unrated saves that 8.
+**What Utku checks at the gym next** (build from `lift-log-gym-round-3`, the third branch below):
+- typing: with the keyboard open in the KG box, ONE tap on the REPS box puts the cursor there;
+- a double-tap within 8 s of the last one that worked does nothing and gives no buzz — tap again after a moment;
+  ordinary taps should buzz promptly, including while the strap is syncing;
+- Lock Screen: the rest clock stops at 0:00; the bottom line reads "Next: Set 2 · Lat pulldown", and at the last
+  set of an exercise it names the next exercise; the bar inside the app shows the same line;
+- with the phone locked and dark, a double-tap lights the screen — and does the phone vibrate or make a sound?
+- numbers typed into the set being lifted show on the bar and the Lock Screen;
+- export the strap log straight after the session (it keeps only ~50 minutes).
+
+**Confirmed on 16 Sep** (third gym session, build `4fda4266`): everything PR 1 and PR 2 below change — one Save,
+discarded sets as 0 / 0 in Edit sets, adding and removing sets there, the warning before an empty Save, and the
+grey max RPE saved when a set is left unrated. The HARDWARE_LINE for each is filled in below.
 
 **Maintained with the handbook.** The follow-up to #2099: branch `lift-log-discard-and-edit` on `UtkuDenizAltiok/noop`.
 Nothing here is posted until Utku says yes, after a gym session on the testing build.
@@ -72,7 +76,7 @@ No schema change.
 
 ## How it was tested
 
-- **Hardware — WHOOP 5.0:** HARDWARE_LINE
+- **Hardware — WHOOP 5.0:** a 16-set gym session on a testing build carrying this branch (16 Sep): one Save; "Discard them" kept the sets as 0 / 0 under Edit sets, where they could be filled in; adding and removing sets there; the warning before a Save that would file nothing.
 - **Tests seen to fail without the change:** zero-rep sets left out of the figures, the weekly SQL counts and the last-session read; discarding saves zeros; a removed set renumbers the rest; the face-down discard files nothing; the SQL rule matching `reps != 0` for a negative count. The Kotlin oracle's changed lines are ones the unchanged Kotlin produced differently.
 - `swift test`: WhoopStore N_WS, StrandAnalytics N_SA — 0 failures.
 - `xcodebuild test` (macOS): N_MAC tests; only the two locale-dependent `TodayCarryOverTests` fail, identically on `main` on this machine.
@@ -127,7 +131,7 @@ A max RPE (1–10) for each program line: the hardest a set should feel, so a li
 
 ## How it was tested
 
-- **Hardware — WHOOP 5.0:** HARDWARE_LINE
+- **Hardware — WHOOP 5.0:** a 16-set gym session (16 Sep): the max RPE showed grey in the session, and a set left unrated saved it.
 - `swift test`: StrandImport N_SI (new: the column and its spellings, out-of-range warnings, the shipped template's header and 1–10 validation); the out-of-range test was seen to fail without the range check.
 - `xcodebuild test` (macOS): N_MAC; `testAMaxRpeFillsAnEmptyRatingLikeEveryOtherGreyNumber` and `testADiscardedSetTakesNoMaxRpe` pin where the plan's number does and does not reach a set.
 - Template regenerated with `Tools/make_lift_program_template.py`. Both app targets build; four new strings in all ten locales.
@@ -136,3 +140,20 @@ Follows #FOLLOWUP.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
+
+## PR 3 — from the third gym session (open after PR 2 merges)
+
+Branch `lift-log-gym-round-3`, stacked on `lift-log-target-rpe`, three commits that map onto separate PRs if the
+maintainers prefer small ones:
+
+1. `d83e9c79` **one tap moves between fields** — `KeyboardDismiss.swift` only.
+2. `236b4a2b` **a strap knock is held back, and the buzz goes out before the sync** — `LiftSessionController`
+   (`isKnock`, synchronous strap handler, log line), `FrameRouter` (DOUBLE_TAP handed on before
+   `onSyncTrigger`), `AppModel` (the override type), tests. BLE-path: say what the hardware showed, and that
+   Android is unchanged (no Lift Log there; its buzz-back would gain but is unmeasured).
+3. `7b993bd5` **the next set, a rest clock that stops at 0:00, typed numbers on the bar, the Lock Screen lights
+   on a strap step** — engine `upcomingSlot`, `nextLine`, `setNumbers`, bar, Live Activity, alert, strings.
+
+Evidence to quote: the 16 Sep strap log (22 of 22 sensed double-taps acted on; knocks at +3 s and +4 s; the four
+1.0–2.8 s buzzes were the taps that kicked a sync), the simulator before/after for typing and the 0:00 clock, and
+the next gym session's result. No Kotlin logic changes: nothing in PR 3 touches `Packages/**` or `android/**`.

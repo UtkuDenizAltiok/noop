@@ -1,6 +1,6 @@
 - [NOOP Lift Log project](noop-lift-log-project.md) — Utku's gym log book in NOOP; start every session with the handbook in `dist/` (README, STATE, RULES).
-- [Lift Log upstream state](lift-log-upstream-prs.md) — merged PRs, the two verified-but-unopened branches, and the parity refresh the follow-up must carry; details in `dist/STATE.md`.
+- [Lift Log upstream state](lift-log-upstream-prs.md) — merged PRs, the three stacked unopened branches, and the parity refresh the follow-up must carry; details in `dist/STATE.md`.
 - [PR communication](lift-log-pr-communication.md) — reply after a GitHub comment; self-found or off-GitHub changes go in description edits.
 - [Ship the build](lift-log-ship-the-build.md) — `dist/tools/ship-build.sh` after every change; trust the verified assets; say "just update" or "wipe".
-- [Verify before claiming](lift-log-verify-before-claiming.md) — `dist/tools/verify.sh`, tests seen to fail, reviewer claims and rebases proven.
+- [Verify before claiming](lift-log-verify-before-claiming.md) — `dist/tools/verify.sh`, tests seen to fail, reviewer claims and rebases proven, odd tool results rechecked on a clean checkout.
 - [The handbook is mine](lift-log-docs-are-mine.md) — keep `dist/STATE.md` true and run `dist/tools/backup.sh` before a session ends.
