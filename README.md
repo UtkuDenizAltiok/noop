@@ -43,6 +43,10 @@ fork's CI.
 handbook need write access to `UtkuDenizAltiok/noop` (Utku adds a collaborator). Opening upstream PRs needs a
 GitHub account and Utku's yes (`WORKFLOW.md` §1, §5).
 
+Verified 17 Sep 2026: a fresh clone of `lift-log-handbook` from GitHub carries the eight pages, `tools/` and
+`memory/` (408 KB), `STATE.md` names the current build, and `tools/strap-log.py` runs from it on macOS's own
+Python — nothing else is needed to pick the work up.
+
 ## Every session
 
 1. Read `STATE.md`, then `RULES.md`; skim `WORKFLOW.md` if the task touches something new.
