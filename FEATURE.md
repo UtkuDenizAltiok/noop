@@ -45,10 +45,11 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 
 - Biggest files: `LiftSessionView.swift` 860, `LiftLogStore.swift` 749, `LiftSessionEngineTests.swift` 651,
   `LiftLogStoreTests.swift` 629, `LiftSessionController.swift` 528, `LiftProgramItemSheet.swift` 481.
-- **The one optional block** is the spreadsheet import — `LiftProgramSheetImporter` + `XlsxSheet` + the template
-  generator and their tests, roughly 1,500 lines, a fifth of the feature. It uses only the store APIs the editor
-  uses and adds no write path (`RULES.md` 16), so it can be split into its own PR or dropped whole without
-  touching the core. The maintainer has offered the split twice; take it only if asked.
+- **The largest single block** is the spreadsheet import — `LiftProgramSheetImporter` + `XlsxSheet` + the
+  template generator and their tests, roughly 1,500 lines, a fifth of the feature. **Utku uses it and wants it
+  kept** (16 Sep 2026): it is how he builds programs on a computer instead of typing them on a phone. It is
+  self-contained (only the store APIs the editor uses, no write path of its own), so if the maintainer ever asks
+  it can move into a PR of its OWN — as a separate change, still shipped. Never remove it.
 - Everything else earns its place: no dead symbols (checked), no second implementation of a figure
   (`RULES.md` 2), and the comment ratio is the house style — comments say WHY, and several exist because a real
   gym session proved the alternative wrong.

@@ -37,8 +37,10 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 14. **Note lengths are bounded by what is visible**: program note 120, exercise note 200.
 15. **Nothing renders as COMPLETE.** The weekly bar draws the ~4-set floor as a tick on a 20-set span, with no
     success-green.
-16. **The spreadsheet import is a convenience** using only the editor's store APIs. If it ever conflicts with
-    the core, the core wins.
+16. **The spreadsheet import stays** (Utku, 16 Sep 2026): he builds programs on a computer with it. It uses only
+    the editor's store APIs and adds no write path of its own, which keeps it self-contained — that isolation is
+    for reviewability and for splitting it into its own PR if the maintainer asks, never a licence to delete it.
+    If it ever conflicts with the core, the core wins and the import is FIXED, not dropped.
 17. **⊖ only drops a PENDING last set**, never the current slot. Disabled controls DIM, not disappear.
 18. **The plan travels in the undo snapshot.**
 19. **Typing is never refused, and typing never CREATES a set.** Values for an unperformed set wait in
