@@ -147,7 +147,8 @@ and flag it.
   one strap log (`LiveState.append(log:)`), buzzes through `AppModel.buzz` and its `HapticPrefs` gate, claims
   NOOP's double-tap, saves a normal `workout`, and uses NOOP's design tokens. A Lift-Log-only copy of something
   NOOP already has is added only when strictly necessary, and said why. Existing exception, merged upstream in
-  #2099: its own Live Activity type, with NOOP's heart-rate activity suppressed during a session.
+  #2099 and kept on purpose: its own Lock Screen banner (Live Activity), with NOOP's heart-rate banner hidden
+  during a session. Utku likes how it looks and works (17 Sep 2026) — do not merge it into NOOP's banner.
 - **Upstream's logging is not the Lift Log's to change** — not its content, rate or buffer. The Lift Log adds only
   its drop lines (29), into that same log.
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;

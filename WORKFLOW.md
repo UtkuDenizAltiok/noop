@@ -60,9 +60,10 @@ device data: read it locally, quote only what a finding needs, and never commit 
 
 `python3 dist/tools/strap-log.py <log.txt>` prints two reports. It is a reading aid for whoever debugs, run on a
 computer against NOOP's ordinary exported strap log; it is not part of the app and adds no log of its own.
-- **runs** — the export is several app PROCESSES: up to three saved tails of earlier runs ("previous app
-  session", each at most 1,000 lines and only as current as its last 32-line save), then the running one
-  ("current app session", its newest 5,000 entries plus up to 256 slack). A run whose first line is not
+- **runs** — the export joins TWO stores, so it can hold 13:00 lines yet miss 21:20: first the saved endings of
+  up to three EARLIER app runs ("previous app session" — each run's last ≤1,000 lines, archived when the next
+  run starts, and only as current as its last 32-line save), then the live log of the run still open when the
+  log is saved ("current app session" — its newest 5,000 entries plus up to 256 slack; older ones are dropped). A run whose first line is not
   "Central state: …" lost its beginning. A header's "rolled at <UTC>" is when the NEXT run started. On 16 Sep
   this is what hid 21:15–21:54: the run started at 21:14:45 stopped logging at 21:15:05, the next started at
   21:20:24, and by the 22:44 export its first half hour had been trimmed (58% of its entries are upstream's

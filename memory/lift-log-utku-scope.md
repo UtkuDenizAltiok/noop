@@ -11,6 +11,8 @@ Stated 17 Sep 2026 after a gym session.
   design tokens — never a Lift-Log-only copy of something NOOP already has, unless strictly necessary (and then
   say why). He worried a "strap log thing" I built was a separate log; it was only a handbook script reading
   NOOP's normal export, and the Lift Log's lines already go into NOOP's log — explain such things plainly up front.
+- **Keep the Lift Log's own Lock Screen banner as it is.** He likes how it looks and works (17 Sep); don't merge it
+  into NOOP's heart-rate banner. Explain design trade-offs in plain words — he did not follow "Live Activity" talk.
 
 - **No changes to upstream fundamentals.** "No change in the log code we are not going to change other
   fundamentals" — the strap log's content, rate and buffer are upstream's. Don't propose changing them, and don't
