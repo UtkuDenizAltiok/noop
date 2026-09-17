@@ -1,11 +1,16 @@
 ---
 name: lift-log-utku-scope
-description: "Utku keeps Lift Log changes minimal and inside the feature: no changes to upstream fundamentals such as logging, and features built exactly as narrow as he describes (e.g. the Lock Screen light-up)."
+description: "Utku: the Lift Log is an addition built from NOOP's own features (strap log, buzz, double-tap), no Lift-Log-only copies; no changes to upstream fundamentals such as logging; requests built as narrow as he words them."
 metadata:
   type: feedback
 ---
 
 Stated 17 Sep 2026 after a gym session.
+
+- **The Lift Log is an addition to NOOP.** Use NOOP's own features — its one strap log, buzz, double-tap, workouts,
+  design tokens — never a Lift-Log-only copy of something NOOP already has, unless strictly necessary (and then
+  say why). He worried a "strap log thing" I built was a separate log; it was only a handbook script reading
+  NOOP's normal export, and the Lift Log's lines already go into NOOP's log — explain such things plainly up front.
 
 - **No changes to upstream fundamentals.** "No change in the log code we are not going to change other
   fundamentals" — the strap log's content, rate and buffer are upstream's. Don't propose changing them, and don't

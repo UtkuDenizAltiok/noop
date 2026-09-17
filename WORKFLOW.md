@@ -16,8 +16,9 @@ reviewers verified rather than obeyed, and this implementation kept unless a cha
 - **Nothing public without his yes**: opening a PR, a comment in his name, an issue.
 - **Every build lands on his releases page** (`https://github.com/UtkuDenizAltiok/noop/releases`) — it is where
   he installs from. Tell him the link and the 7-character id that ends the release title.
-- **Scope is his.** Keep changes inside the Lift Log; upstream's fundamentals (the strap log's content, rate or
-  buffer included) are not changed for it. Build a request exactly as narrow as he words it — the Lock Screen
+- **Scope is his.** The Lift Log is an addition to NOOP: use NOOP's existing features (strap log, buzz, double-tap,
+  workouts, design tokens) instead of Lift-Log-only structures, unless strictly necessary. Upstream's
+  fundamentals (the strap log's content, rate or buffer included) are not changed for it. Build a request exactly as narrow as he words it — the Lock Screen
   light-up is "just light up", nothing more.
 - **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
   show him line numbers and a search he can repeat.
@@ -57,7 +58,8 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and
 device data: read it locally, quote only what a finding needs, and never commit it — this handbook is public.
 
-`python3 dist/tools/strap-log.py <log.txt>` prints two reports.
+`python3 dist/tools/strap-log.py <log.txt>` prints two reports. It is a reading aid for whoever debugs, run on a
+computer against NOOP's ordinary exported strap log; it is not part of the app and adds no log of its own.
 - **runs** — the export is several app PROCESSES: up to three saved tails of earlier runs ("previous app
   session", each at most 1,000 lines and only as current as its last 32-line save), then the running one
   ("current app session", its newest 5,000 entries plus up to 256 slack). A run whose first line is not

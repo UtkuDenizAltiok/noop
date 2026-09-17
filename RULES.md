@@ -143,8 +143,13 @@ and flag it.
 - **Spreadsheet import (Utku, 9 Sep):** template dropdowns stay English-only (tokens are matched case-, space-
   and hyphen-insensitively); re-importing creates a second program; a new column or muscle means regenerating
   the template.
-- **Upstream's logging is not the Lift Log's to change** (Utku, 17 Sep 2026) — not its content, rate or buffer.
-  The Lift Log adds only its own drop lines (29).
+- **The Lift Log is an addition to NOOP, built from NOOP's own parts** (Utku, 17 Sep 2026). It writes to NOOP's
+  one strap log (`LiveState.append(log:)`), buzzes through `AppModel.buzz` and its `HapticPrefs` gate, claims
+  NOOP's double-tap, saves a normal `workout`, and uses NOOP's design tokens. A Lift-Log-only copy of something
+  NOOP already has is added only when strictly necessary, and said why. Existing exception, merged upstream in
+  #2099: its own Live Activity type, with NOOP's heart-rate activity suppressed during a session.
+- **Upstream's logging is not the Lift Log's to change** — not its content, rate or buffer. The Lift Log adds only
+  its drop lines (29), into that same log.
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;
   a frequency score; a composite workout score.
 

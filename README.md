@@ -77,8 +77,9 @@ Paste this as the first message:
   ledger, ratchet and governance are run, not assumed (`WORKFLOW.md` §3–4).
 - **Real gym sessions find the bugs that matter.** Ship a build after every change — it must appear on the
   fork's releases page — and ask what happened before trusting any list (`HISTORY.md`).
-- **Stay inside the Lift Log.** Upstream's fundamentals (logging, BLE plumbing beyond the double-tap path, other
-  screens) are not changed for it, and a request is built exactly as narrow as Utku words it (`RULES.md`
-  settled decisions; `WORKFLOW.md` §1).
+- **The Lift Log is an addition to NOOP, built from NOOP's parts.** It uses NOOP's strap log, buzz, double-tap,
+  workouts and design tokens rather than copies of them; upstream's fundamentals (logging, BLE plumbing beyond
+  the double-tap path, other screens) are not changed for it; a request is built exactly as narrow as Utku
+  words it (`RULES.md` settled decisions; `WORKFLOW.md` §1).
 - **The fork stays exact** — a mirror `main`, the stacked work branches, the build branch, this handbook — and this
   branch is public: nothing personal, no unapproved drafts (`WORKFLOW.md` §8).

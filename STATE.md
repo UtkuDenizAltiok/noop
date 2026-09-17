@@ -57,11 +57,12 @@ it. Nothing open upstream about the Lift Log. Run `bash dist/tools/upstream-chec
 - **PRs 1 and 2 on `8576a2dd`** (test merge, parity refresh applied): full `verify.sh` green; the refresh changes
   only what their two twin pairs add (`NEXT_PR.md` step 3). Android CI green on `1564578a` / `858b8678`.
 
-## Open question for Utku
+## The 21:15 restart
 
-Why did the app run that started at 21:14:45 stop about 21:15, before he opened NOOP again at 21:20? If he did not
-close it himself, a crash report may be on the phone: Settings → Privacy & Security → Analytics & Improvements →
-Analytics Data, entries starting "NOOP" from 16 Sep around 21:15. Nothing in the log says which.
+Answered 17 Sep: no NOOP crash report on his phone for 16 Sep. He may have closed NOOP or left it in the
+background for Spotify around 21:15, so the run that started at 21:14:45 was most likely closed by him or by iOS,
+not a crash. His workout itself was saved (the log header: "Latest: 2026-09-16 · Strength Training (manual)");
+only the diagnostic text of its first half hour was trimmed.
 
 ## Nothing is blocked
 
