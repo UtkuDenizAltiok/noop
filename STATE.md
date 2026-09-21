@@ -55,16 +55,17 @@ from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is 
   which steps lit the screen — each step now logs it. NOOP restarted at 21:37:30 and 21:38:37; the log does not
   say why.
 
-## Open questions for Utku
+## Confirmed at the gym
 
-- After the next session: for any strap step that buzzed without lighting the screen — was the phone face down,
-  or a Focus on? The log will now say whether the app asked iOS to light it.
-- Did typing between boxes and the 0:00 rest clock work on 17 Sep? (He did not mention them; the PR's hardware
-  line waits on it.)
+Everything up to round 3, including one-tap typing and the 0:00 rest clock (Utku, 21 Sep, about 17 Sep). Round 4
+(5 s knock window, done = complete, heaviest set to the program, light-up without the "locked" gate, banner layout,
+no sync banner) waits on the next session. Ask him then: for any step that buzzed but stayed dark, was the phone
+face down or a Focus on? The log now says whether the app asked iOS to light it.
 
 ## Nothing is blocked
 
-The PR waits on one gym session on this build and Utku's yes.
+The PR is written (`NEXT_PR.md`, plain words as Utku asked) and waits on one gym session on build `592e17b` and his
+yes.
 
 ## Next
 

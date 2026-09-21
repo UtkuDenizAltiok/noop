@@ -60,7 +60,8 @@ trustworthy — keep it.
 - **21 Sep** — the stack rebased onto `a56840bb` (110 upstream commits: 11.8.0 shipped the Lift Log; #2272 added a
   sync banner; #2327 notes the Lift Log has no Android UI). All ten commits range-diff identical; the parity refresh
   committed on the first branch; full `verify.sh` green on the tip, governance included, for the first time. Round-4
-  changes on top, and the plan changed to ONE PR for the whole stack.
+  changes on top, and the plan changed to ONE PR for the whole stack. Utku confirmed one-tap typing and the 0:00
+  clock from 17 Sep, and asked for the PR in simple, clear words.
 
 ## What found what
 

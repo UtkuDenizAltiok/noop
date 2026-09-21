@@ -104,7 +104,10 @@ Android is an independent reimplementation; analytics and stored data must be by
 
 ## 5. GitHub etiquette and PRs
 
-- **One concern per PR**; show the verification in the description; follow the repo's PR template.
+- **One concern per PR**, unless later work rewrites earlier behaviour (then one PR, split into commits by
+  concern — decided for the follow-up, 21 Sep); show the verification; follow the repo's PR template.
+- **Write PRs and replies in simple, clear words** (Utku, 21 Sep): what changed and why, as a lifter would say it,
+  then the technical notes a reviewer needs. No sophisticated or AI-sounding phrasing.
 - **A comment on GitHub** gets ONE concise reply posted after it, covering only its points, citing commits.
 - **A change found by us or heard off GitHub** goes into an EDIT of the description (or of our own post it
   concerns), never a new "update" comment. The description describes the PR as it is now, not a changelog.

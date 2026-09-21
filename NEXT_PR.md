@@ -6,7 +6,10 @@ branch introduced; one PR lets the maintainers review the final behaviour once, 
 merge once. Its commits stay separable by concern if they ask for smaller PRs. Nothing is posted until Utku says
 yes.
 
-**What Utku checks at the gym next** (build from `lift-log-gym-round-3`, the stack's tip):
+**Writing style (Utku, 21 Sep):** simple, clear words — what changed since #2098 and #2099 merged, and why. No
+sophisticated or AI-sounding phrasing.
+
+**What Utku checks at the gym next** (build `592e17b` from `lift-log-gym-round-3`, the stack's tip):
 - a set he ticks (Set done, or a strap double-tap) and leaves untyped saves its grey numbers; Finish asks only
   about sets he never started ("Sets not started: N");
 - after Save, the program shows each exercise's heaviest set as its weight × reps;
@@ -20,8 +23,8 @@ yes.
 
 ## Before opening
 
-1. The gym session above. Replace `HARDWARE_ROUND_4` below with what it showed; a problem found there is fixed,
-   verified and re-shipped first.
+1. The gym session above. Replace `HARDWARE_ROUND_4` below with what it showed (or delete the sentence if all
+   went well); a problem found there is fixed, verified and re-shipped first.
 2. `bash dist/tools/upstream-check.sh`. If `main` moved: rebase the stack in order (`WORKFLOW.md` §7 — first
    `lift-log-discard-and-edit`, then `--onto` for `lift-log-target-rpe` and `lift-log-gym-round-3`), prove every
    commit is unchanged with `git range-diff`, then re-run the parity refresh
@@ -32,7 +35,8 @@ yes.
 3. Create the PR branch from the tip and push it: `git branch lift-log-follow-ups lift-log-gym-round-3`, then
    `git push -u origin lift-log-follow-ups`. Run Android CI on it:
    `gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref lift-log-follow-ups`.
-4. Fill the counts and the CI line from those runs; re-read the whole diff once as a reviewer.
+4. The test counts below are from 21 Sep (`7bafa857`); update them if a rebase changed them. Re-read the whole
+   diff once as a reviewer.
 5. Open it and post the reply (below), in that order:
    ```bash
    gh pr create --repo ryanbr/noop --base main --head UtkuDenizAltiok:lift-log-follow-ups \
@@ -48,38 +52,44 @@ yes.
 ```markdown
 ## What this PR does
 
-Follow-ups to #2099 from four real gym sessions (15–17 Sep) on a WHOOP 5.0, each one found by lifting with the previous build. Grouped by what a lifter sees; the commits follow the same lines.
+After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions (15–17 Sep, WHOOP 5.0). This PR is what those sessions showed: fixes for what went wrong, and a few small improvements. The commits follow the sections below.
 
-**Finishing and editing a session**
-- **One Save button.** Finishing had Skip and Save session, and both saved the same way.
-- **A set that was done is complete.** A set ticked by Set done or a strap double-tap saves what was typed into it, and a field left blank takes the grey number the sheet showed. Finishing asks "complete or discard" only about sets never started. A session with no set done and the rest discarded still files no session, sets or workout — your guard from #2099 (`fed714cb`), now reading "no set counts".
-- **Discarded sets stay editable.** "Discard them" keeps never-started sets as 0 kg × 0 reps instead of dropping them, so a discard made by mistake can be filled back in under Edit sets.
-- **A set with 0 reps was not performed.** `LiftMetrics.isPerformed` is `reps != 0`, and it leaves such a set out of every figure; `WhoopStore.liftSetCounts` and `lastLiftSets` apply the same rule in SQL (`reps <> 0`), pinned to agree with the in-memory count, a negative count included. This also stops a set typed as 0 reps from counting.
-- **Edit sets can add and remove sets.** An added set takes the exercise's muscles and no timing; the last set can be removed (each exercise keeps one); set numbers are renumbered on Save; removed rows go through the new `deleteLiftSets`. Only that session changes. A field holding 0 empties when focused, so typing replaces the 0.
-- **The program follows the session.** At Save each program line takes the weight and reps of its heaviest set done that session — more weight first, then more reps — so a lighter back-off set does not pull the working weight down. Warm-ups, discarded zeros and sets completed at finish without being started move nothing. A changed set count is still asked about.
+### Finishing a session
+- **One Save button.** Skip and Save session did the same thing, so Skip is gone.
+- **A set you finished counts as done.** It saves the numbers you typed, or the grey numbers if you typed nothing. The finish screen now only asks about sets you never started: complete them, or discard them.
+- **Discarded sets are kept as 0 kg × 0 reps.** They are left out of every figure, and you can still fill them in under Edit sets if the discard was a mistake.
+- **Nothing done, nothing saved.** If no set was done and the rest are discarded, no session and no workout are saved. This is your guard from #2099 (`fed714cb`), kept.
+- **The program follows the session.** At Save, each exercise in the program takes the weight and reps of its heaviest set (more weight first, then more reps). Warm-ups and discarded sets don't count. A changed set count is still asked about.
 
-**A max RPE per exercise**
-- A program line can carry a max RPE (1–10): the ceiling a set should not pass, so a lifter knows where to hold back. Typed in the line editor (refused outside the scale) or read from the template's `Target max RPE` column (the importer also reads `Max RPE` and `RPE`, and warns and leaves it blank outside 1–10). The session shows it grey in the RPE field, and grey means the same as for weight and reps: a set nobody rated saves it; a typed rating wins; a discarded set saves none; a previous set's rating is never copied onto another. The trade is stated: a stored rating no longer proves the lifter rated that set. No schema change — `liftProgramItem.targetRpe` existed and nothing filled it.
+### Editing a finished session
+- **Add and remove sets** under Edit sets. Set numbers are renumbered on Save, and only that session changes.
+- A box showing **0 clears when you tap it**, so typing replaces the 0.
 
-**The strap double-tap**
-- **A knock is not a tap.** The strap's own sensor log showed double-taps 3–4 s after the one that started a set — the arm going onto the bar — each finishing a set seconds old. A strap double-tap under 5 s after the last one the session acted on is held back, with no buzz and one strap-log line; a rest that is already over (a line planned with no rest) is exempt, and the on-screen button is never held back.
-- **The buzz goes out before the sync.** A DOUBLE_TAP event also kicks a sync, and `FrameRouter` did that before handing the tap on; the session then buzzed from a `Task`. The strap received "send historical data" first and started the transfer before playing the buzz, so those taps buzzed 1.0–2.8 s late where most came in under one. `FrameRouter` now hands the tap on first and the session buzzes synchronously. Wrist and other events keep their order. Android has no Lift Log and is unchanged.
+### Max RPE
+- Each exercise in a program can have a **max RPE (1–10)**: the hardest a set should feel. Type it in the editor, or fill the new `Target max RPE` column in the template. The editor refuses values outside 1–10; the import leaves them blank and warns.
+- The session shows it in grey in the RPE box, like the grey weight and reps, and a set you don't rate saves it.
 
-**The bar and the Lock Screen**
-- The set coming up replaces "3 of 19 sets done": "Next: Set 2 · Lat pulldown", on one line, the set number first so a narrow line cuts the name. It is where the taps go (`LiftSessionEngine.upcomingSlot` is `slotAfter` with the current set counted as done).
-- The Lock Screen rest clock stays at 0:00 once the rest is over, as the in-app bar does, instead of counting up again.
-- Numbers typed into the set being lifted show on the bar and the Lock Screen, not the grey plan behind them.
-- The banner gives its width to the words: icon and numbers nearer the edges, the heart rate stacked over the clock.
-- A strap step lights a dark Lock Screen — an ActivityKit alert on the update the step sends anyway, with a bundled silent sound, sent whenever NOOP is not the app on screen — and each step leaves one strap-log line saying whether it asked iOS to light.
-- One banner during a session: NOOP's live-HR banner already stood aside for the session's; the strap-sync banner (#2272) now starts none mid-session either (`SyncLiveActivityController.holdsBackNewBanner`).
+### Strap double-tap
+- **A second double-tap within 5 seconds is ignored.** The strap sometimes reports a second double-tap a few seconds after a real one (most likely a knock on the bar), which finished sets that had just started. The ignored tap gets no buzz and writes one line to the strap log.
+- **The confirmation buzz comes right away.** A double-tap also starts a sync, and the sync request used to reach the strap first, so the buzz waited behind it (up to 2.8 s). Now the buzz goes first.
 
-**Typing**
-- With the keyboard open, one tap on another field moves the cursor there. The tap-outside-to-dismiss gesture used to take the focus straight back, so moving from weight to reps took two taps.
+### Minimised bar and Lock Screen
+- Shows **the next set** ("Next: Set 2 · Lat pulldown") instead of "0 of 16 sets done".
+- The rest timer **stops at 0:00** instead of counting up again.
+- Numbers you type into the current set show there too, not the grey plan.
+- **More room for the text**: the heart rate sits above the timer, and the icon and numbers are closer to the edges.
+- A double-tap **lights up the Lock Screen**, so you can see where you are without unlocking. Each double-tap writes one line to the strap log saying whether it asked iOS to light the screen.
+- **One banner during a session**: the sync banner (#2272) doesn't start while a session is running, the same way the heart-rate banner already steps aside.
 
-**Parity**
-- `LiftMetrics.kt` (#2232) follows `isPerformed`, one function per platform so the ledger pairs them; the oracle fixture gains a 0-rep bench set carrying muscles and an RPE, and the expected block is the stdout of the real `StrandAnalytics` and `WhoopStore` packages (every section this cannot affect came back identical). `deleteLiftSets` has its Kotlin twin in `DeviceRegistryDao`, ported ahead of its consumer. The two new twin pairs move the authority, so the PR carries the guarded refresh of `Tools/parity_twin_map.json` (`--refresh-derived`, not a hand edit); `parity_ledger_baseline.json` is unchanged.
+### Typing
+- **One tap moves from one box to the next.** Before, the first tap on the reps box only closed the keyboard.
 
-No schema change.
+### Behind the scenes
+- A set with 0 reps counts nowhere: `LiftMetrics.isPerformed`, and the same rule in the SQL of `liftSetCounts` and `lastLiftSets` (`reps <> 0`), with a test that the two agree.
+- Android: `LiftMetrics.kt` (#2232) follows the change, with its oracle regenerated from the real Swift packages, and `deleteLiftSets` has its Kotlin twin in `DeviceRegistryDao`. Android has no Lift Log screens, so nothing else there changes.
+- `Tools/parity_twin_map.json` is refreshed with `parity_ledger.py --refresh-derived` for the two new twin pairs (not edited by hand).
+- Outside the Lift Log's own files: `FrameRouter` hands a double-tap on before it starts the sync; `AppModel`'s double-tap handler type is `@MainActor`; `SyncLiveActivityController` gets a `holdsBackNewBanner` hook; and `StrandiOSApp` wires them up.
+- No schema change.
 
 ## Type of change
 
@@ -91,14 +101,14 @@ No schema change.
 
 ## How it was tested
 
-- **Hardware — WHOOP 5.0, four gym sessions.** 15 Sep: the finish questions, grey numbers staying grey, editing a finished session. 16 Sep (16 sets): one Save; discards kept as 0 / 0 and filled in under Edit sets; adding and removing sets there; the warning before a Save that would file nothing; the grey max RPE saved when a set is left unrated. 17 Sep: the next-set line on the Lock Screen (his screenshot); its strap log showed all 28 double-taps the strap sensed reaching the app, two of them held back as knocks. HARDWARE_ROUND_4
-- **Tests seen to fail without the change:** zero-rep sets left out of the figures, the weekly SQL counts and the last-session read; the SQL rule matching `reps != 0` for a negative count; a removed set renumbering the rest; done sets complete without asking and only never-started sets zeroed; the heaviest-set rule and its exclusions; the importer's 1–10 range; the max RPE filling an unrated set but never a discarded one; the knock window, pinned at 5 s; the tap handed on before its sync; the synchronous buzz; the next set named during a set and during its rest; typed numbers on the bar; one Lock Screen light-up per strap step. The Kotlin oracle's changed lines are ones the unchanged Kotlin produced differently.
-- `swift test`: WhoopStore N_WS, StrandAnalytics N_SA, StrandImport N_SI — 0 failures.
-- `xcodebuild test` (macOS): N_MAC tests; only the two locale-dependent `TodayCarryOverTests` fail, identically on `main` on this machine.
-- Android CI (assemble + unit tests, the regenerated oracle included): N_ANDROID.
-- iOS simulator, before and after: one tap moving between fields in the session, Edit sets and the program editor; the Lock Screen clock reading 0:00 after a rest where the old build climbed; the next-set line; the banner with a working set's count-up, a rest's countdown and a finished rest. Edit sets and the discard flow were walked through against the database.
-- Parity, with Python 3.12: ledger, ratchet (against this branch's base) and governance tests all pass (N_GOV).
-- Both app targets build. Every new string has all ten locales.
+- **Four gym sessions on a WHOOP 5.0 (15–17 Sep).** Checked there: one Save, discarded sets shown as 0 / 0 under Edit sets, adding and removing sets, the warning before a save that files nothing, the grey max RPE, one-tap typing, the next-set line and the timer stopping at 0:00. In the last session the strap sensed 28 double-taps and all 28 reached the app. HARDWARE_ROUND_4
+- **Every new test was seen to fail without its fix**, then pass with it.
+- `swift test`: WhoopStore 609, StrandAnalytics 2030, StrandImport 327 — 0 failures.
+- `xcodebuild test` (macOS): 2066 tests; only the two date-format `TodayCarryOverTests` fail, the same as on `main` on this machine.
+- Android CI (build + unit tests, including the regenerated oracle): green.
+- Parity with Python 3.12: ledger, ratchet and governance tests (124) all pass.
+- iOS simulator, before and after: one-tap typing, the Lock Screen timer, the banner layout.
+- Both app targets build. Every new text is translated into all ten languages.
 
 ## Checklist
 
@@ -112,7 +122,7 @@ No schema change.
 
 ## Related issues
 
-Follows #2099 (merged as `4453a089`), keeping its empty-session guard (`fed714cb`), and #2232 (the Kotlin `LiftMetrics` twin). Touches #2272's sync banner only to keep it from starting during a gym session. #2327 (no Android UI) is not addressed here.
+Follows #2098 and #2099 (merged as `4453a089`, keeping its guard `fed714cb`) and #2232 (the Kotlin `LiftMetrics` twin). Touches #2272's sync banner only so it doesn't start during a gym session. Does not address #2327 (no Android UI).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
@@ -120,9 +130,9 @@ Follows #2099 (merged as `4453a089`), keeping its empty-session guard (`fed714cb
 ## Reply on #2099, after ryanbr's 15 Sep 04:07 comment
 
 ```markdown
-Thanks for the guard and for taking it. You were right about the workout: an hour discarded to nothing should not come back as a Strength Training entry with a strain on it.
+Thanks for the guard, and for merging. You were right: a session with nothing in it should not come back as a Strength Training workout with a strain.
 
-The next gym sessions (15–17 Sep) went into #FOLLOWUP, and they met your question from the other side. A discard made by mistake should be recoverable, so discarded sets are kept as 0 kg × 0 reps, which every figure leaves out and Edit sets can fill back in; and a set that was done now counts as done, with its grey numbers, so only sets never started are asked about. Your guard stays, reading "no set counts": a session with no set done and the rest discarded still files no session, sets or workout, and the finish sheet says so before Save.
+The next gym sessions went into #FOLLOWUP. Your guard stays: if no set was done and the rest are discarded, nothing is saved, and the finish screen says so before Save. Two things changed around it: a discard made by mistake can now be undone (discarded sets are kept as 0 × 0 and can be filled in under Edit sets), and a set that was done now always counts as done.
 
-On the taps: the strap logs showed every double-tap the strap sensed reaching the app (16 of 16, 22 of 22, 28 of 28). The ones felt as missed were either never sensed by the strap or, later, held back on purpose as knocks under 5 s.
+About the taps: in every session's strap log, every double-tap the strap sensed reached the app (16 of 16, 22 of 22, 28 of 28). The ones that felt missed were either never sensed by the strap, or knocks the app now ignores on purpose.
 ```

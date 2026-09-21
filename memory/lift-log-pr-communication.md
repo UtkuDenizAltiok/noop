@@ -24,7 +24,8 @@ and accept the PR easily.
 The same rule holds for the follow-up PR: ryanbr's 15 Sep 04:07 comment on merged #2099 gets one reply
 (drafted in `dist/NEXT_PR.md`), posted with Utku's yes right after the follow-up opens.
 
-The description describes the PR as it is now, not a changelog. Never touch Utku's own comments. Deleting
+The description describes the PR as it is now, not a changelog. **Write it in simple, clear words** (Utku,
+21 Sep): what changed since the last merge and why, plainly — no sophisticated or AI-sounding phrasing. Never touch Utku's own comments. Deleting
 my own self-initiated comments needed his go-ahead (given 13 Sep 2026); otherwise ask first, and confirm
 the content survives where it belongs before removing anything. Public posts outside the PR (issues,
 Discord) need his explicit yes.
