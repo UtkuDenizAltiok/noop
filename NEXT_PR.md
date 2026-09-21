@@ -129,10 +129,11 @@ Follows #2098 and #2099 (merged as `4453a089`, keeping its guard `fed714cb`) and
 
 ## Reply on #2099, after ryanbr's 15 Sep 04:07 comment
 
+Optional, and only with Utku's yes. Why it exists: #2099 is merged and closed, but ryanbr's last comment there
+(he pushed the empty-session guard `fed714cb` himself) ends by asking whether we would rather keep performed sets
+with their timing. Nobody answered. Round 4 is exactly that choice, so one short reply answers him and points to
+the new PR. Post it right after the PR opens.
+
 ```markdown
-Thanks for the guard, and for merging. You were right: a session with nothing in it should not come back as a Strength Training workout with a strain.
-
-The next gym sessions went into #FOLLOWUP. Your guard stays: if no set was done and the rest are discarded, nothing is saved, and the finish screen says so before Save. Two things changed around it: a discard made by mistake can now be undone (discarded sets are kept as 0 × 0 and can be filled in under Edit sets), and a set that was done now always counts as done.
-
-About the taps: in every session's strap log, every double-tap the strap sensed reached the app (16 of 16, 22 of 22, 28 of 28). The ones that felt missed were either never sensed by the strap, or knocks the app now ignores on purpose.
+Thanks for the guard, and for merging. You asked whether I'd rather keep performed sets with their timing: after more gym sessions, yes. In #FOLLOWUP a set that was done always counts as done, with the numbers typed or the grey ones, and the finish screen only asks about sets never started. Your guard stays: if no set was done and the rest are discarded, nothing is saved, and the finish screen says so before Save.
 ```

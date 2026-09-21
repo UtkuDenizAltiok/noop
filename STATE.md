@@ -14,8 +14,9 @@
 
 - **`upstream/main` is `a56840bb`** (21 Sep). 11.8.0 shipped the Lift Log (Apple only). The fork's `main` mirrors it.
 - **Open upstream:** ryanbr's #2327 — the Lift Log has no Android UI (`BACKLOG.md` 4). Not ours to answer unasked.
-- **Unanswered:** ryanbr's 15 Sep 04:07 comment on #2099. The reply is drafted in `NEXT_PR.md`; it goes out right
-  after the follow-up PR opens, with Utku's yes.
+- **Unanswered (optional):** ryanbr's last comment on merged #2099 (15 Sep 04:07) asks whether we would rather
+  keep performed sets with their timing — round 4 did exactly that. A 3-sentence reply is drafted in `NEXT_PR.md`,
+  to post right after the new PR opens, only with Utku's yes.
 
 ## Open work — one stack, ONE PR
 
