@@ -45,6 +45,8 @@ including the maintainer — have been wrong in ways that sounded authoritative.
   code.** 16 Sep: governance showed an extra finding on the new branch only because `swift test` had left
   `Packages/*/.build` for the scanner to read. The same day a "break the fix" run silently tested unbroken code
   because zsh did not split a file list — run such scripts with bash and check the break landed (`git diff`).
+- **A commit split by hand is built on its own.** 21 Sep: staging `-U0` hunks one by one put two lines outside
+  their function in the middle commit while the tip compiled fine; building that commit alone is what proves it.
 - **A strap log is evidence, read to the millisecond.** The strap's console lines (`IMU double tap detected`,
   `Command Run haptics`) carry its own ms ticks; mapping them to event timestamps separated knocks from taps
   and showed which buzzes queued behind a sync.

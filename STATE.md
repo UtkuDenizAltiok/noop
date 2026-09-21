@@ -1,6 +1,6 @@
 # State
 
-**Updated 17 Sep 2026.** The only file that changes every session. Replace, don't append — history goes in
+**Updated 21 Sep 2026.** The only file that changes every session. Replace, don't append — history goes in
 `HISTORY.md`.
 
 ## Upstream (`ryanbr/noop`)
@@ -12,77 +12,76 @@
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
 
-**Unanswered:** ryanbr's 15 Sep 04:07 comment on #2099. The reply is drafted in `NEXT_PR.md`; it goes out right
-after the follow-up opens, with Utku's yes.
+- **`upstream/main` is `a56840bb`** (21 Sep). 11.8.0 shipped the Lift Log (Apple only). The fork's `main` mirrors it.
+- **Open upstream:** ryanbr's #2327 — the Lift Log has no Android UI (`BACKLOG.md` 4). Not ours to answer unasked.
+- **Unanswered:** ryanbr's 15 Sep 04:07 comment on #2099. The reply is drafted in `NEXT_PR.md`; it goes out right
+  after the follow-up PR opens, with Utku's yes.
 
-**`upstream/main` was `8576a2dd`** when last checked (16 Sep evening), green on its own; the fork's `main` mirrors
-it. Nothing open upstream about the Lift Log. Run `bash dist/tools/upstream-check.sh` first — it moves daily.
+## Open work — one stack, ONE PR
 
-## Open work — three stacked branches, three PRs, in this order
+Three stacked branches, rebased on `a56840bb` 21 Sep (every commit range-diff identical), to be opened as ONE PR
+from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is at its top):
 
-1. **Follow-up** — `lift-log-discard-and-edit` @ `1564578a` on `c430ca0b`: one Save; discards kept as 0 × 0; add /
-   remove sets in Edit sets; the guard reads "no set counts"; SQL mirrors `reps != 0`; Kotlin twins of
-   `LiftMetrics` and `deleteLiftSets`. **Hardware-confirmed 16 Sep.** Ready to open with Utku's yes.
-2. **Target max RPE** — `lift-log-target-rpe` @ `858b8678`, stacked on 1 (`RULES.md` 34). **Hardware-confirmed 16 Sep.**
-3. **Gym round 3** — `lift-log-gym-round-3` @ `65c5a68e`, stacked on 2, five commits (`NEXT_PR.md` PR 3): one tap
-   moves between fields; a strap knock under 8 s is held back and the buzz goes out before the sync (`RULES.md`
-   35, 36); the next set on the bar and Lock Screen, a rest clock that stops at 0:00, typed numbers on the bar,
-   a locked Lock Screen lights on a strap step (37–39); cleanup. App-target Swift only — nothing under
-   `Packages/**` or `android/**`. **Not yet gym-tested.**
+1. `lift-log-discard-and-edit` @ `631f411f` — one Save; discards as 0 × 0 fillable in Edit sets; add / remove
+   sets in Edit sets; SQL mirrors `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and the
+   parity refresh commit (`631f411f`: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2).
+2. `lift-log-target-rpe` @ `0c9c72e9` — max RPE per program line (`RULES.md` 34).
+3. `lift-log-gym-round-3` @ `7bafa857` — rounds 3 and 4: one-tap field focus; knock guard (now 5 s) and buzz
+   before the sync; next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking;
+   the program takes each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each
+   step; no sync banner during a session; banner layout (`RULES.md` 5, 27, 28, 35–40).
 
 - **Work branch:** `lift-log-gym-round-3`
-- **Testing build on Utku's phone:** `954a53a8` = `65c5a68e` + the template commit. Releases page: "NOOP Staging —
-  base 11.7.0 · 2026-09-16 · 954a53a" (Pre-release; the title date is UTC), `.ipa` uploaded 01:53 on 17 Sep,
-  verified. Just update, no wipe.
+- **Testing build on Utku's phone:** `592e17bf` = `7bafa857` + the template commit, now on NOOP 11.8.0. Releases
+  page: "NOOP Staging — base 11.8.0 · 2026-09-21 · 592e17b" (Pre-release), `.ipa` uploaded 10:21 on 21 Sep,
+  verified. Just update, no wipe. Not yet gym-tested.
 
 ## Verified
 
-- **Round 3, full `verify.sh` on `65c5a68e`:** WhoopStore 600 · StrandAnalytics 2021 · StrandImport 322 · doc lint ·
-  i18n · ledger · ratchet · macOS tests 1907 (only the two `TodayCarryOverTests`) · iOS build. Governance, on a
-  clean checkout: one failure, `test_checked_metadata_is_compact_v3_and_expands_losslessly` (functions 4404 →
-  4408), identical on `858b8678` — the twin-pair drift PR 1's refresh fixes.
-- **Tests seen to fail without their fix:** the knock guard, the synchronous buzz, the tap-before-sync order, the
-  two next-set engine tests, typed numbers on the bar, the one light-up signal per strap step.
-- **Simulator, before/after builds:** typing — the old build lost the digit after one tap on REPS, the new one
-  takes it, also in Edit sets and the program editor; a button tap with the keyboard open dismisses and acts.
-  Lock Screen — after a rest ended and the "Ready" push re-rendered it, the old clock read "2:--" and climbing,
-  the new one 0:00; "Next: Set 2 · Bench press" on the bar and the Lock Screen. **Not verifiable in the
-  simulator:** the Lock Screen lighting, whether the phone vibrates with it, buzz latency on a real strap.
-- **The 16 Sep strap log** (`python3 dist/tools/strap-log.py <log>`): 22 double-taps sensed by the strap, 22
-  acted on; knocks at +2.9 s and +4.1 s; the four 1.0–2.8 s buzzes were the taps that kicked a sync. The log has
-  nothing from 21:15:05 to 21:54:01: the app run started at 21:14:45 stopped logging at 21:15:05, a new run
-  started at 21:20:24, and its first half hour was trimmed from its 5,000-entry log by the 22:44 export (58% of
-  its entries upstream's once-a-second heart-rate line; 44 the Lift Log's). Not a Lift Log fault; nothing about
-  logging is to change (Utku).
-- **PRs 1 and 2 on `8576a2dd`** (test merge, parity refresh applied): full `verify.sh` green; the refresh changes
-  only what their two twin pairs add (`NEXT_PR.md` step 3). Android CI green on `1564578a` / `858b8678`.
+- **The tip `7bafa857`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout, no failure) · macOS
+  tests 2066 (only the two `TodayCarryOverTests`) · iOS build. `--quick` also passed on `631f411f` and `0c9c72e9`
+  alone. The light-up commit `51078475` was built on its own (its file was split by hand).
+- **Android CI:** green on the rebased tip `7bafa857` (run 35576172501).
+- **Tests seen to fail without their fix (round 4):** knock window pinned at 5 s; done sets complete without
+  asking; only never-started sets unfinished or zeroed; a discarded set takes no max RPE; the heaviest-set rule
+  and its exclusions. Earlier rounds: listed in `NEXT_PR.md`'s PR body.
+- **Simulator:** the new banner with a working set's count-up, a rest's countdown and a finished rest's 0:00, all
+  right-aligned under the heart rate, the status line whole ("Resting after set 4 — 9 x 60 kg"). A first layout
+  let the running timer spread across the banner; caught here, not on the phone. **Not verifiable in the
+  simulator:** whether the Lock Screen lights, and whether the phone vibrates with it.
+- **The 17 Sep strap log** (`python3 dist/tools/strap-log.py <log>`): 28 double-taps sensed, 28 reached the app,
+  2 held back as knocks (at +3.5 s and +6.0 s after an acted-on tap, under the old 8 s). The log could not show
+  which steps lit the screen — each step now logs it. NOOP restarted at 21:37:30 and 21:38:37; the log does not
+  say why.
 
-## The 21:15 restart
+## Open questions for Utku
 
-Answered 17 Sep: no NOOP crash report on his phone for 16 Sep. He may have closed NOOP or left it in the
-background for Spotify around 21:15, so the run that started at 21:14:45 was most likely closed by him or by iOS,
-not a crash. His workout itself was saved (the log header: "Latest: 2026-09-16 · Strength Training (manual)");
-only the diagnostic text of its first half hour was trimmed.
+- After the next session: for any strap step that buzzed without lighting the screen — was the phone face down,
+  or a Focus on? The log will now say whether the app asked iOS to light it.
+- Did typing between boxes and the 0:00 rest clock work on 17 Sep? (He did not mention them; the PR's hardware
+  line waits on it.)
 
 ## Nothing is blocked
 
-Round 3 waits only on a gym session. PRs 1 and 2 wait only on Utku's yes to open.
+The PR waits on one gym session on this build and Utku's yes.
 
 ## Next
 
-1. **Utku's next gym session on the round-3 build.** The checklist is at the top of `NEXT_PR.md`. Read the log
-   he sends with `dist/tools/strap-log.py` (`WORKFLOW.md` §3).
+1. **Utku's next gym session on this build.** The checklist is at the top of `NEXT_PR.md`. Read his log with
+   `dist/tools/strap-log.py`.
 2. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh lift-log-gym-round-3`), give him the
    release link and the build id, and say "just update" or "wipe".
-3. **Only with his yes, in order:** rebase PR 1 onto the latest `upstream/main`, commit the parity refresh, run
-   everything and Android CI, open it, post the reply on #2099. Then PR 2, then PR 3 (`NEXT_PR.md`).
+3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
+   `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
+   three stacked branches from the fork.
 4. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main`, `8576a2dd`), `lift-log-discard-and-edit`, `lift-log-target-rpe`,
+- Branches: `main` (mirror of `upstream/main`, `a56840bb`), `lift-log-discard-and-edit`, `lift-log-target-rpe`,
   `lift-log-gym-round-3`, `lift-log-build`, `lift-log-handbook`.
-- Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags.
+- Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - Retired refs removed 15 Sep sit in `~/Developer/noop-retired/noop-retired-refs-2026-09-15.bundle` on Utku's Mac,
   LOCAL ONLY — nothing in it is needed (its content is merged upstream or the maintainers' old prototypes).

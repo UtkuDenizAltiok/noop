@@ -41,8 +41,8 @@ trustworthy — keep it.
   left blank, one Save, discarded sets as 0 / 0 in Edit sets, adding and removing sets there, the orange warning.
   Found: weight → reps still took two taps; one double-tap "skipped two things" and 3–4 did not register; buzzes
   sometimes slightly late; the Lock Screen rest clock counted up past zero. Asked for: the Lock Screen to light on
-  a strap step, and the next set instead of "0 of 16 sets". The exported log has the session from 21:54 on; in it the strap
-  sensed 22 double-taps and all 22 were acted on, two of them knocks 3–4 s after a tap. All six built on
+  a strap step, and the next set instead of "0 of 16 sets". The exported log has the session from 21:54 on; in it
+  the strap sensed 22 double-taps and all 22 were acted on, two of them knocks 3–4 s after a tap. All six built on
   `lift-log-gym-round-3` the same night, plus typed numbers missing from the bar (found in the simulator).
 - **17 Sep** — Utku narrowed the light-up to "just light up" a dark Lock Screen (now: locked phone only, one
   update, sent at once) and ruled out any change to logging. He asked why the log had nothing from 21:15 to
@@ -51,6 +51,16 @@ trustworthy — keep it.
   22:44 export that run's first half hour had been trimmed from its 5,000-entry log — 58% of it upstream's
   once-a-second heart-rate line, 44 entries the Lift Log's. Not a Lift Log fault; `tools/strap-log.py` now
   reports it. Open: why the 21:14:45 run stopped (closed by him, by iOS, or a crash).
+- **17 Sep, 21:37–22:29** — fourth gym session, on build `954a53a8`. The strap sensed 28 double-taps and all 28
+  reached the app; 2 were held back by the 8 s knock window and felt "unregistered". Four strap steps buzzed but
+  did not light the Lock Screen: the light-up waited for iOS to report the phone locked, which it does ~10 s after
+  the screen goes dark. NOOP restarted at 21:37:30 and again at 21:38:37 (cause not in the log). Utku asked for:
+  5 s, done sets complete without asking, the program following each line's heaviest set, and the banner's words
+  given more width.
+- **21 Sep** — the stack rebased onto `a56840bb` (110 upstream commits: 11.8.0 shipped the Lift Log; #2272 added a
+  sync banner; #2327 notes the Lift Log has no Android UI). All ten commits range-diff identical; the parity refresh
+  committed on the first branch; full `verify.sh` green on the tip, governance included, for the first time. Round-4
+  changes on top, and the plan changed to ONE PR for the whole stack.
 
 ## What found what
 
@@ -96,6 +106,12 @@ trustworthy — keep it.
 | "0 of 16 sets done" told a lifter nothing to act on | Utku asked | 37 |
 | the bar showed the grey plan for a set whose numbers were typed | simulator | 5 |
 | an exported strap log had lost the first half hour of the session | log analysis, Utku asked why | 29, `tools/strap-log.py` |
+| strap steps that buzzed but did not light the Lock Screen (the "locked" gate lags ~10 s) | gym | 39 |
+| two deliberate taps held back by an 8 s knock window | gym, strap log | 35 |
+| done sets asked about at finish; the program not following the session | Utku asked | 27, 28 |
+| a second, sync banner would appear mid-session once #2272 arrived | reading upstream | 40 |
+| the Lock Screen's words cut short by the numbers' width | Utku asked (screenshot) | banner layout |
+| a stacked timer spread across the banner | simulator | clock sized from a hidden "00:00" |
 
 **Confirmed on hardware:** Lock Screen activity (HR, reps × weight, ticking seconds), carried values across
 sessions, spreadsheet import on device, double-tap with confirm and rest buzzes; and on 16 Sep the max RPE grey

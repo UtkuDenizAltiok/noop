@@ -23,7 +23,7 @@ import datetime as dt
 import re
 import sys
 
-KNOCK_WINDOW_S = 8   # LiftSessionController.strapKnockWindowSec
+KNOCK_WINDOW_S = 5   # LiftSessionController.strapKnockWindowSec (8 before 21 Sep 2026)
 CLOCK = re.compile(r"^\[(\d\d:\d\d:\d\d)\] ")
 
 
@@ -114,6 +114,9 @@ def report_taps(lines):
         elif "Double-tap ignored" in body: app["ignored by the 1.2 s debounce"] += 1
         elif "already handled" in body: app["replay suppressed (already handled)"] += 1
         elif "late during a sync" in body: app["arrived late through a sync, not acted on"] += 1
+        elif "with a light-up alert" in body: app["Lock Screen: light-up alert sent to iOS"] += 1
+        elif "not lighting the Lock Screen" in body:
+            app["Lock Screen: not lit — " + body.split("—", 1)[-1].strip()] += 1
     print(f"  strap sensed {len(sensed)} double-taps (its own console)")
     for name, n in app.most_common():
         print(f"  {n:3d}  {name}")
@@ -139,6 +142,7 @@ def report_taps(lines):
         print(f"  {when}  {delay}  {'; '.join(notes)}")
         previous = s
     print("\n  Within the time this run covers, a tap missing above was never sensed by the strap, so no app code saw it.")
+    print("  A light-up alert sent to iOS that did not light the screen was iOS's choice (face-down, a Focus, its limits).")
 
 
 def main(argv):

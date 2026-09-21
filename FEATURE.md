@@ -16,19 +16,23 @@
 - **Grey numbers stay grey** — this exercise earlier in the session, else last session, else the program
   target — until something is typed. The RPE field shows the line's max RPE grey, and a set left unrated saves
   it; a previous set's rating is only ever shown, never saved onto another set.
-- **Finishing asks, never assumes** (one Save button, disabled until answered): sets with no typed numbers are
-  **completed** with their grey numbers or **discarded** — saved as 0 kg × 0 reps, out of every figure,
-  fillable later under Edit sets; if a set count changed, whether the program keeps it. A discard that would
-  leave no set counting files nothing, and the sheet warns before Save.
+- **Finishing asks only what it cannot know** (one Save button, disabled until answered): a set that was done
+  is complete — typed numbers, else grey ones — with no question. Sets never started are **completed** with
+  their grey numbers or **discarded** — saved as 0 kg × 0 reps, out of every figure, fillable later under Edit
+  sets; if a set count changed, whether the program keeps it. A discard that would leave no set counting files
+  nothing, and the sheet warns before Save.
+- **The program follows the session**: at Save each line takes its heaviest done set's weight and reps.
 - **A finished session can be edited** ("Edit sets"): weights, reps, RPE, warm-up marks, session RPE, sets added
   or removed. Only that session changes, never the program. Zeros show only here.
 - **Two inputs advance**: the on-screen button, or a **double-tap on the strap**. One buzz confirms the tap;
-  three mean the rest is nearly over. The phone can stay face-down all session. A strap double-tap under 8 s
+  three mean the rest is nearly over. The phone can stay face-down all session. A strap double-tap under 5 s
   after the last one acted on is taken as a knock: no buzz, nothing moves, one log line.
 - **The session outlives its screen**: minimise to a bar above the tab bar; a Lock Screen Live Activity shows
   state, exercise, reps × weight, live HR, the clock and the next set ("Next: Set 2 · Lat pulldown"). A finished
-  rest reads 0:00 everywhere. A strap step lights a locked, dark Lock Screen and nothing more (a silent ActivityKit alert on the step's one update). Crash-safe
-  snapshot in UserDefaults.
+  rest reads 0:00 everywhere. The banner's icon and numbers sit near its edges, heart rate over the clock, so
+  the words get the width. A strap step lights a dark Lock Screen and nothing more (a silent ActivityKit alert
+  on the step's one update, whenever NOOP is not on screen), and logs whether it asked. It is the only banner
+  during a session: NOOP's heart-rate and sync banners stand aside. Crash-safe snapshot in UserDefaults.
 - **Typing moves with one tap**: with the keyboard open, a tap on another field puts the cursor there; a tap
   anywhere else puts the keyboard away and still does what it was aimed at.
 - **Saved as a normal `workout`** (`source "manual"`, sport "Strength Training", `strain: nil`), so the engine
@@ -39,13 +43,14 @@
 
 **The double-tap.** One gesture once reached the app twice: live, then again when the strap offloaded its event
 log; the 1.2 s debounce cannot catch that, and each phantom silently skipped a set. It is de-duplicated on the
-event's own timestamp, read-side only (the macOS Automations gesture shares the path and was verified). In the
-15 Sep log all 16 taps the strap reported were dispatched and buzzed within 3 s, and all 14 held-back replays
-sat within 9 s of an already-dispatched tap: misses are the strap not sensing the tap. In the 16 Sep log (the
-file has the session from 21:54 on) the strap's own console reported 22 double-taps and all 22 were acted
-on. Two of them came 3 s and 4 s after the tap that started a set — knocks the strap reported as taps — which is
-why a strap tap under 8 s after the last acted-on one is held back. The same log showed the four slowest buzzes
-(1.0–2.8 s) were the taps whose event also kicked a sync, so the tap is now handed on, and buzzed, first.
+event's own timestamp, read-side only (the macOS Automations gesture shares the path and was verified). In the 15
+Sep log all 16 taps the strap reported were dispatched and buzzed within 3 s, and all 14 held-back replays sat
+within 9 s of an already-dispatched tap: misses are the strap not sensing the tap. In the 16 Sep log (the file has
+the session from 21:54 on) the strap's own console reported 22 double-taps and all 22 were acted on. Two of them
+came 3 s and 4 s after the tap that started a set — knocks the strap reported as taps — which is why a strap tap
+under 5 s (8 s until 21 Sep) after the last acted-on one is held back. That log also showed the four slowest buzzes
+(1.0–2.8 s) were the taps whose event also kicked a sync, so the tap is now handed on, and buzzed, first. The 17
+Sep log: 28 sensed, 28 reached the app, 2 held back as knocks — which he felt as unregistered.
 
 ## Size and shape (measured 16 Sep 2026, before gym round 3)
 
@@ -102,6 +107,7 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 | `Screens/LiftSessionView.swift` | the session sheet, ⊕/⊖, control bar, finish sheet (questions, warning) and `save()` |
 | `Screens/LiftSessionBar.swift` · `LiftSessionDetailSheet.swift` · `LiftSessionEditSheet.swift` · `KeyboardDismiss.swift` | bar (with the next set) · finished session (performed sets only) · its editor · tap-outside keyboard helper (a UIKit window recognizer that stands aside for text inputs) |
 | `BLE/FrameRouter.swift` · `App/AppModel.swift` | double-tap de-duplication, drop logs, tap handed on before the sync kick · gesture claim (synchronous) and debounce log |
+| `StrandiOS/Widgets/SyncLiveActivityController.swift` (upstream's, #2272) | `holdsBackNewBanner`: no sync banner starts during a session |
 
 iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller; `StrandiOS/App/RootTabView.swift` adds
 More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShared/LiftActivityAttributes.swift`,
@@ -110,6 +116,6 @@ More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShar
 `StrandiOS/Resources/lift-step-silence.caf`. The activity's attributes carry nothing; everything shown is content state.
 
 ### App tests — `StrandTests/`
-`LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 14 ·
+`LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 18 ·
 `LiftSessionEditTests` 8 · `LiftSessionPersistenceTests` 5 (old-format JSON: decides wipe or update) ·
 `LiftSessionStrapTapTests` 6 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.

@@ -1,6 +1,6 @@
 # Backlog
 
-Verified against the code at `lift-log-gym-round-3` (`3de2ad29`, 17 Sep 2026). The open follow-up
+Verified against the code at `lift-log-gym-round-3` (`7bafa857`, 21 Sep 2026). The open follow-up PR
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — six gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
@@ -23,7 +23,8 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 3. **`LiftFormat.duration` has no hours branch** — 75 minutes reads "75:23" on the bar, sheet and Lock Screen.
    Copy the `H:MM:SS` idiom from `Strand/App/ActiveWorkoutClock.swift`; consider upstream's clock-format
    setting (#1822).
-4. **Android screens.** The Kotlin figures exist (#2232); Compose screens and a DAO reading lift sets do not
+4. **Android screens** — ryanbr's #2327 (19 Sep): an Android user found the 11.8.0 notes announcing a log book
+   Android does not have. The Kotlin figures exist (#2232); Compose screens and a DAO reading lift sets do not
    (so `liftSetCounts` / `lastLiftSets` have no Kotlin twin). Best done by someone who runs Android.
 5. **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` query `lastLiftSets` once
    per exercise. Fine at 5–8 exercises; a single windowed query if programs grow.

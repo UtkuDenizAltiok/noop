@@ -70,8 +70,9 @@ computer against NOOP's ordinary exported strap log; it is not part of the app a
   once-a-second heart-rate line; 44 of 5,180 were the Lift Log's).
 - **taps** — the strap's own console (`IMU double tap detected`, `Command Run haptics`, `Command Send Historical
   Data`, millisecond ticks) against the app's lines: how many double-taps the strap sensed, what the app did with
-  each, tap-to-buzz delay, taps under 8 s apart (knocks, `RULES.md` 35), and buzzes that queued behind a sync
-  (36). A tap Utku felt but the strap never sensed cannot be fixed in the app.
+  each, tap-to-buzz delay, taps under 5 s apart (knocks, `RULES.md` 35), per step whether the Lock Screen was asked
+  to light (39), and buzzes that queued behind a sync (36). A tap Utku felt but the strap never sensed cannot be
+  fixed in the app.
 
 ## 4. Cross-platform parity
 
@@ -158,6 +159,9 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
   the repo (`git bundle create`), not onto GitHub.
 - **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go
   in `dist/private/` (ignored). Never commit `dist/` to a work branch.
+- **Splitting one file across two commits:** build the in-between file by exact text edits and stage the whole
+  file. `git apply --cached --unidiff-zero` with only some `-U0` hunks placed a later hunk by line number and put
+  two lines outside their function (21 Sep); a split commit is then built on its own before it is pushed.
 - **zsh** does not word-split `$VAR` and expands globs like `--include=*.kt`: run such commands via `bash -c`
   with arrays. `origin/origin` is `origin/HEAD`, not a branch.
 

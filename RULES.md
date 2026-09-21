@@ -19,8 +19,9 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
    machine they left.
 5. **Grey stays grey, and nothing saves silently empty.** `advance` records timing only; a set's own numbers
    are only what was typed; `LiftSessionEngine.carry(for:lastSession:)` is the ONE grey chain every surface
-   reads. `LiftSessionController.setsToSave` saves a set with anything typed (blank fields take grey values)
-   and completes or zeroes the rest by the user's one choice. **RPE is never carried between sets** — only the
+   reads. `LiftSessionController.setsToSave` saves every set that was DONE with what was typed, blank fields
+   taking grey values (Utku, 21 Sep 2026: done means complete), and completes or zeroes the sets never started by
+   the user's one choice. **RPE is never carried between sets** — only the
    line's own max RPE fills a blank rating (34). The bar and the Lock Screen show a set with the numbers its row
    shows, including numbers typed before the set is recorded (`LiftSessionController.setNumbers`).
 6. **Every readout on the session surfaces always renders, dashed when empty.**
@@ -63,10 +64,15 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     regenerated JSON — never a hand edit — and never leaves the governance tests red on `main` (#2229).
 26. **Removing a set removes what was entered for it** (held numbers and warm-up mark,
     `LiftSessionController.removeSet`).
-27. **The program changes only when the user says so, at finish** (`setCountChanges` / `applying`, which moves
-    only `targetSets`; a line with no count is 1; a deleted line is skipped).
+27. **The program changes at finish, two ways.** A set count changed with ⊕/⊖ only when the user says so
+    (`setCountChanges` / `applying`, which moves only `targetSets`; a line with no count is 1). Weight and reps
+    always, from each line's HEAVIEST set done that session — more weight first, then more reps
+    (`applyingHeaviestSets`; Utku chose the heaviest over the last or first set, and "by itself", 21 Sep 2026).
+    Warm-ups, discarded zeros and sets completed at finish without being started move nothing; a bodyweight set
+    keeps the line's weight. One write, only when a line differs; a deleted line is skipped.
 28. **Saving never decides for the user.** One Save button, disabled and dimmed until each question is answered.
-    No Skip. "Unfinished" is `LiftSessionEngine.unenteredSlots`: never performed, or performed with nothing typed.
+    No Skip. "Unfinished" is `LiftSessionEngine.unperformedSlots`: sets never started ("Sets not started: N"). A
+    set that was done is complete and never asked about (21 Sep 2026; it used to include done-but-untyped sets).
 29. **Every silent drop of a double-tap leaves a log line** (suppressed replay, late sync arrival up to 600 s,
     1.2 s debounce, a knock held back by 35). A reported miss with none of these lines was never sent by the
     strap; its console lines (`IMU double tap detected`) show what its sensor sensed. Utku exports the log:
@@ -98,9 +104,9 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     stored rating no longer proves the lifter rated that set, so the session's RPE card can report the plan.
     Say so plainly if the card is ever reworked.
 
-35. **A strap double-tap under 8 s after the last one the session acted on is a knock, not a tap** (16 Sep 2026:
+35. **A strap double-tap under 5 s after the last one the session acted on is a knock, not a tap** (16 Sep 2026:
     the strap's sensor reported two double-taps 3 s and 4 s after the one that started a set, and each finished
-    it). `LiftSessionController.isKnock` holds it back with no buzz and one log line — unless a rest that is
+    it; 8 s at first, 5 s since Utku found 8 too long, 21 Sep). `LiftSessionController.isKnock` holds it back with no buzz and one log line — unless a rest that is
     already over is waiting (a line planned with no rest). Only strap taps are judged; the on-screen button never
     is. The window is time since the last ACTED-ON strap tap, not stage age, so a session started on the phone
     takes its first strap tap at once.
@@ -116,11 +122,17 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 38. **A finished rest reads 0:00 on every surface and waits** — the sheet, the bar and the Lock Screen. The Live
     Activity's countdown range starts at the REST'S start; a range ending "now" re-rendered after the end would
     otherwise switch to counting up.
-39. **A strap step lights a LOCKED screen, and does nothing else** (Utku, 17 Sep 2026: "just light up", then dark
-    again on the phone's own timer). One ActivityKit alert on the update the step sends first
-    (`LiftSessionController.strapStepTaken`, fired straight after the stage moves), skipped unless the phone is
-    locked (`isProtectedDataAvailable` false) and the app is off screen, with a bundled silent sound
-    (`lift-step-silence.caf`). No extra updates, no delay, no notification. ActivityKit has no vibration switch.
+39. **A strap step lights a dark Lock Screen, and does nothing else** (Utku, 17 Sep 2026: "just light up", then
+    dark again on the phone's own timer). One ActivityKit alert on the update the step sends first
+    (`LiftSessionController.strapStepTaken`, fired straight after the stage moves), sent whenever NOOP is not the
+    app on screen, with a bundled silent sound (`lift-step-silence.caf`). Never gated on "locked": iOS reports
+    protected data unavailable only ~10 s after the screen goes dark, and that gate missed taps (21 Sep). Each
+    step leaves one strap-log line (`LiftLiveActivityController.LightUp`): alert sent, NOOP on screen, or no
+    banner. An alert sent that did not light was iOS's choice. No notification; ActivityKit has no vibration
+    switch.
+40. **One banner during a session: the Lift Log's.** NOOP's live-HR banner stands aside while a session runs,
+    and a foreground sync starts no sync banner (`SyncLiveActivityController.holdsBackNewBanner`, #2272's
+    controller); a banner the Sync Strap shortcut started still runs its course.
 
 ## Settled decisions
 
@@ -138,6 +150,8 @@ and flag it.
 - **Sets are rows, not JSON; weight stored in kg.** Rest is an absolute end instant, never auto-advancing.
   **No tap-anywhere-to-advance** (killed by real gym use).
 - **A discard keeps zeros rather than deleting** (Utku, 15 Sep): a mistaken discard must be recoverable.
+- **Done means complete** (Utku, 21 Sep): a ticked set saves typed-else-grey numbers without a question, and
+  the program takes each line's heaviest done set by itself (27, 28).
 - **Max RPE is a safety ceiling, not planned effort** (Utku, 15 Sep): it tells the lifter where to hold back
   to avoid injury. How hard a set actually felt is still only known afterwards and recorded per set.
 - **Spreadsheet import (Utku, 9 Sep):** template dropdowns stay English-only (tokens are matched case-, space-
