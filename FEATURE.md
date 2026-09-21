@@ -9,8 +9,10 @@
 - **The session is a sheet**: every set of every exercise is a row. Any pending set can be started at any time
   (machines get occupied). Finishing a set moves to the next set of the SAME exercise, then plan order.
   Green = working, amber band = rest, check = recorded.
-- **The plan bends**: each exercise ends in an "Add set" row (⊕ appends, ⊖ drops the last pending set),
-  changing this session only; finishing asks whether the program keeps the new counts.
+- **The plan bends**: each exercise ends in an "Add set" row (⊕ appends, ⊖ drops the last pending set), and
+  "Add exercise" at the end of the sheet adds one of the user's saved exercises, or a new one (saved at once,
+  with its muscles), as one set planned at 0 kg × 0 reps. Both change this session only; finishing asks whether
+  the program keeps the new counts and the new exercises.
 - **Any set's numbers can be typed at any time.** A recorded set is edited in place; a pending one is held and
   applied when recorded.
 - **Grey numbers stay grey** — this exercise earlier in the session, else last session, else the program
@@ -19,7 +21,7 @@
 - **Finishing asks only what it cannot know** (one Save button, disabled until answered): a set that was done
   is complete — typed numbers, else grey ones — with no question. Sets never started are **completed** with
   their grey numbers or **discarded** — saved as 0 kg × 0 reps, out of every figure, fillable later under Edit
-  sets; if a set count changed, whether the program keeps it. A discard that would leave no set counting files
+  sets; if a set count changed or an exercise was added, whether the program keeps it (one question). A discard that would leave no set counting files
   nothing, and the sheet warns before Save.
 - **The program follows the session**: at Save each line takes its heaviest done set's weight and reps.
 - **A finished session can be edited** ("Edit sets"): weights, reps, RPE, warm-up marks, session RPE, sets added
@@ -29,8 +31,10 @@
   after the last one acted on is taken as a knock: no buzz, nothing moves, one log line.
 - **The session outlives its screen**: minimise to a bar above the tab bar; a Lock Screen Live Activity shows
   state, exercise, reps × weight, live HR, the clock and the next set ("Next: Set 2 · Lat pulldown"). A finished
-  rest reads 0:00 everywhere. The banner's icon and numbers sit near its edges, heart rate over the clock, so
-  the words get the width. A strap step lights a dark Lock Screen and nothing more (a silent ActivityKit alert
+  rest reads 0:00 everywhere, and every running clock reads as the Lock Screen's does. The bar and the banner
+  share one layout — icon and numbers near the edges, heart rate over the clock — so the words get the width.
+  It also outlives NOOP itself: when iOS closes NOOP and relaunches it, the session is back as the process
+  starts and the banner iOS kept on the Lock Screen is picked up again. A strap step lights a dark Lock Screen and nothing more (a silent ActivityKit alert
   on the step's one update, whenever NOOP is not on screen), and logs whether it asked. It is the only banner
   during a session: NOOP's heart-rate and sync banners stand aside. Crash-safe snapshot in UserDefaults.
 - **Typing moves with one tap**: with the keyboard open, a tap on another field puts the cursor there; a tap
@@ -104,18 +108,21 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 | `Data/LiftFormat.swift` · `LiftMuscleNames.swift` · `HapticPrefs.swift` | formatting · localized muscle names · `haptics.liftRest` |
 | `Screens/LiftLogView.swift` | hub: programs, weekly sets per muscle, history |
 | `Screens/LiftProgramEditorSheet.swift` · `LiftProgramItemSheet.swift` · `LiftProgramImportSheet.swift` | program editor · one line · import |
+| `Screens/LiftExercisePicking.swift` · `LiftSessionExerciseSheet.swift` | what both exercise pickers share (name suggestions, remembering a name, the muscle picker) · the session's Add exercise sheet |
 | `Screens/LiftSessionView.swift` | the session sheet, ⊕/⊖, control bar, finish sheet (questions, warning) and `save()` |
 | `Screens/LiftSessionBar.swift` · `LiftSessionDetailSheet.swift` · `LiftSessionEditSheet.swift` · `KeyboardDismiss.swift` | bar (with the next set) · finished session (performed sets only) · its editor · tap-outside keyboard helper (a UIKit window recognizer that stands aside for text inputs) |
 | `BLE/FrameRouter.swift` · `App/AppModel.swift` | double-tap de-duplication, drop logs, tap handed on before the sync kick · gesture claim (synchronous) and debounce log |
 | `StrandiOS/Widgets/SyncLiveActivityController.swift` (upstream's, #2272) | `holdsBackNewBanner`: no sync banner starts during a session |
 
-iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller; `StrandiOS/App/RootTabView.swift` adds
+iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller and resumes a saved session in its `init`; `StrandiOS/App/RootTabView.swift` adds
 More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShared/LiftActivityAttributes.swift`,
 `StrandiOSWidgets/LiftLiveActivity.swift` (no catalog: words arrive pre-localized),
-`StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert, locked phone only),
+`StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert whenever NOOP is off screen; re-adopts the
+banner after a restart and never requests one from the background),
 `StrandiOS/Resources/lift-step-silence.caf`. The activity's attributes carry nothing; everything shown is content state.
 
 ### App tests — `StrandTests/`
 `LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 18 ·
-`LiftSessionEditTests` 8 · `LiftSessionPersistenceTests` 5 (old-format JSON: decides wipe or update) ·
+`LiftSessionAddExerciseTests` 14 · `LiftSessionEditTests` 8 ·
+`LiftSessionPersistenceTests` 6 (old-format JSON: decides wipe or update; the resume at launch) ·
 `LiftSessionStrapTapTests` 6 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.

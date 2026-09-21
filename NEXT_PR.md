@@ -9,21 +9,23 @@ yes.
 **Writing style (Utku, 21 Sep):** simple, clear words — what changed since #2098 and #2099 merged, and why. No
 sophisticated or AI-sounding phrasing.
 
-**What Utku checks at the gym next** (build `592e17b` from `lift-log-gym-round-3`, the stack's tip):
-- a set he ticks (Set done, or a strap double-tap) and leaves untyped saves its grey numbers; Finish asks only
-  about sets he never started ("Sets not started: N");
-- after Save, the program shows each exercise's heaviest set as its weight × reps;
-- a second double-tap 5 s or more after the last one that worked is acted on; one sooner gives no buzz;
-- the Lock Screen lights on every strap step while NOOP is not open on screen — including right after the screen
-  dimmed. For any step that still does not light: was the phone face down? Was a Focus on?
-- the Lock Screen banner: icon and numbers nearer the edges, heart rate above the clock, words cut less;
-- no second "sync" banner appears during a session;
-- save the strap log after the session; `tools/strap-log.py` now lists, per strap step, whether the Lock Screen
-  was asked to light.
+**What Utku checks at the gym next** (build `3cfd3d0` from `lift-log-gym-round-3`, the stack's tip):
+- the Lock Screen lights on every strap step while NOOP is not on screen — also after NOOP has been in the
+  background a long time (iOS restarts it; the strap log now says "session picked up again" and "Lock Screen
+  banner picked up again" when that happens);
+- "Add exercise" at the bottom of the session: pick one used before, or type a new one and give it muscles; it
+  joins with one set at 0 / 0; type the numbers, ⊕ adds sets; Finish asks "Update program" and the program then
+  lists it with its sets and heaviest set;
+- the minimised bar: icon near the left, heart rate over the clock at the right, words cut less; clocks read
+  "0:45" like the Lock Screen;
+- still true from round 4: done sets complete without asking; the program takes each line's heaviest set; a
+  second double-tap under 5 s is ignored; no second "sync" banner;
+- save the strap log right after the session (and right after anything odd — the phone keeps only the last
+  three NOOP restarts); `tools/strap-log.py … steps` lists every step and whether it lit.
 
 ## Before opening
 
-1. The gym session above. Replace `HARDWARE_ROUND_4` below with what it showed (or delete the sentence if all
+1. The gym session above. Replace `HARDWARE_ROUND_5` below with what it showed (or delete the sentence if all
    went well); a problem found there is fixed, verified and re-shipped first.
 2. `bash dist/tools/upstream-check.sh`. If `main` moved: rebase the stack in order (`WORKFLOW.md` §7 — first
    `lift-log-discard-and-edit`, then `--onto` for `lift-log-target-rpe` and `lift-log-gym-round-3`), prove every
@@ -52,7 +54,7 @@ sophisticated or AI-sounding phrasing.
 ```markdown
 ## What this PR does
 
-After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions (15–17 Sep, WHOOP 5.0). This PR is what those sessions showed: fixes for what went wrong, and a few small improvements. The commits follow the sections below.
+After #2098 and #2099 were merged, I used the Lift Log in five real gym sessions (15–21 Sep, WHOOP 5.0). This PR is what those sessions showed: fixes for what went wrong, and a few small improvements. The commits follow the sections below.
 
 ### Finishing a session
 - **One Save button.** Skip and Save session did the same thing, so Skip is gone.
@@ -60,6 +62,10 @@ After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions
 - **Discarded sets are kept as 0 kg × 0 reps.** They are left out of every figure, and you can still fill them in under Edit sets if the discard was a mistake.
 - **Nothing done, nothing saved.** If no set was done and the rest are discarded, no session and no workout are saved. This is your guard from #2099 (`fed714cb`), kept.
 - **The program follows the session.** At Save, each exercise in the program takes the weight and reps of its heaviest set (more weight first, then more reps). Warm-ups and discarded sets don't count. A changed set count is still asked about.
+
+### Adding an exercise during a session
+- **"Add exercise"** at the end of the session: pick an exercise you have done before, or type a new one and choose its muscles (a new one is saved, like a name typed in the program editor). It joins the session with one set at 0 kg × 0 reps; type what you lift, and add sets with Add set. Undo removes it.
+- **The program only changes if you say so.** Finish asks, in the same question as changed set counts, whether to keep it; "Update program" adds it at the end of the program with its sets and its heaviest set. Rest and max RPE are left for the program editor.
 
 ### Editing a finished session
 - **Add and remove sets** under Edit sets. Set numbers are renumbered on Save, and only that session changes.
@@ -77,7 +83,9 @@ After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions
 - Shows **the next set** ("Next: Set 2 · Lat pulldown") instead of "0 of 16 sets done".
 - The rest timer **stops at 0:00** instead of counting up again.
 - Numbers you type into the current set show there too, not the grey plan.
-- **More room for the text**: the heart rate sits above the timer, and the icon and numbers are closer to the edges.
+- **More room for the text**: the heart rate sits above the timer, and the icon and numbers are closer to the edges — on the Lock Screen and in the app's bar alike.
+- The app's running clocks read like the Lock Screen's ("0:45", "0:00", "1:05:00"), using NOOP's `ActiveWorkoutClock.clock`; before, the app said "45s" next to a Lock Screen "0:45".
+- **The session and its Lock Screen banner survive iOS closing NOOP.** iOS closed NOOP in the background and relaunched it four times in one session. The saved session came back only when the first screen appeared, and the banner's first update after a relaunch found no session and ended the banner iOS had kept; iOS does not allow a new one from the background, so the Lock Screen stayed dark until NOOP was opened. The session is now picked up when the app starts, and the banner is kept.
 - A double-tap **lights up the Lock Screen**, so you can see where you are without unlocking. Each double-tap writes one line to the strap log saying whether it asked iOS to light the screen.
 - **One banner during a session**: the sync banner (#2272) doesn't start while a session is running, the same way the heart-rate banner already steps aside.
 
@@ -88,8 +96,9 @@ After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions
 - A set with 0 reps counts nowhere: `LiftMetrics.isPerformed`, and the same rule in the SQL of `liftSetCounts` and `lastLiftSets` (`reps <> 0`), with a test that the two agree.
 - Android: `LiftMetrics.kt` (#2232) follows the change, with its oracle regenerated from the real Swift packages, and `deleteLiftSets` has its Kotlin twin in `DeviceRegistryDao`. Android has no Lift Log screens, so nothing else there changes.
 - `Tools/parity_twin_map.json` is refreshed with `parity_ledger.py --refresh-derived` for the two new twin pairs (not edited by hand).
-- Outside the Lift Log's own files: `FrameRouter` hands a double-tap on before it starts the sync; `AppModel`'s double-tap handler type is `@MainActor`; `SyncLiveActivityController` gets a `holdsBackNewBanner` hook; and `StrandiOSApp` wires them up.
-- No schema change.
+- Outside the Lift Log's own files: `FrameRouter` hands a double-tap on before it starts the sync; `AppModel`'s double-tap handler type is `@MainActor`; `SyncLiveActivityController` gets a `holdsBackNewBanner` hook; and `StrandiOSApp` wires them up and resumes a saved session in its `init` (it used to be `RootTabView`'s `.task`).
+- The exercise-name suggestions and the muscle picker move from `LiftProgramItemSheet` into `LiftExercisePicking.swift`, shared by the program editor and the new Add exercise sheet; the program editor behaves as before.
+- No schema change: an added exercise uses the existing `liftExercise` and `liftProgramItem` tables, and the crash snapshot gains one optional field.
 
 ## Type of change
 
@@ -101,13 +110,13 @@ After #2098 and #2099 were merged, I used the Lift Log in four real gym sessions
 
 ## How it was tested
 
-- **Four gym sessions on a WHOOP 5.0 (15–17 Sep).** Checked there: one Save, discarded sets shown as 0 / 0 under Edit sets, adding and removing sets, the warning before a save that files nothing, the grey max RPE, one-tap typing, the next-set line and the timer stopping at 0:00. In the last session the strap sensed 28 double-taps and all 28 reached the app. HARDWARE_ROUND_4
+- **Five gym sessions on a WHOOP 5.0 (15–21 Sep).** Checked there: one Save, discarded sets shown as 0 / 0 under Edit sets, adding and removing sets, the warning before a save that files nothing, the grey max RPE, one-tap typing, the next-set line and the timer stopping at 0:00. On 17 Sep the strap sensed 28 double-taps and all 28 reached the app. The 21 Sep session found the banner ending after iOS relaunched NOOP; the fix was checked in the simulator against ActivityKit's own log (the old build ends the banner two seconds after a relaunch; this one keeps updating the same banner). HARDWARE_ROUND_5
 - **Every new test was seen to fail without its fix**, then pass with it.
 - `swift test`: WhoopStore 609, StrandAnalytics 2030, StrandImport 327 — 0 failures.
 - `xcodebuild test` (macOS): 2066 tests; only the two date-format `TodayCarryOverTests` fail, the same as on `main` on this machine.
 - Android CI (build + unit tests, including the regenerated oracle): green.
 - Parity with Python 3.12: ledger, ratchet and governance tests (124) all pass.
-- iOS simulator, before and after: one-tap typing, the Lock Screen timer, the banner layout.
+- iOS simulator, before and after: one-tap typing, the Lock Screen timer, the banner and bar layout, adding an exercise through to the saved program (read back from the database), and the banner kept across a killed and relaunched app.
 - Both app targets build. Every new text is translated into all ten languages.
 
 ## Checklist

@@ -50,5 +50,10 @@ including the maintainer — have been wrong in ways that sounded authoritative.
 - **A strap log is evidence, read to the millisecond.** The strap's console lines (`IMU double tap detected`,
   `Command Run haptics`) carry its own ms ticks; mapping them to event timestamps separated knocks from taps
   and showed which buzzes queued behind a sync.
+- **iOS restarting NOOP is a normal part of a gym session** (21 Sep: 4 background relaunches in 28 min). Anything
+  a session needs must be ready at process start, not when a view appears. Prove Live Activity behaviour from
+  iOS's own log: `xcrun simctl spawn <dev> log show --predicate 'process == "liveactivitiesd"'` names each banner
+  created and ended; `kill -9` mimics iOS closing the app; never reinstall between compared steps (it ends banners).
+  Running the OLD build through the same steps is what turned a likely cause into a proven one.
 
 See [[noop-lift-log-project]], [[lift-log-docs-are-mine]].

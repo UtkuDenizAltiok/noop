@@ -64,8 +64,9 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     regenerated JSON — never a hand edit — and never leaves the governance tests red on `main` (#2229).
 26. **Removing a set removes what was entered for it** (held numbers and warm-up mark,
     `LiftSessionController.removeSet`).
-27. **The program changes at finish, two ways.** A set count changed with ⊕/⊖ only when the user says so
-    (`setCountChanges` / `applying`, which moves only `targetSets`; a line with no count is 1). Weight and reps
+27. **The program changes at finish, two ways.** A set count changed with ⊕/⊖, and an exercise added during the
+    session (42), only when the user says so — one Program question covers both (`setCountChanges` / `applying`,
+    which moves only `targetSets`; a line with no count is 1; `programAfterSession` composes it all). Weight and reps
     always, from each line's HEAVIEST set done that session — more weight first, then more reps
     (`applyingHeaviestSets`; Utku chose the heaviest over the last or first set, and "by itself", 21 Sep 2026).
     Warm-ups, discarded zeros and sets completed at finish without being started move nothing; a bodyweight set
@@ -121,7 +122,10 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     line cuts the name; "Last set"; "All sets done"). The sheet's header keeps "N of M sets done".
 38. **A finished rest reads 0:00 on every surface and waits** — the sheet, the bar and the Lock Screen. The Live
     Activity's countdown range starts at the REST'S start; a range ending "now" re-rendered after the end would
-    otherwise switch to counting up.
+    otherwise switch to counting up. A RUNNING clock in the app is written as the Lock Screen writes it, with
+    NOOP's own `ActiveWorkoutClock.clock` ("0:45", "0:00", "1:05:00"; until 21 Sep the app said "45s" and "0s"
+    beside a Lock Screen "0:45"). `LiftFormat.duration` ("45s rest") is only for a rest spoken about: a program
+    line's, a finished set's.
 39. **A strap step lights a dark Lock Screen, and does nothing else** (Utku, 17 Sep 2026: "just light up", then
     dark again on the phone's own timer). One ActivityKit alert on the update the step sends first
     (`LiftSessionController.strapStepTaken`, fired straight after the stage moves), sent whenever NOOP is not the
@@ -133,6 +137,26 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
 40. **One banner during a session: the Lift Log's.** NOOP's live-HR banner stands aside while a session runs,
     and a foreground sync starts no sync banner (`SyncLiveActivityController.holdsBackNewBanner`, #2272's
     controller); a banner the Sync Strap shortcut started still runs its course.
+41. **A session is back as NOOP's process starts — never when a screen appears — and its banner is kept.** iOS
+    closes NOOP in the background and relaunches it when the strap next sends something (4 times in 28 minutes,
+    21 Sep 2026). `LiftSessionController.resumeSaved` runs in `StrandiOSApp.init`, before any view or publisher:
+    the root view's publishers fire as soon as it is built, and when the session came back later (from
+    `RootTabView`), that first push found no session and ENDED the banner iOS had kept; iOS then refuses a new
+    banner to an app not on screen, so every strap step lit nothing until NOOP was opened (traced in ActivityKit's
+    own log). `LiftLiveActivityController` re-adopts a banner still showing, drops one swiped away or ended, and
+    never asks for a new one from the background. Each restart logs "session picked up again after NOOP
+    restarted" and "Lock Screen banner picked up again"; a banner that cannot come back logs once that it waits
+    for NOOP to be opened.
+42. **An exercise added during a session** (Utku, 21 Sep 2026) is one of his saved exercises or a new name, which
+    is saved to `liftExercise` at once with the muscles chosen (the ONLY things asked). It joins at the END of the
+    sheet as ONE set planned at 0 kg × 0 reps, no max RPE (0 is off the 1–10 scale) and the default rest, so its
+    row shows zeros — or last session's numbers for an exercise done before — until something is typed; done
+    without typing it saves 0 × 0, which is not performed (32). ⊕/⊖ and Undo work as on any line; a session holds
+    at most 200 lines (`LiftSessionEngine.maxExercises`, the importer's cap). The program gains it only on "Update
+    program": a new last line with the session's set count and its heaviest done set, else 0 × 0, nothing else
+    set (`LiftSessionController.programAfterSession`). The line's future program id and `addedInSession` ride
+    in the crash snapshot (optional field). The pickers share one copy of the name suggestions, remembering and
+    the muscle picker (`LiftExercisePicking.swift`).
 
 ## Settled decisions
 

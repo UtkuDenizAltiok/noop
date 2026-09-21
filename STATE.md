@@ -1,6 +1,6 @@
 # State
 
-**Updated 21 Sep 2026.** The only file that changes every session. Replace, don't append — history goes in
+**Updated 21 Sep 2026, night (after the fifth gym session).** The only file that changes every session. Replace, don't append — history goes in
 `HISTORY.md`.
 
 ## Upstream (`ryanbr/noop`)
@@ -27,51 +27,62 @@ from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is 
    sets in Edit sets; SQL mirrors `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and the
    parity refresh commit (`631f411f`: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2).
 2. `lift-log-target-rpe` @ `0c9c72e9` — max RPE per program line (`RULES.md` 34).
-3. `lift-log-gym-round-3` @ `7bafa857` — rounds 3 and 4: one-tap field focus; knock guard (now 5 s) and buzz
+3. `lift-log-gym-round-3` @ `69a3cb0d` — rounds 3, 4 and 5: one-tap field focus; knock guard (now 5 s) and buzz
    before the sync; next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking;
    the program takes each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each
-   step; no sync banner during a session; banner layout (`RULES.md` 5, 27, 28, 35–40).
+   step; no sync banner during a session; banner layout (`RULES.md` 5, 27, 28, 35–40). Round 5 (21 Sep night,
+   four commits on `7bafa857`): the session is resumed as NOOP starts and the banner kept across iOS restarts
+   (`e4e391f7`, rule 41); the bar laid out like the banner (`03919c22`); adding an exercise during a session
+   (`c7d38cee`, rule 42); running clocks via `ActiveWorkoutClock.clock` (`69a3cb0d`, rule 38).
 
 - **Work branch:** `lift-log-gym-round-3`
-- **Testing build on Utku's phone:** `592e17bf` = `7bafa857` + the template commit, now on NOOP 11.8.0. Releases
-  page: "NOOP Staging — base 11.8.0 · 2026-09-21 · 592e17b" (Pre-release), `.ipa` uploaded 10:21 on 21 Sep,
-  verified. Just update, no wipe. Not yet gym-tested.
+- **Testing build on Utku's phone:** `3cfd3d0c` = `69a3cb0d` + the template commit, NOOP 11.8.0. Releases page:
+  "NOOP Staging — base 11.8.0 · 2026-09-21 · 3cfd3d0" (Pre-release), `.ipa` uploaded 22:48 on 21 Sep, verified
+  (target commit, `.ipa`, template). Just update, no wipe (the snapshot's new field is optional). Not yet
+  gym-tested.
 
 ## Verified
 
-- **The tip `7bafa857`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
-  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout, no failure) · macOS
-  tests 2066 (only the two `TodayCarryOverTests`) · iOS build. `--quick` also passed on `631f411f` and `0c9c72e9`
-  alone. The light-up commit `51078475` was built on its own (its file was split by hand).
-- **Android CI:** green on the rebased tip `7bafa857` (run 35576172501).
-- **Tests seen to fail without their fix (round 4):** knock window pinned at 5 s; done sets complete without
-  asking; only never-started sets unfinished or zeroed; a discarded set takes no max RPE; the heaviest-set rule
-  and its exclusions. Earlier rounds: listed in `NEXT_PR.md`'s PR body.
-- **Simulator:** the new banner with a working set's count-up, a rest's countdown and a finished rest's 0:00, all
-  right-aligned under the heart rate, the status line whole ("Resting after set 4 — 9 x 60 kg"). A first layout
-  let the running timer spread across the banner; caught here, not on the phone. **Not verifiable in the
-  simulator:** whether the Lock Screen lights, and whether the phone vibrates with it.
-- **The 17 Sep strap log** (`python3 dist/tools/strap-log.py <log>`): 28 double-taps sensed, 28 reached the app,
-  2 held back as knocks (at +3.5 s and +6.0 s after an acted-on tap, under the old 8 s). The log could not show
-  which steps lit the screen — each step now logs it. NOOP restarted at 21:37:30 and 21:38:37; the log does not
-  say why.
+- **The tip `69a3cb0d`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout) · macOS tests 2081 (only
+  the two `TodayCarryOverTests`) · iOS build. `e4e391f7` (its controller file split by hand) built for iOS and
+  passed its persistence and strap-tap tests on its own. No `android/**` or `Packages/**` change since `7bafa857`,
+  so Android CI's green run 35576172501 on `7bafa857` still covers Android.
+- **Tests seen to fail without their fix (round 5):** five breaks at once — new lines never appended, the set count
+  not forced to 1, the added flag not persisted, the resume not logging, the zero plan — each failed its own tests;
+  restored byte-identical (sha256). Round 4 and earlier: `NEXT_PR.md`'s PR body.
+- **Simulator (iPhone 17 Pro, `281E44EC`):** Add exercise through to the store — "Pec deck" (Chest, Front delts)
+  added, 22.5 × 12 done, a second set added then discarded, "Update program": the program gained a last line of
+  2 sets, 12 × 22.5 kg, no rest or max RPE; `liftExercise` gained the name and muscles; the weekly card counted
+  Chest 1, Front delts 0.5. The program line editor (now on the shared picker) loads its muscles. The bar: heart
+  rate over the clock at the right, "Ready for the next set — 9 x 60 kg" whole, clocks "23:15" / "0:59".
+- **The restart bug, proven from ActivityKit's log** (`WORKFLOW.md` §3): with the gym build `7bafa857`, `kill -9`
+  then relaunch ENDED the surviving banner 2 s after launch (then, on screen, created another); with the fix the
+  same banner kept its updates, and the strap log read "session picked up again after NOOP restarted" and
+  "Lock Screen banner picked up again". A true background relaunch cannot be made in the simulator; iOS's own
+  log line "Requester is foreground" is the gate that refused the gym build's second banner.
+- **The 21 Sep strap log** (`strap-log.py … steps`): runs relaunched by iOS in the background at 20:34:58 and
+  20:58:46 lit 0 of 3 steps ("no Lift Log banner is running"); the run in which Utku had opened NOOP lit 4 of 4.
+  Every tap a sync handed over again matches its live step, except one at 20:47:37 in six minutes the file lost.
+  Taps were buzzed 0.46–0.47 s after the strap sensed them. 20:06–20:09 is not in the file (only the last three
+  earlier runs are kept); why iOS closed NOOP is not in it either (`BACKLOG.md`, known costs).
 
 ## Confirmed at the gym
 
-Everything up to round 3, including one-tap typing and the 0:00 rest clock (Utku, 21 Sep, about 17 Sep). Round 4
-(5 s knock window, done = complete, heaviest set to the program, light-up without the "locked" gate, banner layout,
-no sync banner) waits on the next session. Ask him then: for any step that buzzed but stayed dark, was the phone
-face down or a Focus on? The log now says whether the app asked iOS to light it.
+Everything up to round 3 (Utku, 21 Sep). From round 4, on 21 Sep evening: the light-up works while NOOP runs
+("perfectly working until some time"); the rest of round 4 was not reported on. Round 5 waits on the next session.
+Ask him then about each item on `NEXT_PR.md`'s checklist, and for the iPhone's Analytics Data files
+(`JetsamEvent…` / `NOOP…`) from 21 Sep around 20:34, 20:42 and 20:58 — they would say why iOS closed NOOP.
 
 ## Nothing is blocked
 
-The PR is written (`NEXT_PR.md`, plain words as Utku asked) and waits on one gym session on build `592e17b` and his
+The PR is written (`NEXT_PR.md`, plain words, round 5 included) and waits on one gym session on this build and his
 yes.
 
 ## Next
 
 1. **Utku's next gym session on this build.** The checklist is at the top of `NEXT_PR.md`. Read his log with
-   `dist/tools/strap-log.py`.
+   `dist/tools/strap-log.py` (the `steps` report first).
 2. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh lift-log-gym-round-3`), give him the
    release link and the build id, and say "just update" or "wipe".
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create

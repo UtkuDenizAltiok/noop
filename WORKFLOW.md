@@ -49,6 +49,12 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 - **Run the app.** Simulator walkthroughs caught a wrapped header, stale copy, a missing reload, "0" + "60" = "600".
   Read the simulator's database to confirm what was stored:
   `find ~/Library/Developer/CoreSimulator/Devices/<id>/data/Containers -name whoop.sqlite -path '*OpenWhoop*'`.
+- **The Lock Screen banner's life is readable in the simulator** (21 Sep): iOS's own ActivityKit log names every
+  banner created and ended — `xcrun simctl spawn <device> log show --last 2m --style compact --predicate
+  'process == "liveactivitiesd"' | grep -E "Created activity|activity ended"`. `kill -9` of the app's process is
+  how iOS closes it; `xcrun simctl launch` brings it back (in the foreground). Reinstalling the app ends its banners
+  by itself, so never install between the two steps being compared. The app's own strap log: Test Centre → Strap
+  log → Copy, then `xcrun simctl pbpaste <device>`.
 - **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
@@ -58,7 +64,7 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and
 device data: read it locally, quote only what a finding needs, and never commit it — this handbook is public.
 
-`python3 dist/tools/strap-log.py <log.txt>` prints two reports. It is a reading aid for whoever debugs, run on a
+`python3 dist/tools/strap-log.py <log.txt>` prints three reports (or name one: `runs`, `steps`, `taps`). It is a reading aid for whoever debugs, run on a
 computer against NOOP's ordinary exported strap log; it is not part of the app and adds no log of its own.
 - **runs** — the export joins TWO stores, so it can hold 13:00 lines yet miss 21:20: first the saved endings of
   up to three EARLIER app runs ("previous app session" — each run's last ≤1,000 lines, archived when the next
@@ -68,6 +74,11 @@ computer against NOOP's ordinary exported strap log; it is not part of the app a
   this is what hid 21:15–21:54: the run started at 21:14:45 stopped logging at 21:15:05, the next started at
   21:20:24, and by the 22:44 export its first half hour had been trimmed (58% of its entries are upstream's
   once-a-second heart-rate line; 44 of 5,180 were the Lift Log's).
+- **steps** — every Lift Log step in EVERY run, oldest first: its time, whether the Lock Screen was asked to light
+  (and why not), the Lift Log's own notes (a session picked up after a restart, the banner picked up or waiting for
+  NOOP to be opened), and each tap a sync handed over again, matched to the live step it replays. `runs` says
+  which runs iOS relaunched in the background ("Restored CONNECTED peripheral"). On 21 Sep this is what showed
+  every step after a background relaunch unlit, "no Lift Log banner is running" (`RULES.md` 41).
 - **taps** — the strap's own console (`IMU double tap detected`, `Command Run haptics`, `Command Send Historical
   Data`, millisecond ticks) against the app's lines: how many double-taps the strap sensed, what the app did with
   each, tap-to-buzz delay, taps under 5 s apart (knocks, `RULES.md` 35), per step whether the Lock Screen was asked

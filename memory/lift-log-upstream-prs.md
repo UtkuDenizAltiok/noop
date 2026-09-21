@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches rebased on a56840bb, green, to open as ONE PR (lift-log-follow-ups) with Utku's yes. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3, round 5 added 21 Sep night) to open as ONE PR (lift-log-follow-ups) with Utku's yes. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -21,6 +21,9 @@ that must survive if the handbook is missing (21 Sep 2026):
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.
+- Round 5 (gym 21 Sep evening): iOS relaunched NOOP in the background 4x in 28 min and the root view's first push
+  ENDED the Lock Screen banner (RULES 41: resume in `StrandiOSApp.init`); add an exercise mid-session (RULES 42);
+  the bar laid out like the Lock Screen; running clocks via `ActiveWorkoutClock.clock`.
 - Max RPE (1-10) per program line: typed in the editor or imported from the template's `Target max RPE`
   column, shown grey in the session, and a set left unrated saves it (Utku, 15-16 Sep). Its cost is stated in
   `dist/RULES.md` 34: a stored rating no longer proves he rated that set.

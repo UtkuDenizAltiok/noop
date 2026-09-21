@@ -1,7 +1,7 @@
 # Backlog
 
-Verified against the code at `lift-log-gym-round-3` (`7bafa857`, 21 Sep 2026). The open follow-up PR
-(`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — six gym
+Verified against the code at `lift-log-gym-round-3` (`69a3cb0d`, 21 Sep 2026). The open follow-up PR
+(`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — the gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
 ## Open, ordered by value
@@ -20,26 +20,30 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 2. **RPE coverage where the counts are.** The RPE card says how many working sets were rated. Still open: the
    sets-per-muscle card shows no coverage, and a mean from one or two ratings is drawn at full weight (below ~3
    rated sets, show coverage instead). Display only; counting must not change.
-3. **`LiftFormat.duration` has no hours branch** — 75 minutes reads "75:23" on the bar, sheet and Lock Screen.
-   Copy the `H:MM:SS` idiom from `Strand/App/ActiveWorkoutClock.swift`; consider upstream's clock-format
-   setting (#1822).
-4. **Android screens** — ryanbr's #2327 (19 Sep): an Android user found the 11.8.0 notes announcing a log book
+3. **Android screens** — ryanbr's #2327 (19 Sep): an Android user found the 11.8.0 notes announcing a log book
    Android does not have. The Kotlin figures exist (#2232); Compose screens and a DAO reading lift sets do not
    (so `liftSetCounts` / `lastLiftSets` have no Kotlin twin). Best done by someone who runs Android.
-5. **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` query `lastLiftSets` once
+4. **N+1 reads.** `LiftSessionView.loadLastTime()` and `LiftSessionDetailSheet.load()` query `lastLiftSets` once
    per exercise. Fine at 5–8 exercises; a single windowed query if programs grow.
-6. **Small smells.** `LiftSessionBar` puts a button inside a tappable bar (fine in the simulator; watch on
+5. **Small smells.** `LiftSessionBar` puts a button inside a tappable bar (fine in the simulator; watch on
    device). The session bar is iOS-only, so a session started on macOS is invisible once its sheet closes.
-7. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
+6. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
    Android has no Lift Log, so only its buzz-back and other double-tap actions would gain; unmeasured there.
    Say so in the PR rather than changing Kotlin BLE code nobody can test on a strap here.
 
-**Not asked for — do not build unprompted:** adding an exercise mid-session; exporting a program to a
-spreadsheet; merge-by-name on re-import. **Only if the maintainer asks:** split the spreadsheet import into its
+7. **Removing an exercise added by mistake.** Today: Undo straight after, or discard its sets at finish (they stay
+   in that session as 0 × 0, fillable under Edit sets) and answer "Keep as it was". Only if Utku asks.
+
+**Not asked for — do not build unprompted:** exporting a program to a spreadsheet; merge-by-name on re-import. **Only if the maintainer asks:** split the spreadsheet import into its
 own PR; trim comments; squash.
 
 ## Known costs, measured — not oversights
 
+- **iOS closes NOOP in the background during a session** — four times in 28 minutes on 21 Sep (and on 16 and 17
+  Sep). The Lift Log now survives it (`RULES.md` 41), but the cause is outside the Lift Log and the strap log cannot
+  name it: memory, CPU or a crash. The iPhone's own record would (Settings → Privacy & Security → Analytics &
+  Improvements → Analytics Data: `JetsamEvent…` means memory, a `NOOP…` file a crash). Upstream's area; raise it
+  only with Utku's yes, and with those files.
 - **The session snapshot is JSON-encoded into UserDefaults on every change**, keystrokes included. Deliberate (a
   crash mid-rest keeps what was typed); a few KB per session. If sessions grow, write sets incrementally rather
   than dropping durability. The importer's 200-line cap is part of this bound.

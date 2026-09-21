@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Read an exported NOOP strap log (More → Test Centre → Strap log → Save…) the way the Lift Log needs it.
 
-    python3 dist/tools/strap-log.py <log.txt>          both reports
-    python3 dist/tools/strap-log.py <log.txt> runs     which app runs the file holds, and what fills them
-    python3 dist/tools/strap-log.py <log.txt> taps     every double-tap in the newest run: sensed, acted on, buzzed
+    python3 dist/tools/strap-log.py <log.txt>          all three reports
+    python3 dist/tools/strap-log.py <log.txt> runs     which app runs the file holds, how each started, what fills them
+    python3 dist/tools/strap-log.py <log.txt> steps    every Lift Log step in every run: when, and whether the Lock Screen lit
+    python3 dist/tools/strap-log.py <log.txt> taps     the strap's own console for the newest run: sensed, buzzed, knocks
 
 Standard library only; any Python 3.9+. Read-only. Times print in this computer's time zone; for a log from
 another zone run it as `TZ=Europe/Berlin python3 …` (the strap log's own clock lines are the phone's local time).
@@ -13,6 +14,8 @@ in memory; the export prints the saved tails of up to three earlier processes ("
 each capped at 1,000 lines and only as current as its last 32-line save), then the running process
 ("current app session"). A process's first line is "Central state: …", so a run that starts without it lost its
 beginning to the cap. A header's "rolled at <UTC>" is when the NEXT process started, not when its lines ended.
+A run whose first lines say "Restored CONNECTED peripheral" was relaunched by iOS in the background (Bluetooth
+state restoration) after iOS had closed NOOP — memory, CPU, or a crash; the log cannot say which.
 
 The strap narrates itself in CONSOLE_LOGS frames ("strap: " lines, split at arbitrary points), each record
 stamped with the strap's millisecond tick: "NN, <tick>: SENSORS: IMU double tap detected". That tick is anchored
@@ -60,6 +63,15 @@ def category(entry):
     return next((name for name, test in rules if test(body)), "other")
 
 
+def how_started(run_lines):
+    head = "\n".join(run_lines[:6])
+    if "Restored CONNECTED peripheral" in head:
+        return "relaunched by iOS in the background after iOS closed NOOP (Bluetooth restore)"
+    if "Central state:" in head:
+        return "started (opened, or launched by iOS for other work)"
+    return None
+
+
 def report_runs(lines):
     print("APP RUNS IN THIS FILE")
     previous_last = None
@@ -72,6 +84,9 @@ def report_runs(lines):
               f"clock {clocks[0] if clocks else '?'} → {clocks[-1] if clocks else '?'}")
         print("  its start IS in the file" if starts_in_file
               else "  its start is NOT in the file (the head was dropped: cap, or a 1,000-line tail)")
+        started = how_started(run_lines)
+        if started:
+            print(f"  it was {started}")
         if previous_last and clocks:
             print(f"  nothing in the file between {previous_last} and {clocks[0]}")
         top = collections.Counter(category(e) for e in es).most_common(4)
@@ -98,9 +113,72 @@ def console_records(run_lines):
     return sorted({(int(m.group(1)), m.group(2).strip()) for m in found})
 
 
+def step_time(run_lines, i):
+    """The clock of a clockless line: the next clock within three lines (the buzz it triggered), else the last one."""
+    for l in run_lines[i + 1:i + 4]:
+        m = CLOCK.match(l)
+        if m: return m.group(1)
+    for l in reversed(run_lines[:i]):
+        m = CLOCK.match(l)
+        if m: return m.group(1) + "~"
+    return "?"
+
+
+def seconds(clock):
+    h, m, s = (int(x) for x in clock.rstrip("~").split(":"))
+    return h * 3600 + m * 60 + s
+
+
+def replay_note(body, acted):
+    """A tap handed over again by a sync. Its strap time runs a few seconds behind the phone's clock, so the step it
+    was acted on as, live, comes up to 10 s after it."""
+    m = re.search(r"strap time (\d+)\) arrived (\d+) s late", body)
+    if not m:
+        return body
+    local = dt.datetime.fromtimestamp(int(m.group(1))).strftime("%H:%M:%S")
+    step = next((t for t in acted if 0 <= seconds(t) - seconds(local) <= 10), None)
+    if step:
+        return f"replay of the {step.rstrip('~')} step (strap time {local}) handed over by a sync — rightly ignored"
+    return (f"a tap at strap time {local}, handed over {m.group(2)} s late by a sync and ignored; no step for it is "
+            "in the file (acted on in a part the file lost, or never reached the app live)")
+
+
+def report_steps(lines):
+    """Every Lift Log step and Lift Log line in every run, oldest first: the evidence for a dark Lock Screen."""
+    print("\nLIFT LOG STEPS, EVERY RUN IN THE FILE (~ = time of the line before)")
+    acted = [step_time(run, i) for _, _, run in split_runs(lines)
+             for i, l in enumerate(run) if CLOCK.sub("", l).startswith("Double-tap → ")]
+    for header, first, run in split_runs(lines):
+        rows, lit, dark = [], 0, 0
+        for i, line in enumerate(run):
+            body = CLOCK.sub("", line)
+            if body.startswith("Double-tap → Lift Log"):
+                outcome = next((CLOCK.sub("", l) for l in run[i + 1:i + 5] if "Lock Screen" in l), "")
+                if "light-up alert" in outcome: lit += 1; note = "Lock Screen: alert sent"
+                elif outcome: dark += 1; note = "Lock Screen: NOT lit — " + outcome.split("—", 1)[-1].strip()
+                else: note = "(no Lock Screen line)"
+                rows.append((step_time(run, i), "step", note))
+            elif body.startswith("Double-tap → "):
+                rows.append((step_time(run, i), "tap", "went to NOOP's own double-tap action: " + body[13:]))
+            elif body.startswith("Lift Log:") and "strap step" not in body:
+                rows.append((step_time(run, i), "note", body[len("Lift Log: "):]))
+            elif "late during a sync" in body:
+                rows.append((step_time(run, i), "late", replay_note(body, acted)))
+        started = how_started(run)
+        print(f"\n- {header}" + (f"\n  {started}" if started else ""))
+        if not rows:
+            print("  no Lift Log lines"); continue
+        for when, kind, note in rows:
+            print(f"  {when:<9} {kind:<5} {note}")
+        if lit or dark:
+            print(f"  → {lit} step(s) sent a light-up alert, {dark} did not")
+
+
 def report_taps(lines):
     header, first, run = split_runs(lines)[-1]
-    print(f"\nDOUBLE-TAPS IN THE NEWEST RUN ({header}, from line {first + 1})")
+    print(f"\nTHE STRAP'S OWN CONSOLE, NEWEST RUN ({header}, from line {first + 1})")
+    print("  A sync hands over the strap's console from before this run too: a tap it lists that happened before")
+    print("  this run started was handled (or not) by an earlier run — see the steps above, not the counts here.")
     records = console_records(run)
     sensed = [t for t, m in records if "IMU double tap detected" in m]
     buzzes = [t for t, m in records if "Command Run haptics" in m]
@@ -146,11 +224,12 @@ def report_taps(lines):
 
 
 def main(argv):
-    if len(argv) < 2 or argv[2:3] not in ([], ["runs"], ["taps"]):
+    if len(argv) < 2 or argv[2:3] not in ([], ["runs"], ["steps"], ["taps"]):
         print(__doc__.split("\n\n")[0]); return 2
     lines = open(argv[1], encoding="utf-8", errors="replace").read().splitlines()
     what = argv[2] if len(argv) > 2 else "all"
     if what in ("all", "runs"): report_runs(lines)
+    if what in ("all", "steps"): report_steps(lines)
     if what in ("all", "taps"): report_taps(lines)
     return 0
 

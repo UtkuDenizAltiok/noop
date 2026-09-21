@@ -62,6 +62,16 @@ trustworthy — keep it.
   committed on the first branch; full `verify.sh` green on the tip, governance included, for the first time. Round-4
   changes on top, and the plan changed to ONE PR for the whole stack. Utku confirmed one-tap typing and the 0:00
   clock from 17 Sep, and asked for the PR in simple, clear words.
+- **21 Sep, 19:36–21:02** — fifth gym session, on build `592e17b` (round 4). The Lock Screen lit "perfectly" at
+  first, then mostly stayed dark while buzzes and steps worked. The log (20:34:58 on; the three older runs' slots
+  were used up) shows iOS closing NOOP and relaunching it in the background four times in 28 minutes, and every
+  step after a background relaunch logging "no Lift Log banner is running" until he opened NOOP. Ours: the session
+  came back when the first screen appeared, the banner's first push found none and ENDED the banner iOS had kept,
+  and iOS refuses a new one from the background — proven in the simulator from ActivityKit's own log (rule 41).
+  A tap/buzz/light-up delay he felt at 20:06–20:09 is outside the file. Asked for: adding an exercise during a
+  session (rule 42), and the in-app bar laid out like the Lock Screen banner. The same night: all three built,
+  in-app running clocks switched to NOOP's `ActiveWorkoutClock.clock` (they said "45s" beside the Lock Screen's
+  "0:45"), and `tools/strap-log.py` gained a per-run "steps" report.
 
 ## What found what
 
@@ -109,6 +119,9 @@ trustworthy — keep it.
 | an exported strap log had lost the first half hour of the session | log analysis, Utku asked why | 29, `tools/strap-log.py` |
 | strap steps that buzzed but did not light the Lock Screen (the "locked" gate lags ~10 s) | gym | 39 |
 | two deliberate taps held back by an 8 s knock window | gym, strap log | 35 |
+| after iOS relaunched NOOP in the background, its first push ended the Lock Screen banner | gym, strap log, ActivityKit log | 41 |
+| the in-app clocks said "45s" / "0s" where the Lock Screen said "0:45" / "0:00" | simulator | 38 |
+| an exercise not in the program could not be logged | Utku asked | 42 |
 | done sets asked about at finish; the program not following the session | Utku asked | 27, 28 |
 | a second, sync banner would appear mid-session once #2272 arrived | reading upstream | 40 |
 | the Lock Screen's words cut short by the numbers' width | Utku asked (screenshot) | banner layout |
