@@ -1,6 +1,6 @@
 # Backlog
 
-Verified against the code at `lift-log-gym-round-3` (`69a3cb0d`, 21 Sep 2026). The open follow-up PR
+Verified against the code at `lift-log-follow-ups` (`65b804a6`, 22 Sep 2026). The open follow-up PR
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — the gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
@@ -30,7 +30,6 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 6. **Android does not hand a double-tap on before its sync kick** (the Swift change of 16 Sep, `RULES.md` 36).
    Android has no Lift Log, so only its buzz-back and other double-tap actions would gain; unmeasured there.
    Say so in the PR rather than changing Kotlin BLE code nobody can test on a strap here.
-
 7. **Removing an exercise added by mistake.** Today: Undo straight after, or discard its sets at finish (they stay
    in that session as 0 × 0, fillable under Edit sets) and answer "Keep as it was". Only if Utku asks.
 

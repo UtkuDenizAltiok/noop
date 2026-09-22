@@ -1,15 +1,16 @@
 # Next PR — ready to open
 
-**One PR** for everything since #2099 merged (decided 21 Sep 2026). The work was built as three stacked branches,
-but the fourth gym session changed how finishing treats a set that was done, which rewrites behaviour the first
-branch introduced; one PR lets the maintainers review the final behaviour once, carry one parity refresh, and
-merge once. Its commits stay separable by concern if they ask for smaller PRs. Nothing is posted until Utku says
-yes.
+**One PR** for everything since #2099 merged (decided 21 Sep 2026), from the branch `lift-log-follow-ups`. The work
+was built as three stacked branches, but the fourth gym session changed how finishing treats a set that was done,
+which rewrites behaviour the first branch introduced; one PR lets the maintainers review the final behaviour once,
+carry one parity refresh, and merge once. Since 22 Sep the stack is that one branch (the three old names are
+deleted); its commits stay separable by concern if the maintainers ask for smaller PRs. Nothing is posted until
+Utku says yes.
 
 **Writing style (Utku, 21 Sep):** simple, clear words — what changed since #2098 and #2099 merged, and why. No
 sophisticated or AI-sounding phrasing.
 
-**What Utku checks at the gym next** (build `f7638bf` from `lift-log-gym-round-3`, the stack's tip):
+**What Utku checks at the gym next** (build `f7638bf` = `lift-log-follow-ups` @ `65b804a6` + the template commit):
 - the Lock Screen lights on every strap step while NOOP is not on screen — also after NOOP has been in the
   background a long time (iOS restarts it; the strap log now says "session picked up again" and "Lock Screen
   banner picked up again" when that happens);
@@ -22,24 +23,24 @@ sophisticated or AI-sounding phrasing.
   battery drain over the session feels no worse than before;
 - still true from round 4: done sets complete without asking; the program takes each line's heaviest set; a
   second double-tap under 5 s is ignored; no second "sync" banner;
-- save the strap log right after the session (and right after anything odd — the phone keeps only the last
-  three NOOP restarts); `tools/strap-log.py … steps` lists every step and whether it lit.
+- save the strap log right after the session, and midway through one longer than about 45 minutes (his build keeps
+  only the last three NOOP restarts, until #2386 is merged and in a build); `tools/strap-log.py … steps` lists
+  every step and whether it lit.
 
 ## Before opening
 
 1. The gym session above. Replace `HARDWARE_ROUND_5` below with what it showed (or delete the sentence if all
    went well); a problem found there is fixed, verified and re-shipped first.
-2. `bash dist/tools/upstream-check.sh`. If `main` moved: rebase the stack in order (`WORKFLOW.md` §7 — first
-   `lift-log-discard-and-edit`, then `--onto` for `lift-log-target-rpe` and `lift-log-gym-round-3`), prove every
-   commit is unchanged with `git range-diff`, then re-run the parity refresh
+2. `bash dist/tools/upstream-check.sh`. If `main` moved (it had by one Android-diagnostics commit, `29d90eb6`, on
+   22 Sep; the branch still merged cleanly): rebase `lift-log-follow-ups` (`WORKFLOW.md` §7), prove every commit
+   is unchanged with `git range-diff`, then re-run the parity refresh
    (`Tools/parity_ledger.py --refresh-derived --base "$(git merge-base HEAD upstream/main)"`, Python 3.12). If
    the refresh changes the JSON again, commit it at the tip as "parity: re-derive the twin-map authority after
    rebasing onto …" — never a hand edit. Then `bash dist/tools/verify.sh`: every step must pass, governance
    included (it did on 21 Sep on `a56840bb`).
-3. Create the PR branch from the tip and push it: `git branch lift-log-follow-ups lift-log-gym-round-3`, then
-   `git push -u origin lift-log-follow-ups`. Run Android CI on it:
+3. Push it (with a pinned lease after a rebase, `WORKFLOW.md` §8) and run Android CI on it:
    `gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref lift-log-follow-ups`.
-4. The test counts below are from 21 Sep (`7bafa857`); update them if a rebase changed them. Re-read the whole
+4. The test counts below are from 22 Sep (`65b804a6`); update them if a rebase changed them. Re-read the whole
    diff once as a reviewer.
 5. Open it and post the reply (below), in that order:
    ```bash
@@ -47,9 +48,8 @@ sophisticated or AI-sounding phrasing.
      --title "Lift Log: follow-ups from four gym sessions" --body-file <the PR body below, saved to a file>
    gh pr comment 2099 --repo ryanbr/noop --body-file <the reply below, with #FOLLOWUP filled in>
    ```
-6. Once it is open, the three stacked branches are fully contained in `lift-log-follow-ups`: with Utku's yes,
-   delete them from the fork (their commits live on in the new branch; keep a local bundle). Update `STATE.md`,
-   `HISTORY.md`, then `bash dist/tools/backup.sh "follow-up PR opened"`.
+6. Record the PR's number in `STATE.md` "Now" the moment it exists, then `HISTORY.md`, then
+   `bash dist/tools/backup.sh "follow-up PR opened"`.
 
 ## PR body
 
@@ -117,7 +117,7 @@ After #2098 and #2099 were merged, I used the Lift Log in five real gym sessions
 - **Five gym sessions on a WHOOP 5.0 (15–21 Sep).** Checked there: one Save, discarded sets shown as 0 / 0 under Edit sets, adding and removing sets, the warning before a save that files nothing, the grey max RPE, one-tap typing, the next-set line and the timer stopping at 0:00. On 17 Sep the strap sensed 28 double-taps and all 28 reached the app. The 21 Sep session found the banner ending after iOS relaunched NOOP; the fix was checked in the simulator against ActivityKit's own log (the old build ends the banner two seconds after a relaunch; this one keeps updating the same banner). HARDWARE_ROUND_5
 - **Every new test was seen to fail without its fix**, then pass with it.
 - `swift test`: WhoopStore 609, StrandAnalytics 2030, StrandImport 327 — 0 failures.
-- `xcodebuild test` (macOS): 2066 tests; only the two date-format `TodayCarryOverTests` fail, the same as on `main` on this machine.
+- `xcodebuild test` (macOS): 2085 tests; only the two date-format `TodayCarryOverTests` fail, the same as on `main` on this machine.
 - Android CI (build + unit tests, including the regenerated oracle): green.
 - Parity with Python 3.12: ledger, ratchet and governance tests (124) all pass.
 - iOS simulator, before and after: one-tap typing, the Lock Screen timer, the banner and bar layout, adding an exercise through to the saved program (read back from the database), and the banner kept across a killed and relaunched app.
@@ -151,86 +151,8 @@ the new PR. Post it right after the PR opens.
 Thanks for the guard, and for merging. You asked whether I'd rather keep performed sets with their timing: after more gym sessions, yes. In #FOLLOWUP a set that was done always counts as done, with the numbers typed or the grey ones, and the finish screen only asks about sets never started. Your guard stays: if no set was done and the rest are discarded, nothing is saved, and the finish screen says so before Save.
 ```
 
-## The separate strap-log PR (branch `strap-log-on-disk`)
+## The separate strap-log PR — opened
 
-Not part of the Lift Log PR: it changes NOOP's own strap log, on iOS and Android. Utku asked for it on 22 Sep after
-the log missed the window he wanted, and said yes to opening it the same day, on condition that it is lean, cheap on
-battery and removes nothing he wants. Three commits on `upstream/main` `a56840bb`: `2bfef51e` (the change),
-`8b2edc62` (drops the archive's unused `clear()`) and `300b6c27` (the ring's keys `nonisolated`: the branch had
-added four Swift 6 warnings). Before opening: `gh pr list --repo ryanbr/noop --head
-strap-log-on-disk --state all` must be empty. The body, as it goes up (verified on `300b6c27`):
-
-**Title:** Strap log: keep every line on disk, across restarts, within 2 MB
-
-```markdown
-## What this PR does
-
-The strap log is what people attach to bug reports, and it lost exactly the part that explains a restart:
-
-- it lived in memory and was copied to UserDefaults (SharedPreferences on Android) only every 32 lines, so the last
-  lines before the OS killed the app were gone;
-- each restart kept only the last 1,000 lines of the run before it, and only the last three runs;
-- the current run kept only its newest 5,000 lines, about 50 minutes since the once-a-second heart-rate line (#1767).
-
-On 21 Sep iOS closed NOOP four times in 28 minutes of one gym session (background CPU), and the log saved afterwards
-began half an hour after the moment it was saved for.
-
-Now every line is appended to a file as it is logged: one file per app run, in 256 KB pieces, and past 2 MB in all
-(about 20,000 lines, some three hours with a strap streaming) the oldest pieces are deleted. The log keeps every
-run, and every line of it, within 2 MB, however often the app restarts. Files: `<AppSupport>/OpenWhoop/strap-log`
-(iOS: the store's `completeUntilFirstUserAuthentication` class, so lines logged while the phone is locked are
-written; excluded from backup) and `filesDir/strap-log` on Android.
-
-Exports look as before: the earlier runs oldest first, under the same "previous app session, N line(s), rolled at
-…" header ("head clipped" when a run's start was deleted), then `===== current app session =====` and this run,
-now the whole run rather than its newest 5,000 lines. The log tools read it unchanged. The old ring's lines are
-carried over once and its keys removed.
-
-It also costs less than before. Measured on a Mac over 20,000 lines: 33 ms of CPU and 1.6 MB written, where the
-old mirror took about 370 ms of CPU in the app (plus cfprefsd's share) and re-saved 93 MB. Android's old mirror
-copied up to 5,000 lines every 32.
-
-Not changed: what is logged and its redaction; the in-memory buffer behind the Live log card and the Test Centre
-readouts; Android's opt-in detailed capture (#1121), which keeps its own file. The one new cost is memory while a
-Test Centre guided mode is on: its row rebuilds the export on every line, so the older part is rendered once and
-kept (at most the 2 MB budget).
-
-## Type of change
-
-- [x] Bug fix
-- [ ] New feature
-- [ ] Refactor / cleanup
-- [ ] Documentation
-- [ ] CI / tooling
-
-## How it was tested
-
-- `StrapLogArchiveTests` (7): a line survives a kill without a close; four restarts keep every run in order, each
-  "rolled at" the next one's start; a run longer than a piece exports whole, with an export in the middle; past
-  the budget the oldest go first and a clipped run says so; an export before the first line carries the run
-  before; an empty log exports nothing; the old ring is carried over once, ahead of every run. Breaking the file
-  write, the clipped header or the ring's order each fails them.
-- `StrapLogArchiveTest` (Kotlin): the same behaviour, and two cases whose expected text is the Swift archive's own
-  output, pasted verbatim. Android CI: green on the branch tip, https://github.com/UtkuDenizAltiok/noop/actions/runs/35692959668.
-- Locally on the branch: package tests (WhoopStore 606, StrandAnalytics 2027, StrandImport 324), doc-comment lint,
-  i18n audit, parity ledger, ratchet and governance (124 tests), the macOS app tests (2,043 tests; the only failures are the two
-  `TodayCarryOverTests`, which fail on `main` too under a German region) and the iOS app build.
-- iOS Simulator (iOS 26.5), on the first commit's build (the two after it change nothing that runs): NOOP killed
-  with `kill -9` six seconds after launch; its file held all four lines, and Test Centre → Strap log → Copy after
-  the relaunch showed that run and the two before it, each whole under its header.
-- Not run on a strap: this changes where the log is written, not anything sent or received over Bluetooth.
-
-## Checklist
-
-- [x] Swift package tests pass for any package I touched (none touched; all three run)
-- [x] Android unit tests pass if I touched `android/` (Android CI)
-- [x] No new build warnings introduced (the two in `LiveState.logSafeDeviceName` are on `main` too)
-- [x] UI changes use only `StrandDesign` tokens (no UI change)
-- [x] No hardcoded hex frame bytes; protocol facts live in the schema / decoders
-- [x] Follows the conventions in `docs/CONTRIBUTING.md`
-- [x] I did not commit generated output (`Strand.xcodeproj/`) or any secrets/keystores
-
-## Related issues
-
-Refs #510, #1263, #1468
-```
+[#2386](https://github.com/ryanbr/noop/pull/2386), opened 22 Sep with Utku's yes; its text lives on GitHub and its
+state in `STATE.md`. Not part of the Lift Log PR. A comment on it gets one reply after it; a later change of ours
+goes into a description edit (`WORKFLOW.md` §5).

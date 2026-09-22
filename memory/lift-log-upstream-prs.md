@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3 @ 65b804a6) to open as ONE PR (lift-log-follow-ups) with Utku's yes; the separate strap-log PR is open as #2386. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; one work branch lift-log-follow-ups @ 65b804a6 (the former three-branch stack, merged into one name 22 Sep) to open as ONE PR with Utku's yes; the separate strap-log PR is open as #2386. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -14,10 +14,10 @@ that must survive if the handbook is missing (21 Sep 2026):
 - Merged upstream: #2098 schema, #2099 app (with ryanbr's empty-session guard `fed714cb`), #2232 the
   maintainers' Kotlin `LiftMetrics` twin, #2233 their parity-governance repair (#2229 blamed #2099 for leaving
   that gate red).
-- Three stacked branches, rebased on `a56840bb` (21 Sep), to be opened as ONE PR from a new branch
-  `lift-log-follow-ups` at the tip (decided 21 Sep: round 4 rewrote how finishing treats done sets, so separate
-  PRs would review replaced behaviour). The first branch carries the parity refresh commit; with it the full
-  `verify.sh` passes on the tip, governance included. Details and the PR body: `dist/NEXT_PR.md`.
+- One work branch, `lift-log-follow-ups` (22 Sep: the three stacked branches were renamed / deleted into it; all
+  their commits are in it), to be opened as ONE PR (decided 21 Sep: round 4 rewrote how finishing treats done
+  sets, so separate PRs would review replaced behaviour). It carries the parity refresh commit; the full
+  `verify.sh` passes on it, governance included. Details and the PR body: `dist/NEXT_PR.md`.
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.

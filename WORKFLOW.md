@@ -1,6 +1,7 @@
 # Workflow
 
-How work on the Lift Log is done. The app repo's own `CLAUDE.md` and `docs/CONTRIBUTING.md` still apply; this
+How work on the Lift Log is done. The app repo's own `AGENTS.md` (`CLAUDE.md` points to it) and
+`docs/CONTRIBUTING.md` still apply; this
 adds what this feature and this fork need. Commands run from the app repo root; tools live in `dist/tools/`.
 
 ## 1. Working with Utku
@@ -41,22 +42,26 @@ hours behind the work). A session can stop anywhere, without an end; the convers
   run's id the moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo",
   and "Next safe action".
 - **Save often, upload at milestones.** `bash dist/tools/checkpoint.sh save "what"` is a local commit of the handbook
-  and Claude Code's memory — instant, offline, never public. `backup.sh` uploads after any milestone that took real
-  work, not only at the end; it folds the local checkpoints into its one commit.
+  (and of Claude Code's memory notes, when there are any) — instant, offline, never public. `backup.sh` uploads
+  after any milestone that took real work, not only at the end; it folds the local checkpoints into its one commit.
 - **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
   `dist/private/events.log` (local); a verification's numbers go into `STATE.md`. Nothing needed later lives only
   in the scratchpad or `$TMPDIR`, which a restart wipes: harnesses go to `tools/` (the strap-log oracle was one),
   drafts to `NEXT_PR.md` or `private/`.
 - **Background jobs** are named in "Now" with how to check them; `checkpoint.sh status` lists long jobs still
   running, so an old session's job is waited on or stopped, never started twice.
-- **Hooks** (optional, Utku's choice — they change how Claude Code behaves; its safety guard does not let the agent
-  install them itself): `bash dist/tools/checkpoint.sh install-hooks` puts five hooks into the app repo's
-  `.claude/settings.local.json` (excluded through `.git/info/exclude`, never committed). A new, resumed or
-  compacted session starts with "Now" and the status in its context; the handbook is checkpointed after every
-  reply, before a compaction, and when a usage limit or server error ends a turn (`StopFailure`), and the next
-  prompt after such an error is told so. `remove-hooks` undoes it. The hooks only save locally and print; they
-  never upload, block or fail. `bash dist/tools/test-checkpoint.sh` proves the tool and backup's folding in a
-  sandbox (31 checks; four broken guards each caught, 22 Sep).
+- **Other AI tools** keep the same discipline by hand: `checkpoint.sh status --net` at the start and after any
+  interruption, `checkpoint.sh save` after each milestone, README "End a session" before a fresh start.
+- **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep).** `bash dist/tools/checkpoint.sh install-hooks`
+  puts five hooks into the app repo's `.claude/settings.local.json` (excluded through `.git/info/exclude`, never
+  committed). A new, resumed or compacted session starts with "Now" and the status in its context; the handbook is
+  checkpointed after every reply, before a compaction, and when a usage limit or server error ends a turn
+  (`StopFailure`), and the next prompt after such an error is told so. `remove-hooks` undoes it. The hooks only save
+  locally and print; they never upload, block or fail. The desktop app picks a change up within about a minute,
+  in the running session too (a probe hook fired from 07:42 on 22 Sep). They change how Claude Code behaves, so
+  installing them is the owner's call: Claude Code's auto-mode guard refuses to let the agent write — or even read —
+  Claude's settings files. `bash dist/tools/test-checkpoint.sh` proves the tool and backup's folding in a sandbox
+  (31 checks; four broken guards each caught, 22 Sep).
 
 ## 3. Verification
 
@@ -100,10 +105,11 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 - **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
-- **The session transcripts are the last resort** after an interruption, when the handbook, git, CI and the event
-  log leave a question open: `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl`, one JSON object per
-  line. Search the tool results with Python (`json.loads` per line, then the text), not `grep -o` with a long
-  pattern, which fails on the minified lines. On 22 Sep it held the numbers of a verify run nobody had written down.
+- **The AI tool's own session history is the last resort** after an interruption, when the handbook, git, CI and the
+  event log leave a question open. Claude Code keeps it in
+  `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl`, one JSON object per line: search the tool results
+  with Python (`json.loads` per line, then the text), not `grep -o` with a long pattern, which fails on the
+  minified lines. On 22 Sep it held the numbers of a verify run nobody had written down.
 
 ### Reading a strap log
 
@@ -211,9 +217,11 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 ## 8. Git and fork hygiene
 
-- **The fork holds exactly:** `main` (mirror), the work branches (stacked, one per upcoming PR, listed in
-  `STATE.md`), `lift-log-build`, `lift-log-handbook`; tags
-  `fork/ships-template` and `testing-latest` (plus upstream's version tags). Nothing else.
+- **The fork holds exactly:** `main` (mirror), the work branch `lift-log-follow-ups` (everything for the next Lift
+  Log PR, one commit per concern), one branch per open upstream PR (now `strap-log-on-disk`, #2386),
+  `lift-log-build`, `lift-log-handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version
+  tags); one release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven to
+  equal it (§5); the three stacked branches that became `lift-log-follow-ups` were deleted on 22 Sep.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
 - **Before any history rewrite** — a rebase, an amend or reset of a pushed commit, a force-push — tag the old tip
   `backup/<what>` locally; `checkpoint.sh status` lists such refs until they are deleted, so an interrupted rewrite
