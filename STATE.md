@@ -1,6 +1,6 @@
 # State
 
-**Updated 22 Sep 2026, 09:00 (PR #2386 open; one work branch; the handbook usable by any AI).** The only file that
+**Updated 22 Sep 2026, 23:10 (#2386 merged; the sixth session's island and light-up fixes shipped as `a01bf3fd`).** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -9,9 +9,8 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (22 Sep 10:05). #2386: fix `23bee21a` pushed, replied to and described with Utku's yes; all five
-upstream checks green, MERGEABLE CLEAN; waiting on the maintainers. Waiting on Utku's next gym session on build
-`f7638bf`.
+Nothing in flight (22 Sep 23:10). The sixth session's two findings are fixed, verified and shipped as `a01bf3fd`;
+waiting on Utku's seventh session and then his yes for the follow-up PR.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -21,10 +20,12 @@ upstream checks green, MERGEABLE CLEAN; waiting on the maintainers. Waiting on U
 | [#2099](https://github.com/ryanbr/noop/pull/2099) | the app | merged 15 Sep, squash `4453a089` (our `45caa744` + ryanbr's empty-session guard `fed714cb`) |
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
-| [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's; branch `strap-log-on-disk`) | **open** since 22 Sep 08:10; ryanbr approving (06:55 UTC); head `23bee21a` = his finding fixed, replied to; all five checks green |
+| [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's) | merged 22 Sep 09:14 UTC, squash `a9717abc` (proven equal to `23bee21a` file by file); branch and worktree removed |
 
-- **`upstream/main` is `29d90eb6`** (22 Sep: one Android-diagnostics commit on top of `a56840bb`, which touches neither
-  of our branches; both merge cleanly). 11.8.0 shipped the Lift Log (Apple only). The fork's `main` mirrors it.
+- **`upstream/main` is `039dd939`** (22 Sep evening; our merged `a9717abc` is in it, plus Android diagnostics, an
+  Android chart fix, a macOS frame-loop fix and a design hex-parse fix — none touching Lift Log files).
+  `lift-log-follow-ups` sits on `a56840bb` and merges cleanly; rebase before the PR. 11.8.0 shipped the Lift Log
+  (Apple only). The fork's `main` mirrors upstream as of `29d90eb6` — re-mirror at the next sync.
 - **Open upstream:** ryanbr's #2327 — the Lift Log has no Android UI (`BACKLOG.md` 3). Not ours to answer unasked.
 - **Unanswered (optional):** ryanbr's last comment on merged #2099 (15 Sep 04:07) asks whether we would rather
   keep performed sets with their timing — round 4 did exactly that. A 3-sentence reply is drafted in `NEXT_PR.md`,
@@ -40,20 +41,21 @@ branches until 22 Sep:
    mirrors `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and the parity refresh commit
    (`631f411f`: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2).
 2. up to `0c9c72e9` — max RPE per program line (`RULES.md` 34).
-3. up to `65b804a6` — rounds 3, 4 and 5: one-tap field focus; knock guard (now 5 s) and buzz before the sync;
+3. up to `e8dcd181` — rounds 3 to 6: one-tap field focus; knock guard (now 5 s) and buzz before the sync;
    next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking; the program takes
    each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each step; no sync banner
    during a session; banner layout (`RULES.md` 5, 27, 28, 35–40). Round 5 (21–22 Sep): the session is resumed as
    NOOP starts and the banner kept across iOS restarts (`e4e391f7`, rule 41); the bar laid out like the banner
    (`03919c22`); adding an exercise during a session (`c7d38cee`, rule 42); running clocks via
    `ActiveWorkoutClock.clock` (`69a3cb0d`, rule 38); a running session does no work between taps (`65b804a6`,
-   rule 43) — the cause of iOS's four CPU kills on 21 Sep.
+   rule 43) — the cause of iOS's four CPU kills on 21 Sep. Round 6 (22 Sep night): the Dynamic Island carries the
+   heart rate and keeps its clock to the edge (`ee3b6201`, rule 45); the banner is pushed for a heart rate only
+   every 30 s and ≥ 2 bpm, and the app builds nothing per tick (`e8dcd181`, rule 44).
 
-- **Work branch:** `lift-log-follow-ups` (checked out in `~/Developer/noop`).
-- **Testing build on Utku's phone:** `f7638bfe` = `65b804a6` + the template commit, NOOP 11.8.0. Releases page:
-  "NOOP Staging — base 11.8.0 · 2026-09-21 · f7638bf" (Pre-release), `.ipa` uploaded 22:46 UTC on 21 Sep, verified
-  (target commit, `.ipa`, template). Just update, no wipe (the snapshot's new field is optional). Not yet
-  gym-tested.
+- **Work branch:** `lift-log-follow-ups` @ `e8dcd181` (checked out in `~/Developer/noop`).
+- **Testing build on Utku's phone:** `a01bf3fd` = `e8dcd181` + the template commit, NOOP 11.8.0, shipped 22 Sep
+  ~23:05 and verified (target commit, `.ipa`, template). Just update, no wipe. Not yet gym-tested; `f7638bf` was,
+  on 22 Sep (the sixth session).
 
 ## A separate PR, not the Lift Log's: #2386 (`strap-log-on-disk`)
 
@@ -72,7 +74,16 @@ description edit (`WORKFLOW.md` §5). Not in Utku's testing build (it holds the 
 
 ## Verified
 
-- **The tip `65b804a6`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+- **The tip `e8dcd181`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 · macOS tests 2,090 (only the two
+  `TodayCarryOverTests`) · iOS build. `LiftBannerPushPolicy` 5 tests; breaking the interval or the presence floor
+  each fails them. The island's before/after was built into the simulator twice (`WORKFLOW.md` §3).
+- **The sixth gym session (22 Sep, 20:10–21:24, build `f7638bf`)**: ONE app run from 19:46 to 21:25 — iOS did not
+  close NOOP once, and Utku found no crash report for the day, so rule 43's fix held in the field. 34 double-taps
+  handled, 30 light-up alerts sent, 4 skipped with NOOP on screen; tap→buzz 0.26–0.74 s (0.63 s at 20:42, where he
+  felt a delay). The log's window began at 20:35 — his build still has the 5,000-line screen buffer; `a9717abc`
+  (merged) is what keeps the whole run, and it reaches him in the build after this one.
+- **The tip `65b804a6` (round 5), full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
   StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout) · macOS tests 2085 (only
   the two `TodayCarryOverTests`) · iOS build. `e4e391f7` (its controller file split by hand) built for iOS and
   passed its persistence and strap-tap tests on its own. No `android/**` or `Packages/**` change since `7bafa857`,
@@ -122,10 +133,10 @@ on this build and his yes. #2386 waits on the maintainers.
    `dist/tools/strap-log.py` (the `steps` report first).
 2. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh`), give him the release link and the build
    id, and say "just update" or "wipe".
-3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase onto `upstream/main`, refresh parity, verify,
-   Android CI, open the ONE PR from `lift-log-follow-ups`, post the reply on #2099.
-4. **#2386:** follow its checks and comments; after a squash merge, prove the squash equals the head, then delete the
-   branch from the fork and remove `~/Developer/noop-strap-log`.
+3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase onto `upstream/main` (`039dd939`; it moved four
+   commits, none in Lift Log files), refresh parity, verify, Android CI, open the ONE PR from
+   `lift-log-follow-ups`, post the reply on #2099.
+4. (Done 22 Sep: #2386 merged, proven, cleaned up.)
 5. **Hooks (Claude Code) are installed** (Utku, 22 Sep 08:22:55): SessionStart, UserPromptSubmit, Stop, PreCompact,
    StopFailure. A session starts with the recovery brief; the handbook is checkpointed after every reply. If a new
    Claude Code session shows no brief, tell Utku rather than touching Claude's settings (its guard forbids it).
@@ -133,14 +144,14 @@ on this build and his yes. #2386 waits on the maintainers.
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main`, `29d90eb6`), `lift-log-follow-ups`, `lift-log-build`,
-  `lift-log-handbook`, `strap-log-on-disk` (#2386). The stacked `lift-log-discard-and-edit`, `lift-log-target-rpe`
-  and `lift-log-gym-round-3` were deleted on 22 Sep: all three are contained in `lift-log-follow-ups`.
+- Branches: `main` (mirror of `upstream/main` as of `29d90eb6`), `lift-log-follow-ups`, `lift-log-build`,
+  `lift-log-handbook`. The stacked `lift-log-discard-and-edit`, `lift-log-target-rpe` and `lift-log-gym-round-3`
+  were deleted on 22 Sep (all contained in `lift-log-follow-ups`), and `strap-log-on-disk` once #2386 merged.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - The repo's description and website field point newcomers to this handbook (22 Sep).
 - CI caches: about 3 GB on `main`, shared by every build; GitHub expires unused ones after a week.
-- Local only: worktrees `~/Developer/noop` (`lift-log-follow-ups`), `~/Developer/noop/dist` (this handbook),
-  `~/Developer/noop-strap-log` (#2386); `dist/private/` (the event log). The retired-refs bundle of 15 Sep went to
+- Local only: worktrees `~/Developer/noop` (`lift-log-follow-ups`) and `~/Developer/noop/dist` (this handbook);
+  `dist/private/` (the event log, and drafts). The retired-refs bundle of 15 Sep went to
   the Trash on 22 Sep: everything unique in it was superseded (the handbook's predecessor, an old stash, pre-rebase
   snapshots of merged work).

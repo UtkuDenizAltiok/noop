@@ -55,6 +55,10 @@ including the maintainer — have been wrong in ways that sounded authoritative.
   iOS's own log: `xcrun simctl spawn <dev> log show --predicate 'process == "liveactivitiesd"'` names each banner
   created and ended; `kill -9` mimics iOS closing the app; never reinstall between compared steps (it ends banners).
   Running the OLD build through the same steps is what turned a likely cause into a proven one.
+- **Prove a UI fix by building the old version beside it.** 22 Sep: the Dynamic Island's stretched clock was
+  reproduced in the simulator by installing the pre-fix layout with the same session and a hard-coded heart rate,
+  then the fix in the same conditions — before/after screenshots. `simctl io screenshot` omits the island; the
+  simulator panel's screenshot shows it. Restore any temporary value byte-identical (sha256), as with a broken guard.
 - **Measure a battery/CPU claim, don't argue it.** 22 Sep: `ps -o time=` on the simulator's NOOP process read 60 s
   apart (9.96 → 6.59 CPU-s/min, 6.29 idle baseline). The iPhone's `cpu_resource_fatal-*.ips` reports say why iOS
   killed NOOP; they hold only 3-4 unsymbolicated samples, so call them consistent evidence, not proof.

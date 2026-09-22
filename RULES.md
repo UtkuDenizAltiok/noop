@@ -203,6 +203,22 @@ and flag it.
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;
   a frequency score; a composite workout score.
 
+44. **The Lock Screen banner is pushed for what a person would notice, and a heart rate is not that often.**
+    Every push wakes the widget extension to re-render, and ActivityKit budgets how often an app may update an
+    activity — spend it on a moving number and the update that carries the light-up alert waits behind it. In the
+    22 Sep session the banner was pushed for the heart rate every 10 s (about 409 pushes in 75 minutes) and, after
+    20:42, the Lock Screen lit 5–10 s after each double-tap while the buzz stayed immediate; the strap log shows
+    every alert leaving the app at once, so the wait was iOS's. `LiftBannerPushPolicy` (pure, tested in
+    `StrandTests`) now allows a heart-rate push only every 30 s and only on a change of ≥ 2 bpm — 5 s for the strap
+    appearing or disappearing — about 143 pushes over the same session; everything else pushes at once and carries
+    the current number. `LiftLiveActivityController.updateHeartRate` is the per-tick path and builds nothing unless
+    the policy agrees: the app must never compose a presentation once a second for a push it will not send.
+45. **A running `Text(timerInterval:)` takes every point it is offered.** Both surfaces size their clock with a
+    hidden "00:00" in the same font and right-align the live clock over it. Without that, the Lock Screen banner
+    spread a working set's count-up across its whole width (21 Sep), and the Dynamic Island stretched to most of
+    the screen with the digits adrift in its middle (22 Sep). The island's compact leading carries the heart rate,
+    with the dumbbell standing in until the strap reports one, so neither side of the pill is blank.
+
 ## Sources
 
 - Resistance-training dose–response meta-regression (Sports Medicine, 2025) — set-counting methods, the

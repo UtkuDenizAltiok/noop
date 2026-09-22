@@ -91,6 +91,15 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
   how iOS closes it; `xcrun simctl launch` brings it back (in the foreground). Reinstalling the app ends its banners
   by itself, so never install between the two steps being compared. The app's own strap log: Test Centre → Strap
   log → Copy, then `xcrun simctl pbpaste <device>`.
+- **The Dynamic Island is visible in the simulator, but not in every screenshot** (22 Sep): `xcrun simctl io …
+  screenshot` returns the screen WITHOUT the island's overlay, while the simulator panel's own screenshot shows it.
+  The activity itself only starts while the app is on screen and something changes, so in a simulator with no strap:
+  open NOOP, advance a set (the bar's ✓), confirm `Activity started` in `liveactivitiesd`'s log, press HOME, then
+  screenshot from the panel.
+- **A layout fix is proven the same way a test is**: build the OLD layout into the same simulator, same session and
+  same values, and screenshot both. On 22 Sep that reproduced Utku's stretched island exactly, which no amount of
+  reading the code would have shown. A value the simulator cannot produce (a live heart rate, with no strap) is
+  worth a temporary hard-coded one — restored byte-identical afterwards, like a broken guard.
 - **CPU is measurable in the simulator** (22 Sep): a simulator app is a Mac process, so
   `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")` read 60 s apart gives its CPU-seconds a minute.
   Compare the same screen and state before and after, with NOOP alone as the baseline. The simulator suspends NOOP

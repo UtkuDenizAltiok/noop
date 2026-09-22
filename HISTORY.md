@@ -96,6 +96,12 @@ trustworthy — keep it.
   superseded snapshots were unique to it). README now opens with a starter prompt for any AI and an end-of-session
   prompt, with "End a session" and "Working with any AI"; Claude-only parts are marked. A newcomer's setup from
   GitHub was run end to end, and the repo page links to the handbook.
+- **22 Sep, evening (sixth gym session, 20:10–21:24, build `f7638bf`)** — the in-app bar, adding and removing an
+  exercise all right. NOOP was NOT closed once (one app run from 19:46 to 21:25, and no crash report for the day):
+  the CPU fix held in the field. Two findings: the Dynamic Island stretched with its clock adrift and no heart rate
+  (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
+  recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
+  heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
 - **22 Sep, 09:45** — ryanbr reviewed #2386: approving, with one finding — lines logged before the first unlock after
   a boot were dropped at the first segment boundary. Verified by a test that failed (and wider: held lines never
   reached disk later); fixed on both platforms in `23bee21a` (they wait in memory within the budget and are

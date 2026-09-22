@@ -108,6 +108,7 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 | `Data/LiftFormat.swift` · `LiftMuscleNames.swift` · `HapticPrefs.swift` | formatting · localized muscle names · `haptics.liftRest` |
 | `Screens/LiftLogView.swift` | hub: programs, weekly sets per muscle, history |
 | `Screens/LiftProgramEditorSheet.swift` · `LiftProgramItemSheet.swift` · `LiftProgramImportSheet.swift` | program editor · one line · import |
+| `Data/LiftBannerPushPolicy.swift` | when a heart rate alone is worth a Lock Screen push: ≥ 2 bpm and ≥ 30 s, 5 s for the strap appearing or disappearing (`RULES.md` 44) |
 | `Screens/LiftLiveReadouts.swift` | the two numbers that change on their own — `LiftRunningClock` (a TimelineView) and `LiftHeartRate` — as leaf views, so a tick or a beat redraws one number (`RULES.md` 43) |
 | `Screens/LiftExercisePicking.swift` · `LiftSessionExerciseSheet.swift` | what both exercise pickers share (name suggestions, remembering a name, the muscle picker) · the session's Add exercise sheet |
 | `Screens/LiftSessionView.swift` | the session sheet, ⊕/⊖, control bar, finish sheet (questions, warning) and `save()` |
@@ -117,9 +118,12 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 
 iOS shell: `StrandiOS/App/StrandiOSApp.swift` creates the controller and resumes a saved session in its `init`; `StrandiOS/App/RootTabView.swift` adds
 More → Body → "Lift Log", the bar and the sheet. Lock Screen: `StrandiOSShared/LiftActivityAttributes.swift`,
-`StrandiOSWidgets/LiftLiveActivity.swift` (no catalog: words arrive pre-localized),
+`StrandiOSWidgets/LiftLiveActivity.swift` (no catalog: words arrive pre-localized; the Lock Screen face and the
+Dynamic Island's compact regions — heart rate leading, clock trailing, each sized by a hidden "00:00",
+`RULES.md` 45),
 `StrandiOS/Widgets/LiftLiveActivityController.swift` (the light-up alert whenever NOOP is off screen; re-adopts the
-banner after a restart and never requests one from the background),
+banner after a restart, never requests one from the background, and `updateHeartRate`, the per-tick path that
+builds nothing unless `Data/LiftBannerPushPolicy.swift` says the number is worth a push, `RULES.md` 44),
 `StrandiOS/Resources/lift-step-silence.caf`. The activity's attributes carry nothing; everything shown is content state.
 
 ### App tests — `StrandTests/`
