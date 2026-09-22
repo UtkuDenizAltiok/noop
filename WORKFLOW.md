@@ -50,6 +50,11 @@ hours behind the work). A session can stop anywhere, without an end; the convers
   drafts to `NEXT_PR.md` or `private/`.
 - **Background jobs** are named in "Now" with how to check them; `checkpoint.sh status` lists long jobs still
   running, so an old session's job is waited on or stopped, never started twice.
+- **"Continue" after an interruption is an instruction, never a question.** A usage limit, a server error or the
+  Claude app asking Utku to sign in again (22 Sep ~09:55: no API-error event was logged; the session came back as
+  a "resume") can end a turn while a step is open. The next "Continue from where you left off" means: status,
+  settle "Now", finish its open steps, report — on 22 Sep it got "No response requested" instead, and the last
+  bookkeeping waited for Utku to ask again.
 - **Other AI tools** keep the same discipline by hand: `checkpoint.sh status --net` at the start and after any
   interruption, `checkpoint.sh save` after each milestone, README "End a session" before a fresh start.
 - **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep).** `bash dist/tools/checkpoint.sh install-hooks`

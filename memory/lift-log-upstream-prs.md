@@ -27,7 +27,8 @@ that must survive if the handbook is missing (21 Sep 2026):
   iOS `cpu_resource_fatal` kills (background CPU) — the session's once-a-second tick redrew SwiftUI app-wide; fixed
   with no tick at all (RULES 43, `65b804a6`), build `f7638bf`.
 - A SEPARATE PR, not part of the Lift Log's: **#2386, opened 22 Sep 2026 with Utku's yes** (branch
-  `strap-log-on-disk`, head `300b6c27`, worktree `~/Developer/noop-strap-log`) — the strap log appended to disk
+  `strap-log-on-disk`, head `23bee21a`, worktree `~/Developer/noop-strap-log`; ryanbr approving, his one finding
+  fixed and replied to on 22 Sep) — the strap log appended to disk
   per app run within 2 MB, Swift + Kotlin twin, replacing the 3 × 1,000-line ring. Never open it again; follow its
   comments per [[lift-log-pr-communication]].
 - Max RPE (1-10) per program line: typed in the editor or imported from the template's `Target max RPE`

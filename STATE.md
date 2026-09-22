@@ -9,23 +9,9 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**#2386 review (ryanbr, 22 Sep 06:55 UTC):** approving; one finding, "can follow rather than block": when storage
-cannot be written (before the first unlock after a boot), `segmentSize` grows anyway, so at the first segment
-boundary `closeSegment()` clears `openLines` and, with no render cached, those lines are in neither memory nor disk —
-on both platforms. His options: narrow the doc's promise, or keep a bounded tail.
-- [x] Verified: a new Swift test fails on `300b6c27` — of 100 lines logged while storage was locked the export kept
-  91–100, and after a restart 57 of 164 survived (also: lines held in memory never reached disk after unlock).
-- [x] Fix `23bee21a` (LOCAL on `strap-log-on-disk`, one ahead of the fork): lines that cannot be written wait in
-  `unwritten` (newest within the 2 MB budget) and go to disk the moment a file opens; both twins; 2 tests per
-  platform + a third oracle case (the two old cases byte-identical; cost unchanged, ~31 ms / 20,000 lines). Breaks of
-  the bound and of the clipped marking each caught. verify.sh all steps (macOS 2,045); Android CI 35700255515 green
-  (run on a temporary fork branch, since deleted). Upstream moved to `e9fe33db` (an Android chart fix): no overlap,
-  merges cleanly; fork `main` re-mirrored.
-- [ ] Waiting on Utku's yes to: push `23bee21a` to `strap-log-on-disk` (a normal push, no rewrite), post the reply
-  (`dist/private/pr2386-reply.md`) and apply the description update (`dist/private/pr2386-body.md`). None of the three
-  done yet — check `gh pr view 2386 --repo ryanbr/noop --json comments,headRefOid` before doing any, never twice.
-
-**Next safe action:** Utku's answer.
+Nothing in flight (22 Sep 10:05). #2386: fix `23bee21a` pushed, replied to and described with Utku's yes; all five
+upstream checks green, MERGEABLE CLEAN; waiting on the maintainers. Waiting on Utku's next gym session on build
+`f7638bf`.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -35,7 +21,7 @@ on both platforms. His options: narrow the doc's promise, or keep a bounded tail
 | [#2099](https://github.com/ryanbr/noop/pull/2099) | the app | merged 15 Sep, squash `4453a089` (our `45caa744` + ryanbr's empty-session guard `fed714cb`) |
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
-| [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's; branch `strap-log-on-disk`) | **open** since 22 Sep 08:10, head `300b6c27`; all five checks green (both app builds, Android, doc lint, i18n) |
+| [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's; branch `strap-log-on-disk`) | **open** since 22 Sep 08:10; ryanbr approving (06:55 UTC); head `23bee21a` = his finding fixed, replied to; all five checks green |
 
 - **`upstream/main` is `29d90eb6`** (22 Sep: one Android-diagnostics commit on top of `a56840bb`, which touches neither
   of our branches; both merge cleanly). 11.8.0 shipped the Lift Log (Apple only). The fork's `main` mirrors it.
@@ -73,8 +59,10 @@ branches until 22 Sep:
 
 Utku asked for it on 22 Sep (the saved log missed his window) and said yes to opening it, on condition that it is
 lean, cheap on battery and removes nothing he wants. Opened 22 Sep 08:10 as
-[#2386](https://github.com/ryanbr/noop/pull/2386), three commits on `a56840bb`: `2bfef51e` the change, `8b2edc62`
-drops an unused `clear()`, `300b6c27` removes four Swift 6 warnings the branch had added. The strap log is
+[#2386](https://github.com/ryanbr/noop/pull/2386), four commits on `a56840bb`: `2bfef51e` the change, `8b2edc62`
+drops an unused `clear()`, `300b6c27` removes four Swift 6 warnings the branch had added, `23bee21a` answers
+ryanbr's review (lines refused before the first unlock after a boot wait in memory and reach disk once storage
+opens). ryanbr is approving. The strap log is
 appended to one file per app run (256 KB pieces, 2 MB for all runs, oldest deleted first) instead of the
 UserDefaults / SharedPreferences ring of 3 runs × 1,000 lines mirrored every 32 lines. Measured over 20,000 lines:
 33 ms CPU and 1.6 MB written vs about 370 ms and 93 MB re-saved. Exports read exactly as before, so `strap-log.py`

@@ -96,6 +96,10 @@ trustworthy — keep it.
   superseded snapshots were unique to it). README now opens with a starter prompt for any AI and an end-of-session
   prompt, with "End a session" and "Working with any AI"; Claude-only parts are marked. A newcomer's setup from
   GitHub was run end to end, and the repo page links to the handbook.
+- **22 Sep, 09:45** — ryanbr reviewed #2386: approving, with one finding — lines logged before the first unlock after
+  a boot were dropped at the first segment boundary. Verified by a test that failed (and wider: held lines never
+  reached disk later); fixed on both platforms in `23bee21a` (they wait in memory within the budget and are
+  written once storage opens), a third oracle case; pushed, replied and the description updated with Utku's yes.
 
 ## What found what
 
