@@ -9,7 +9,23 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (22 Sep 09:05). Waiting on Utku's next gym session on build `f7638bf`, and on #2386's review.
+**#2386 review (ryanbr, 22 Sep 06:55 UTC):** approving; one finding, "can follow rather than block": when storage
+cannot be written (before the first unlock after a boot), `segmentSize` grows anyway, so at the first segment
+boundary `closeSegment()` clears `openLines` and, with no render cached, those lines are in neither memory nor disk —
+on both platforms. His options: narrow the doc's promise, or keep a bounded tail.
+- [x] Verified: a new Swift test fails on `300b6c27` — of 100 lines logged while storage was locked the export kept
+  91–100, and after a restart 57 of 164 survived (also: lines held in memory never reached disk after unlock).
+- [x] Fix `23bee21a` (LOCAL on `strap-log-on-disk`, one ahead of the fork): lines that cannot be written wait in
+  `unwritten` (newest within the 2 MB budget) and go to disk the moment a file opens; both twins; 2 tests per
+  platform + a third oracle case (the two old cases byte-identical; cost unchanged, ~31 ms / 20,000 lines). Breaks of
+  the bound and of the clipped marking each caught. verify.sh all steps (macOS 2,045); Android CI 35700255515 green
+  (run on a temporary fork branch, since deleted). Upstream moved to `e9fe33db` (an Android chart fix): no overlap,
+  merges cleanly; fork `main` re-mirrored.
+- [ ] Waiting on Utku's yes to: push `23bee21a` to `strap-log-on-disk` (a normal push, no rewrite), post the reply
+  (`dist/private/pr2386-reply.md`) and apply the description update (`dist/private/pr2386-body.md`). None of the three
+  done yet — check `gh pr view 2386 --repo ryanbr/noop --json comments,headRefOid` before doing any, never twice.
+
+**Next safe action:** Utku's answer.
 
 ## Upstream (`ryanbr/noop`)
 

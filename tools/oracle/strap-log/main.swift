@@ -24,5 +24,25 @@ func scenario(budget: Int) -> String {
     last.append("current 1")
     return last.exportText()
 }
+/// Storage refused (iOS before the first unlock), then open: what memory holds, and what the next run reads.
+func lockedScenario() -> (held: String, after: String) {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent("strap-oracle-\(UUID().uuidString)")
+    let fm = FileManager.default
+    try! fm.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? fm.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir.path); try? fm.removeItem(at: dir) }
+    func run(_ s: Double) -> StrapLogArchive {
+        StrapLogArchive(directory: dir, budgetBytes: 250, segmentBytes: 100, now: t0.addingTimeInterval(s))
+    }
+    try! fm.setAttributes([.posixPermissions: 0o500], ofItemAtPath: dir.path)
+    let locked = run(0)
+    for i in 1...40 { locked.append(String(format: "locked %02d", i)) }
+    let held = locked.exportText()
+    try! fm.setAttributes([.posixPermissions: 0o700], ofItemAtPath: dir.path)
+    for i in 1...64 { locked.append(String(format: "open %02d", i)) }
+    return (held, run(100).exportText())
+}
 print("KEPT<<", scenario(budget: 4096), ">>KEPT", separator: "")
 print("PRUNED<<", scenario(budget: 250), ">>PRUNED", separator: "")
+let locked = lockedScenario()
+print("LOCKED_HELD<<", locked.held, ">>LOCKED_HELD", separator: "")
+print("LOCKED_AFTER<<", locked.after, ">>LOCKED_AFTER", separator: "")
