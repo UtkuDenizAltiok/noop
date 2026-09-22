@@ -83,6 +83,11 @@ description edit (`WORKFLOW.md` §5). Not in Utku's testing build (it holds the 
   handled, 30 light-up alerts sent, 4 skipped with NOOP on screen; tap→buzz 0.26–0.74 s (0.63 s at 20:42, where he
   felt a delay). The log's window began at 20:35 — his build still has the 5,000-line screen buffer; `a9717abc`
   (merged) is what keeps the whole run, and it reaches him in the build after this one.
+  A SECOND log he saved at 20:43 covers the rest (19:46:52–20:43:09, same single run): the session's first step was
+  20:22:44 and 13 of 13 steps sent their alert, so the app behaved the same before and after 20:42, and nothing else
+  happened there (no reconnect, no error — the window holds the ordinary once-a-second stream). That stream is also
+  the measurement behind rule 44: 1,380 transport samples between 20:20 and 20:43, a sample a second, which is what
+  the banner used to be pushed for every 10 s.
 - **The tip `65b804a6` (round 5), full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
   StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout) · macOS tests 2085 (only
   the two `TodayCarryOverTests`) · iOS build. `e4e391f7` (its controller file split by hand) built for iOS and
