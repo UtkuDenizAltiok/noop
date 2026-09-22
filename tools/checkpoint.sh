@@ -54,7 +54,7 @@ journal() {  # STATE.md's "Now" section, as written
 }
 
 status() {
-  local net=${1:-} w b sha sync n a z busy running
+  local net=${1:-} w b sha sync n a z busy running pat
   [ "$net" = --net ] && { git -C "$REPO" fetch -q origin 2>/dev/null || echo "(fetch failed: offline?)"; }
 
   echo "== journal: open steps in STATE.md \"Now\""
@@ -97,9 +97,12 @@ status() {
   [ "$n" = 0 ] || echo "  $n git stash entr(ies) — the stack is shared; read before using"
 
   echo "== long jobs running now"
-  running=$(ps -Ao pid=,etime=,command= | grep -E 'xcodebuild|gradle|ship-build\.sh|verify\.sh|gh run watch|swift-(build|test)|simctl' \
-            | grep -v -e grep -e 'checkpoint\.sh' -e 'log stream' | cut -c1-150)
-  if [ -n "$running" ]; then echo "$running" | sed 's/^ */  /'; else echo "  none"; fi
+  # Each job from the command that matched (a waiter's shell line starts with its setup); the pattern reaches perl
+  # through the environment, so no filter in this pipeline lists itself.
+  pat='xcodebuild|gradle|ship-build\.sh|verify\.sh|gh run (watch|view)|gh pr checks|swift-(build|test)|simctl'
+  running=$(ps -Ao pid=,etime=,command= | grep -E "$pat" | grep -v -e grep -e 'checkpoint\.sh' -e 'log stream' \
+            | PAT="$pat" perl -ne 'print "  pid $1, running $2: ", substr($3, 0, 110), "\n" if /^\s*(\d+)\s+(\S+)\s+.*?((?:$ENV{PAT}).*)$/')
+  if [ -n "$running" ]; then echo "$running"; else echo "  none"; fi
 
   echo "== last events (dist/private/events.log)"
   if [ -s "$EVENTS" ]; then tail -n 8 "$EVENTS" | cut -c1-160 | sed 's/^/  /'; else echo "  none yet"; fi

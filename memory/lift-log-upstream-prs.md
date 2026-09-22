@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3 @ 65b804a6) to open as ONE PR (lift-log-follow-ups) with Utku's yes; a separate strap-log PR branch (strap-log-on-disk) also waits on his yes. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3 @ 65b804a6) to open as ONE PR (lift-log-follow-ups) with Utku's yes; the separate strap-log PR is open as #2386. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -26,9 +26,10 @@ that must survive if the handbook is missing (21 Sep 2026):
   the bar laid out like the Lock Screen; running clocks via `ActiveWorkoutClock.clock`. 22 Sep: the 4 restarts were
   iOS `cpu_resource_fatal` kills (background CPU) — the session's once-a-second tick redrew SwiftUI app-wide; fixed
   with no tick at all (RULES 43, `65b804a6`), build `f7638bf`.
-- A SEPARATE PR, not part of the Lift Log's: branch `strap-log-on-disk` (`2bfef51e`, on `a56840bb`, worktree
-  `~/Developer/noop-strap-log`) — the strap log appended to disk per app run within 2 MB, Swift + Kotlin twin,
-  replacing the 3 × 1,000-line ring. Utku asked for it 22 Sep; open it only with his yes (`dist/NEXT_PR.md`).
+- A SEPARATE PR, not part of the Lift Log's: **#2386, opened 22 Sep 2026 with Utku's yes** (branch
+  `strap-log-on-disk`, head `300b6c27`, worktree `~/Developer/noop-strap-log`) — the strap log appended to disk
+  per app run within 2 MB, Swift + Kotlin twin, replacing the 3 × 1,000-line ring. Never open it again; follow its
+  comments per [[lift-log-pr-communication]].
 - Max RPE (1-10) per program line: typed in the editor or imported from the template's `Target max RPE`
   column, shown grey in the session, and a set left unrated saves it (Utku, 15-16 Sep). Its cost is stated in
   `dist/RULES.md` 34: a stored rating no longer proves he rated that set.

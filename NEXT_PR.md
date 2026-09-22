@@ -154,11 +154,83 @@ Thanks for the guard, and for merging. You asked whether I'd rather keep perform
 ## The separate strap-log PR (branch `strap-log-on-disk`)
 
 Not part of the Lift Log PR: it changes NOOP's own strap log, on iOS and Android. Utku asked for it on 22 Sep after
-the log missed the window he wanted. One commit on `upstream/main` (`2bfef51e`). Open only with his yes; title
-"Strap log: keep every line on disk, across restarts, within 2 MB". The body is the commit message, plus the
-verification and one line of context: found while reading a gym session's log for the Lift Log, after four
-background kills. Verified 22 Sep on `2bfef51e`: full `verify.sh` (every step, governance included; macOS tests
-2044 with only the two `TodayCarryOverTests`), Android CI run 35690102091 green (the oracle tests included), and on
-the simulator, NOOP `kill -9`ed six seconds after launch: its file held all 4 lines, and Test Centre → Copy after
-the relaunch showed that run, and the two before it, each whole under its header. Before opening: rebase if `main`
-moved, re-run `verify.sh` and Android CI.
+the log missed the window he wanted, and said yes to opening it the same day, on condition that it is lean, cheap on
+battery and removes nothing he wants. Three commits on `upstream/main` `a56840bb`: `2bfef51e` (the change),
+`8b2edc62` (drops the archive's unused `clear()`) and `300b6c27` (the ring's keys `nonisolated`: the branch had
+added four Swift 6 warnings). Before opening: `gh pr list --repo ryanbr/noop --head
+strap-log-on-disk --state all` must be empty. The body, as it goes up (verified on `300b6c27`):
+
+**Title:** Strap log: keep every line on disk, across restarts, within 2 MB
+
+```markdown
+## What this PR does
+
+The strap log is what people attach to bug reports, and it lost exactly the part that explains a restart:
+
+- it lived in memory and was copied to UserDefaults (SharedPreferences on Android) only every 32 lines, so the last
+  lines before the OS killed the app were gone;
+- each restart kept only the last 1,000 lines of the run before it, and only the last three runs;
+- the current run kept only its newest 5,000 lines, about 50 minutes since the once-a-second heart-rate line (#1767).
+
+On 21 Sep iOS closed NOOP four times in 28 minutes of one gym session (background CPU), and the log saved afterwards
+began half an hour after the moment it was saved for.
+
+Now every line is appended to a file as it is logged: one file per app run, in 256 KB pieces, and past 2 MB in all
+(about 20,000 lines, some three hours with a strap streaming) the oldest pieces are deleted. The log keeps every
+run, and every line of it, within 2 MB, however often the app restarts. Files: `<AppSupport>/OpenWhoop/strap-log`
+(iOS: the store's `completeUntilFirstUserAuthentication` class, so lines logged while the phone is locked are
+written; excluded from backup) and `filesDir/strap-log` on Android.
+
+Exports look as before: the earlier runs oldest first, under the same "previous app session, N line(s), rolled at
+…" header ("head clipped" when a run's start was deleted), then `===== current app session =====` and this run,
+now the whole run rather than its newest 5,000 lines. The log tools read it unchanged. The old ring's lines are
+carried over once and its keys removed.
+
+It also costs less than before. Measured on a Mac over 20,000 lines: 33 ms of CPU and 1.6 MB written, where the
+old mirror took about 370 ms of CPU in the app (plus cfprefsd's share) and re-saved 93 MB. Android's old mirror
+copied up to 5,000 lines every 32.
+
+Not changed: what is logged and its redaction; the in-memory buffer behind the Live log card and the Test Centre
+readouts; Android's opt-in detailed capture (#1121), which keeps its own file. The one new cost is memory while a
+Test Centre guided mode is on: its row rebuilds the export on every line, so the older part is rendered once and
+kept (at most the 2 MB budget).
+
+## Type of change
+
+- [x] Bug fix
+- [ ] New feature
+- [ ] Refactor / cleanup
+- [ ] Documentation
+- [ ] CI / tooling
+
+## How it was tested
+
+- `StrapLogArchiveTests` (7): a line survives a kill without a close; four restarts keep every run in order, each
+  "rolled at" the next one's start; a run longer than a piece exports whole, with an export in the middle; past
+  the budget the oldest go first and a clipped run says so; an export before the first line carries the run
+  before; an empty log exports nothing; the old ring is carried over once, ahead of every run. Breaking the file
+  write, the clipped header or the ring's order each fails them.
+- `StrapLogArchiveTest` (Kotlin): the same behaviour, and two cases whose expected text is the Swift archive's own
+  output, pasted verbatim. Android CI: green on the branch tip, https://github.com/UtkuDenizAltiok/noop/actions/runs/35692959668.
+- Locally on the branch: package tests (WhoopStore 606, StrandAnalytics 2027, StrandImport 324), doc-comment lint,
+  i18n audit, parity ledger, ratchet and governance (124 tests), the macOS app tests (2,043 tests; the only failures are the two
+  `TodayCarryOverTests`, which fail on `main` too under a German region) and the iOS app build.
+- iOS Simulator (iOS 26.5), on the first commit's build (the two after it change nothing that runs): NOOP killed
+  with `kill -9` six seconds after launch; its file held all four lines, and Test Centre → Strap log → Copy after
+  the relaunch showed that run and the two before it, each whole under its header.
+- Not run on a strap: this changes where the log is written, not anything sent or received over Bluetooth.
+
+## Checklist
+
+- [x] Swift package tests pass for any package I touched (none touched; all three run)
+- [x] Android unit tests pass if I touched `android/` (Android CI)
+- [x] No new build warnings introduced (the two in `LiveState.logSafeDeviceName` are on `main` too)
+- [x] UI changes use only `StrandDesign` tokens (no UI change)
+- [x] No hardcoded hex frame bytes; protocol facts live in the schema / decoders
+- [x] Follows the conventions in `docs/CONTRIBUTING.md`
+- [x] I did not commit generated output (`Strand.xcodeproj/`) or any secrets/keystores
+
+## Related issues
+
+Refs #510, #1263, #1468
+```

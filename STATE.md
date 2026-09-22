@@ -1,6 +1,6 @@
 # State
 
-**Updated 22 Sep 2026, morning (after the fifth gym session's crash reports).** The only file that changes every session. Replace, don't append — history goes in
+**Updated 22 Sep 2026, 08:25 (strap-log PR #2386 opened; continuity tools in place).** The only file that changes every session. Replace, don't append — history goes in
 `HISTORY.md`.
 
 ## Now — work in flight
@@ -9,26 +9,8 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**Asked (22 Sep, Utku):** (1) open the strap-log PR upstream — his yes, on condition that it is lean, battery-cheap
-and removes nothing he wants; (2) make the project safe to resume after usage limits, server errors and
-compaction, inside the existing handbook/memory structure.
-- [x] Recovery system: `tools/checkpoint.sh` (status / save / event / hook / install-hooks), event lines from
-  verify / ship / backup, `backup.sh` folds checkpoints and never copies an empty memory folder, README "After an
-  interruption", WORKFLOW §2 Continuity, memory note; `tools/test-checkpoint.sh` 31/31, four broken guards caught;
-  strap-log oracle moved to `tools/oracle/strap-log/` (reproduces the Kotlin test's blocks exactly).
-  **Hooks not installed:** Claude Code's auto-mode guard blocks the agent from Claude's settings (writing, even
-  reading). Before it did, one PROBE hook went into the app repo's `.claude/settings.local.json` (git-excluded):
-  PostToolUse on Bash, appending a line to this session's scratchpad. It did not load in this session; it will at
-  the next start, and fail harmlessly once that scratchpad is gone. Utku's `install-hooks` replaces it,
-  `remove-hooks` deletes it.
-- [ ] Strap-log PR: review the branch for size and battery, verify, then open it ← next (check `gh pr list --repo
-  ryanbr/noop --head strap-log-on-disk` first — never open it twice); record its number here at once.
-- [ ] Backup, STATE / HISTORY / memory, then tell Utku what to do.
-
-**Do not redo:** build `f7638bf` is shipped and verified; `strap-log-on-disk` @ `2bfef51e` passed `verify.sh`, Android
-CI 35690102091 and the simulator kill test (22 Sep 07:23).
-
-**Next safe action:** the strap-log PR review.
+Nothing in flight (22 Sep 08:25). Waiting on Utku: `install-hooks` or `remove-hooks` (Next, 4), and his next gym
+session on build `f7638bf`.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -38,6 +20,7 @@ CI 35690102091 and the simulator kill test (22 Sep 07:23).
 | [#2099](https://github.com/ryanbr/noop/pull/2099) | the app | merged 15 Sep, squash `4453a089` (our `45caa744` + ryanbr's empty-session guard `fed714cb`) |
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
+| [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's; branch `strap-log-on-disk`) | **open** since 22 Sep 08:10, head `300b6c27`; all five checks green (both app builds, Android, doc lint, i18n) |
 
 - **`upstream/main` is `a56840bb`** (21 Sep). 11.8.0 shipped the Lift Log (Apple only). The fork's `main` mirrors it.
 - **Open upstream:** ryanbr's #2327 — the Lift Log has no Android UI (`BACKLOG.md` 4). Not ours to answer unasked.
@@ -69,16 +52,18 @@ from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is 
   (target commit, `.ipa`, template). Just update, no wipe (the snapshot's new field is optional). Not yet
   gym-tested. (`3cfd3d0`, the build before it, lacked `65b804a6`.)
 
-## A separate PR, not the Lift Log's: `strap-log-on-disk`
+## A separate PR, not the Lift Log's: #2386 (`strap-log-on-disk`)
 
-Utku asked for it on 22 Sep: the saved log missed the window he wanted. One commit on `a56840bb`, `2bfef51e`
-(pushed to the fork; the earlier `076a87ed` differed only in a test helper's name — `run(at:)`, which the parity
-ledger's name-only call graph credited to `StandardHRLifecycleFlush.run/2` and so failed ledger and governance). The
-strap log is appended to one file per app run (256 KB segments, 2 MB for all runs, oldest deleted first) instead of
-the UserDefaults / SharedPreferences ring of 3 runs × 1,000 lines mirrored every 32 lines. Swift
-`Strand/BLE/StrapLogArchive.swift` + `StorePaths.strapLogDirectory()`; Kotlin `com.noop.ui.StrapLogArchive`, its
-test carrying the Swift oracle's output verbatim. Exports read exactly as before, so `strap-log.py` is unchanged.
-Opening it upstream needs Utku's yes (`NEXT_PR.md`, last section). Its worktree: `~/Developer/noop-strap-log`.
+Utku asked for it on 22 Sep (the saved log missed his window) and said yes to opening it, on condition that it is
+lean, cheap on battery and removes nothing he wants. Opened 22 Sep 08:10 as
+[#2386](https://github.com/ryanbr/noop/pull/2386), three commits on `a56840bb`: `2bfef51e` the change, `8b2edc62`
+drops an unused `clear()`, `300b6c27` removes four Swift 6 warnings the branch had added. The strap log is
+appended to one file per app run (256 KB pieces, 2 MB for all runs, oldest deleted first) instead of the
+UserDefaults / SharedPreferences ring of 3 runs × 1,000 lines mirrored every 32 lines. Measured over 20,000 lines:
+33 ms CPU and 1.6 MB written vs about 370 ms and 93 MB re-saved. Exports read exactly as before, so `strap-log.py`
+is unchanged. The PR body is `NEXT_PR.md`'s last section; its oracle harness is `tools/oracle/strap-log/`.
+Worktree `~/Developer/noop-strap-log`. A comment gets one reply after it; our own later changes go into a
+description edit (`WORKFLOW.md` §5). Not in Utku's testing build (it holds the Lift Log branch only).
 
 ## Verified
 
@@ -135,9 +120,13 @@ this build and his yes. The strap-log PR waits only on his yes.
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
    `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
    three stacked branches from the fork.
-4. **Utku:** `install-hooks` or `remove-hooks` (above) — the probe must not stay.
-5. **Only with his yes:** open `strap-log-on-disk` as its own PR (`NEXT_PR.md`, last section); delete its worktree
-   and fork branch once merged.
+4. **Utku:** `bash ~/Developer/noop/dist/tools/checkpoint.sh install-hooks` (or `remove-hooks`). Until one runs,
+   the app repo's `.claude/settings.local.json` holds a one-off PROBE hook written before Claude Code's auto-mode
+   guard stopped the agent touching Claude's settings: PostToolUse on Bash, appending a line to the 22 Sep session's
+   scratchpad. It loads at the next session start and fails harmlessly once that scratchpad is gone. Either
+   command replaces or removes it; the agent may not.
+5. **#2386:** follow its checks and comments; after a squash merge, prove the squash equals the head, then delete the
+   branch from the fork and remove `~/Developer/noop-strap-log`.
 6. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly

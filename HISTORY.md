@@ -83,6 +83,13 @@ trustworthy — keep it.
   name-only call graph, as a caller of `StandardHRLifecycleFlush.run/2` (renamed `process(at:)`). Three stuck
   "wait for the build" loops of mine were `pgrep -f` matching their own command line — never wait on a process
   search whose pattern is in the waiting command.
+- **22 Sep, morning** — Utku said yes to the strap-log PR (lean, battery-cheap, nothing he wants removed) and asked
+  for the project to survive usage limits, server errors and compaction. Continuity: `STATE.md` "Now" became a
+  write-ahead journal, `tools/checkpoint.sh` shows the ground truth after an interruption and saves locally, verify /
+  ship / backup log events, `backup.sh` folds checkpoints, README gained "After an interruption"; Claude Code hooks
+  are ready but only Utku can install them (the auto-mode guard blocks the agent from Claude's settings). The
+  strap-log branch lost an unused `clear()` and four Swift 6 warnings it had added; measured, it costs about a
+  tenth of the CPU of the mirror it replaces. Opened as #2386 at 08:10; all five upstream checks green.
 
 ## What found what
 
@@ -134,6 +141,8 @@ trustworthy — keep it.
 | the in-app clocks said "45s" / "0s" where the Lock Screen said "0:45" / "0:00" | simulator | 38 |
 | an exercise not in the program could not be logged | Utku asked | 42 |
 | iOS killed NOOP for background CPU: the session redrew every screen each second | crash reports (Analytics Data) | 43 |
+| the handbook seven hours behind the work after a usage limit, a server error and a compaction | Utku | WORKFLOW §2 Continuity |
+| four Swift 6 warnings added by the strap-log branch | reading its build log before opening the PR | — |
 | done sets asked about at finish; the program not following the session | Utku asked | 27, 28 |
 | a second, sync banner would appear mid-session once #2272 arrived | reading upstream | 40 |
 | the Lock Screen's words cut short by the numbers' width | Utku asked (screenshot) | banner layout |
