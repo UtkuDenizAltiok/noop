@@ -9,16 +9,8 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**Asked (22 Sep 23:20, Utku):** NOOP keeps working with the app closed (the HR banner and widgets update) — does
-the Lift Log need that too? Answer: NO, and the evidence is in `RULES.md` 46. Nothing new is needed; two things
-came out of looking:
-- [x] The Lift Log's own strap-log lines now carry their own time (`0da3998e`, rule 47): all 98 of his 22 Sep lines
-  had none. `verify.sh` all steps (macOS 2,092); two tests, both fail without the prefix.
-- [x] Shipped as `1c34d6cd` (= `0da3998e` + the template), verified on the releases page.
-- [ ] OFFERED, not started: half of a session's strap log (52.8%, 3,009 of 5,704 lines) is upstream's once-a-second
-  `standard-hr transport host-received` line (#1767). It costs little battery, but it is why 2 MB of on-disk log
-  now holds ~3 hours instead of ~30. A summary line while no Test Centre mode is on would keep the fact and the
-  history; upstream's call, issue-first, and only with Utku's yes.
+Nothing in flight (23 Sep 01:30). #2402 is open and green on `5ce691ac` (19 checks, MERGEABLE); the Lift Log branch
+waits on Utku's seventh gym session on build `1c34d6cd`, then his yes for its PR.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -29,6 +21,7 @@ came out of looking:
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
 | [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's) | merged 22 Sep 09:14 UTC, squash `a9717abc` (proven equal to `23bee21a` file by file); branch and worktree removed |
+| [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's; branch `hr-transport-summary`) | **open** since 23 Sep 00:40, head `5ce691ac`, rebased onto `751fa1d8`; all 19 checks green |
 
 - **`upstream/main` is `039dd939`** (22 Sep evening; our merged `a9717abc` is in it, plus Android diagnostics, an
   Android chart fix, a macOS frame-loop fix and a design hex-parse fix — none touching Lift Log files).

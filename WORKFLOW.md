@@ -237,6 +237,11 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
   tags); one release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven to
   equal it (§5); the three stacked branches that became `lift-log-follow-ups` were deleted on 22 Sep.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
+- **Never start a branch by copying files from another branch.** 22 Sep: the standard-HR change was built on the
+  Lift Log branch (based on an older `upstream/main`) and copied into a worktree of the newer one, which silently
+  reverted two upstream commits inside `BLEManager.swift`; the app tests caught it as "no member
+  `sessionEndedOutcome`". Take the file from the target base (`git checkout upstream/main -- <path>`) and re-apply
+  the edit, then check `git diff upstream/main -- <path>` shows ONLY the intended lines.
 - **Before any history rewrite** — a rebase, an amend or reset of a pushed commit, a force-push — tag the old tip
   `backup/<what>` locally; `checkpoint.sh status` lists such refs until they are deleted, so an interrupted rewrite
   is visible.

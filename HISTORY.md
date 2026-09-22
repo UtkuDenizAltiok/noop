@@ -102,6 +102,14 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 00:40** — the separate diagnostics PR Utku asked for: upstream's standard-HR host-received line,
+  written once a second, was 52.8% of a session's strap log and so decided how much history the on-disk log holds.
+  Now a refusal is still written at once, the routine samples become one line a minute (count, span, widest gap,
+  accepted / refused / pending), the window closes at a disconnect, and full detail returns under the Test Centre's
+  HRV or Connection mode. Replayed over his log: 3,938 lines → 67. Opened as
+  [#2402](https://github.com/ryanbr/noop/pull/2402) from `hr-transport-summary`. Three faults caught on the way:
+  whole-file copying between branches reverted newer upstream code, a Kotlin property is not a function reference,
+  and a constant name collided with one the parity ledger already pairs.
 - **22 Sep, night** — Utku asked whether the Lift Log needs background machinery of its own, since NOOP keeps
   showing live HR with the app closed. It does not (rule 46): it rides NOOP's CoreBluetooth background mode, which
   both of that day's gym logs demonstrate. Looking for it found something else: the Lift Log's own strap-log lines
