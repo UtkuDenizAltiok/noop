@@ -9,8 +9,7 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (22 Sep 08:25). Waiting on Utku: `install-hooks` or `remove-hooks` (Next, 4), and his next gym
-session on build `f7638bf`.
+Nothing in flight (22 Sep 08:25). Waiting on Utku's next gym session on build `f7638bf`, and on #2386's review.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -120,11 +119,10 @@ this build and his yes. The strap-log PR waits only on his yes.
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
    `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
    three stacked branches from the fork.
-4. **Utku:** `bash ~/Developer/noop/dist/tools/checkpoint.sh install-hooks` (or `remove-hooks`). Until one runs,
-   the app repo's `.claude/settings.local.json` holds a one-off PROBE hook written before Claude Code's auto-mode
-   guard stopped the agent touching Claude's settings: PostToolUse on Bash, appending a line to the 22 Sep session's
-   scratchpad. It loads at the next session start and fails harmlessly once that scratchpad is gone. Either
-   command replaces or removes it; the agent may not.
+4. **Hooks are installed** (Utku ran `checkpoint.sh install-hooks`, 22 Sep 08:21: SessionStart, UserPromptSubmit,
+   Stop, PreCompact, StopFailure; the one-off probe hook is gone). A session started after that begins with the
+   recovery brief; the handbook is checkpointed after every reply. If a session shows no brief, the hooks did not
+   load: say so to Utku rather than touching Claude's settings (the auto-mode guard forbids it).
 5. **#2386:** follow its checks and comments; after a squash merge, prove the squash equals the head, then delete the
    branch from the fork and remove `~/Developer/noop-strap-log`.
 6. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
