@@ -119,10 +119,10 @@ this build and his yes. The strap-log PR waits only on his yes.
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
    `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
    three stacked branches from the fork.
-4. **No hooks are installed.** Utku ran `install-hooks` at 08:21:07 and `remove-hooks` at 08:21:30 (22 Sep); the
-   file is gone, and the one-off probe hook with it. Continuity rests on the journal, `checkpoint.sh status` and the
-   memory note. If he wants the automatic checkpoints, he runs `bash ~/Developer/noop/dist/tools/checkpoint.sh
-   install-hooks` once; the agent may not (the auto-mode guard forbids Claude's settings).
+4. **Hooks are installed** (Utku, 22 Sep 08:22:55, after an install and a removal a minute earlier): SessionStart,
+   UserPromptSubmit, Stop, PreCompact, StopFailure; the one-off probe hook is gone. A session started after that
+   begins with the recovery brief, and the handbook is checkpointed after every reply. If a new session shows no
+   brief, the hooks did not load: tell Utku rather than touching Claude's settings (the auto-mode guard forbids it).
 5. **#2386:** follow its checks and comments; after a squash merge, prove the squash equals the head, then delete the
    branch from the fork and remove `~/Developer/noop-strap-log`.
 6. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.

@@ -24,9 +24,9 @@ and updated before the session ends stay true.
   after; `bash dist/tools/checkpoint.sh save "what"` after each milestone (local commit, instant); `backup.sh`
   after milestones, not only at the end. **After any interruption or compaction, first run
   `bash dist/tools/checkpoint.sh status --net` and follow README "After an interruption": settle every open step
-  against evidence; never repeat a push, build, PR or comment without evidence it did not happen.** No hooks
-  are installed: Utku ran `install-hooks`, then `remove-hooks` 23 s later (22 Sep), so the discipline above and this
-  note carry continuity. Hook changes are always Utku's to run: the auto-mode guard blocks the agent from Claude's
+  against evidence; never repeat a push, build, PR or comment without evidence it did not happen.** Utku
+  installed the hooks on 22 Sep 08:22 (`checkpoint.sh install-hooks`): a session starts with the recovery brief and
+  the handbook is checkpointed after every reply; if a new session shows no brief, tell him. Hook changes are always Utku's to run: the auto-mode guard blocks the agent from Claude's
   settings, even reading them.
 - Every session end: replace `STATE.md` with the truth, update whatever else changed (rules keep their numbers;
   events become one line in `HISTORY.md`), then `bash dist/tools/backup.sh "what changed"`.
