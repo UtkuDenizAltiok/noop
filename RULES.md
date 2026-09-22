@@ -219,6 +219,21 @@ and flag it.
     the screen with the digits adrift in its middle (22 Sep). The island's compact leading carries the heart rate,
     with the dumbbell standing in until the strap reports one, so neither side of the pill is blank.
 
+46. **The Lift Log needs no background machinery of its own.** It lives in NOOP's process, and NOOP already holds
+    `bluetooth-central` with CoreBluetooth state restoration (`CBCentralManagerOptionRestoreIdentifierKey`), which
+    is why the heart rate keeps arriving with the app off screen. Every input a session has is a BLE event on that
+    same link — the double-tap — so a session advances, buzzes, updates its banner and lights the Lock Screen with
+    the phone in a pocket, and it is resumed at process start when iOS relaunches the app (41). Both gym logs of
+    22 Sep show it: 34 taps handled, 30 alerts sent, one app run of 1 h 39 m with the phone away. Nothing more is
+    needed, and anything more — a location mode, an audio session, a background task assertion held for a workout
+    — would cost battery to buy behaviour the Lift Log already has. A force-quit (swiped away) is the one case iOS
+    does not relaunch for; the session waits, correctly, until NOOP is opened. Do not add background modes for it.
+47. **Every line the Lift Log writes carries its own time.** NOOP's strap log takes each line's clock from whoever
+    writes it (`BLEManager.logTimeFormatter`), and the Lift Log's lines had none: all 98 of them in the 22 Sep
+    session, so when a tap or a light-up happened had to be inferred from its neighbours — in the one file that
+    exists to answer that. `AppModel.stamped()` prefixes them at the five sites that write them. A new Lift Log
+    line goes through it; a diagnostic that cannot say when it happened is half a diagnostic (`AGENTS.md`).
+
 ## Sources
 
 - Resistance-training dose–response meta-regression (Sports Medicine, 2025) — set-counting methods, the

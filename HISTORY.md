@@ -102,6 +102,12 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **22 Sep, night** — Utku asked whether the Lift Log needs background machinery of its own, since NOOP keeps
+  showing live HR with the app closed. It does not (rule 46): it rides NOOP's CoreBluetooth background mode, which
+  both of that day's gym logs demonstrate. Looking for it found something else: the Lift Log's own strap-log lines
+  carried no time of their own (98 in that session) — fixed (rule 47), build `1c34d6cd`. Left offered, not done:
+  52.8% of a session's log is upstream's once-a-second standard-HR line, which is what limits how much history the
+  new on-disk log holds.
 - **22 Sep, 09:45** — ryanbr reviewed #2386: approving, with one finding — lines logged before the first unlock after
   a boot were dropped at the first segment boundary. Verified by a test that failed (and wider: held lines never
   reached disk later); fixed on both platforms in `23bee21a` (they wait in memory within the budget and are

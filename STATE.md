@@ -9,8 +9,16 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (22 Sep 23:10). The sixth session's two findings are fixed, verified and shipped as `a01bf3fd`;
-waiting on Utku's seventh session and then his yes for the follow-up PR.
+**Asked (22 Sep 23:20, Utku):** NOOP keeps working with the app closed (the HR banner and widgets update) — does
+the Lift Log need that too? Answer: NO, and the evidence is in `RULES.md` 46. Nothing new is needed; two things
+came out of looking:
+- [x] The Lift Log's own strap-log lines now carry their own time (`0da3998e`, rule 47): all 98 of his 22 Sep lines
+  had none. `verify.sh` all steps (macOS 2,092); two tests, both fail without the prefix.
+- [x] Shipped as `1c34d6cd` (= `0da3998e` + the template), verified on the releases page.
+- [ ] OFFERED, not started: half of a session's strap log (52.8%, 3,009 of 5,704 lines) is upstream's once-a-second
+  `standard-hr transport host-received` line (#1767). It costs little battery, but it is why 2 MB of on-disk log
+  now holds ~3 hours instead of ~30. A summary line while no Test Centre mode is on would keep the fact and the
+  history; upstream's call, issue-first, and only with Utku's yes.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -41,7 +49,7 @@ branches until 22 Sep:
    mirrors `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and the parity refresh commit
    (`631f411f`: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2).
 2. up to `0c9c72e9` — max RPE per program line (`RULES.md` 34).
-3. up to `e8dcd181` — rounds 3 to 6: one-tap field focus; knock guard (now 5 s) and buzz before the sync;
+3. up to `0da3998e` — rounds 3 to 6: one-tap field focus; knock guard (now 5 s) and buzz before the sync;
    next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking; the program takes
    each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each step; no sync banner
    during a session; banner layout (`RULES.md` 5, 27, 28, 35–40). Round 5 (21–22 Sep): the session is resumed as
@@ -50,12 +58,13 @@ branches until 22 Sep:
    `ActiveWorkoutClock.clock` (`69a3cb0d`, rule 38); a running session does no work between taps (`65b804a6`,
    rule 43) — the cause of iOS's four CPU kills on 21 Sep. Round 6 (22 Sep night): the Dynamic Island carries the
    heart rate and keeps its clock to the edge (`ee3b6201`, rule 45); the banner is pushed for a heart rate only
-   every 30 s and ≥ 2 bpm, and the app builds nothing per tick (`e8dcd181`, rule 44).
+   every 30 s and ≥ 2 bpm, and the app builds nothing per tick (`e8dcd181`, rule 44); its strap-log lines carry
+   their own time (`0da3998e`, rule 47).
 
-- **Work branch:** `lift-log-follow-ups` @ `e8dcd181` (checked out in `~/Developer/noop`).
-- **Testing build on Utku's phone:** `a01bf3fd` = `e8dcd181` + the template commit, NOOP 11.8.0, shipped 22 Sep
-  ~23:05 and verified (target commit, `.ipa`, template). Just update, no wipe. Not yet gym-tested; `f7638bf` was,
-  on 22 Sep (the sixth session).
+- **Work branch:** `lift-log-follow-ups` @ `0da3998e` (checked out in `~/Developer/noop`).
+- **Testing build on Utku's phone:** `1c34d6cd` = `0da3998e` + the template commit, NOOP 11.8.0, shipped 22 Sep
+  ~23:45 and verified (target commit, `.ipa`, template). Just update, no wipe. Not yet gym-tested; `f7638bf` was,
+  on 22 Sep (the sixth session). `a01bf3fd` was the same work without rule 47's stamps.
 
 ## A separate PR, not the Lift Log's: #2386 (`strap-log-on-disk`)
 
@@ -74,8 +83,8 @@ description edit (`WORKFLOW.md` §5). Not in Utku's testing build (it holds the 
 
 ## Verified
 
-- **The tip `e8dcd181`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
-  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 · macOS tests 2,090 (only the two
+- **The tip `0da3998e`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 · macOS tests 2,092 (only the two
   `TodayCarryOverTests`) · iOS build. `LiftBannerPushPolicy` 5 tests; breaking the interval or the presence floor
   each fails them. The island's before/after was built into the simulator twice (`WORKFLOW.md` §3).
 - **The sixth gym session (22 Sep, 20:10–21:24, build `f7638bf`)**: ONE app run from 19:46 to 21:25 — iOS did not
