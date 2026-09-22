@@ -15,14 +15,14 @@ project memory.
 
 | file | what it answers | changes |
 |---|---|---|
-| [`STATE.md`](STATE.md) | where things stand upstream and on the fork, what is blocked, what is next | every session |
+| [`STATE.md`](STATE.md) | "Now": the work in flight, step by step; then where things stand upstream and on the fork, what is blocked, what is next | every step that matters |
 | [`RULES.md`](RULES.md) | the numbered invariants and the settled decisions — break one and the feature is wrong | rarely |
 | [`WORKFLOW.md`](WORKFLOW.md) | how work is done: Utku, verification, parity, PRs, builds, syncing, git hygiene | when a method changes |
 | [`FEATURE.md`](FEATURE.md) | what the Lift Log does, and every file behind it on both platforms | with features |
 | [`NEXT_PR.md`](NEXT_PR.md) | the prepared upstream PR, its reply, and the pre-flight checklist | per PR |
 | [`BACKLOG.md`](BACKLOG.md) | verified open work, ordered by value | when items move |
 | [`HISTORY.md`](HISTORY.md) | what happened upstream, and what each real gym session found | one line per event |
-| `tools/` | `upstream-check.sh` · `verify.sh` · `ship-build.sh` · `backup.sh` · `strap-log.py` · `oracle/` · `xcmerge.py` | when a method changes |
+| `tools/` | `checkpoint.sh` · `upstream-check.sh` · `verify.sh` · `ship-build.sh` · `backup.sh` · `strap-log.py` · `oracle/` · `xcmerge.py` · `test-checkpoint.sh` | when a method changes |
 | `memory/` | Claude Code's memory files for this project, backed up by `backup.sh`. Plain Markdown: any agent may read them; everything in them is also in these pages | via `backup.sh` |
 
 ## Set up on a new machine
@@ -32,6 +32,7 @@ git clone https://github.com/UtkuDenizAltiok/noop.git ~/Developer/noop && cd ~/D
 git remote add upstream https://github.com/ryanbr/noop.git && git fetch --all
 git worktree add dist lift-log-handbook     # this handbook, in the app repo's gitignored dist/
 bash dist/tools/backup.sh --restore-memory  # Claude Code only
+bash dist/tools/checkpoint.sh install-hooks # Claude Code only, optional: automatic checkpoints (WORKFLOW.md §2)
 git checkout lift-log-gym-round-3           # or whatever STATE.md's "Work branch" says
 ```
 Requires a Mac with Xcode (license accepted; after every Xcode update open Xcode once and agree, and install an
@@ -49,23 +50,49 @@ Python — nothing else is needed to pick the work up.
 
 ## Every session
 
-1. Read `STATE.md`, then `RULES.md`; skim `WORKFLOW.md` if the task touches something new.
-2. `bash dist/tools/upstream-check.sh` — the maintainers merge fast and add twins of our code.
-3. Work. Verify with `bash dist/tools/verify.sh`. Ship with `bash dist/tools/ship-build.sh`.
-4. Before stopping: bring `STATE.md` (and any file that changed) up to date, then
-   `bash dist/tools/backup.sh "what changed"`.
+1. Read `STATE.md` — its "Now" section first — then `RULES.md`; skim `WORKFLOW.md` if the task touches something new.
+2. `bash dist/tools/checkpoint.sh status --net`. If "Now" has open steps, follow "After an interruption" below
+   before anything else. Then `bash dist/tools/upstream-check.sh` — the maintainers merge fast and add twins of our
+   code.
+3. Work, journal first (`WORKFLOW.md` §2): write each long, public or hard-to-undo step into "Now" before it starts
+   and tick it with its result when it ends; `bash dist/tools/checkpoint.sh save "what"` after each milestone.
+   Verify with `bash dist/tools/verify.sh`. Ship with `bash dist/tools/ship-build.sh`.
+4. After a milestone that took real work, and before stopping: bring `STATE.md` (and any file that changed) up to
+   date, then `bash dist/tools/backup.sh "what changed"`. At the end "Now" is empty — its lines have become
+   `HISTORY.md` and the rest of `STATE.md`.
+
+## After an interruption
+
+A usage limit, a server error, a compaction of the conversation, a crash or a new session: the work may have
+stopped anywhere, and a summary of the conversation may be wrong. These pages and the tools, not recollection,
+say where it stands. In order:
+
+1. **See what is true:** `bash dist/tools/checkpoint.sh status --net` — the open journal steps, unsaved or unuploaded
+   handbook changes, each worktree (branch, commit, pushed or not, uncommitted files, an unfinished rebase or merge,
+   leftover safety refs), jobs still running, the last events (verify, ship, backup, checkpoints, interruptions),
+   fork CI, the build on the releases page, our upstream PRs.
+2. **Settle each open step in "Now"** against that evidence (and `git log`, `gh pr list`, the release title): if it
+   happened, tick it with its result; if not, it is still to do; if it is half-done (a build running, a push that
+   did not land), finish or undo that one step.
+3. **Never repeat a public or outward step without evidence that it did not happen** — a push, a build, a PR, a
+   comment, anything in Utku's name. A job still running is waited on, not restarted; a waiter left behind by the
+   old session is stopped.
+4. **Uncommitted code** in a worktree is read (`git diff`) before anything else touches that worktree.
+5. **Still unsure?** The session transcripts are the last resort (`WORKFLOW.md` §3). Otherwise ask Utku.
+6. Continue from "Next safe action", updating "Now" as you go.
 
 ## Starting a fresh AI session
 
 Paste this as the first message:
 
 > You are continuing work on the NOOP Lift Log in `~/Developer/noop`. Before anything else read
-> `dist/README.md`, `dist/STATE.md` and `dist/RULES.md`, then run `bash dist/tools/upstream-check.sh` and
-> follow `dist/WORKFLOW.md`. I am not a programmer: explain in plain language, make the technical decisions
+> `dist/README.md`, `dist/STATE.md` and `dist/RULES.md`, then run `bash dist/tools/checkpoint.sh status --net`
+> (and README's "After an interruption" if STATE.md's "Now" has open steps) and `bash dist/tools/upstream-check.sh`,
+> and follow `dist/WORKFLOW.md`. I am not a programmer: explain in plain language, make the technical decisions
 > yourself, verify by running things rather than assuming, keep changes inside the Lift Log, ship every change
 > as a build on my GitHub releases page and tell me "just update" or "wipe" with the build's id, and post
-> nothing publicly without my yes. Before the session ends, update `dist/STATE.md` and the other pages the work
-> changed, then run `bash dist/tools/backup.sh`.
+> nothing publicly without my yes. Keep `dist/STATE.md`'s "Now" written before each step that matters, and after
+> each milestone and before the session ends update the pages the work changed and run `bash dist/tools/backup.sh`.
 
 ## The rules that matter most
 

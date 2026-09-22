@@ -4,16 +4,17 @@
 #   bash dist/tools/verify.sh --quick    skip the Xcode app targets (macOS tests, iOS build)
 # Android is not local: gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref <branch>
 set -uo pipefail
-REPO=${NOOP_REPO:-$(cd "$(dirname "$0")/../.." && pwd)}
+TOOLS=$(cd "$(dirname "$0")" && pwd)
+REPO=${NOOP_REPO:-$(cd "$TOOLS/../.." && pwd)}
 cd "$REPO"
 OUT="${TMPDIR:-/tmp}/lift-verify/$(git rev-parse --short HEAD)"; DD="${TMPDIR:-/tmp}/lift-verify/derived"
 mkdir -p "$OUT"
-failed=0
+failed=0 failures=""
 
 step() {  # step <name> <command…>
   local name=$1; shift
   printf '  %-20s' "$name"
-  if "$@" >"$OUT/$name.log" 2>&1; then echo "ok"; else echo "FAILED — $OUT/$name.log"; failed=1; fi
+  if "$@" >"$OUT/$name.log" 2>&1; then echo "ok"; else echo "FAILED — $OUT/$name.log"; failed=1; failures+=" $name"; fi
   grep -h -E "Executed [0-9]+ tests|^Ran [0-9]+ test|\*\* BUILD (SUCCEEDED|FAILED)" "$OUT/$name.log" | tail -1 | sed 's/^[[:space:]]*/      /'
 }
 
@@ -79,5 +80,8 @@ if [ "${1:-}" != "--quick" ]; then
   step ios-build       ios_build
 fi
 echo "logs: $OUT"
+if [ $failed = 0 ]; then result="all steps passed"; elif [ -n "$failures" ]; then result="FAILED:$failures"
+else result="steps SKIPPED, not verified"; fi
+bash "$TOOLS/checkpoint.sh" event "verify${1:+ $1} $(git rev-parse --abbrev-ref HEAD) @ $(git rev-parse --short HEAD): $result — $OUT"
 [ $failed = 0 ] && echo "all steps passed" || echo "some steps FAILED — read their logs; compare with upstream/main before blaming the branch"
 exit $failed

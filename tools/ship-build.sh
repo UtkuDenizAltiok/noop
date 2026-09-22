@@ -3,10 +3,13 @@
 #   bash dist/tools/ship-build.sh [work-branch]      (default: the branch checked out in the app repo)
 # lift-log-build = work branch + fork/ships-template (uploads the .xlsx template; kept out of upstream PRs).
 set -euo pipefail
-REPO=${NOOP_REPO:-$(cd "$(dirname "$0")/../.." && pwd)}
+TOOLS=$(cd "$(dirname "$0")" && pwd)
+REPO=${NOOP_REPO:-$(cd "$TOOLS/../.." && pwd)}
 cd "$REPO"
 FORK=UtkuDenizAltiok/noop BUILD=lift-log-build WF="Testing build (fork)"
 WORK=${1:-$(git rev-parse --abbrev-ref HEAD)}
+# One line per outcome in the event log, so an interrupted ship can be checked instead of repeated.
+trap 'rc=$?; [ $rc = 0 ] || bash "$TOOLS/checkpoint.sh" event "ship $WORK FAILED (exit $rc)${RUN:+ — run $RUN}"' EXIT
 
 git fetch -q origin
 [ "$(git rev-parse "$WORK")" = "$(git rev-parse "origin/$WORK" 2>/dev/null || echo missing)" ] \
@@ -29,6 +32,7 @@ for _ in $(seq 30); do
 done
 [ -n "${RUN:-}" ] || { echo "the run for ${SHA:0:8} did not start"; exit 1; }
 echo "building ${SHA:0:8}: https://github.com/$FORK/actions/runs/$RUN (about 15 minutes)"
+bash "$TOOLS/checkpoint.sh" event "ship ${SHA:0:7} ($WORK @ $(git rev-parse --short "$WORK")) building — run $RUN"
 gh run watch "$RUN" --repo "$FORK" --interval 60 --exit-status >/dev/null \
   || { echo "build FAILED — gh run view $RUN --repo $FORK; on a 5xx or early clone failure: gh run rerun $RUN"; exit 1; }
 
@@ -38,3 +42,4 @@ assets=$(gh release view testing-latest --repo "$FORK" --json assets --jq '.asse
 grep -q '^NOOP-ios-unsigned-.*\.ipa$' <<<"$assets" || { echo "release has no .ipa"; exit 1; }
 grep -q '^lift-log-program-template\.xlsx$' <<<"$assets" || { echo "release has no template"; exit 1; }
 echo "shipped ${SHA:0:8} with the .ipa and the template: https://github.com/$FORK/releases/tag/testing-latest"
+bash "$TOOLS/checkpoint.sh" event "ship ${SHA:0:7} verified on the releases page (.ipa + template) — run $RUN"

@@ -3,6 +3,33 @@
 **Updated 22 Sep 2026, morning (after the fifth gym session's crash reports).** The only file that changes every session. Replace, don't append — history goes in
 `HISTORY.md`.
 
+## Now — work in flight
+
+The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or hard to undo is written here BEFORE
+it starts and ticked when it ends. After any interruption, check every unticked line against
+`bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
+
+**Asked (22 Sep, Utku):** (1) open the strap-log PR upstream — his yes, on condition that it is lean, battery-cheap
+and removes nothing he wants; (2) make the project safe to resume after usage limits, server errors and
+compaction, inside the existing handbook/memory structure.
+- [x] Recovery system: `tools/checkpoint.sh` (status / save / event / hook / install-hooks), event lines from
+  verify / ship / backup, `backup.sh` folds checkpoints and never copies an empty memory folder, README "After an
+  interruption", WORKFLOW §2 Continuity, memory note; `tools/test-checkpoint.sh` 31/31, four broken guards caught;
+  strap-log oracle moved to `tools/oracle/strap-log/` (reproduces the Kotlin test's blocks exactly).
+  **Hooks not installed:** Claude Code's auto-mode guard blocks the agent from Claude's settings (writing, even
+  reading). Before it did, one PROBE hook went into the app repo's `.claude/settings.local.json` (git-excluded):
+  PostToolUse on Bash, appending a line to this session's scratchpad. It did not load in this session; it will at
+  the next start, and fail harmlessly once that scratchpad is gone. Utku's `install-hooks` replaces it,
+  `remove-hooks` deletes it.
+- [ ] Strap-log PR: review the branch for size and battery, verify, then open it ← next (check `gh pr list --repo
+  ryanbr/noop --head strap-log-on-disk` first — never open it twice); record its number here at once.
+- [ ] Backup, STATE / HISTORY / memory, then tell Utku what to do.
+
+**Do not redo:** build `f7638bf` is shipped and verified; `strap-log-on-disk` @ `2bfef51e` passed `verify.sh`, Android
+CI 35690102091 and the simulator kill test (22 Sep 07:23).
+
+**Next safe action:** the strap-log PR review.
+
 ## Upstream (`ryanbr/noop`)
 
 | PR | what | state |
@@ -108,9 +135,10 @@ this build and his yes. The strap-log PR waits only on his yes.
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
    `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
    three stacked branches from the fork.
-4. **Only with his yes:** open `strap-log-on-disk` as its own PR (`NEXT_PR.md`, last section); delete its worktree
+4. **Utku:** `install-hooks` or `remove-hooks` (above) — the probe must not stay.
+5. **Only with his yes:** open `strap-log-on-disk` as its own PR (`NEXT_PR.md`, last section); delete its worktree
    and fork branch once merged.
-5. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
+6. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 

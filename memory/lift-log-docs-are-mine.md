@@ -1,6 +1,6 @@
 ---
 name: lift-log-docs-are-mine
-description: "I own the Lift Log handbook (dist/, the public lift-log-handbook branch as a git worktree): keep STATE.md true every session and back it up, with memory, via dist/tools/backup.sh before the session ends."
+description: "I own the Lift Log handbook (dist/, the public lift-log-handbook branch): journal each step that matters in STATE.md \"Now\" BEFORE doing it, checkpoint.sh save after milestones, backup.sh at milestones; after ANY interruption (usage limit, server error, compaction, new session) run checkpoint.sh status --net and settle \"Now\" before acting."
 metadata:
   node_type: memory
   type: feedback
@@ -18,6 +18,15 @@ and updated before the session ends stay true.
 - The handbook is `dist/` = a git worktree of the branch `lift-log-handbook` (README, STATE, RULES, WORKFLOW,
   FEATURE, NEXT_PR, BACKLOG, HISTORY, `tools/`, `memory/`). On a new machine:
   `git worktree add dist lift-log-handbook`, then `bash dist/tools/backup.sh --restore-memory`.
+- **Continuity (Utku, 22 Sep 2026, after a usage limit, a server error and a compaction left the handbook 7 h
+  behind):** a session can stop anywhere, so the conversation is never the store. Before a long, public or
+  hard-to-undo step, write it in `STATE.md` "Now" with what will prove it (commit, run id, PR number) and tick it
+  after; `bash dist/tools/checkpoint.sh save "what"` after each milestone (local commit, instant); `backup.sh`
+  after milestones, not only at the end. **After any interruption or compaction, first run
+  `bash dist/tools/checkpoint.sh status --net` and follow README "After an interruption": settle every open step
+  against evidence; never repeat a push, build, PR or comment without evidence it did not happen.** Optional
+  hooks (`checkpoint.sh install-hooks`) are Utku's to install — the auto-mode guard blocks the agent from editing
+  Claude settings, even reading them.
 - Every session end: replace `STATE.md` with the truth, update whatever else changed (rules keep their numbers;
   events become one line in `HISTORY.md`), then `bash dist/tools/backup.sh "what changed"`.
 - The branch is PUBLIC: drafts or anything personal go in `dist/private/` (ignored). Never commit `dist/` to a

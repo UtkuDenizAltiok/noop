@@ -26,11 +26,37 @@ reviewers verified rather than obeyed, and this implementation kept unless a cha
 
 ## 2. Session routine
 
-- **Start:** `STATE.md` → `RULES.md` → `bash dist/tools/upstream-check.sh` (our PRs, upstream commits touching
-  Lift Log files on either platform, merge conflicts, open threads). The maintainers push to and merge our
-  branches, and add twins of our code, within hours.
+- **Start:** `STATE.md` ("Now" first) → `RULES.md` → `bash dist/tools/checkpoint.sh status --net` (README's
+  "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh` (our PRs, upstream
+  commits touching Lift Log files on either platform, merge conflicts, open threads). The maintainers push to and
+  merge our branches, and add twins of our code, within hours.
 - **End:** replace `STATE.md`'s content with the truth, update any file the work changed, then
   `bash dist/tools/backup.sh "what changed"`. Drafts belong in `NEXT_PR.md`, never only in a scratch folder.
+
+**Continuity** (22 Sep, after a usage limit, a server error and a compaction in one night left the handbook seven
+hours behind the work). A session can stop anywhere, without an end; the conversation is not a store.
+- **Journal first.** Before a step that is long (a build, a verify, CI), public (a push, a release, a PR, a comment)
+  or hard to undo (a rebase, a force-push, a migration), write it in `STATE.md` "Now" with what will prove it
+  happened (branch and commit, run id, PR number); tick it with its result when it ends. Record a PR's number or a
+  run's id the moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo",
+  and "Next safe action".
+- **Save often, upload at milestones.** `bash dist/tools/checkpoint.sh save "what"` is a local commit of the handbook
+  and Claude Code's memory — instant, offline, never public. `backup.sh` uploads after any milestone that took real
+  work, not only at the end; it folds the local checkpoints into its one commit.
+- **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
+  `dist/private/events.log` (local); a verification's numbers go into `STATE.md`. Nothing needed later lives only
+  in the scratchpad or `$TMPDIR`, which a restart wipes: harnesses go to `tools/` (the strap-log oracle was one),
+  drafts to `NEXT_PR.md` or `private/`.
+- **Background jobs** are named in "Now" with how to check them; `checkpoint.sh status` lists long jobs still
+  running, so an old session's job is waited on or stopped, never started twice.
+- **Hooks** (optional, Utku's choice — they change how Claude Code behaves; its safety guard does not let the agent
+  install them itself): `bash dist/tools/checkpoint.sh install-hooks` puts five hooks into the app repo's
+  `.claude/settings.local.json` (excluded through `.git/info/exclude`, never committed). A new, resumed or
+  compacted session starts with "Now" and the status in its context; the handbook is checkpointed after every
+  reply, before a compaction, and when a usage limit or server error ends a turn (`StopFailure`), and the next
+  prompt after such an error is told so. `remove-hooks` undoes it. The hooks only save locally and print; they
+  never upload, block or fail. `bash dist/tools/test-checkpoint.sh` proves the tool and backup's folding in a
+  sandbox (31 checks; four broken guards each caught, 22 Sep).
 
 ## 3. Verification
 
@@ -74,6 +100,10 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
 - **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
+- **The session transcripts are the last resort** after an interruption, when the handbook, git, CI and the event
+  log leave a question open: `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl`, one JSON object per
+  line. Search the tool results with Python (`json.loads` per line, then the text), not `grep -o` with a long
+  pattern, which fails on the minified lines. On 22 Sep it held the numbers of a verify run nobody had written down.
 
 ### Reading a strap log
 
@@ -185,6 +215,9 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
   `STATE.md`), `lift-log-build`, `lift-log-handbook`; tags
   `fork/ships-template` and `testing-latest` (plus upstream's version tags). Nothing else.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
+- **Before any history rewrite** — a rebase, an amend or reset of a pushed commit, a force-push — tag the old tip
+  `backup/<what>` locally; `checkpoint.sh status` lists such refs until they are deleted, so an interrupted rewrite
+  is visible.
 - **Backup tags stay local** and are deleted after the push is verified. Retired refs go into a bundle outside
   the repo (`git bundle create`), not onto GitHub.
 - **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go
@@ -212,7 +245,10 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 ## 10. Maintaining this handbook
 
-- Keep `STATE.md` true at the end of every session; move finished events into `HISTORY.md` as one line.
+- Keep `STATE.md` true at every milestone and at the end of every session (§2 Continuity); move finished events
+  into `HISTORY.md` as one line.
 - Rules keep their numbers. Settled science is not rewritten silently.
-- `bash dist/tools/backup.sh "what changed"` copies Claude Code's memory into `memory/`, commits and pushes;
-  `--restore-memory` copies it back on a new machine.
+- `bash dist/tools/backup.sh "what changed"` copies Claude Code's memory into `memory/`, commits (folding local
+  checkpoints) and pushes; `--restore-memory` copies it back on a new machine. Neither it nor `checkpoint.sh` ever
+  copies from an empty memory folder.
+- After editing `checkpoint.sh` or `backup.sh`, run `bash dist/tools/test-checkpoint.sh`.
