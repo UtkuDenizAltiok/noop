@@ -72,6 +72,17 @@ trustworthy — keep it.
   session (rule 42), and the in-app bar laid out like the Lock Screen banner. The same night: all three built,
   in-app running clocks switched to NOOP's `ActiveWorkoutClock.clock` (they said "45s" beside the Lock Screen's
   "0:45"), and `tools/strap-log.py` gained a per-run "steps" report.
+- **22 Sep** — Utku sent the iPhone's crash reports: four `cpu_resource_fatal` (20:34, 20:42, 20:58 during the
+  session, 09:17 that morning on the previous build), no jetsam — iOS killed NOOP for background CPU (over 80% for
+  60 s), its main thread redrawing SwiftUI views. Ours: a once-a-second tick published to the whole app shell and
+  the sheet, and the sheet watching LiveState and AppModel. Fixed without a tick (rule 43); measured in the
+  simulator; build `f7638bf`. He also asked why the log missed his window: the ring kept three runs of 1,000 lines
+  and lost up to 31 lines at each kill. A separate PR branch `strap-log-on-disk` keeps every line on disk, all runs
+  within 2 MB, on iOS and Android (Kotlin twin checked against the Swift output), waiting on his yes. Its first
+  commit failed the parity ledger and governance: a test helper named `run(at:)` was credited, by the ledger's
+  name-only call graph, as a caller of `StandardHRLifecycleFlush.run/2` (renamed `process(at:)`). Three stuck
+  "wait for the build" loops of mine were `pgrep -f` matching their own command line — never wait on a process
+  search whose pattern is in the waiting command.
 
 ## What found what
 
@@ -122,6 +133,7 @@ trustworthy — keep it.
 | after iOS relaunched NOOP in the background, its first push ended the Lock Screen banner | gym, strap log, ActivityKit log | 41 |
 | the in-app clocks said "45s" / "0s" where the Lock Screen said "0:45" / "0:00" | simulator | 38 |
 | an exercise not in the program could not be logged | Utku asked | 42 |
+| iOS killed NOOP for background CPU: the session redrew every screen each second | crash reports (Analytics Data) | 43 |
 | done sets asked about at finish; the program not following the session | Utku asked | 27, 28 |
 | a second, sync banner would appear mid-session once #2272 arrived | reading upstream | 40 |
 | the Lock Screen's words cut short by the numbers' width | Utku asked (screenshot) | banner layout |

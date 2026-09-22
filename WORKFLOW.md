@@ -55,6 +55,22 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
   how iOS closes it; `xcrun simctl launch` brings it back (in the foreground). Reinstalling the app ends its banners
   by itself, so never install between the two steps being compared. The app's own strap log: Test Centre → Strap
   log → Copy, then `xcrun simctl pbpaste <device>`.
+- **CPU is measurable in the simulator** (22 Sep): a simulator app is a Mac process, so
+  `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")` read 60 s apart gives its CPU-seconds a minute.
+  Compare the same screen and state before and after, with NOOP alone as the baseline. The simulator suspends NOOP
+  in the background (no strap keeps it awake), so background timing is checked in unit tests, not there.
+- **Why iOS closed NOOP is in the iPhone's own record**, not the strap log: Settings → Privacy & Security →
+  Analytics & Improvements → Analytics Data. `NOOP Staging.cpu_resource_fatal-<date>.ips` = killed for background
+  CPU; `JetsamEvent-…` = memory. Utku can share them from there. Their stacks are unsymbolicated and only 3–4
+  samples ("Heaviest stack for the target process"): count the libraries in it (SwiftUICore / AttributeGraph = view
+  updates) and read `Version:` — the 09:17 kill on 21 Sep was on an older build.
+- **Name test helpers unlike any production function** (`process(at:)`, not `run(at:)`): the parity ledger matches
+  calls to declarations by name and arity alone, so a test's `run(at: 0, segment: 200)` counted as a call of
+  `StandardHRLifecycleFlush.run/2` and failed the ledger and governance with drift in a package the branch never
+  touched (22 Sep). A drift in a package you did not touch: diff `parity_ledger.py --no-baseline` against a clean
+  `git archive` of the base.
+- **Never wait on `pgrep -f <pattern>` from a command that contains the pattern**: it finds itself and never ends
+  (three such loops ran for hours on 22 Sep). Wait on the command itself (`run_in_background`) or on its output.
 - **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.

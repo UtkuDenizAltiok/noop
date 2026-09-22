@@ -9,7 +9,7 @@ yes.
 **Writing style (Utku, 21 Sep):** simple, clear words — what changed since #2098 and #2099 merged, and why. No
 sophisticated or AI-sounding phrasing.
 
-**What Utku checks at the gym next** (build `3cfd3d0` from `lift-log-gym-round-3`, the stack's tip):
+**What Utku checks at the gym next** (build `f7638bf` from `lift-log-gym-round-3`, the stack's tip):
 - the Lock Screen lights on every strap step while NOOP is not on screen — also after NOOP has been in the
   background a long time (iOS restarts it; the strap log now says "session picked up again" and "Lock Screen
   banner picked up again" when that happens);
@@ -18,6 +18,8 @@ sophisticated or AI-sounding phrasing.
   lists it with its sets and heaviest set;
 - the minimised bar: icon near the left, heart rate over the clock at the right, words cut less; clocks read
   "0:45" like the Lock Screen;
+- no background restarts of NOOP during the session (the strap log's `runs` report shows each one), and the
+  battery drain over the session feels no worse than before;
 - still true from round 4: done sets complete without asking; the program takes each line's heaviest set; a
   second double-tap under 5 s is ignored; no second "sync" banner;
 - save the strap log right after the session (and right after anything odd — the phone keeps only the last
@@ -85,6 +87,7 @@ After #2098 and #2099 were merged, I used the Lift Log in five real gym sessions
 - Numbers you type into the current set show there too, not the grey plan.
 - **More room for the text**: the heart rate sits above the timer, and the icon and numbers are closer to the edges — on the Lock Screen and in the app's bar alike.
 - The app's running clocks read like the Lock Screen's ("0:45", "0:00", "1:05:00"), using NOOP's `ActiveWorkoutClock.clock`; before, the app said "45s" next to a Lock Screen "0:45".
+- **A running session does no work between taps.** iOS closed NOOP for using too much CPU in the background (its crash reports: over 80% for a minute, redrawing screens). The session had a once-a-second timer that made every screen watching it redraw, even off screen, and the session sheet also redrew on every strap-log line and heartbeat. Now there is no timer: the rest warning and the rest's end are two one-shot timers, and the clocks and heart rate on screen are small views that update themselves. In the simulator, with the sheet open and nothing happening, NOOP's CPU went from 9.96 to 6.59 CPU-seconds a minute (6.29 with no session at all).
 - **The session and its Lock Screen banner survive iOS closing NOOP.** iOS closed NOOP in the background and relaunched it four times in one session. The saved session came back only when the first screen appeared, and the banner's first update after a relaunch found no session and ended the banner iOS had kept; iOS does not allow a new one from the background, so the Lock Screen stayed dark until NOOP was opened. The session is now picked up when the app starts, and the banner is kept.
 - A double-tap **lights up the Lock Screen**, so you can see where you are without unlocking. Each double-tap writes one line to the strap log saying whether it asked iOS to light the screen.
 - **One banner during a session**: the sync banner (#2272) doesn't start while a session is running, the same way the heart-rate banner already steps aside.
@@ -96,6 +99,7 @@ After #2098 and #2099 were merged, I used the Lift Log in five real gym sessions
 - A set with 0 reps counts nowhere: `LiftMetrics.isPerformed`, and the same rule in the SQL of `liftSetCounts` and `lastLiftSets` (`reps <> 0`), with a test that the two agree.
 - Android: `LiftMetrics.kt` (#2232) follows the change, with its oracle regenerated from the real Swift packages, and `deleteLiftSets` has its Kotlin twin in `DeviceRegistryDao`. Android has no Lift Log screens, so nothing else there changes.
 - `Tools/parity_twin_map.json` is refreshed with `parity_ledger.py --refresh-derived` for the two new twin pairs (not edited by hand).
+- Following the PERF rule TodayView already states: no Lift Log screen watches `LiveState` or `AppModel` any more; the heart rate and the clocks are leaf views (`LiftLiveReadouts.swift`).
 - Outside the Lift Log's own files: `FrameRouter` hands a double-tap on before it starts the sync; `AppModel`'s double-tap handler type is `@MainActor`; `SyncLiveActivityController` gets a `holdsBackNewBanner` hook; and `StrandiOSApp` wires them up and resumes a saved session in its `init` (it used to be `RootTabView`'s `.task`).
 - The exercise-name suggestions and the muscle picker move from `LiftProgramItemSheet` into `LiftExercisePicking.swift`, shared by the program editor and the new Add exercise sheet; the program editor behaves as before.
 - No schema change: an added exercise uses the existing `liftExercise` and `liftProgramItem` tables, and the crash snapshot gains one optional field.
@@ -146,3 +150,15 @@ the new PR. Post it right after the PR opens.
 ```markdown
 Thanks for the guard, and for merging. You asked whether I'd rather keep performed sets with their timing: after more gym sessions, yes. In #FOLLOWUP a set that was done always counts as done, with the numbers typed or the grey ones, and the finish screen only asks about sets never started. Your guard stays: if no set was done and the rest are discarded, nothing is saved, and the finish screen says so before Save.
 ```
+
+## The separate strap-log PR (branch `strap-log-on-disk`)
+
+Not part of the Lift Log PR: it changes NOOP's own strap log, on iOS and Android. Utku asked for it on 22 Sep after
+the log missed the window he wanted. One commit on `upstream/main` (`2bfef51e`). Open only with his yes; title
+"Strap log: keep every line on disk, across restarts, within 2 MB". The body is the commit message, plus the
+verification and one line of context: found while reading a gym session's log for the Lift Log, after four
+background kills. Verified 22 Sep on `2bfef51e`: full `verify.sh` (every step, governance included; macOS tests
+2044 with only the two `TodayCarryOverTests`), Android CI run 35690102091 green (the oracle tests included), and on
+the simulator, NOOP `kill -9`ed six seconds after launch: its file held all 4 lines, and Test Centre → Copy after
+the relaunch showed that run, and the two before it, each whole under its header. Before opening: rebase if `main`
+moved, re-run `verify.sh` and Android CI.

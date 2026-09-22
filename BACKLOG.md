@@ -39,11 +39,12 @@ own PR; trim comments; squash.
 
 ## Known costs, measured — not oversights
 
-- **iOS closes NOOP in the background during a session** — four times in 28 minutes on 21 Sep (and on 16 and 17
-  Sep). The Lift Log now survives it (`RULES.md` 41), but the cause is outside the Lift Log and the strap log cannot
-  name it: memory, CPU or a crash. The iPhone's own record would (Settings → Privacy & Security → Analytics &
-  Improvements → Analytics Data: `JetsamEvent…` means memory, a `NOOP…` file a crash). Upstream's area; raise it
-  only with Utku's yes, and with those files.
+- **iOS closing NOOP in the background** — the 21 Sep kills were `cpu_resource_fatal`, and the Lift Log's
+  per-second redraws were ours to remove (`RULES.md` 43). NOOP alone still costs ~6 CPU-s a minute idle on Today in
+  the simulator, and one kill (09:17 on 21 Sep, previous build) may have had no session running: if a gym log still
+  shows a background restart, ask for that day's Analytics Data files (Settings → Privacy & Security → Analytics &
+  Improvements → Analytics Data: `NOOP Staging.cpu_resource_fatal-…` means CPU, `JetsamEvent…` memory). Upstream's
+  area beyond the Lift Log; raise it only with Utku's yes, and with those files.
 - **The session snapshot is JSON-encoded into UserDefaults on every change**, keystrokes included. Deliberate (a
   crash mid-rest keeps what was typed); a few KB per session. If sessions grow, write sets incrementally rather
   than dropping durability. The importer's 200-line cap is part of this bound.

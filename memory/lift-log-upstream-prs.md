@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3, round 5 added 21 Sep night) to open as ONE PR (lift-log-follow-ups) with Utku's yes. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233 merged; three stacked branches on a56840bb (tip lift-log-gym-round-3 @ 65b804a6) to open as ONE PR (lift-log-follow-ups) with Utku's yes; a separate strap-log PR branch (strap-log-on-disk) also waits on his yes. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -23,7 +23,12 @@ that must survive if the handbook is missing (21 Sep 2026):
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.
 - Round 5 (gym 21 Sep evening): iOS relaunched NOOP in the background 4x in 28 min and the root view's first push
   ENDED the Lock Screen banner (RULES 41: resume in `StrandiOSApp.init`); add an exercise mid-session (RULES 42);
-  the bar laid out like the Lock Screen; running clocks via `ActiveWorkoutClock.clock`.
+  the bar laid out like the Lock Screen; running clocks via `ActiveWorkoutClock.clock`. 22 Sep: the 4 restarts were
+  iOS `cpu_resource_fatal` kills (background CPU) — the session's once-a-second tick redrew SwiftUI app-wide; fixed
+  with no tick at all (RULES 43, `65b804a6`), build `f7638bf`.
+- A SEPARATE PR, not part of the Lift Log's: branch `strap-log-on-disk` (`2bfef51e`, on `a56840bb`, worktree
+  `~/Developer/noop-strap-log`) — the strap log appended to disk per app run within 2 MB, Swift + Kotlin twin,
+  replacing the 3 × 1,000-line ring. Utku asked for it 22 Sep; open it only with his yes (`dist/NEXT_PR.md`).
 - Max RPE (1-10) per program line: typed in the editor or imported from the template's `Target max RPE`
   column, shown grey in the session, and a set left unrated saves it (Utku, 15-16 Sep). Its cost is stated in
   `dist/RULES.md` 34: a stored rating no longer proves he rated that set.

@@ -1,6 +1,6 @@
 # State
 
-**Updated 21 Sep 2026, night (after the fifth gym session).** The only file that changes every session. Replace, don't append — history goes in
+**Updated 22 Sep 2026, morning (after the fifth gym session's crash reports).** The only file that changes every session. Replace, don't append — history goes in
 `HISTORY.md`.
 
 ## Upstream (`ryanbr/noop`)
@@ -27,27 +27,46 @@ from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is 
    sets in Edit sets; SQL mirrors `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and the
    parity refresh commit (`631f411f`: functions +4, function_pairs +2, file_pairs +1, unpaired_files −2).
 2. `lift-log-target-rpe` @ `0c9c72e9` — max RPE per program line (`RULES.md` 34).
-3. `lift-log-gym-round-3` @ `69a3cb0d` — rounds 3, 4 and 5: one-tap field focus; knock guard (now 5 s) and buzz
+3. `lift-log-gym-round-3` @ `65b804a6` — rounds 3, 4 and 5: one-tap field focus; knock guard (now 5 s) and buzz
    before the sync; next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking;
    the program takes each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each
    step; no sync banner during a session; banner layout (`RULES.md` 5, 27, 28, 35–40). Round 5 (21 Sep night,
    four commits on `7bafa857`): the session is resumed as NOOP starts and the banner kept across iOS restarts
    (`e4e391f7`, rule 41); the bar laid out like the banner (`03919c22`); adding an exercise during a session
-   (`c7d38cee`, rule 42); running clocks via `ActiveWorkoutClock.clock` (`69a3cb0d`, rule 38).
+   (`c7d38cee`, rule 42); running clocks via `ActiveWorkoutClock.clock` (`69a3cb0d`, rule 38); and, 22 Sep, a
+   running session does no work between taps (`65b804a6`, rule 43) — the cause of iOS's four CPU kills on 21 Sep.
 
 - **Work branch:** `lift-log-gym-round-3`
-- **Testing build on Utku's phone:** `3cfd3d0c` = `69a3cb0d` + the template commit, NOOP 11.8.0. Releases page:
-  "NOOP Staging — base 11.8.0 · 2026-09-21 · 3cfd3d0" (Pre-release), `.ipa` uploaded 22:48 on 21 Sep, verified
+- **Testing build on Utku's phone:** `f7638bfe` = `65b804a6` + the template commit, NOOP 11.8.0. Releases page:
+  "NOOP Staging — base 11.8.0 · 2026-09-21 · f7638bf" (Pre-release), `.ipa` uploaded 22:46 UTC on 21 Sep, verified
   (target commit, `.ipa`, template). Just update, no wipe (the snapshot's new field is optional). Not yet
-  gym-tested.
+  gym-tested. (`3cfd3d0`, the build before it, lacked `65b804a6`.)
+
+## A separate PR, not the Lift Log's: `strap-log-on-disk`
+
+Utku asked for it on 22 Sep: the saved log missed the window he wanted. One commit on `a56840bb`, `2bfef51e`
+(pushed to the fork; the earlier `076a87ed` differed only in a test helper's name — `run(at:)`, which the parity
+ledger's name-only call graph credited to `StandardHRLifecycleFlush.run/2` and so failed ledger and governance). The
+strap log is appended to one file per app run (256 KB segments, 2 MB for all runs, oldest deleted first) instead of
+the UserDefaults / SharedPreferences ring of 3 runs × 1,000 lines mirrored every 32 lines. Swift
+`Strand/BLE/StrapLogArchive.swift` + `StorePaths.strapLogDirectory()`; Kotlin `com.noop.ui.StrapLogArchive`, its
+test carrying the Swift oracle's output verbatim. Exports read exactly as before, so `strap-log.py` is unchanged.
+Opening it upstream needs Utku's yes (`NEXT_PR.md`, last section). Its worktree: `~/Developer/noop-strap-log`.
 
 ## Verified
 
-- **The tip `69a3cb0d`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
-  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout) · macOS tests 2081 (only
+- **The tip `65b804a6`, full `verify.sh`, every step passed:** WhoopStore 609 · StrandAnalytics 2030 ·
+  StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 (clean checkout) · macOS tests 2085 (only
   the two `TodayCarryOverTests`) · iOS build. `e4e391f7` (its controller file split by hand) built for iOS and
   passed its persistence and strap-tap tests on its own. No `android/**` or `Packages/**` change since `7bafa857`,
   so Android CI's green run 35576172501 on `7bafa857` still covers Android.
+- **The CPU kills (22 Sep):** the four crash reports are `cpu_resource_fatal` (48 s of CPU in 49–60 s, "exceeding
+  limit of 80% cpu over 60 seconds"), NOOP not frontmost in every sample; each report's heaviest stack is SwiftUI's
+  view update (SwiftUICore / AttributeGraph; only 3–4 unsymbolicated samples each, so evidence that fits rather
+  than proof). 09:17 was on the older build 11.7.0 (390), maybe not in a session (ask Utku).
+  Simulator, sheet open, nothing happening, CPU-seconds per minute of NOOP: 9.96 with the tick, 6.59 without, 6.29
+  with no session at all. `LiftSessionTimingTests` (4) all failed with the tick put back, and the undo test alone
+  failed with the rest timers left uncancelled.
 - **Tests seen to fail without their fix (round 5):** five breaks at once — new lines never appended, the set count
   not forced to 1, the added flag not persisted, the resume not logging, the zero plan — each failed its own tests;
   restored byte-identical (sha256). Round 4 and earlier: `NEXT_PR.md`'s PR body.
@@ -65,19 +84,20 @@ from a new branch `lift-log-follow-ups` at the tip (`NEXT_PR.md`; the reason is 
   20:58:46 lit 0 of 3 steps ("no Lift Log banner is running"); the run in which Utku had opened NOOP lit 4 of 4.
   Every tap a sync handed over again matches its live step, except one at 20:47:37 in six minutes the file lost.
   Taps were buzzed 0.46–0.47 s after the strap sensed them. 20:06–20:09 is not in the file (only the last three
-  earlier runs are kept); why iOS closed NOOP is not in it either (`BACKLOG.md`, known costs).
+  earlier runs are kept — the reason for `strap-log-on-disk`); why iOS closed NOOP is in the crash reports above.
 
 ## Confirmed at the gym
 
 Everything up to round 3 (Utku, 21 Sep). From round 4, on 21 Sep evening: the light-up works while NOOP runs
 ("perfectly working until some time"); the rest of round 4 was not reported on. Round 5 waits on the next session.
-Ask him then about each item on `NEXT_PR.md`'s checklist, and for the iPhone's Analytics Data files
-(`JetsamEvent…` / `NOOP…`) from 21 Sep around 20:34, 20:42 and 20:58 — they would say why iOS closed NOOP.
+Ask him then about each item on `NEXT_PR.md`'s checklist, and whether the strap log's `runs` report shows any
+background restart. Until `strap-log-on-disk` is in his build, he saves the log right after a session, and midway
+through one longer than about 45 minutes (the screen's buffer holds about 50).
 
 ## Nothing is blocked
 
-The PR is written (`NEXT_PR.md`, plain words, round 5 included) and waits on one gym session on this build and his
-yes.
+The PR is written (`NEXT_PR.md`, plain words, round 5 and the CPU fix included) and waits on one gym session on
+this build and his yes. The strap-log PR waits only on his yes.
 
 ## Next
 
@@ -88,12 +108,14 @@ yes.
 3. **Only with his yes:** `NEXT_PR.md` "Before opening" — rebase if `main` moved, refresh parity, verify, create
    `lift-log-follow-ups`, Android CI, open the ONE PR, post the reply on #2099; then, with his yes, delete the
    three stacked branches from the fork.
-4. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
+4. **Only with his yes:** open `strap-log-on-disk` as its own PR (`NEXT_PR.md`, last section); delete its worktree
+   and fork branch once merged.
+5. Keep this file true and run `bash dist/tools/backup.sh "what changed"` before the session ends.
 
 ## The fork, exactly
 
 - Branches: `main` (mirror of `upstream/main`, `a56840bb`), `lift-log-discard-and-edit`, `lift-log-target-rpe`,
-  `lift-log-gym-round-3`, `lift-log-build`, `lift-log-handbook`.
+  `lift-log-gym-round-3`, `lift-log-build`, `lift-log-handbook`, `strap-log-on-disk`.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - Retired refs removed 15 Sep sit in `~/Developer/noop-retired/noop-retired-refs-2026-09-15.bundle` on Utku's Mac,

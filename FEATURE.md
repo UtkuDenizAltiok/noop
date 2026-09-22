@@ -103,11 +103,12 @@ Excludes upstream's own `LiftingImporter` (Hevy/Liftosaur) and the maintainers' 
 | file | what |
 |---|---|
 | `Data/LiftSessionEngine.swift` | pure slot state machine: stages, `slotAfter`, `carry`, `unenteredSlots`, add/remove set (max 20), undo |
-| `Data/LiftSessionController.swift` | `@MainActor` owner: tick, buzzes, strap claim, pending input, persistence, `setsToSave`, `anyPerformed`, `setCountChanges`, `presentation(system:)` |
+| `Data/LiftSessionController.swift` | `@MainActor` owner: the rest's one-shot timers (no tick), buzzes, strap claim, pending input, persistence, `setsToSave`, `anyPerformed`, `programAfterSession`, `presentation(system:)`, `changesSettled` |
 | `Data/LiftSessionPersistence.swift` | crash-safe `Codable` snapshot (`noop.activeLiftSession`); new fields must be optional |
 | `Data/LiftFormat.swift` · `LiftMuscleNames.swift` · `HapticPrefs.swift` | formatting · localized muscle names · `haptics.liftRest` |
 | `Screens/LiftLogView.swift` | hub: programs, weekly sets per muscle, history |
 | `Screens/LiftProgramEditorSheet.swift` · `LiftProgramItemSheet.swift` · `LiftProgramImportSheet.swift` | program editor · one line · import |
+| `Screens/LiftLiveReadouts.swift` | the two numbers that change on their own — `LiftRunningClock` (a TimelineView) and `LiftHeartRate` — as leaf views, so a tick or a beat redraws one number (`RULES.md` 43) |
 | `Screens/LiftExercisePicking.swift` · `LiftSessionExerciseSheet.swift` | what both exercise pickers share (name suggestions, remembering a name, the muscle picker) · the session's Add exercise sheet |
 | `Screens/LiftSessionView.swift` | the session sheet, ⊕/⊖, control bar, finish sheet (questions, warning) and `save()` |
 | `Screens/LiftSessionBar.swift` · `LiftSessionDetailSheet.swift` · `LiftSessionEditSheet.swift` · `KeyboardDismiss.swift` | bar (with the next set) · finished session (performed sets only) · its editor · tap-outside keyboard helper (a UIKit window recognizer that stands aside for text inputs) |
@@ -123,6 +124,6 @@ banner after a restart and never requests one from the background),
 
 ### App tests — `StrandTests/`
 `LiftSessionEngineTests` 56 · `LiftSessionPendingInputTests` 11 · `LiftSessionFinishTests` 18 ·
-`LiftSessionAddExerciseTests` 14 · `LiftSessionEditTests` 8 ·
+`LiftSessionAddExerciseTests` 14 · `LiftSessionTimingTests` 4 · `LiftSessionEditTests` 8 ·
 `LiftSessionPersistenceTests` 6 (old-format JSON: decides wipe or update; the resume at launch) ·
 `LiftSessionStrapTapTests` 6 · `FrameRouterDoubleTapDedupTests` 10 · `LiftFormatNumberTests` 10.

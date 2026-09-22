@@ -157,6 +157,17 @@ deliberately. **Numbers are stable** — other files cite them; retire a rule by
     set (`LiftSessionController.programAfterSession`). The line's future program id and `addedInSession` ride
     in the crash snapshot (optional field). The pickers share one copy of the name suggestions, remembering and
     the muscle picker (`LiftExercisePicking.swift`).
+43. **A running session does no work between taps, and a screen watches only what it draws.** iOS killed NOOP for
+    background CPU three times in the 21 Sep session (and once that morning): `cpu_resource_fatal`, over 80% for
+    60 s, the main thread redrawing SwiftUI views. The Lift Log published a once-a-second tick to every screen
+    watching the session — the whole tab shell, the sheet, the bar, the hub — and the sheet also watched LiveState
+    (every log line, beat and R-R packet) and AppModel. Now there is no tick: a rest's warning and end are one-shot
+    timers (`LiftSessionController.scheduleRestTimers` / `restEventTimes`); running clocks and the heart rate are
+    leaf views (`LiftLiveReadouts.swift`: `LiftRunningClock`, a TimelineView, and `LiftHeartRate`); the banner
+    follows `changesSettled`. Upstream's own rule for Today (its PERF note) says the same. Measured, simulator, 60 s
+    idle, no strap: bar 8.35 → 6.14 CPU-s, sheet 9.96 → 6.59, NOOP alone 6.29. `LiftSessionTimingTests` pins that
+    nothing is published between taps. Never add an `@Published` that changes on a timer, nor an
+    `@EnvironmentObject` for a value a leaf could read instead.
 
 ## Settled decisions
 

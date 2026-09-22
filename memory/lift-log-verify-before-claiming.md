@@ -55,5 +55,15 @@ including the maintainer — have been wrong in ways that sounded authoritative.
   iOS's own log: `xcrun simctl spawn <dev> log show --predicate 'process == "liveactivitiesd"'` names each banner
   created and ended; `kill -9` mimics iOS closing the app; never reinstall between compared steps (it ends banners).
   Running the OLD build through the same steps is what turned a likely cause into a proven one.
+- **Measure a battery/CPU claim, don't argue it.** 22 Sep: `ps -o time=` on the simulator's NOOP process read 60 s
+  apart (9.96 → 6.59 CPU-s/min, 6.29 idle baseline). The iPhone's `cpu_resource_fatal-*.ips` reports say why iOS
+  killed NOOP; they hold only 3-4 unsymbolicated samples, so call them consistent evidence, not proof.
+- **Never wait on `pgrep -f pattern` from a command containing the pattern** — it matches itself and never ends
+  (three "wait for the build" loops ran for hours on 22 Sep and worried Utku). Use `run_in_background` on the
+  command itself, or poll its output.
+- **Test helpers must not share a name with a production function**: the parity ledger's call graph is by name +
+  arity, so a test's `run(at:segment:)` counted as a call of `StandardHRLifecycleFlush.run/2` and failed ledger +
+  governance in a package the branch never touched. Diff `parity_ledger.py --no-baseline` against a clean
+  `git archive` of the base to find such drift.
 
 See [[noop-lift-log-project]], [[lift-log-docs-are-mine]].
