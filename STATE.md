@@ -9,31 +9,7 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**Asked (22 Sep 08:30, Utku):** (1) what to do next; (2) a short end-of-session prompt that prepares a fresh
-session; (3) delete everything unneeded, locally and on GitHub; (4) everything usable by ANY AI model, with a
-starter prompt for a new person on his GitHub.
-- [x] Inventory: fork = 7 branches, tags `fork/ships-template` + `testing-latest` + upstream's version tags, one
-  release, no artifacts, no issues; 30 CI caches (3 GB) all on `main`, used this morning — kept. Local: stale
-  `main` (c430ca0b, behind upstream), a stale local `testing-latest` tag (de85d2a3; GitHub's is f7638bfe), three
-  upstream tags (come back on every fetch — kept), the 194 MB retired bundle, `dist/.DS_Store`, old verify logs.
-- [x] Delete / tidy, each proven first (all done 22 Sep ~08:40; the fork's `main` also re-mirrored to upstream's new
-  `29d90eb6`, an Android-diagnostics commit that touches neither PR — #2386 stays MERGEABLE CLEAN):
-  - fork + local branches `lift-log-discard-and-edit` (631f411f) and `lift-log-target-rpe` (0c9c72e9): both are
-    ancestors of `lift-log-gym-round-3` (checked with `merge-base --is-ancestor`), so nothing is lost;
-  - `lift-log-gym-round-3` renamed `lift-log-follow-ups` (same commit 65b804a6; the name the PR plan already used),
-    pushed, then the old name deleted from the fork; no open PR uses any of the three;
-  - local `main` fast-forwarded to `upstream/main`; local tag `testing-latest` deleted (stale copy);
-  - `~/Developer/noop-retired/…bundle` MOVED TO THE TRASH, not erased: its unique refs are superseded (the
-    handbook's 14–15 Sep predecessor, the stash that became `lift-log-discard-and-edit`, pre-rebase snapshots of
-    merged work); the rest is kept upstream or on the fork;
-  - `dist/.DS_Store`, verify logs of superseded commits, this session's scratch builds.
-- [x] README: universal starter prompt, "End a session" procedure + prompt, "Working with any AI"; WORKFLOW (AI-neutral,
-  hooks marked Claude Code, fork list), STATE, NEXT_PR (one branch, 22 Sep counts, #2386 a pointer), BACKLOG and the
-  memory notes brought final.
-- [ ] Fresh clone from GitHub, as a newcomer would: pages and tools work.
-- [ ] Backup, status clean, memory, reply.
-
-**Next safe action:** the fresh-clone test from GitHub.
+Nothing in flight (22 Sep 09:05). Waiting on Utku's next gym session on build `f7638bf`, and on #2386's review.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -158,6 +134,7 @@ on this build and his yes. #2386 waits on the maintainers.
   and `lift-log-gym-round-3` were deleted on 22 Sep: all three are contained in `lift-log-follow-ups`.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
+- The repo's description and website field point newcomers to this handbook (22 Sep).
 - CI caches: about 3 GB on `main`, shared by every build; GitHub expires unused ones after a week.
 - Local only: worktrees `~/Developer/noop` (`lift-log-follow-ups`), `~/Developer/noop/dist` (this handbook),
   `~/Developer/noop-strap-log` (#2386); `dist/private/` (the event log). The retired-refs bundle of 15 Sep went to

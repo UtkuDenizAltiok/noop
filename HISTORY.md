@@ -90,6 +90,12 @@ trustworthy — keep it.
   are ready but only Utku can install them (the auto-mode guard blocks the agent from Claude's settings). The
   strap-log branch lost an unused `clear()` and four Swift 6 warnings it had added; measured, it costs about a
   tenth of the CPU of the mirror it replaces. Opened as #2386 at 08:10; all five upstream checks green.
+- **22 Sep, 09:00** — Utku asked for a clean, final project that any AI can pick up. The three stacked branches
+  became one, `lift-log-follow-ups` (all contained, the old names deleted); the fork's `main` re-mirrored
+  (`29d90eb6`); a stale local `main` and tag tidied; the 15 Sep retired-refs bundle moved to the Trash (only
+  superseded snapshots were unique to it). README now opens with a starter prompt for any AI and an end-of-session
+  prompt, with "End a session" and "Working with any AI"; Claude-only parts are marked. A newcomer's setup from
+  GitHub was run end to end, and the repo page links to the handbook.
 
 ## What found what
 

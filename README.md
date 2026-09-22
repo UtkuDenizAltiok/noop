@@ -87,6 +87,10 @@ fork's CI.
 handbook need write access to `UtkuDenizAltiok/noop` (Utku adds a collaborator). Opening upstream PRs needs a
 GitHub account and Utku's yes (`WORKFLOW.md` §1, §5).
 
+Verified 22 Sep 2026 as a newcomer would: the setup above, from GitHub into an empty folder, took 17 seconds; there
+`checkpoint.sh status --net` showed the journal, the worktree, CI, the build on the releases page and the PRs,
+`test-checkpoint.sh` passed its 31 checks, and `strap-log.py` and `upstream-check.sh` ran. The fork's GitHub page
+links here (its description and website field).
 
 ## Every session
 
