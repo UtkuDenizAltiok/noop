@@ -102,7 +102,10 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
-- **23 Sep, 03:40 — the Lift Log follow-up PR is open**, [#2403](https://github.com/ryanbr/noop/pull/2403), from
+- **23 Sep, 01:46 UTC — #2403 MERGED**, squash `3ada90c3`, proven identical to the submitted head over all 55
+  files; the branch is deleted and `upstream/main` now carries rounds 3–6. The reply ryanbr's 15 Sep question had
+  been waiting for was posted the same night, with Utku's yes, pointing at the merged work.
+- **23 Sep, 03:40 — the Lift Log follow-up PR was opened**, [#2403](https://github.com/ryanbr/noop/pull/2403), from
   `lift-log-follow-ups` rebased onto `751fa1d8` (every commit range-diff identical, the twin map re-derived as its
   own commit). It carries rounds 3–6: one Save and the finish flow, max RPE, the knock guard and the buzz before
   the sync, the next-set line and the 0:00 clock, adding an exercise mid-session, the Lock Screen light-up and the

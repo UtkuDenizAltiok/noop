@@ -1,11 +1,8 @@
-# Next PR — opened
+# Next PR — nothing prepared
 
-**The Lift Log follow-up PR is open: [#2403](https://github.com/ryanbr/noop/pull/2403)** (23 Sep 2026, head
-`8b05e0bb`, from `lift-log-follow-ups` rebased onto `751fa1d8`). Its text is on GitHub, which is now the copy that
-counts; this page keeps only what is still to do and how the body was built, for the next PR.
-
-- **Do not open it again.** A comment on it gets ONE reply after it; a change of ours goes into an edit of the
-  description (`WORKFLOW.md` §5).
+**The Lift Log follow-up PR [#2403](https://github.com/ryanbr/noop/pull/2403) MERGED on 23 Sep 2026** as
+`3ada90c3`, proven identical to the submitted head over all 55 files. Rounds 3–6 are upstream. Nothing is prepared
+for the next one; this page keeps how that body was built, and what the next gym session should look at.
 - **How this body was built**, for the next one: what changed since the last merge, in the order a lifter meets it,
   in plain words (Utku, 21 Sep); the gym sessions and what each showed; every new test seen to fail without its fix;
   the package, macOS, iOS and Android CI numbers; the parity refresh as its own commit, never a hand edit.

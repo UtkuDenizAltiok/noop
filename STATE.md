@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 04:00 (both PRs open: the Lift Log's #2403 and the diagnostics #2402).** The only file that
+**Updated 23 Sep 2026, 04:45 — #2403 IS MERGED. The Lift Log's seven-session follow-up is upstream.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -9,8 +9,8 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (23 Sep 04:10, end of session). Both PRs are open and green — #2403 (the Lift Log's, 19 checks)
-and #2402 (diagnostics, 19 checks) — and wait on the maintainers. Utku's build is `1c34d6cd`.
+Nothing in flight (23 Sep 04:50, end of session). #2403 merged; the reply on #2099 posted; #2402 open and green.
+Utku's build is `1c34d6cd`; the next gym session has three things to look at (`## Confirmed at the gym`).
 
 ## Upstream (`ryanbr/noop`)
 
@@ -22,9 +22,9 @@ and #2402 (diagnostics, 19 checks) — and wait on the maintainers. Utku's build
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
 | [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's) | merged 22 Sep 09:14 UTC, squash `a9717abc` (proven equal to `23bee21a` file by file); branch and worktree removed |
 | [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's; branch `hr-transport-summary`) | **open** since 23 Sep 00:40, head `5ce691ac`, rebased onto `751fa1d8`; all 19 checks green |
-| [#2403](https://github.com/ryanbr/noop/pull/2403) | **the Lift Log follow-ups** from seven gym sessions, rounds 3–6 in one PR (branch `lift-log-follow-ups`) | **open** since 23 Sep 03:40, head `8b05e0bb`, rebased onto `751fa1d8`; all 19 checks green |
+| [#2403](https://github.com/ryanbr/noop/pull/2403) | **the Lift Log follow-ups** from seven gym sessions, rounds 3–6 | **merged** 23 Sep 01:46 UTC, squash `3ada90c3` (proven equal to `8b05e0bb` over all 55 files); branch deleted |
 
-- **`upstream/main` is `751fa1d8`** (22 Sep evening; our merged `a9717abc` is in it, plus Android diagnostics, an
+- **`upstream/main` is `3ada90c3`** — our own merge (22 Sep evening; our merged `a9717abc` is in it, plus Android diagnostics, an
   Android chart fix, a macOS frame-loop fix and a design hex-parse fix — none touching Lift Log files).
   `lift-log-follow-ups` sits on `a56840bb` and merges cleanly; rebase before the PR. 11.8.0 shipped the Lift Log
   (Apple only). The fork's `main` mirrors upstream as of `29d90eb6` — re-mirror at the next sync.
@@ -33,28 +33,22 @@ and #2402 (diagnostics, 19 checks) — and wait on the maintainers. Utku's build
   keep performed sets with their timing — round 4 did exactly that. A 3-sentence reply is drafted in `NEXT_PR.md`,
   to post right after the new PR opens, only with Utku's yes.
 
-## Open work — both PRs are open; nothing is waiting to be opened
+## Open work — none on the Lift Log itself
 
-`lift-log-follow-ups` @ `8b05e0bb` IS [#2403](https://github.com/ryanbr/noop/pull/2403), rebased onto `751fa1d8`
-(every commit range-diff identical; the twin map re-derived as its own commit, `parity_ledger.py --refresh-derived`).
-One commit per concern, in four parts:
+`#2403` merged on 23 Sep as `3ada90c3`, which is now `upstream/main`: rounds 3–6 are upstream. The squash was
+proven identical to the submitted head over all 55 files, the branch is deleted from the fork and the app repo sits
+on `main` again. The next Lift Log change starts a fresh branch from `upstream/main`.
 
-1. up to `631f411f` — one Save; discards as 0 × 0 fillable in Edit sets; add / remove sets there; SQL mirrors
-   `reps != 0`; Kotlin twins of `LiftMetrics` and `deleteLiftSets`; and that round's parity refresh.
-2. up to `0c9c72e9` — max RPE per program line (`RULES.md` 34).
-3. up to `65b804a6` — rounds 3, 4 and 5: one-tap field focus; knock guard (5 s) and the buzz before the sync;
-   next-set line, 0:00 rest clock, typed numbers on the bar; done sets complete without asking; the program takes
-   each line's heaviest set; the Lock Screen lights whenever NOOP is off screen and logs each step; no sync banner
-   during a session; banner layout; the session resumed at process start with its banner kept (41); adding an
-   exercise mid-session (42); running clocks through `ActiveWorkoutClock.clock` (38); no work between taps (43).
-4. up to `839616ad` — round 6: the Dynamic Island carries the heart rate and keeps its clock to the edge (45); the
-   banner is pushed for a heart rate only every 30 s and ≥ 2 bpm, and nothing is built per tick (44); every Lift
-   Log line in the strap log carries its own time (47).
+What it carried: one Save and the finish flow (a done set counts as done, discards kept as 0 × 0, fillable in Edit
+sets); max RPE per line; the knock guard and the buzz before the sync; the next-set line, the 0:00 rest clock and
+typed numbers on the bar; the program taking each line's heaviest set; adding an exercise mid-session; the Lock
+Screen light-up, the session and banner surviving an iOS restart, one banner during a session; no work between taps;
+the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines (`RULES.md` 5, 27, 28, 34–35,
+38–45, 47).
 
-- **Work branch:** `lift-log-follow-ups` @ `8b05e0bb` (checked out in `~/Developer/noop`), now #2403.
-- **Testing build on Utku's phone:** `1c34d6cd` = `0da3998e` + the template commit, NOOP 11.8.0, shipped 22 Sep
-  ~23:45 and verified. Just update, no wipe. Gym-tested on 23 Sep (the seventh session). NOTE: it was built from
-  the pre-rebase tip; the PR's content is the same work rebased.
+- **Work branch:** none — `~/Developer/noop` is on `main` @ `3ada90c3`.
+- **Testing build on Utku's phone:** `1c34d6cd`, NOOP 11.8.0, shipped 22 Sep ~23:45 and verified; gym-tested 23 Sep.
+  Just update, no wipe. Built from `0da3998e`, whose content is what merged.
 
 ## The separate PRs, not the Lift Log's
 
@@ -137,15 +131,14 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## Nothing is blocked
 
-Both PRs are open and waiting on the maintainers: #2403 (the Lift Log's) and #2402 (the diagnostics one). Nothing
-is waiting to be opened. The only unposted thing is the optional reply on merged #2099 (`NEXT_PR.md`), which needs
-its own yes.
+#2403 is merged. #2402 (diagnostics) is open, green, and waits on the maintainers. The reply on #2099 was posted on
+23 Sep with Utku's yes. Nothing is waiting to be opened, and nothing is blocked.
 
 ## Next
 
-1. **Follow #2403 and #2402.** Read each comment, reply once after it (`WORKFLOW.md` §5), and fix what a review
-   finds on the branch the PR points at. After a squash merge: prove the squash equals the head file by file,
-   delete the branch from the fork, remove its worktree.
+1. **Follow #2402** (the only open PR): read each comment, reply once after it (`WORKFLOW.md` §5). After a squash
+   merge, prove the squash equals the head file by file, delete the branch from the fork and remove
+   `~/Developer/noop-hrlog`. (#2403 was handled this way on 23 Sep.)
 2. **Utku's next gym session on build `1c34d6cd`.** Check the Dynamic Island, the light-up timing late in a
    session, and the walk-away test (rule 48). Read his log with `dist/tools/strap-log.py` (`steps` first).
 3. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh`), give him the release link and the
@@ -158,8 +151,8 @@ its own yes.
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main` as of `29d90eb6` — re-mirror at the next sync), `lift-log-follow-ups`
-  (#2403), `hr-transport-summary` (#2402), `lift-log-build`, `lift-log-handbook`. The stacked branches were deleted
+- Branches: `main` (mirror of `upstream/main`, `3ada90c3`), `hr-transport-summary` (#2402), `lift-log-build`,
+  `lift-log-handbook`. `lift-log-follow-ups` was deleted when #2403 merged. The stacked branches were deleted
   on 22 Sep (all contained in `lift-log-follow-ups`), and `strap-log-on-disk` once #2386 merged.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.

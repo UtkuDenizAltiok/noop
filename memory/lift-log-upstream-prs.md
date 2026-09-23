@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up PR is OPEN as #2403 and the diagnostics PR as #2402, so nothing is left to open. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 MERGED 23 Sep (rounds 3-6 upstream); only the diagnostics PR #2402 is open. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -14,9 +14,10 @@ that must survive if the handbook is missing (21 Sep 2026):
 - Merged upstream: #2098 schema, #2099 app (with ryanbr's empty-session guard `fed714cb`), #2232 the
   maintainers' Kotlin `LiftMetrics` twin, #2233 their parity-governance repair (#2229 blamed #2099 for leaving
   that gate red).
-- **The follow-up PR is OPEN: #2403** (23 Sep, branch `lift-log-follow-ups` @ `8b05e0bb`, rebased onto `751fa1d8`;
-  rounds 3-6 in one PR, as decided 21 Sep). Never open it again; a comment gets ONE reply, our own later changes go
-  into a description edit. The optional reply on merged #2099 is drafted in `dist/NEXT_PR.md` and NOT posted.
+- **#2403 MERGED 23 Sep** as `3ada90c3` (rounds 3-6: the finish flow, max RPE, knock guard, next-set line, adding
+  an exercise mid-session, the Lock Screen light-up and restart survival, no work between taps, the Dynamic Island,
+  the banner's push rate, stamped log lines). Squash proven equal over 55 files; branch deleted; the app repo sits
+  on `main`. The reply on merged #2099 was posted the same night, with Utku's yes.
 - **#2402** is also open and green: upstream's standard-HR log line summarised (branch `hr-transport-summary`,
   worktree `~/Developer/noop-hrlog`) — not the Lift Log's, opened 23 Sep with his yes. #2386 merged 22 Sep.
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
