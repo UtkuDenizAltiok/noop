@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 21:55 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications), #2420 (MetricKit), #2422 (live HR truth; iOS draws the dash when readings stop — proven in the simulator). Build `9a4d83e` shipping.** The only file that
+**Updated 23 Sep 2026, 22:55 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications), #2420 (MetricKit), #2422 (live HR shown only while measured; a banner only while it can show one). Build `c146351`.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -121,7 +121,8 @@ and that a disconnected strap should obviously show none. Decided: DISCONNECTED 
 iOS's dash in the background (NOOP suspended; the next wake is the re-wear, when an end could not be undone; keeping
 NOOP awake would cost battery) = commit 8 `7e468f26`. verify ALL passed (2,133 macOS tests incl. the new ones).
 #2422 pushed + description; title now "…and a banner only while it can show one".
-- [ ] ship `noop-optimisations` @ the new stack (iOS-compiled locally) → Utku re-tests: off-wrist in pocket (dash
+- [x] SHIPPED `c146351` (22:55), verified; just update; Utku's build.
+- [ ] Utku re-tests on `c146351`: off-wrist in pocket (dash
   ~2 min, number back by itself on the wrist), off-wrist with NOOP open (banner gone), strap disconnected (gone after
   30 s).
 - [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
