@@ -113,8 +113,10 @@ Activity types, no AlarmKit / Now Playing); switches must only affect showing; s
 - [x] commit 6 `19d1fd85` verified (ALL passed), pushed, #2422 description edited. SIMULATOR PROOF: a hard-coded 93 pushed
   once (temporary, never committed); with NOOP in the background the island went "♥ 93" → "♥ –" by itself. iOS scheduled
   the stale mark as a NON-WAKING task 2 min after the push (not at the 30-s date): background dash ≈ 2 min.
-- [ ] ship `noop-optimisations` @ `4204d250` — RUNNING: build `9a4d83e`, run 35912321895 (21:53); never start a second. (= `3ad25885` + #2422×6 + #2419 net + #2420) → Utku re-tests: strap off
-  with NOOP in the background → dash in about 2 minutes; open → at once
+- [x] SHIPPED `9a4d83e` (22:13), verified: `noop-optimisations` @ `4204d250` = `3ad25885` + #2422×6 + #2419 net + #2420.
+  Just update. Utku's build.
+- [ ] Utku re-tests on `9a4d83e`: strap off with NOOP in the background → the dash in about 2 minutes (iOS's batch);
+  with NOOP open → within 10 s; a day with the HR banner on. Add the result to #2422's description.
 - [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
 **Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
 FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch
