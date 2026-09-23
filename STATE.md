@@ -131,7 +131,8 @@ Rounds 1–5 confirmed by 21–22 Sep. **Round 6 (23 Sep 02:28–02:53, build `1
 worked; 24 steps, tap→buzz 0.27–0.47 s, no tap refused by any guard. Two taps he felt never reached the app (the
 strap console in that file covers only four, so whether the band sensed them cannot be told — probably physical).
 Not yet confirmed on his phone: the Dynamic Island's new layout, whether the Lock Screen lights as promptly late in
-a session as early, and a deliberate walk-away test (rule 48). He saves the log right after a session; the on-disk
+a session as early, and a deliberate walk-away test (rule 48 — that session had no disconnect at all; the only drop
+in the file is at 02:23:22, five minutes BEFORE it started). He saves the log right after a session; the on-disk
 log (#2386) is merged upstream but reaches him only in a build made after it lands in `main`.
 
 ## Nothing is blocked

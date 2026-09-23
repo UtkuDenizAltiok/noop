@@ -241,9 +241,12 @@ and flag it.
     stays (only NOOP's heart-rate banner follows `connected`). The heart rate reads "—" while the link is down and
     comes back by itself. A double-tap made out of range reaches the app later, through the reconnect's sync, and
     is deliberately NOT acted on: advancing a set minutes late would put the session on the wrong one. It is
-    logged as arriving late, and a replay of a tap already handled is suppressed (22). Seen in the 23 Sep log: the
-    link timed out at 02:23:22, a tap at 02:23:17 was handed over 156 s later and ignored, and the session then
-    ran its 24 steps. Never end or reset a session on a disconnect.
+    logged as arriving late, and a replay of a tap already handled is suppressed (22). Partly seen in the 23 Sep
+    log, and BEFORE that session began: the link timed out at 02:23:22 and was back a second later; a double-tap
+    the strap recorded at 02:23:17 reached the app 156 s later through a sync and was ignored, because the live
+    window is 5 s (`FrameRouter.liveGestureWindowSeconds`). The session itself, 02:28–02:53, had NO drop, so the
+    in-session case rests on the code above, not on evidence — one deliberate walk-away test would settle it.
+    Never end or reset a session on a disconnect.
 
 ## Sources
 

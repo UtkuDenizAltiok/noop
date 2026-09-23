@@ -108,7 +108,9 @@ trustworthy — keep it.
   the sync, the next-set line and the 0:00 clock, adding an exercise mid-session, the Lock Screen light-up and the
   banner kept across an iOS restart, no work between taps, the Dynamic Island's layout, the banner's push rate and
   the stamped log lines. Seventh gym session the same night (02:28–02:53, build `1c34d6cd`): 24 steps, no tap
-  refused by any guard, two taps Utku felt that never reached the app, and the reconnect path seen for real.
+  refused by any guard, two taps Utku felt that never reached the app. The file's only disconnect (02:23:22, back a second later) was
+  before that session, not during it: it shows the late-tap path — a tap at 02:23:17 handed over 156 s later and
+  ignored — but not a drop mid-session, which is still untested (rule 48).
 - **23 Sep, 00:40** — the separate diagnostics PR Utku asked for: upstream's standard-HR host-received line,
   written once a second, was 52.8% of a session's strap log and so decided how much history the on-disk log holds.
   Now a refusal is still written at once, the routine samples become one line a minute (count, span, widest gap,
