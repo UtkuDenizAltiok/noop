@@ -49,6 +49,14 @@ struct StrandiOSApp: App {
     /// unit preference lives here and not in the widget extension.
     @AppStorage(UnitPrefs.systemKey) private var unitSystemRaw = UnitSystem.metric.rawValue
 
+    /// The live heart rate banner makes room for the gym banner during a Lift Log session, and for the sync banner
+    /// during a sync — but only when that banner's own switch is on, so turning one live notification off never
+    /// leaves the Lock Screen with none of the others.
+    private var heartRateBannerStandsAside: Bool {
+        (liftSession.isActive && UnitPrefs.liftLiveActivityEnabled())
+            || (model.live.backfilling && UnitPrefs.syncLiveActivityEnabled())
+    }
+
     init() {
         // #1008: pin the pre-change Overnight-only default for existing installs before
         // anything reads it. Idempotent; a no-op on fresh installs and after the first launch.
@@ -107,8 +115,10 @@ struct StrandiOSApp: App {
         }))
         // A gym session keeps ONE banner on the Lock Screen, its own — as the live-HR banner already
         // stands aside for it. A sync started in the foreground mid-session starts no sync banner.
+        // Held back only for a gym banner that will actually show: with its switch off, a session leaves the
+        // Lock Screen to the sync, rather than to nothing.
         SyncLiveActivityController.shared.holdsBackNewBanner = { [weak liftSession] in
-            liftSession?.isActive == true
+            liftSession?.isActive == true && UnitPrefs.liftLiveActivityEnabled()
         }
         // Before any view or publisher exists: the first push to the Lock Screen banner must find the
         // session already running, or it ends the banner iOS kept alive across the restart.
@@ -232,7 +242,7 @@ struct StrandiOSApp: App {
                         bpm: model.live.connected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
                         // While a sync runs its own activity is the useful banner; don't stack the HR one.
-                        connected: model.live.connected && !liftSession.isActive && !model.live.backfilling,
+                        connected: model.live.connected && !heartRateBannerStandsAside,
                         effort: day?.strain.map { Int($0.rounded()) }
                     )
                     // The gym banner's own cheap path: no presentation is built here, and a heart rate moves
@@ -249,7 +259,7 @@ struct StrandiOSApp: App {
                     liveActivity.update(
                         bpm: isConnected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
-                        connected: isConnected && !liftSession.isActive && !model.live.backfilling,
+                        connected: isConnected && !heartRateBannerStandsAside,
                         effort: day?.strain.map { Int($0.rounded()) }
                     )
                 }
