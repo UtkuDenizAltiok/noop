@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 16:45 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications switches), #2420 (MetricKit), #2422 (off-wrist HR — its off-wrist path still to be seen in a log). Build `90394a7`.** The only file that
+**Updated 23 Sep 2026, 17:45 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications), #2420 (MetricKit), #2422 (live HR truth + banner kept through drops/syncs; needs Utku's re-test). Build `26fbca0`.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -91,9 +91,20 @@ Activity types, no AlarmKit / Now Playing); switches must only affect showing; s
 - [x] SHIPPED `90394a7` (16:40), verified: `noop-optimisations` @ `27aa0d84` = `3ad25885` + A×2 + B×2 + C. Just update. Utku's build.
 - [x] A rebased (`e3e76651` on `3ad25885`), verify ALL passed, OPENED **#2422** — says plainly the off-wrist path is not yet
   observed; ask Utku for a targeted off-wrist test log and edit the description with its answer
-- [ ] Utku tests OFF-WRIST on his strap (asked again 16:45, build `90394a7` logs the contact flag): take it off with NOOP connected → Today's card leaves "Live", the
-  Live screen and the Lock Screen show a dash within a few seconds; on again → the number returns. Then a strap log:
-  look for "HR: skin contact …", "HR: 3 unreadable samples in a row" or a WRIST_OFF clear; edit #2422's description with it.
+- [x] Utku's OFF-WRIST test (log `~/Downloads/noop-strap-log-260923-1700.txt`): the Lock Screen / island FROZE at 93. The
+  log: at 16:02:51 the strap sent 0 bpm and the unreadable run cleared it (contact flag "unsupported" on a 5.0); in
+  the 16:53–17:00 test it went SILENT instead (last sample 16:54:16, a burst ~16:57, then none; link up, syncs ok).
+  Fixed in `b6b290f7` (10-s silence clears; longest normal gap in the log 2 s). He also reported the banners being
+  "random" for days: the HR banner was ENDED on every link drop (3 timeouts in that log) and on EVERY sync, incl. the
+  15-min background ones that show no sync banner; iOS then refuses a new one until NOOP is opened, and in the
+  background every HR tick asked and was refused. Fixed in `83108026` (`LiveHRBannerLifecycle`, 5 tests). Both seen
+  to fail with the old behaviour (silence test stays at 93), restored byte-identical.
+- [x] verify #2422 @ `83108026` ALL passed; + `8fa291ae` (Today's big number = live HR only: Utku saw 91 with the strap off,
+  the last banked 5-min average drawn like a live reading); pushed; title + description edited
+- [x] #2419 @ `99abbcb7`: the superseded make-room rule removed; pushed; description edited
+- [x] SHIPPED `26fbca0` (17:40), verified: `noop-optimisations` @ `a0ec2641`. Just update. Utku's build.
+- [ ] Utku re-tests: strap off (dash within ~10 s everywhere, Today's big number gone), and a day of banners (the HR
+  banner should survive link drops and background syncs). Then add the result to #2422's description.
 - [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
 **Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
 FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch

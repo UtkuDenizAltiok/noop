@@ -102,6 +102,12 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 17:00–18:00 — the off-wrist test, and the "random" banners.** Utku's log: the 5.0 went quiet off the wrist
+  (link up, no 0, no WRIST_OFF) and the banner froze at 93, while at 16:02 it had sent 0 and the fix cleared it. He
+  also saw Today's big number at 91 (the last banked 5-min average, drawn like a live reading) and said the banners
+  had been unreliable for days: NOOP ended the HR banner on every link drop and every sync, background ones included,
+  and iOS will not let a background app start another. #2422 gained a 10-s silence clear, a banner kept through drops
+  and background syncs, and a live-only big number (rule 49); #2419 lost its superseded make-room rule.
 - **23 Sep, 16:00–16:45 — Live notifications.** Utku's log confirmed the switches alone and together; it did not show
   the off-wrist path (the strap sent plausible bpm until NOOP closed the link). He asked whether these are all the live
   notifications (yes: three Live Activity types, nothing else), that switches only hide, and for shorter wording:

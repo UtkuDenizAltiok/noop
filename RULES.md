@@ -258,6 +258,16 @@ and flag it.
     in-session case rests on the code above, not on evidence — one deliberate walk-away test would settle it.
     Never end or reset a session on a disconnect.
 
+49. **A heart rate is shown only while the strap is measuring it, on every surface, and the Live HR banner is kept,
+    not ended, through what it can survive** (#2422, 23 Sep 2026). A WHOOP 5.0 leaving the wrist either sends 0 bpm
+    (a run of three unreadable samples clears the live heart rate) or goes quiet with the link up (ten seconds with no
+    readable sample clears it; normal gaps were ≤ 2 s); WRIST_OFF clears it at once. Clearing goes through
+    `LiveState.clearLiveHeartRate` (R-R first) so the median, the banners and Today all see it; Today's big number is
+    the live heart rate or nothing, never a banked average drawn like one. iOS starts a Live Activity only for an app
+    on screen, so ending one costs it until NOOP is opened: the banner shows the dash through a dropped link and ends
+    only for its switch, another banner actually on screen, or ten minutes with the link down
+    (`LiveHRBannerLifecycle`). A banner is never requested from the background. Live notification switches only hide.
+
 ## Sources
 
 - Resistance-training dose–response meta-regression (Sports Medicine, 2025) — set-counting methods, the
