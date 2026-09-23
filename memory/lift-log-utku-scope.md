@@ -1,6 +1,6 @@
 ---
 name: lift-log-utku-scope
-description: "Utku: the Lift Log is an addition built from NOOP's own features (strap log, buzz, double-tap), no Lift-Log-only copies; no changes to upstream fundamentals such as logging; requests built as narrow as he words them."
+description: "Utku: the Lift Log is an addition built from NOOP's own features (strap log, buzz, double-tap), no Lift-Log-only copies; no changes to upstream fundamentals for the Lift Log; since 23 Sep NOOP itself may be optimised in separate PRs with his yes; requests built as narrow as he words them."
 metadata:
   type: feedback
 ---
@@ -14,9 +14,12 @@ Stated 17 Sep 2026 after a gym session.
 - **Keep the Lift Log's own Lock Screen banner as it is.** He likes how it looks and works (17 Sep); don't merge it
   into NOOP's heart-rate banner. Explain design trade-offs in plain words — he did not follow "Live Activity" talk.
 
-- **No changes to upstream fundamentals.** "No change in the log code we are not going to change other
-  fundamentals" — the strap log's content, rate and buffer are upstream's. Don't propose changing them, and don't
-  propose upstream issues about them.
+- **No changes to upstream fundamentals FOR THE LIFT LOG.** "No change in the log code we are not going to change other
+  fundamentals" — the strap log's content, rate and buffer are upstream's. Don't change them to serve the Lift Log.
+- **Changed 23 Sep 2026: NOOP itself may now be improved, as separate PRs.** The Lift Log is mostly finished; he asked
+  to "optimize and perfectize the main NOOP" — same behaviour, cleaner, faster, no crash, less battery for phone
+  and strap — each PR one concern, measured/tested, both platforms, opened only with his yes (`dist/RULES.md`
+  settled decisions). He is on Claude Pro: spend a 5-hour window deliberately and settle the handbook before ~95%.
 - **Build a request as narrow as he words it.** The Lock Screen light-up is "just light up" a dark locked screen,
   then dark again on the phone's timer: no vibration, no extra updates, no delay, no extra logic.
 - **When his reading of evidence differs from mine**, re-read it fully first, then show him the exact line

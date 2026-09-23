@@ -4,4 +4,4 @@
 - [Ship the build](lift-log-ship-the-build.md) — `dist/tools/ship-build.sh` after every change; trust the verified assets; say "just update" or "wipe".
 - [Verify before claiming](lift-log-verify-before-claiming.md) — `dist/tools/verify.sh`, tests seen to fail, reviewer claims and rebases proven, odd tool results rechecked on a clean checkout.
 - [The handbook is mine](lift-log-docs-are-mine.md) — journal steps in STATE.md "Now" first; after ANY interruption run `dist/tools/checkpoint.sh status --net` before acting; backup at milestones.
-- [Utku's scope](lift-log-utku-scope.md) — the Lift Log uses NOOP's own features (one strap log, buzz, double-tap); no upstream fundamentals changed; build requests as narrow as worded.
+- [Utku's scope](lift-log-utku-scope.md) — the Lift Log uses NOOP's own features; since 23 Sep NOOP itself is optimised in separate PRs (his yes each); build requests as narrow as worded.

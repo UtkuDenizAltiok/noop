@@ -20,7 +20,8 @@ that must survive if the handbook is missing (21 Sep 2026):
   on `main`. The reply on merged #2099 was posted the same night, with Utku's yes.
 - **#2402 MERGED 23 Sep** as `94a71b04` (upstream's standard-HR log line summarised; not the Lift Log's). ryanbr
   rebased our branch himself before merging — proven same content; branch and worktree removed. #2386 merged 22 Sep.
-  Utku's build `1c34d6cd` has neither; a build from `main` would carry both (offered 23 Sep).
+  Build `8351bc7` (23 Sep, = upstream main) carries both. Two NOOP optimisation PRs prepared 23 Sep (Live HR banner
+  pushes; workout HR once a second) — see `dist/STATE.md`.
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.

@@ -198,6 +198,12 @@ and flag it.
   NOOP already has is added only when strictly necessary, and said why. Existing exception, merged upstream in
   #2099 and kept on purpose: its own Lock Screen banner (Live Activity), with NOOP's heart-rate banner hidden
   during a session. Utku likes how it looks and works (17 Sep 2026) — do not merge it into NOOP's banner.
+- **NOOP itself may now be improved, in separate PRs** (Utku, 23 Sep 2026: "optimize and perfectize the main NOOP
+  … do everything it does at the moment but in a more perfect and optimized way", less battery for phone and strap).
+  The Lift Log is mostly finished. Each change is ONE concern, keeps behaviour the same (or fixes a proven bug),
+  is measured or tested rather than asserted, covers both platforms where both have the code, and is opened only
+  with his yes. Work the maintainers already did (widget, Watch and notification dedup, Today's leaf isolation,
+  the Liquid motion gate) is left alone; a change to BLE behaviour needs a strap test first.
 - **Upstream's logging is not the Lift Log's to change** — not its content, rate or buffer. The Lift Log adds only
   its drop lines (29), into that same log.
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;

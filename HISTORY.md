@@ -102,6 +102,13 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, morning — NOOP optimisation begins** (Utku: the Lift Log is mostly finished; make NOOP itself leaner,
+  same behaviour, separate PRs). His last gym session confirmed the Dynamic Island and a prompt Lock Screen light-up;
+  the walk-away test is for later. Build `8351bc7` (the upstream app, with the on-disk strap log) shipped 05:13. A
+  survey found upstream already careful (widgets, Watch, Android's notification, Today's redraws, crash patterns),
+  and two real faults: the iOS Live HR banner pushed ~1,200 times an hour even unchanged (Android fixed the same in
+  #216), and a manual workout recorded some seconds twice on both platforms, inflating its Effort (42.86 vs 35.3 in
+  a 20-minute test). Both fixed on their own branches, tested (seen to fail), fully verified, Android CI green.
 - **23 Sep, 02:10 UTC — #2402 MERGED** by ryanbr as `94a71b04`, twenty minutes after #2403. He first rebased our
   branch onto `3ada90c3` himself (head `5c3c06f3`); proven the next morning: the squash's tree equals that head's,
   all 9 code files carry exactly our lines, and only the twin map's hashes were re-derived for the new base. The

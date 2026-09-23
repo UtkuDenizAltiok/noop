@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 05:10 — #2403 and #2402 are both MERGED. Nothing of ours is open upstream.** The only file that
+**Updated 23 Sep 2026, 05:40 — nothing of ours is open upstream; two NOOP optimisation PRs are ready, waiting for Utku's yes.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -9,9 +9,43 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (23 Sep 05:10). #2402 merged and cleaned up (`HISTORY.md`); nothing of ours is open upstream.
-Utku's build is `1c34d6cd`; offered: a fresh build from `main` before the next gym session (`## Next` 2) — not
-started, waits for his yes. Do not redo: the #2099 reply (posted 23 Sep 03:48).
+**23 Sep, ~05:20 — Utku:** "ship the latest build". Also confirmed from his last real gym session (23 Sep, build
+`1c34d6cd`): the Dynamic Island looks right and the Lock Screen lights up quickly, no problem. The walk-away test
+(rule 48) is postponed, not dropped. **New direction:** the Lift Log is mostly finished; now optimise NOOP itself
+(and the Lift Log) — same behaviour, cleaner, faster, no bloat, no delay, no crash, less battery for phone AND
+strap — as SEPARATE upstream PRs, each only with his yes. Budget: his Claude Pro 5-hour window, up to 95%.
+- [x] ship a build from `main` @ `94a71b04` — SHIPPED 05:13 and verified: `testing-latest` is "NOOP Staging — base
+  11.8.0 · 2026-09-23 · 8351bc7", target `8351bc74` (parent `94a71b04`), `.ipa` + template present; run 35812381287.
+  Just update. Utku's build is now `8351bc7` (Lift Log as merged + #2386 on-disk log + #2402).
+
+**Optimisation PR 1 (local branch `live-hr-banner-pushes`, from `upstream/main` @ `94a71b04`, not pushed):** the
+iOS Live HR banner was pushed every ~2 s all day while a strap is connected, even unchanged (it shows only bpm,
+recovery, effort; bpm is a 10-s median). Now pushed only when it changes, else once a minute to stay ahead of its
+120-s stale date — Android's notification rule since #216. `Strand/Data/LiveHRBannerPushPolicy.swift` + 5 tests.
+- [x] tests seen to fail without the fix (2 of 5; steady hour 1,200 vs 60), restored byte-identical; commit `e2312c4c`;
+  full `verify.sh` passed: WhoopStore 609 · StrandAnalytics 2044 · StrandImport 327 · lint · i18n · ledger · ratchet ·
+  governance 124 · macOS 2,107 (only the two `TodayCarryOverTests`) · iOS build; no warnings in changed files.
+- [ ] ask Utku before pushing the branch / opening the PR
+**Optimisation PR 2 (branch `workout-hr-once-a-second`, worktree `~/Developer/noop-workout`, from `94a71b04`, not
+committed yet):** a manual workout recorded >1 HR sample per second with one `ts` on BOTH platforms (iOS: two
+`@Published` sinks, `$heartRate` + `$rr`; Android: every LiveState emission), and `StrainScorer` credits a zero gap
+with a full second, so Effort (live + saved) was inflated; calories are not (real gaps). Fix: one sample a second —
+iOS `ActiveWorkout.recordSample`, Android inline guard in `captureWorkoutSample`. 2 StrandTests.
+- [x] 2 tests pass; without the guard both fail (Effort 42.86 vs 35.3 over 20 min, every second twice), restored
+  byte-identical (sha256). Committed in the worktree (see `git -C ~/Developer/noop-workout log -1`).
+- [x] full `verify.sh` on `b7a6e710` passed: WhoopStore 609 · StrandAnalytics 2044 · StrandImport 327 · lint · i18n ·
+  ledger · ratchet · governance 124 · macOS 2,104 (only the two `TodayCarryOverTests`) · iOS build
+- [x] pushed to the fork (no PR) @ `b7a6e710`; Android CI 35813899964 GREEN — proof: `gh run list
+  --repo UtkuDenizAltiok/noop --workflow "Android CI" --branch workout-hr-once-a-second`
+- [ ] testing build of both fixes for Utku: branch `noop-optimisations` @ `8accfd2a` (= `94a71b04` + `cd1c24a8` +
+  `8accfd2a`, cherry-picks of `e2312c4c` and `b7a6e710`), pushed to the fork; STARTED ~05:31, `ship-build.sh noop-optimisations` — proof: release title ends in the new `lift-log-build` id
+Draft PR bodies (private, unapproved): `dist/private/pr-live-hr-banner-body.md`, `pr-workout-samples-body.md`.
+Found, not yet fixed: iOS `evaluateStress` gets each R-R packet 1–2× (same two sinks, reading the PREVIOUS packet
+in willSet); Android runs it once per offload on `rrRecent`. Also dead code: `BLEManager.uploadTimer` never starts.
+Survey so far (23 Sep): upstream already dedupes widgets, the Watch, Android's notification and Today's redraws;
+the idle ~10–18% CPU on Today is the deliberate Liquid animation (gated by Low Power / "Reduce motion in NOOP").
+
+Do not redo: the #2099 reply (posted 23 Sep 03:48).
 
 ## Upstream (`ryanbr/noop`)
 
@@ -44,10 +78,12 @@ Screen light-up, the session and banner surviving an iOS restart, one banner dur
 the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines (`RULES.md` 5, 27, 28, 34–35,
 38–45, 47).
 
-- **Work branch:** none — `~/Developer/noop` is on `main` @ `94a71b04`.
-- **Testing build on Utku's phone:** `1c34d6cd`, NOOP 11.8.0, shipped 22 Sep ~23:45 and verified; gym-tested 23 Sep.
-  Just update, no wipe. Built from `0da3998e`, whose content is what merged. It has NEITHER #2386 nor #2402: its
-  strap log is still the 5,000-line screen buffer plus 3 × 1,000-line run endings.
+- **Work branches (NOOP optimisation, not the Lift Log):** `live-hr-banner-pushes` @ `e2312c4c` (checked out in
+  `~/Developer/noop`, local only) and `workout-hr-once-a-second` @ `b7a6e710` (worktree `~/Developer/noop-workout`,
+  on the fork); `noop-optimisations` @ `8accfd2a` = both, for Utku's testing build only (never a PR).
+- **Testing builds:** `8351bc7` (= `94a71b04`, the upstream app) shipped 23 Sep 05:13, verified, just update; then the
+  combined optimisation build from `noop-optimisations` — see "Now" for its id. Both carry #2386 and #2402, so the
+  strap log now keeps a whole session on disk.
 
 ## The separate PRs, not the Lift Log's
 
@@ -134,17 +170,14 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## Next
 
-1. **Watch upstream** at every session start (`upstream-check.sh`): after a merge the maintainers often add twins
-   or fixes on top of our code. A comment on a merged PR of ours gets one reply after it, with Utku's yes.
-2. **Offered, waiting for Utku's yes: a build from `main` (`94a71b04`) before the next gym session** —
-   `bash dist/tools/ship-build.sh main`, just update. Why: it is exactly what upstream now ships, and its strap log
-   keeps the WHOLE session on disk (#2386) with the once-a-second HR line cut to one a minute (#2402), so the late-
-   session light-up and the walk-away test will be fully in the file; `1c34d6cd` trims a long session's start.
-3. **Utku's next gym session.** Check the Dynamic Island, the light-up timing late in a session, and the walk-away
-   test (rule 48). Read his log with `dist/tools/strap-log.py` (`steps` first); #2386 kept the export's format
-   (above), so the tool reads a new build's file too — check its `runs` report the first time.
-4. **Fix whatever it finds** on a fresh branch from `upstream/main`, verify, ship (`bash dist/tools/ship-build.sh`),
-   give him the release link and the build id, and say "just update" or "wipe".
+1. **With Utku's yes, open the two NOOP optimisation PRs** (bodies in `dist/private/pr-*-body.md`, upstream's
+   template): push `live-hr-banner-pushes` to the fork first, then `gh pr create --repo ryanbr/noop` from each branch.
+   Record each number in "Now" the moment it exists. Then follow them (`WORKFLOW.md` §5).
+2. **Next optimisation candidates** (`BACKLOG.md` "NOOP itself"): iOS stress check fed each R-R packet 1–2× per
+   packet; dead `uploadTimer`. Each its own PR, verified the same way.
+3. **Watch upstream** at every session start (`upstream-check.sh`).
+4. **Utku's next gym session:** the walk-away test (rule 48), when he chooses. Island and light-up are confirmed.
+   Read his log with `dist/tools/strap-log.py` (`steps` first); check its `runs` report once on the on-disk log.
 5. **Hooks (Claude Code) are installed** (22 Sep 08:22:55): SessionStart, UserPromptSubmit, Stop, PreCompact,
    StopFailure. A session starts with the recovery brief; the handbook is checkpointed after every reply. If a new
    Claude Code session shows no brief, tell Utku rather than touching Claude's settings (its guard forbids it).
@@ -152,14 +185,16 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main`, `94a71b04`), `lift-log-build`, `lift-log-handbook`. Deleted once
+- Branches: `main` (mirror of `upstream/main`, `94a71b04`), `lift-log-build`, `lift-log-handbook`,
+  `workout-hr-once-a-second` (next PR), `noop-optimisations` (testing build only). Deleted once
   merged and proven: `lift-log-follow-ups` (#2403) and `hr-transport-summary` (#2402) on 23 Sep,
   `strap-log-on-disk` (#2386) and the three stacked branches on 22 Sep.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - The repo's description and website field point newcomers to this handbook (22 Sep).
 - CI caches: about 3 GB on `main`, shared by every build; GitHub expires unused ones after a week.
-- Local only: worktrees `~/Developer/noop` (`main`) and `~/Developer/noop/dist` (this handbook);
+- Local only: worktrees `~/Developer/noop` (`live-hr-banner-pushes`), `~/Developer/noop-workout`
+  (`workout-hr-once-a-second`) and `~/Developer/noop/dist` (this handbook);
   `dist/private/` (the event log, and drafts). The retired-refs bundle of 15 Sep went to
   the Trash on 22 Sep: everything unique in it was superseded (the handbook's predecessor, an old stash, pre-rebase
   snapshots of merged work).

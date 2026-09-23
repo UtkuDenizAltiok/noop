@@ -4,6 +4,18 @@ Verified against the code at `lift-log-follow-ups` (`65b804a6`, 22 Sep 2026). Th
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — the gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
+## NOOP itself (not the Lift Log) — found 23 Sep 2026, not yet fixed
+
+- **iOS stress check-in reads each R-R packet 1–2×.** `AppModel.evaluateStress` runs from the same two `@Published`
+  sinks as `ingestHR` (`$heartRate`, `$rr`), inside `willSet`, so it appends the PREVIOUS packet's intervals to
+  `rrBuf` once per packet plus once per heart-rate change, and advances the "slow" EMA baseline per call (0.98 per
+  call ≈ 25 s memory at 2 calls/s). Android runs the same detector once per history offload on `rrRecent`. Fix
+  direction: consume packets by `rrSeq` (`RRPacketObserver.swift`'s rule), once per packet. Only matters with the
+  stress check-in enabled; a behaviour choice about the baseline's speed belongs to the maintainers.
+- **`BLEManager.uploadTimer` / `uploadIntervalSeconds`** are dead: declared and cancelled, never started.
+- **Idle CPU on Today is the Liquid animation** (~10–18% of a core, measured upstream). Deliberate and gated by Low
+  Power Mode and "Reduce motion in NOOP"; a user who wants the battery can turn that on. Not a bug.
+
 ## Open, ordered by value
 
 1. **A strength trend across sessions.** Per session there is best set, e1RM and volume "vs last time", but no

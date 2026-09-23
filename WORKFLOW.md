@@ -232,7 +232,8 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 ## 8. Git and fork hygiene
 
 - **The fork holds exactly:** `main` (mirror), the work branch when there is one (everything for the next Lift
-  Log PR, one commit per concern, started from `upstream/main`), one branch per open upstream PR (none on 23 Sep),
+  Log PR, one commit per concern, started from `upstream/main`), one branch per open or prepared upstream PR, `noop-optimisations` (a testing-build-only stack of the prepared NOOP
+  PRs, never itself a PR),
   `lift-log-build`, `lift-log-handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version
   tags); one release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven to
   equal it (§5); the three stacked branches that became `lift-log-follow-ups` were deleted on 22 Sep.
