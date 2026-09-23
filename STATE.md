@@ -37,8 +37,8 @@ iOS `ActiveWorkout.recordSample`, Android inline guard in `captureWorkoutSample`
   ledger · ratchet · governance 124 · macOS 2,104 (only the two `TodayCarryOverTests`) · iOS build
 - [x] pushed to the fork (no PR) @ `b7a6e710`; Android CI 35813899964 GREEN — proof: `gh run list
   --repo UtkuDenizAltiok/noop --workflow "Android CI" --branch workout-hr-once-a-second`
-- [ ] testing build of both fixes for Utku: branch `noop-optimisations` @ `8accfd2a` (= `94a71b04` + `cd1c24a8` +
-  `8accfd2a`, cherry-picks of `e2312c4c` and `b7a6e710`), pushed to the fork; STARTED ~05:31, `ship-build.sh noop-optimisations` — proof: release title ends in the new `lift-log-build` id
+- [x] testing build of both fixes SHIPPED 05:48 and verified: "NOOP Staging — base 11.8.0 · 2026-09-23 · 0f9f85b",
+  from `noop-optimisations` @ `8accfd2a`, run 35814622686, `.ipa` + template present. Just update. Utku's build.
 Draft PR bodies (private, unapproved): `dist/private/pr-live-hr-banner-body.md`, `pr-workout-samples-body.md`.
 Found, not yet fixed: iOS `evaluateStress` gets each R-R packet 1–2× (same two sinks, reading the PREVIOUS packet
 in willSet); Android runs it once per offload on `rrRecent`. Also dead code: `BLEManager.uploadTimer` never starts.
@@ -82,7 +82,7 @@ the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines
   `~/Developer/noop`, local only) and `workout-hr-once-a-second` @ `b7a6e710` (worktree `~/Developer/noop-workout`,
   on the fork); `noop-optimisations` @ `8accfd2a` = both, for Utku's testing build only (never a PR).
 - **Testing builds:** `8351bc7` (= `94a71b04`, the upstream app) shipped 23 Sep 05:13, verified, just update; then the
-  combined optimisation build from `noop-optimisations` — see "Now" for its id. Both carry #2386 and #2402, so the
+  combined optimisation build `0f9f85b` from `noop-optimisations` (shipped 05:48, just update) — his current build. Both carry #2386 and #2402, so the
   strap log now keeps a whole session on disk.
 
 ## The separate PRs, not the Lift Log's
