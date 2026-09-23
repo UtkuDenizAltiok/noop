@@ -76,7 +76,8 @@ live HR was never cleared on unreadable samples (0 / out of range / contact not 
 (`LiveHeartRateReadability`), WRIST_OFF clears at once; AppModel's median read old values in willSet → sinks pass
 the written value, `clearLiveHeartRate` clears R-R before HR; the banner froze on a nil HR → shows the dash. 3 tests,
 the order test fails with the old order (restored byte-identical).
-- [ ] `verify.sh` (running since ~13:42)
+- [x] `verify.sh` on `6d2cd162`: all ok (macOS 2,117 with only the two `TodayCarryOverTests`, iOS build) except the 2
+  parity tests then red on `main` (repaired since in `44ef71eb`)
 - [x] SHIPPED `445fe65` 14:47, verified (asset list + .ipa download): `noop-optimisations` @ `8b8b1392` = `8f064df7` + A + B + C.
   Just update. Utku's build.
 - [ ] Utku tests OFF-WRIST on his strap (asked 14:50): take it off with NOOP connected → Today's card leaves "Live", the
