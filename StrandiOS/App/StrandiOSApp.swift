@@ -49,14 +49,6 @@ struct StrandiOSApp: App {
     /// unit preference lives here and not in the widget extension.
     @AppStorage(UnitPrefs.systemKey) private var unitSystemRaw = UnitSystem.metric.rawValue
 
-    /// The live heart rate banner makes room for the gym banner during a Lift Log session, and for the sync banner
-    /// during a sync — but only when that banner's own switch is on, so turning one live notification off never
-    /// leaves the Lock Screen with none of the others.
-    private var heartRateBannerStandsAside: Bool {
-        (liftSession.isActive && UnitPrefs.liftLiveActivityEnabled())
-            || (model.live.backfilling && UnitPrefs.syncLiveActivityEnabled())
-    }
-
     init() {
         // #1008: pin the pre-change Overnight-only default for existing installs before
         // anything reads it. Idempotent; a no-op on fresh installs and after the first launch.
@@ -242,7 +234,7 @@ struct StrandiOSApp: App {
                         bpm: model.live.connected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
                         // While a sync runs its own activity is the useful banner; don't stack the HR one.
-                        connected: model.live.connected && !heartRateBannerStandsAside,
+                        connected: model.live.connected && !liftSession.isActive && !model.live.backfilling,
                         effort: day?.strain.map { Int($0.rounded()) }
                     )
                     // The gym banner's own cheap path: no presentation is built here, and a heart rate moves
@@ -259,7 +251,7 @@ struct StrandiOSApp: App {
                     liveActivity.update(
                         bpm: isConnected ? (model.bpm ?? model.live.heartRate) : nil,
                         recovery: day?.recovery.map { Int($0.rounded()) },
-                        connected: isConnected && !heartRateBannerStandsAside,
+                        connected: isConnected && !liftSession.isActive && !model.live.backfilling,
                         effort: day?.strain.map { Int($0.rounded()) }
                     )
                 }
