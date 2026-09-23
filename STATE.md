@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 12:00 — NOOP optimisation: #2415 and #2416 OPEN upstream; a cleanup PR and a stress fix prepared, waiting for Utku's yes.** The only file that
+**Updated 23 Sep 2026, 13:30 — NOOP optimisation: #2415 MERGED; #2416 (review fix pushed, reply awaiting Utku's yes), #2417, #2418 OPEN.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -38,19 +38,33 @@ same things). Backup tags `backup/banner-pre-rebase` (`e2312c4c`) and `backup/wo
 `34211e18`, local only):** 707 lines of `private` code nothing uses, 11 files — mostly Settings' 5/MG research card,
 orphaned by #1709 (29 Aug). verify on `187b264d` (same diff): all ok except the 3 parity steps (= main's failure);
 the 2 newer upstream commits touch none of its files. Draft `dist/private/pr-cleanup-body.md`.
-- [ ] Utku's yes to open it (he approved #2415/#2416 only)
+- [x] Utku's yes, 23 Sep ~12:15 ("Yes do it") — to BOTH the cleanup and the stress PR.
+- [x] rebased onto `5783c499` (no overlap) → `87f03749`, pushed, OPENED **#2417** (23 Sep ~12:25)
 **Fix PR 4 prepared (worktree `~/Developer/noop-stress`, branch `stress-rr-once-per-packet`, local only):** the iOS
 stress check-in took each R-R packet 1–2× (two sinks, willSet); `RRPacketCursor` (keyed on `rrSeq`) in
 `RRPacketObserver.swift`, used by `evaluateStress`. 3 tests; with the cursor broken they fail showing `800, 800, 801,
 802, 802…`; restored byte-identical. Draft `dist/private/pr-stress-body.md` (VERIFY_LINE to fill).
 - [x] `verify.sh` on `48b772b6` (on `34211e18`): all ok (macOS 2,110, only the two `TodayCarryOverTests`; iOS build) except the 3
   parity steps, identical to `main`'s failure
-- [ ] Utku's yes to open it
+- [x] Utku's yes (see the cleanup PR above).
+- [x] rebased onto `5783c499` (no overlap) → `725c163b`, pushed, OPENED **#2418** (23 Sep ~12:25)
 - [x] testing build of ALL FOUR SHIPPED 12:04: `0ca931b` (= `ad1a31d0` + template; `ad1a31d0` = `34211e18` + #2415 +
   #2416 + cleanup + stress), run 35844909325, all jobs green. The tool said FAILED ("no .ipa") because `gh release
   view` lagged at 0 files; the release's own asset list holds all 5 and the .ipa downloads (HTTP 200, 21,619,098 B).
   `ship-build.sh` now reads that list and checks the download. Just update. Utku's build.
 - [x] `verify.sh` on both: all ok except the 3 parity steps, whose failure is byte-identical to clean `main`'s
+- **#2416: ryanbr CHANGES_REQUESTED (09:59 UTC).** Diagnosis confirmed; parity red on `main` is his to repair. Asks: a
+  refused repeat is often a DIFFERENT bpm (the rate moved), so fold it into `peakHr` before returning (skip rescore
+  + snapshot); note in the doc that `samples.last` dedupes a repeat, not an out-of-order arrival. We add: the SAVED
+  workout's max also comes from `samples` on both platforms, so it must include `peakHr` too.
+  - [x] `fb774dd2` on `workout-hr-once-a-second` (no force-push): Swift `recordSample` folds the peak + `savedPeak`;
+    Kotlin inline fold + saved peak + peak grown by comparison. New test fails without the fold (120 ≠ 131); verify ok
+    except ratchet + governance (= main's, the two tests ryanbr named). Pushed. Android CI 35851894720 GREEN.
+  - [x] testing build `6adaf45` SHIPPED 13:25 and verified by the tool (asset list + .ipa HTTP 200): `noop-optimisations`
+    @ `7ab1bacb` = `09c583bd` + #2416 (`3f3cfc19`, `fb774dd2`) + cleanup + stress (cherry-picks). Just update. Utku's build.
+  - [ ] reply on #2416 after the push — drafted in `dist/private/pr2416-reply.md`, ONLY with Utku's yes (asked 13:30)
+- [x] **#2415 MERGED** 10:04 UTC as `f4600d0e` (proven equal to `228a65f0`, 3 files); branch deleted, fork main
+  mirrored to `5783c499`.
 - [x] pushed both to the fork and OPENED: **#2415** (Live HR banner, head `228a65f0`) and **#2416** (workout HR once a
   second, head `3f3cfc19`), 23 Sep ~11:40. Bodies: `dist/private/pr-*-body.final.md`. Follow them (`WORKFLOW.md` §5).
 **Optimisation PR 2 (branch `workout-hr-once-a-second`, worktree `~/Developer/noop-workout`, from `94a71b04`, not
@@ -85,6 +99,10 @@ Do not redo: the #2099 reply (posted 23 Sep 03:48).
 | [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's) | merged 22 Sep 09:14 UTC, squash `a9717abc` (proven equal to `23bee21a` file by file); branch and worktree removed |
 | [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's) | merged 23 Sep 02:10 UTC, squash `94a71b04`; ryanbr rebased it onto `3ada90c3` first (head `5c3c06f3`) — proven: same tree, our 9 code files line for line, only the twin map's hashes re-derived; branch and worktree removed |
 | [#2403](https://github.com/ryanbr/noop/pull/2403) | **the Lift Log follow-ups** from seven gym sessions, rounds 3–6 | **merged** 23 Sep 01:46 UTC, squash `3ada90c3` (proven equal to `8b05e0bb` over all 55 files); branch deleted |
+| [#2415](https://github.com/ryanbr/noop/pull/2415) | iOS Live HR banner pushed only when it changes (NOOP optimisation) | merged 23 Sep 10:04 UTC, squash `f4600d0e` (proven equal to `228a65f0`); branch deleted |
+| [#2416](https://github.com/ryanbr/noop/pull/2416) | manual workout: one HR sample a second, both platforms | **open**; ryanbr asked for the peak fold, fixed in `fb774dd2` |
+| [#2417](https://github.com/ryanbr/noop/pull/2417) | cleanup: 707 lines of private code nothing uses | **open**, green |
+| [#2418](https://github.com/ryanbr/noop/pull/2418) | iOS stress check-in takes each R-R packet once | **open**, green |
 
 - **`upstream/main` is `94a71b04`** (#2402), on top of `3ada90c3` (#2403): everything of ours is in it — the Lift
   Log through round 6, the on-disk strap log (#2386) and the summarised standard-HR line (#2402). The fork's `main`
@@ -107,9 +125,9 @@ the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines
 
 - **Work branches (NOOP optimisation, not the Lift Log), each its own worktree:** `live-hr-banner-pushes` @ `228a65f0`
   (#2415, `~/Developer/noop`), `workout-hr-once-a-second` @ `3f3cfc19` (#2416, `~/Developer/noop-workout`),
-  `cleanup-unused-private-code` @ `a8bc8d35` (`~/Developer/noop-cleanup`, local), `stress-rr-once-per-packet` @
-  `48b772b6` (`~/Developer/noop-stress`, local); `noop-optimisations` @ `ad1a31d0` = all four on `34211e18`, for
-  Utku's testing build only (never a PR).
+  `cleanup-unused-private-code` @ `87f03749` (#2417, `~/Developer/noop-cleanup`), `stress-rr-once-per-packet` @
+  `725c163b` (#2418, `~/Developer/noop-stress`); `noop-optimisations` @ `7ab1bacb` (testing build only, never a PR).
+  #2415's `live-hr-banner-pushes` is merged and deleted; `~/Developer/noop` is back on `main`.
 - **Testing builds:** `8351bc7` (= `94a71b04`, the upstream app) shipped 23 Sep 05:13, verified, just update; then the
   `0f9f85b` (05:48), then `0ca931b` (12:04) from `noop-optimisations` = all four changes on `34211e18` — his current build. Both carry #2386 and #2402, so the
   strap log now keeps a whole session on disk.
@@ -199,11 +217,9 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## Next
 
-1. **Follow #2415 and #2416** (`WORKFLOW.md` §5): one reply after each comment; after a squash merge prove it equals
-   the head, delete the branch and its worktree.
-2. **With Utku's yes, open the cleanup PR and the stress PR** (drafts `dist/private/pr-cleanup-body.md`,
-   `pr-stress-body.md`; strip the `Title:` line): push the branch to the fork, `gh pr create --repo ryanbr/noop`,
-   record the number in "Now". Rebase first if `main` moved, and check the new commits touch none of their files.
+1. **Follow #2416, #2417, #2418** (`WORKFLOW.md` §5): one reply after each comment, each with Utku's yes; after a
+   squash merge prove it equals the head, delete the branch and its worktree (as #2415 on 23 Sep).
+2. **Next candidates** (`BACKLOG.md` "NOOP itself"): the second cleanup once #2417 lands; MetricKit (his call).
 3. **Upstream's parity gate is red on `main` itself** since `971d0d9f` (twin-map authority drift). Every branch's
    ledger/ratchet/governance fail the same way; compare with a clean `main` checkout, say so in the PR, never refresh
    the authority ourselves. When `main` is repaired, re-run `verify.sh` on each open branch.

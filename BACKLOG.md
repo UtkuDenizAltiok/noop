@@ -20,8 +20,26 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 - **Android's HR smoothing window counts LiveState emissions** (`AppViewModel.ingestHr`, window 5), not packets or
   seconds, while iOS uses a 10-s median; any field changing (a sync chunk, an event) refills it. Display only; a
   behaviour choice, so a question for the maintainers rather than a silent change.
+- **A second cleanup, if #2417 is welcomed:** internal (not `private`) app code no Swift file references —
+  `Collector.bufferedCount`, `ImuSessionFileStore.prepareForRead`, `BLEManager.uploadTimer`/`uploadIntervalSeconds`,
+  `captureRawAccel`, `clearEcgRawDataGate` (its Settings row died with the 5/MG card), `NavRouter.openTrends`/
+  `openLiveSession`, `AppModel.cycleAwarenessHidden` (the views read the key through `@AppStorage`),
+  `BiofeedbackPrefs.clearLockedPace`/`useResonancePace`, `SleepView.napMaxHours`, `BatteryGuidedCapture.currentStatus`,
+  `CoachBriefScheduler.widgetBriefText`/`widgetBriefDate`, `AICoach.clearKey`/`aiCoachPrivacyNote`,
+  `Profile.avatarImage`, `Repository.hasAnyHistory`/`dismissedSleepManagementWindows`/`allowSleepReDetection`/
+  `availableKeys`/`numericJournalSeries`, `BehaviorStore.recalibrateChargeBaseline`/`didRecalibrateCharge`,
+  `JournalCatalog.setSortIndex`, `SkinTempBackfillWalker.totalAttempted`, `HealthKitBridge.foregroundCatchUp` (never
+  called since June; app-active already runs `health.sync()`, so not a bug). Framework callbacks (Bluetooth,
+  document picker, scene delegate, App Intents, HealthKit workout builder) look unused and must stay. Check each
+  for an Android twin or a missing UI before removing: some may be features whose entry point was never built.
+- **MetricKit, local only (idea for Utku):** iOS hands an app a daily on-device report of its own CPU time, energy,
+  hangs, disk writes and crash diagnostics. NOOP does not subscribe. Written into the strap log / Test Centre export,
+  it would give measured evidence for further battery and crash work, with nothing leaving the phone. A new
+  diagnostic, so his call.
 - Checked and clean (23 Sep): forced unwraps/`try!`/`as!` (none unguarded), network use (update check off by default,
-  once a day; AI and Oura opt-in), widgets / Watch / notification dedup, formatter creation in hot paths.
+  once a day; AI and Oura opt-in), widgets / Watch / notification dedup, formatter creation in hot paths, stale reads
+  in `@Published`/`objectWillChange` sinks (only the pair #2416/#2418 fix), timer leeway (keep-alive exact on
+  purpose, #1052), whole-number conversions of divisions (all guarded).
 - **Idle CPU on Today is the Liquid animation** (~10–18% of a core, measured upstream). Deliberate and gated by Low
   Power Mode and "Reduce motion in NOOP"; a user who wants the battery can turn that on. Not a bug.
 
