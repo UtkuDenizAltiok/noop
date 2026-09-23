@@ -102,6 +102,13 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 03:40 — the Lift Log follow-up PR is open**, [#2403](https://github.com/ryanbr/noop/pull/2403), from
+  `lift-log-follow-ups` rebased onto `751fa1d8` (every commit range-diff identical, the twin map re-derived as its
+  own commit). It carries rounds 3–6: one Save and the finish flow, max RPE, the knock guard and the buzz before
+  the sync, the next-set line and the 0:00 clock, adding an exercise mid-session, the Lock Screen light-up and the
+  banner kept across an iOS restart, no work between taps, the Dynamic Island's layout, the banner's push rate and
+  the stamped log lines. Seventh gym session the same night (02:28–02:53, build `1c34d6cd`): 24 steps, no tap
+  refused by any guard, two taps Utku felt that never reached the app, and the reconnect path seen for real.
 - **23 Sep, 00:40** — the separate diagnostics PR Utku asked for: upstream's standard-HR host-received line,
   written once a second, was 52.8% of a session's strap log and so decided how much history the on-disk log holds.
   Now a refusal is still written at once, the routine samples become one line a minute (count, span, widest gap,

@@ -234,6 +234,17 @@ and flag it.
     exists to answer that. `AppModel.stamped()` prefixes them at the five sites that write them. A new Lift Log
     line goes through it; a diagnostic that cannot say when it happened is half a diagnostic (`AGENTS.md`).
 
+48. **A session survives the strap going out of range, and a tap made while it was away is not applied.** Asked by
+    Utku on 23 Sep ("what if I leave my phone and walk off?"). The session lives in the phone, not the link: the
+    claim on the double-tap (`AppModel.strapDoubleTapOverride`) is set when the session starts and cleared only
+    when it ends — no disconnect path touches it — the rest's one-shot timers are the phone's, and the banner
+    stays (only NOOP's heart-rate banner follows `connected`). The heart rate reads "—" while the link is down and
+    comes back by itself. A double-tap made out of range reaches the app later, through the reconnect's sync, and
+    is deliberately NOT acted on: advancing a set minutes late would put the session on the wrong one. It is
+    logged as arriving late, and a replay of a tap already handled is suppressed (22). Seen in the 23 Sep log: the
+    link timed out at 02:23:22, a tap at 02:23:17 was handed over 156 s later and ignored, and the session then
+    ran its 24 steps. Never end or reset a session on a disconnect.
+
 ## Sources
 
 - Resistance-training dose–response meta-regression (Sports Medicine, 2025) — set-counting methods, the
