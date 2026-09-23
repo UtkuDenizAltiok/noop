@@ -265,8 +265,9 @@ and flag it.
     iOS itself draw the dash (`NOOPLiveActivity.shownBpm`) — in its own non-waking batch, about two minutes after the
     last push (simulator, 23 Sep) — and a steady number is re-pushed every 15 s while readings flow. In the app, a run of three unreadable samples, ten seconds of silence or WRIST_OFF clears the live heart rate
     through `LiveState.clearLiveHeartRate` (R-R first); Today's big number is the live heart rate or nothing. iOS lets
-    only a foreground app START a Live Activity, so ending one costs it until NOOP is opened: it ends only for its
-    switch or the Lift Log banner on screen (`LiveHRBannerLifecycle`) — never for a link drop, a sync, or a timer
+    only a foreground app START a Live Activity, so ending one costs it until NOOP is opened: it ends for its switch,
+    the Lift Log banner on screen, a link down 30 s (checked inside the time iOS lends the woken app), or nothing to
+    show while NOOP is on screen (`LiveHRBannerLifecycle`) — never for a sync, a short drop, or a timer left for later
     (a suspended app's timer fires at its next wake, typically the strap coming back). Never requested from the
     background. Live notification switches only hide.
 

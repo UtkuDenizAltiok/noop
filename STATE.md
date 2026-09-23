@@ -113,10 +113,17 @@ Activity types, no AlarmKit / Now Playing); switches must only affect showing; s
 - [x] commit 6 `19d1fd85` verified (ALL passed), pushed, #2422 description edited. SIMULATOR PROOF: a hard-coded 93 pushed
   once (temporary, never committed); with NOOP in the background the island went "♥ 93" → "♥ –" by itself. iOS scheduled
   the stale mark as a NON-WAKING task 2 min after the push (not at the 30-s date): background dash ≈ 2 min.
-- [x] SHIPPED `9a4d83e` (22:13), verified: `noop-optimisations` @ `4204d250` = `3ad25885` + #2422×6 + #2419 net + #2420.
-  Just update. Utku's build.
-- [ ] Utku re-tests on `9a4d83e`: strap off with NOOP in the background → the dash in about 2 minutes (iOS's batch);
-  with NOOP open → within 10 s; a day with the HR banner on. Add the result to #2422's description.
+- [x] SHIPPED `9a4d83e` (22:13) with #2422 commit 6.
+**Utku 23 Sep ~22:20:** asked whether removing the banner entirely is better; clarified he meant off-wrist (connected),
+and that a disconnected strap should obviously show none. Decided: DISCONNECTED → dash at once, ended after 30 s
+(covers the 1/1/18-s drops; runs in the ~30 s iOS lends a woken app) = commit 7 `29ac0446`, simulator-proven (dash
+22:30:13, ended 22:30:44, NOOP in background). OFF-WRIST → ended while NOOP is on screen (it can restart it), kept as
+iOS's dash in the background (NOOP suspended; the next wake is the re-wear, when an end could not be undone; keeping
+NOOP awake would cost battery) = commit 8 `7e468f26`. verify ALL passed (2,133 macOS tests incl. the new ones).
+#2422 pushed + description; title now "…and a banner only while it can show one".
+- [ ] ship `noop-optimisations` @ the new stack (iOS-compiled locally) → Utku re-tests: off-wrist in pocket (dash
+  ~2 min, number back by itself on the wrist), off-wrist with NOOP open (banner gone), strap disconnected (gone after
+  30 s).
 - [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
 **Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
 FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch
