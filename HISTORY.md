@@ -102,6 +102,11 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 11:40 — #2415 and #2416 opened** with Utku's yes ("I accept your opinions"): the Live HR banner pushes and
+  the manual workout's once-a-second samples, rebased onto `266a8702`. Upstream's parity gate was found red on `main`
+  itself (twin-map drift from `971d0d9f`), which every branch inherits. Prepared the same morning: a cleanup of 707
+  lines of `private` code nothing used (mostly Settings' 5/MG research card, orphaned by #1709) and the iOS stress
+  check-in taking each R-R packet once (`RRPacketCursor`).
 - **23 Sep, morning — NOOP optimisation begins** (Utku: the Lift Log is mostly finished; make NOOP itself leaner,
   same behaviour, separate PRs). His last gym session confirmed the Dynamic Island and a prompt Lock Screen light-up;
   the walk-away test is for later. Build `8351bc7` (the upstream app, with the on-disk strap log) shipped 05:13. A

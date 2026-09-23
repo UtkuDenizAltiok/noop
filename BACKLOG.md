@@ -6,13 +6,22 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 
 ## NOOP itself (not the Lift Log) — found 23 Sep 2026, not yet fixed
 
-- **iOS stress check-in reads each R-R packet 1–2×.** `AppModel.evaluateStress` runs from the same two `@Published`
+- **iOS stress check-in reads each R-R packet 1–2×** — FIXED on `stress-rr-once-per-packet` (`RRPacketCursor`), PR
+  prepared, waiting for Utku's yes. Original finding: `AppModel.evaluateStress` runs from the same two `@Published`
   sinks as `ingestHR` (`$heartRate`, `$rr`), inside `willSet`, so it appends the PREVIOUS packet's intervals to
   `rrBuf` once per packet plus once per heart-rate change, and advances the "slow" EMA baseline per call (0.98 per
   call ≈ 25 s memory at 2 calls/s). Android runs the same detector once per history offload on `rrRecent`. Fix
   direction: consume packets by `rrSeq` (`RRPacketObserver.swift`'s rule), once per packet. Only matters with the
   stress check-in enabled; a behaviour choice about the baseline's speed belongs to the maintainers.
-- **`BLEManager.uploadTimer` / `uploadIntervalSeconds`** are dead: declared and cancelled, never started.
+- **`BLEManager.uploadTimer` / `uploadIntervalSeconds`** are dead: declared and cancelled, never started (not
+  `private`, so the cleanup PR's scan did not reach them).
+- **Android #2270 (OutOfMemoryError in `LiquidRender.wavePolygon`)** needs a heap profile of a session on a device;
+  the issue itself says the 16-byte allocation is the victim, not the cause. Not doable without an Android device.
+- **Android's HR smoothing window counts LiveState emissions** (`AppViewModel.ingestHr`, window 5), not packets or
+  seconds, while iOS uses a 10-s median; any field changing (a sync chunk, an event) refills it. Display only; a
+  behaviour choice, so a question for the maintainers rather than a silent change.
+- Checked and clean (23 Sep): forced unwraps/`try!`/`as!` (none unguarded), network use (update check off by default,
+  once a day; AI and Oura opt-in), widgets / Watch / notification dedup, formatter creation in hot paths.
 - **Idle CPU on Today is the Liquid animation** (~10–18% of a core, measured upstream). Deliberate and gated by Low
   Power Mode and "Reduce motion in NOOP"; a user who wants the battery can turn that on. Not a bug.
 
