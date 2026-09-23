@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 MERGED 23 Sep (rounds 3-6 upstream); only the diagnostics PR #2402 is open. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 and the diagnostics PR #2402 both MERGED 23 Sep; nothing of ours is open. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -18,8 +18,9 @@ that must survive if the handbook is missing (21 Sep 2026):
   an exercise mid-session, the Lock Screen light-up and restart survival, no work between taps, the Dynamic Island,
   the banner's push rate, stamped log lines). Squash proven equal over 55 files; branch deleted; the app repo sits
   on `main`. The reply on merged #2099 was posted the same night, with Utku's yes.
-- **#2402** is also open and green: upstream's standard-HR log line summarised (branch `hr-transport-summary`,
-  worktree `~/Developer/noop-hrlog`) — not the Lift Log's, opened 23 Sep with his yes. #2386 merged 22 Sep.
+- **#2402 MERGED 23 Sep** as `94a71b04` (upstream's standard-HR log line summarised; not the Lift Log's). ryanbr
+  rebased our branch himself before merging — proven same content; branch and worktree removed. #2386 merged 22 Sep.
+  Utku's build `1c34d6cd` has neither; a build from `main` would carry both (offered 23 Sep).
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.
@@ -38,8 +39,8 @@ that must survive if the handbook is missing (21 Sep 2026):
   `dist/RULES.md` 34: a stored rating no longer proves he rated that set.
 - Parity needs Python 3.12 (installed at `/opt/homebrew/bin/python3.12`); compare against the branch's own base,
   never the moving tip.
-- ryanbr's 15 Sep 04:07 comment on #2099 is unanswered; the reply is drafted in `dist/NEXT_PR.md`. Nothing is
-  posted without Utku's yes.
+- ryanbr's 15 Sep 04:07 comment on #2099 was answered 23 Sep 03:48 with Utku's yes. Nothing is posted without
+  his yes.
 
 **Lesson:** start every session with `bash dist/tools/upstream-check.sh` — within hours the maintainer pushed to
 our branch and merged it, merged a Kotlin twin of our Swift, and repaired a gate our merge had left red. A clean

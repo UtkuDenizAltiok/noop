@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 04:45 — #2403 IS MERGED. The Lift Log's seven-session follow-up is upstream.** The only file that
+**Updated 23 Sep 2026, 05:10 — #2403 and #2402 are both MERGED. Nothing of ours is open upstream.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -9,8 +9,9 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing in flight (23 Sep 04:50, end of session). #2403 merged; the reply on #2099 posted; #2402 open and green.
-Utku's build is `1c34d6cd`; the next gym session has three things to look at (`## Confirmed at the gym`).
+Nothing in flight (23 Sep 05:10). #2402 merged and cleaned up (`HISTORY.md`); nothing of ours is open upstream.
+Utku's build is `1c34d6cd`; offered: a fresh build from `main` before the next gym session (`## Next` 2) — not
+started, waits for his yes. Do not redo: the #2099 reply (posted 23 Sep 03:48).
 
 ## Upstream (`ryanbr/noop`)
 
@@ -21,21 +22,18 @@ Utku's build is `1c34d6cd`; the next gym session has three things to look at (`#
 | [#2232](https://github.com/ryanbr/noop/pull/2232) | Kotlin `LiftMetrics` twin + oracle tests (by the maintainers) | merged 15 Sep, `eb34f3c8` |
 | [#2233](https://github.com/ryanbr/noop/pull/2233) | parity-governance repair; `main` green again after #2099 left it red (#2229) | merged 15 Sep, `36b49dbe` |
 | [#2386](https://github.com/ryanbr/noop/pull/2386) | strap log kept on disk across restarts, within 2 MB (not the Lift Log's) | merged 22 Sep 09:14 UTC, squash `a9717abc` (proven equal to `23bee21a` file by file); branch and worktree removed |
-| [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's; branch `hr-transport-summary`) | **open** since 23 Sep 00:40, head `5ce691ac`, rebased onto `751fa1d8`; all 19 checks green |
+| [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's) | merged 23 Sep 02:10 UTC, squash `94a71b04`; ryanbr rebased it onto `3ada90c3` first (head `5c3c06f3`) — proven: same tree, our 9 code files line for line, only the twin map's hashes re-derived; branch and worktree removed |
 | [#2403](https://github.com/ryanbr/noop/pull/2403) | **the Lift Log follow-ups** from seven gym sessions, rounds 3–6 | **merged** 23 Sep 01:46 UTC, squash `3ada90c3` (proven equal to `8b05e0bb` over all 55 files); branch deleted |
 
-- **`upstream/main` is `3ada90c3`** — our own merge (22 Sep evening; our merged `a9717abc` is in it, plus Android diagnostics, an
-  Android chart fix, a macOS frame-loop fix and a design hex-parse fix — none touching Lift Log files).
-  `lift-log-follow-ups` sits on `a56840bb` and merges cleanly; rebase before the PR. 11.8.0 shipped the Lift Log
-  (Apple only). The fork's `main` mirrors upstream as of `29d90eb6` — re-mirror at the next sync.
+- **`upstream/main` is `94a71b04`** (#2402), on top of `3ada90c3` (#2403): everything of ours is in it — the Lift
+  Log through round 6, the on-disk strap log (#2386) and the summarised standard-HR line (#2402). The fork's `main`
+  and the app repo's `main` both sit on it (mirrored 23 Sep). 11.8.0 shipped the Lift Log (Apple only).
 - **Open upstream:** ryanbr's #2327 — the Lift Log has no Android UI (`BACKLOG.md` 3). Not ours to answer unasked.
-- **Unanswered (optional):** ryanbr's last comment on merged #2099 (15 Sep 04:07) asks whether we would rather
-  keep performed sets with their timing — round 4 did exactly that. A 3-sentence reply is drafted in `NEXT_PR.md`,
-  to post right after the new PR opens, only with Utku's yes.
+- **Answered:** ryanbr's 15 Sep question on merged #2099 — the reply was posted 23 Sep 03:48 with Utku's yes.
 
 ## Open work — none on the Lift Log itself
 
-`#2403` merged on 23 Sep as `3ada90c3`, which is now `upstream/main`: rounds 3–6 are upstream. The squash was
+`#2403` merged on 23 Sep as `3ada90c3` (`upstream/main` builds on it): rounds 3–6 are upstream. The squash was
 proven identical to the submitted head over all 55 files, the branch is deleted from the fork and the app repo sits
 on `main` again. The next Lift Log change starts a fresh branch from `upstream/main`.
 
@@ -46,9 +44,10 @@ Screen light-up, the session and banner surviving an iOS restart, one banner dur
 the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines (`RULES.md` 5, 27, 28, 34–35,
 38–45, 47).
 
-- **Work branch:** none — `~/Developer/noop` is on `main` @ `3ada90c3`.
+- **Work branch:** none — `~/Developer/noop` is on `main` @ `94a71b04`.
 - **Testing build on Utku's phone:** `1c34d6cd`, NOOP 11.8.0, shipped 22 Sep ~23:45 and verified; gym-tested 23 Sep.
-  Just update, no wipe. Built from `0da3998e`, whose content is what merged.
+  Just update, no wipe. Built from `0da3998e`, whose content is what merged. It has NEITHER #2386 nor #2402: its
+  strap log is still the 5,000-line screen buffer plus 3 × 1,000-line run endings.
 
 ## The separate PRs, not the Lift Log's
 
@@ -58,14 +57,14 @@ the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines
   as before, so `strap-log.py` is unchanged. ryanbr's review found that lines refused before the first unlock after
   a boot were dropped at a segment boundary; they now wait in memory within the budget and reach disk once storage
   opens (`23bee21a`). Its Kotlin oracle harness is `tools/oracle/strap-log/`.
-- **#2402, open and green** (`hr-transport-summary` @ `5ce691ac`, worktree `~/Developer/noop-hrlog`): upstream's
+- **#2402, merged 23 Sep** (squash `94a71b04`): upstream's
   once-a-second `standard-hr transport host-received` line was 52.8% of a session's log and so decided how much
   history #2386's 2 MB holds. A refusal is still written at once; the routine samples become one line a minute
   (count, span, widest gap, accepted / refused / pending); the window closes at a disconnect; full detail returns
   under the Test Centre's HRV or Connection mode. Replayed over the 22 Sep log: 3,938 lines → 67. Both twins,
   7 Swift tests + 4 Kotlin (2 oracle), the twin map re-derived.
 
-Neither is in Utku's testing build: it holds the Lift Log branch plus the template commit.
+Neither is in Utku's testing build `1c34d6cd`; a build from `main` would carry both.
 
 ## Verified
 
@@ -131,19 +130,21 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## Nothing is blocked
 
-#2403 is merged. #2402 (diagnostics) is open, green, and waits on the maintainers. The reply on #2099 was posted on
-23 Sep with Utku's yes. Nothing is waiting to be opened, and nothing is blocked.
+#2403 and #2402 are merged; the reply on #2099 is posted. Nothing of ours is open, waiting to be opened, or blocked.
 
 ## Next
 
-1. **Follow #2402** (the only open PR): read each comment, reply once after it (`WORKFLOW.md` §5). After a squash
-   merge, prove the squash equals the head file by file, delete the branch from the fork and remove
-   `~/Developer/noop-hrlog`. (#2403 was handled this way on 23 Sep.)
-2. **Utku's next gym session on build `1c34d6cd`.** Check the Dynamic Island, the light-up timing late in a
-   session, and the walk-away test (rule 48). Read his log with `dist/tools/strap-log.py` (`steps` first).
-3. **Fix whatever it finds**, verify, ship (`bash dist/tools/ship-build.sh`), give him the release link and the
-   build id, and say "just update" or "wipe".
-4. **Only with his yes:** the reply on #2099 (`NEXT_PR.md`).
+1. **Watch upstream** at every session start (`upstream-check.sh`): after a merge the maintainers often add twins
+   or fixes on top of our code. A comment on a merged PR of ours gets one reply after it, with Utku's yes.
+2. **Offered, waiting for Utku's yes: a build from `main` (`94a71b04`) before the next gym session** —
+   `bash dist/tools/ship-build.sh main`, just update. Why: it is exactly what upstream now ships, and its strap log
+   keeps the WHOLE session on disk (#2386) with the once-a-second HR line cut to one a minute (#2402), so the late-
+   session light-up and the walk-away test will be fully in the file; `1c34d6cd` trims a long session's start.
+3. **Utku's next gym session.** Check the Dynamic Island, the light-up timing late in a session, and the walk-away
+   test (rule 48). Read his log with `dist/tools/strap-log.py` (`steps` first); #2386 kept the export's format
+   (above), so the tool reads a new build's file too — check its `runs` report the first time.
+4. **Fix whatever it finds** on a fresh branch from `upstream/main`, verify, ship (`bash dist/tools/ship-build.sh`),
+   give him the release link and the build id, and say "just update" or "wipe".
 5. **Hooks (Claude Code) are installed** (22 Sep 08:22:55): SessionStart, UserPromptSubmit, Stop, PreCompact,
    StopFailure. A session starts with the recovery brief; the handbook is checkpointed after every reply. If a new
    Claude Code session shows no brief, tell Utku rather than touching Claude's settings (its guard forbids it).
@@ -151,14 +152,14 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main`, `3ada90c3`), `hr-transport-summary` (#2402), `lift-log-build`,
-  `lift-log-handbook`. `lift-log-follow-ups` was deleted when #2403 merged. The stacked branches were deleted
-  on 22 Sep (all contained in `lift-log-follow-ups`), and `strap-log-on-disk` once #2386 merged.
+- Branches: `main` (mirror of `upstream/main`, `94a71b04`), `lift-log-build`, `lift-log-handbook`. Deleted once
+  merged and proven: `lift-log-follow-ups` (#2403) and `hr-transport-summary` (#2402) on 23 Sep,
+  `strap-log-on-disk` (#2386) and the three stacked branches on 22 Sep.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - The repo's description and website field point newcomers to this handbook (22 Sep).
 - CI caches: about 3 GB on `main`, shared by every build; GitHub expires unused ones after a week.
-- Local only: worktrees `~/Developer/noop` (`lift-log-follow-ups`) and `~/Developer/noop/dist` (this handbook);
+- Local only: worktrees `~/Developer/noop` (`main`) and `~/Developer/noop/dist` (this handbook);
   `dist/private/` (the event log, and drafts). The retired-refs bundle of 15 Sep went to
   the Trash on 22 Sep: everything unique in it was superseded (the handbook's predecessor, an old stash, pre-rebase
   snapshots of merged work).

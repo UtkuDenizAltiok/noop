@@ -102,6 +102,10 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 02:10 UTC — #2402 MERGED** by ryanbr as `94a71b04`, twenty minutes after #2403. He first rebased our
+  branch onto `3ada90c3` himself (head `5c3c06f3`); proven the next morning: the squash's tree equals that head's,
+  all 9 code files carry exactly our lines, and only the twin map's hashes were re-derived for the new base. The
+  branch and its worktree were removed and the fork's `main` mirrored to `94a71b04`: nothing of ours is open.
 - **23 Sep, 01:46 UTC — #2403 MERGED**, squash `3ada90c3`, proven identical to the submitted head over all 55
   files; the branch is deleted and `upstream/main` now carries rounds 3–6. The reply ryanbr's 15 Sep question had
   been waiting for was posted the same night, with Utku's yes, pointing at the merged work.
