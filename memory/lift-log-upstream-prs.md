@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 and the diagnostics PR #2402 both MERGED 23 Sep; NOOP optimisation #2415-#2418 merged, #2419/#2420 open. Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 and the diagnostics PR #2402 both MERGED 23 Sep; NOOP optimisation #2415-#2418 merged, #2419/#2420/#2422 open. Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -20,8 +20,8 @@ that must survive if the handbook is missing (21 Sep 2026):
   on `main`. The reply on merged #2099 was posted the same night, with Utku's yes.
 - **#2402 MERGED 23 Sep** as `94a71b04` (upstream's standard-HR log line summarised; not the Lift Log's). ryanbr
   rebased our branch himself before merging — proven same content; branch and worktree removed. #2386 merged 22 Sep.
-  Build `8351bc7` (23 Sep, = upstream main) carries both. NOOP optimisation (23 Sep): #2415-#2418 MERGED; #2419 (Lock Screen
-  switches), #2420 (MetricKit) OPEN; off-wrist HR fix awaits his strap test. He gave standing permission to reply and
+  Build `8351bc7` (23 Sep, = upstream main) carries both. NOOP optimisation (23 Sep): #2415-#2418 MERGED; #2419 (Live notifications
+  switches), #2420 (MetricKit), #2422 (off-wrist HR; off-wrist path not yet seen in a log) OPEN. He gave standing permission to reply and
   push (dist/RULES.md) — see `dist/STATE.md`.
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on

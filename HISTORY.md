@@ -102,6 +102,11 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 16:00–16:45 — Live notifications.** Utku's log confirmed the switches alone and together; it did not show
+  the off-wrist path (the strap sent plausible bpm until NOOP closed the link). He asked whether these are all the live
+  notifications (yes: three Live Activity types, nothing else), that switches only hide, and for shorter wording:
+  #2419 now reads "Live notifications" with one-line rows and each switch hides only its own banner. #2422 opened for
+  the off-wrist fix with a contact-flag log line, saying what is not yet observed. Build `90394a7`.
 - **23 Sep, 14:00–14:50 — all four optimisation PRs merged** (#2416 with the peak fold, #2417 with ryanbr's comment
   follow-up, #2418), and ryanbr re-derived the parity authority (`44ef71eb`). Utku gave standing permission to reply
   and push, and asked for three things: MetricKit (→ #2420), a switch per Lock Screen banner so the everyday HR one can

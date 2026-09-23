@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 14:50 — #2415–#2418 MERGED; #2419 (Lock Screen switches) and #2420 (MetricKit) OPEN; the off-wrist HR fix waits for Utku's strap test. Build `445fe65`.** The only file that
+**Updated 23 Sep 2026, 16:45 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications switches), #2420 (MetricKit), #2422 (off-wrist HR — its off-wrist path still to be seen in a log). Build `90394a7`.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -80,10 +80,21 @@ the order test fails with the old order (restored byte-identical).
   parity tests then red on `main` (repaired since in `44ef71eb`)
 - [x] SHIPPED `445fe65` 14:47, verified (asset list + .ipa download): `noop-optimisations` @ `8b8b1392` = `8f064df7` + A + B + C.
   Just update. Utku's build.
-- [ ] Utku tests OFF-WRIST on his strap (asked 14:50): take it off with NOOP connected → Today's card leaves "Live", the
+**Utku 23 Sep ~16:00 (log `~/Downloads/noop-strap-log-260923-1556.txt`):** the switches work alone and together (log
+15:48:26 "no Lift Log banner is running" with the Lift switch off; sync banners 15:50, 15:54). The OFF-WRIST path is
+NOT shown by that log: the strap sent 91–104 bpm every second until NOOP closed the link at 15:50:12 ("Disconnected
+(intentional)"); no unreadable-run line, no WRIST_OFF. So the fix is not yet hardware-validated. Added `bcdd258e`:
+log the skin-contact flag when it changes. He also asked: are these ALL the live notifications (yes — three Live
+Activity types, no AlarmKit / Now Playing); switches must only affect showing; shorter wording, "Live notifications".
+→ `lockscreen-switches` commit 2 `54e70c3c` (Live notifications, short captions, switch-aware stand-aside): verify ALL
+  passed; simulator shows the section; PUSHED to #2419, title + description edited.
+- [x] SHIPPED `90394a7` (16:40), verified: `noop-optimisations` @ `27aa0d84` = `3ad25885` + A×2 + B×2 + C. Just update. Utku's build.
+- [x] A rebased (`e3e76651` on `3ad25885`), verify ALL passed, OPENED **#2422** — says plainly the off-wrist path is not yet
+  observed; ask Utku for a targeted off-wrist test log and edit the description with its answer
+- [ ] Utku tests OFF-WRIST on his strap (asked again 16:45, build `90394a7` logs the contact flag): take it off with NOOP connected → Today's card leaves "Live", the
   Live screen and the Lock Screen show a dash within a few seconds; on again → the number returns. Then a strap log:
-  look for "HR: 3 unreadable samples in a row" or a WRIST_OFF clear. Rebase `live-hr-off-wrist` (`0936d1f3`) and open.
-- [ ] open the PR with his hardware result
+  look for "HR: skin contact …", "HR: 3 unreadable samples in a row" or a WRIST_OFF clear; edit #2422's description with it.
+- [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
 **Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
 FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch
 (`UnitPrefs.liftLiveActivityEnabled`, default on) and all three (live HR, Lift Log, strap sync) in a new iOS
