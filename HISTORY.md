@@ -102,6 +102,12 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 14:00–14:50 — all four optimisation PRs merged** (#2416 with the peak fold, #2417 with ryanbr's comment
+  follow-up, #2418), and ryanbr re-derived the parity authority (`44ef71eb`). Utku gave standing permission to reply
+  and push, and asked for three things: MetricKit (→ #2420), a switch per Lock Screen banner so the everyday HR one can
+  be off while the gym one stays (the Lift Log banner had followed the HR switch → #2419, checked in the simulator),
+  and a fix for a heart rate still shown with the strap off his wrist (three faults: never cleared, a stale-read
+  median, a banner that froze on nil → branch `live-hr-off-wrist`, waiting for his strap test). Build `445fe65`.
 - **23 Sep, afternoon — #2415 MERGED** (10:04 UTC, `f4600d0e`, proven equal to our head). ryanbr reviewed #2416: the
   diagnosis confirmed, one change asked — a refused repeat is often a different bpm, so it must still reach the peak;
   fixed in `fb774dd2`, which also makes the SAVED max include it on both platforms. #2417 (cleanup) and #2418 (stress

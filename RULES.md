@@ -204,6 +204,10 @@ and flag it.
   is measured or tested rather than asserted, covers both platforms where both have the code, and is opened only
   with his yes. Work the maintainers already did (widget, Watch and notification dedup, Today's leaf isolation,
   the Liquid motion gate) is left alone; a change to BLE behaviour needs a strap test first.
+- **Standing permission (Utku, 23 Sep 2026): "You can reply you can push anything you want."** Replies on our own
+  PRs and pushes to our branches no longer need a per-item yes; still one concise reply per review, in plain words.
+  Opening a PR for work he asked for counts too. Anything else public in his name (a new issue, a comment on someone
+  else's thread) still gets asked.
 - **Upstream's logging is not the Lift Log's to change** — not its content, rate or buffer. The Lift Log adds only
   its drop lines (29), into that same log.
 - **Never built, on purpose:** an exercise catalogue; per-exercise muscle weightings; ACWR / injury warnings;

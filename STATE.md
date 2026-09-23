@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 13:30 — NOOP optimisation: #2415 MERGED; #2416 (review fix pushed, reply awaiting Utku's yes), #2417, #2418 OPEN.** The only file that
+**Updated 23 Sep 2026, 14:50 — #2415–#2418 MERGED; #2419 (Lock Screen switches) and #2420 (MetricKit) OPEN; the off-wrist HR fix waits for Utku's strap test. Build `445fe65`.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -62,7 +62,39 @@ stress check-in took each R-R packet 1–2× (two sinks, willSet); `RRPacketCurs
     except ratchet + governance (= main's, the two tests ryanbr named). Pushed. Android CI 35851894720 GREEN.
   - [x] testing build `6adaf45` SHIPPED 13:25 and verified by the tool (asset list + .ipa HTTP 200): `noop-optimisations`
     @ `7ab1bacb` = `09c583bd` + #2416 (`3f3cfc19`, `fb774dd2`) + cleanup + stress (cherry-picks). Just update. Utku's build.
-  - [ ] reply on #2416 after the push — drafted in `dist/private/pr2416-reply.md`, ONLY with Utku's yes (asked 13:30)
+- [x] Utku's yes (23 Sep, afternoon): "You can reply you can push anything you want" — STANDING permission for replies
+  on our PRs and pushes to our branches (recorded in RULES settled decisions).
+- [x] #2416 reply POSTED (issuecomment-5794056842)
+**Utku's new asks (23 Sep, afternoon):** (1) MetricKit, local only, "if it's not gonna cost any usage or memory — go
+for it". (2) BUG: with the strap OFF his wrist the app sometimes still shows a heart rate, and sometimes the app shows
+"—" while the Lock Screen / Dynamic Island banner still shows a number — not logical. (3) A small settings section for
+everything NOOP streams to the Lock Screen / Dynamic Island, each with its own switch: he does NOT want the live HR
+banner all the time (sitting, in bed, on the bus), but DEFINITELY wants the Lift Log session banner. Find what streams
+in what conditions, optimise it, let people turn one off and keep another. Each its own PR.
+**Fix A (branch `live-hr-off-wrist`, worktree `~/Developer/noop-offwrist`, from `38b56855`):** three faults — the
+live HR was never cleared on unreadable samples (0 / out of range / contact not detected) → a run of 3 clears it
+(`LiveHeartRateReadability`), WRIST_OFF clears at once; AppModel's median read old values in willSet → sinks pass
+the written value, `clearLiveHeartRate` clears R-R before HR; the banner froze on a nil HR → shows the dash. 3 tests,
+the order test fails with the old order (restored byte-identical).
+- [ ] `verify.sh` (running since ~13:42)
+- [x] SHIPPED `445fe65` 14:47, verified (asset list + .ipa download): `noop-optimisations` @ `8b8b1392` = `8f064df7` + A + B + C.
+  Just update. Utku's build.
+- [ ] Utku tests OFF-WRIST on his strap (asked 14:50): take it off with NOOP connected → Today's card leaves "Live", the
+  Live screen and the Lock Screen show a dash within a few seconds; on again → the number returns. Then a strap log:
+  look for "HR: 3 unreadable samples in a row" or a WRIST_OFF clear. Rebase `live-hr-off-wrist` (`0936d1f3`) and open.
+- [ ] open the PR with his hardware result
+**Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
+FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch
+(`UnitPrefs.liftLiveActivityEnabled`, default on) and all three (live HR, Lift Log, strap sync) in a new iOS
+"Lock Screen & Dynamic Island" Settings section after Strap; 4 new strings × 9 languages.
+- [x] `verify.sh` on `680c2980`: all ok (i18n gate passes the 4 new strings) except the 2 parity tests then red on main
+- [x] simulator: section renders; HR switch off + Lift session → gym banner stays (ActivityKit: no end)
+- [x] OPENED **#2419** (head `002a1240`)
+**MetricKit C (branch `metrickit-daily-report`, worktree `~/Developer/noop-metrickit`):** one strap-log line per iOS
+MetricKit report (daily metrics; crash/hang/CPU/disk/launch diagnostics); `MetricKitLine` pure + 4 tests (the
+"not printed as zero" test fails when a missing value prints 0).
+- [x] `verify.sh` on `6721e3b2`: ALL steps passed (parity green again)
+- [x] OPENED **#2420** (head `d81f0cc1`)
 - [x] **#2415 MERGED** 10:04 UTC as `f4600d0e` (proven equal to `228a65f0`, 3 files); branch deleted, fork main
   mirrored to `5783c499`.
 - [x] pushed both to the fork and OPENED: **#2415** (Live HR banner, head `228a65f0`) and **#2416** (workout HR once a
@@ -100,9 +132,9 @@ Do not redo: the #2099 reply (posted 23 Sep 03:48).
 | [#2402](https://github.com/ryanbr/noop/pull/2402) | the standard-HR host-received line summarised, every refusal kept (not the Lift Log's) | merged 23 Sep 02:10 UTC, squash `94a71b04`; ryanbr rebased it onto `3ada90c3` first (head `5c3c06f3`) — proven: same tree, our 9 code files line for line, only the twin map's hashes re-derived; branch and worktree removed |
 | [#2403](https://github.com/ryanbr/noop/pull/2403) | **the Lift Log follow-ups** from seven gym sessions, rounds 3–6 | **merged** 23 Sep 01:46 UTC, squash `3ada90c3` (proven equal to `8b05e0bb` over all 55 files); branch deleted |
 | [#2415](https://github.com/ryanbr/noop/pull/2415) | iOS Live HR banner pushed only when it changes (NOOP optimisation) | merged 23 Sep 10:04 UTC, squash `f4600d0e` (proven equal to `228a65f0`); branch deleted |
-| [#2416](https://github.com/ryanbr/noop/pull/2416) | manual workout: one HR sample a second, both platforms | **open**; ryanbr asked for the peak fold, fixed in `fb774dd2` |
-| [#2417](https://github.com/ryanbr/noop/pull/2417) | cleanup: 707 lines of private code nothing uses | **open**, green |
-| [#2418](https://github.com/ryanbr/noop/pull/2418) | iOS stress check-in takes each R-R packet once | **open**, green |
+| [#2416](https://github.com/ryanbr/noop/pull/2416) | manual workout: one HR sample a second, both platforms | merged 23 Sep as `d990ef6e` (= `3f3cfc19` + `fb774dd2`, after ryanbr's peak review) |
+| [#2417](https://github.com/ryanbr/noop/pull/2417) | cleanup: 707 lines of private code nothing uses | merged 23 Sep 11:16 UTC as `be060c2b` (+ ryanbr's comment follow-up `38b56855`) |
+| [#2418](https://github.com/ryanbr/noop/pull/2418) | iOS stress check-in takes each R-R packet once | merged 23 Sep as `8f064df7` |
 
 - **`upstream/main` is `94a71b04`** (#2402), on top of `3ada90c3` (#2403): everything of ours is in it — the Lift
   Log through round 6, the on-disk strap log (#2386) and the summarised standard-HR line (#2402). The fork's `main`
@@ -220,7 +252,7 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 1. **Follow #2416, #2417, #2418** (`WORKFLOW.md` §5): one reply after each comment, each with Utku's yes; after a
    squash merge prove it equals the head, delete the branch and its worktree (as #2415 on 23 Sep).
 2. **Next candidates** (`BACKLOG.md` "NOOP itself"): the second cleanup once #2417 lands; MetricKit (his call).
-3. **Upstream's parity gate is red on `main` itself** since `971d0d9f` (twin-map authority drift). Every branch's
+3. **Upstream's parity gate was red on `main`** from `971d0d9f` until ryanbr's `44ef71eb` re-derived it (23 Sep) (twin-map authority drift). Every branch's
    ledger/ratchet/governance fail the same way; compare with a clean `main` checkout, say so in the PR, never refresh
    the authority ourselves. When `main` is repaired, re-run `verify.sh` on each open branch.
 3. **Watch upstream** at every session start (`upstream-check.sh`).
