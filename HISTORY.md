@@ -102,6 +102,10 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, afternoon — #2415 MERGED** (10:04 UTC, `f4600d0e`, proven equal to our head). ryanbr reviewed #2416: the
+  diagnosis confirmed, one change asked — a refused repeat is often a different bpm, so it must still reach the peak;
+  fixed in `fb774dd2`, which also makes the SAVED max include it on both platforms. #2417 (cleanup) and #2418 (stress
+  check-in) opened with Utku's yes. He also confirmed the parity gate on `main` is his to repair. Build `6adaf45`.
 - **23 Sep, 11:40 — #2415 and #2416 opened** with Utku's yes ("I accept your opinions"): the Live HR banner pushes and
   the manual workout's once-a-second samples, rebased onto `266a8702`. Upstream's parity gate was found red on `main`
   itself (twin-map drift from `971d0d9f`), which every branch inherits. Prepared the same morning: a cleanup of 707
