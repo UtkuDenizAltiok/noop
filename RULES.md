@@ -259,14 +259,16 @@ and flag it.
     Never end or reset a session on a disconnect.
 
 49. **A heart rate is shown only while the strap is measuring it, on every surface, and the Live HR banner is kept,
-    not ended, through what it can survive** (#2422, 23 Sep 2026). A WHOOP 5.0 leaving the wrist either sends 0 bpm
-    (a run of three unreadable samples clears the live heart rate) or goes quiet with the link up (ten seconds with no
-    readable sample clears it; normal gaps were ≤ 2 s); WRIST_OFF clears it at once. Clearing goes through
-    `LiveState.clearLiveHeartRate` (R-R first) so the median, the banners and Today all see it; Today's big number is
-    the live heart rate or nothing, never a banked average drawn like one. iOS starts a Live Activity only for an app
-    on screen, so ending one costs it until NOOP is opened: the banner shows the dash through a dropped link and ends
-    only for its switch, another banner actually on screen, or ten minutes with the link down
-    (`LiveHRBannerLifecycle`). A banner is never requested from the background. Live notification switches only hide.
+    not ended, through what it can survive** (#2422, 23 Sep 2026, three strap logs). A WHOOP 5.0 off the wrist goes
+    SILENT (no 0, no WRIST_OFF, the link up); the zeros come when it goes back ON, while it finds the pulse. With
+    nothing arriving iOS suspends NOOP, so no timer of NOOP's can clear anything: the banner's 30-s stale date makes
+    iOS itself draw the dash (`NOOPLiveActivity.shownBpm`) — in its own non-waking batch, about two minutes after the
+    last push (simulator, 23 Sep) — and a steady number is re-pushed every 15 s while readings flow. In the app, a run of three unreadable samples, ten seconds of silence or WRIST_OFF clears the live heart rate
+    through `LiveState.clearLiveHeartRate` (R-R first); Today's big number is the live heart rate or nothing. iOS lets
+    only a foreground app START a Live Activity, so ending one costs it until NOOP is opened: it ends only for its
+    switch or the Lift Log banner on screen (`LiveHRBannerLifecycle`) — never for a link drop, a sync, or a timer
+    (a suspended app's timer fires at its next wake, typically the strap coming back). Never requested from the
+    background. Live notification switches only hide.
 
 ## Sources
 

@@ -100,6 +100,13 @@ targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltio
   same values, and screenshot both. On 22 Sep that reproduced Utku's stretched island exactly, which no amount of
   reading the code would have shown. A value the simulator cannot produce (a live heart rate, with no strap) is
   worth a temporary hard-coded one — restored byte-identical afterwards, like a broken guard.
+- **A Live Activity's stale rendering is testable in the simulator** (23 Sep): push ONE update with a hard-coded value
+  from a throwaway copy (never commit it), press Home, and watch the island. `liveactivitiesd`'s log line "Earliest
+  nonwaking date from task \"Marking activities stale\"" says when iOS will apply it — two minutes after the push for
+  a 30-s stale date, because iOS batches it without waking the device.
+- **Simulator settings live in the app's own container:** `simctl spawn … defaults write <bundle>` writes a domain the
+  app does not read. Terminate the app and edit `$(xcrun simctl get_app_container <dev> <bundle> data)/Library/
+  Preferences/<bundle>.plist` (keys with dots: read them with Python `plistlib`, not `plutil -extract`).
 - **CPU is measurable in the simulator** (22 Sep): a simulator app is a Mac process, so
   `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")` read 60 s apart gives its CPU-seconds a minute.
   Compare the same screen and state before and after, with NOOP alone as the baseline. The simulator suspends NOOP

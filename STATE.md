@@ -1,6 +1,6 @@
 # State
 
-**Updated 23 Sep 2026, 17:45 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications), #2420 (MetricKit), #2422 (live HR truth + banner kept through drops/syncs; needs Utku's re-test). Build `26fbca0`.** The only file that
+**Updated 23 Sep 2026, 21:55 — #2415–#2418 MERGED; OPEN: #2419 (Live notifications), #2420 (MetricKit), #2422 (live HR truth; iOS draws the dash when readings stop — proven in the simulator). Build `9a4d83e` shipping.** The only file that
 changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -103,8 +103,18 @@ Activity types, no AlarmKit / Now Playing); switches must only affect showing; s
   the last banked 5-min average drawn like a live reading); pushed; title + description edited
 - [x] #2419 @ `99abbcb7`: the superseded make-room rule removed; pushed; description edited
 - [x] SHIPPED `26fbca0` (17:40), verified: `noop-optimisations` @ `a0ec2641`. Just update. Utku's build.
-- [ ] Utku re-tests: strap off (dash within ~10 s everywhere, Today's big number gone), and a day of banners (the HR
-  banner should survive link drops and background syncs). Then add the result to #2422's description.
+- [x] Utku re-tested (log `~/Downloads/noop-strap-log-260923-2133.txt`): strap ON → number in ~10 s, but strap OFF → the
+  banner kept its number until the strap went back on or NOOP was opened. The log: a 5.0 off the wrist goes SILENT;
+  with nothing arriving iOS suspends NOOP (no timer runs); the zeros that cleared it (21:09, 21:16, 21:23, 21:32)
+  arrived when the strap went back ON. He also asked for no banner at all when the strap is off (impossible to do
+  reliably: iOS lets only a foreground app start one, and a suspended NOOP cannot end one) and once saw no banner.
+  → commit 6 on #2422: 30-s stale date, the widget draws the dash when stale (iOS does it, no wake needed); removed
+  the 10-min link-down end and the sync stand-aside (both could end the banner exactly when it could not return).
+- [x] commit 6 `19d1fd85` verified (ALL passed), pushed, #2422 description edited. SIMULATOR PROOF: a hard-coded 93 pushed
+  once (temporary, never committed); with NOOP in the background the island went "♥ 93" → "♥ –" by itself. iOS scheduled
+  the stale mark as a NON-WAKING task 2 min after the push (not at the 30-s date): background dash ≈ 2 min.
+- [ ] ship `noop-optimisations` @ `4204d250` — RUNNING: build `9a4d83e`, run 35912321895 (21:53); never start a second. (= `3ad25885` + #2422×6 + #2419 net + #2420) → Utku re-tests: strap off
+  with NOOP in the background → dash in about 2 minutes; open → at once
 - [x] PR opened as #2422 before the off-wrist log (Utku: "go with the PR"), saying so
 **Switches B (branch `lockscreen-switches`, worktree `~/Developer/noop-lockscreen`, `680c2980`):** the Lift Log banner
 FOLLOWED the live-HR switch (turning off the HR banner killed the gym banner too); now its own switch
