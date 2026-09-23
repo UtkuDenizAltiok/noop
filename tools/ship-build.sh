@@ -37,9 +37,15 @@ gh run watch "$RUN" --repo "$FORK" --interval 60 --exit-status >/dev/null \
   || { echo "build FAILED — gh run view $RUN --repo $FORK; on a 5xx or early clone failure: gh run rerun $RUN"; exit 1; }
 
 target=$(gh release view testing-latest --repo "$FORK" --json targetCommitish --jq .targetCommitish)
-assets=$(gh release view testing-latest --repo "$FORK" --json assets --jq '.assets[].name')
+# The release's OWN asset list, not `gh release view` or /releases/tags/…: on 23 Sep both of those listed 0 files for
+# over ten minutes after every attach step had succeeded, while this list held all five and the .ipa downloaded.
+rid=$(gh api "repos/$FORK/releases" --jq '.[] | select(.tag_name == "testing-latest") | .id' | head -1)
+assets=$(gh api "repos/$FORK/releases/$rid/assets" --jq '.[] | select(.state == "uploaded") | .name')
 [ "$target" = "$SHA" ] || { echo "release points at ${target:0:8}, not ${SHA:0:8}"; exit 1; }
 grep -q '^NOOP-ios-unsigned-.*\.ipa$' <<<"$assets" || { echo "release has no .ipa"; exit 1; }
 grep -q '^lift-log-program-template\.xlsx$' <<<"$assets" || { echo "release has no template"; exit 1; }
+ipa=$(grep '^NOOP-ios-unsigned-.*\.ipa$' <<<"$assets" | head -1)
+code=$(curl -s -o /dev/null -I -L -w '%{http_code}' "https://github.com/$FORK/releases/download/testing-latest/$ipa")
+[ "$code" = 200 ] || { echo "the .ipa does not download (HTTP $code)"; exit 1; }
 echo "shipped ${SHA:0:8} with the .ipa and the template: https://github.com/$FORK/releases/tag/testing-latest"
 bash "$TOOLS/checkpoint.sh" event "ship ${SHA:0:7} verified on the releases page (.ipa + template) — run $RUN"

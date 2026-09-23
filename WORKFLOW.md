@@ -199,7 +199,9 @@ Android is an independent reimplementation; analytics and stored data must be by
 branch + `fork/ships-template` (the commit that uploads the `.xlsx`, kept out of PRs), force-pushes it with a
 pinned lease, runs "Testing build (fork)", waits, and verifies the release: target commit, the `.ipa` and the
 template. The workflow recreates `testing-latest` BEFORE building, so a failed run leaves an EMPTY release —
-never trust a title or an exit code, only the assets. On an HTTP 5xx or a ~2-minute clone failure, rerun.
+never trust a title or an exit code, only the assets. On an HTTP 5xx or a ~2-minute clone failure, rerun. The
+converse also happens (23 Sep): every attach step green, yet `gh release view` and `/releases/tags/…` listed 0 files for
+over ten minutes; the release's own `/releases/{id}/assets` list and the download URL were right. The tool reads those.
 Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`).
 
 **Just update or wipe:** just update for UI, logic, analytics or a new OPTIONAL snapshot field (pinned by

@@ -46,9 +46,10 @@ stress check-in took each R-R packet 1–2× (two sinks, willSet); `RRPacketCurs
 - [x] `verify.sh` on `48b772b6` (on `34211e18`): all ok (macOS 2,110, only the two `TodayCarryOverTests`; iOS build) except the 3
   parity steps, identical to `main`'s failure
 - [ ] Utku's yes to open it
-- [ ] testing build of ALL FOUR: `noop-optimisations` reset to `34211e18` + cherry-picks of `228a65f0` (#2415),
-  `3f3cfc19` (#2416), `a8bc8d35` (cleanup), `48b772b6` (stress); force-push with a pinned lease; `ship-build.sh
-  noop-optimisations` — proof: release title ends in the new `lift-log-build` id; events.log "ship … verified"
+- [x] testing build of ALL FOUR SHIPPED 12:04: `0ca931b` (= `ad1a31d0` + template; `ad1a31d0` = `34211e18` + #2415 +
+  #2416 + cleanup + stress), run 35844909325, all jobs green. The tool said FAILED ("no .ipa") because `gh release
+  view` lagged at 0 files; the release's own asset list holds all 5 and the .ipa downloads (HTTP 200, 21,619,098 B).
+  `ship-build.sh` now reads that list and checks the download. Just update. Utku's build.
 - [x] `verify.sh` on both: all ok except the 3 parity steps, whose failure is byte-identical to clean `main`'s
 - [x] pushed both to the fork and OPENED: **#2415** (Live HR banner, head `228a65f0`) and **#2416** (workout HR once a
   second, head `3f3cfc19`), 23 Sep ~11:40. Bodies: `dist/private/pr-*-body.final.md`. Follow them (`WORKFLOW.md` §5).
@@ -110,7 +111,7 @@ the Dynamic Island's layout; the banner's push rate; and stamped strap-log lines
   `48b772b6` (`~/Developer/noop-stress`, local); `noop-optimisations` @ `ad1a31d0` = all four on `34211e18`, for
   Utku's testing build only (never a PR).
 - **Testing builds:** `8351bc7` (= `94a71b04`, the upstream app) shipped 23 Sep 05:13, verified, just update; then the
-  combined optimisation build `0f9f85b` from `noop-optimisations` (shipped 05:48, just update) — his current build. Both carry #2386 and #2402, so the
+  `0f9f85b` (05:48), then `0ca931b` (12:04) from `noop-optimisations` = all four changes on `34211e18` — his current build. Both carry #2386 and #2402, so the
   strap log now keeps a whole session on disk.
 
 ## The separate PRs, not the Lift Log's
