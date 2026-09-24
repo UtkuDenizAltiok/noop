@@ -9,7 +9,8 @@ Built for the strap-off / strap-on work (LIVE_HR.md). It reads only lines NOOP a
   - `… host-received summary windowSec=… samples=…` (one a minute otherwise): how many readings a window held;
   - `HR notify: N bpm` (every 30 s while readings flow), `HR: skin contact …`, `HR: 3 unreadable samples …`,
     `HR: no readable heart-rate sample …` (the clears), `flush-attempt reason=background|foreground|termination`
-    (app state; termination = its screen discarded), `Central state:` (a new app run), `Connected —` /
+    (app state; termination = its screen discarded), the export's run headers (a new app run), `Central state:`
+    (Bluetooth on / off), `Connected —` /
     `Disconnected`, `Toggle Realtime HR`;
   - from #2422's builds on (24 Sep 2026): `Live HR banner: …` (started, picked up, renewed, ended, gone, the dash
     and back) and `Strap: WRIST_ON` / `Strap: WRIST_OFF` (the strap's own word that it went on or came off).
@@ -28,11 +29,21 @@ end = args[args.index("--to") + 1] if "--to" in args else "99:99:99"
 
 stamp = re.compile(r"^\[(\d\d:\d\d:\d\d)\]")
 events = []
+new_run = False   # the export's own run header ("===== … app session …") came last: the next line starts a run
 for line in open(path, encoding="utf-8", errors="replace"):
+    if line.startswith("=====") and "app session" in line:
+        new_run = True
+        continue
     m = stamp.match(line)
-    if not m or not (start <= m.group(1) <= end):
+    if not m:
         continue
     t = m.group(1)
+    if new_run:
+        new_run = False
+        if start <= t <= end:
+            events.append((t, "NOOP started (a new app run)"))
+    if not (start <= t <= end):
+        continue
     if "host-received hostUnixSec" in line:
         acc = int(re.search(r"acceptedHRRows=(\d+)", line).group(1))
         rej = int(re.search(r"rejectedHRRows=(\d+)", line).group(1))
@@ -49,8 +60,10 @@ for line in open(path, encoding="utf-8", errors="replace"):
         events.append((t, f"app → {r.group(1)}"))
     elif "flush-attempt reason=termination" in line:
         events.append((t, "app closed (its screen discarded: swiped away, or by iOS)"))
-    elif "] Central state:" in line:
-        events.append((t, "NOOP started (a new app run)"))
+    elif (r := re.search(r"\] Central state: (\d+)", line)):
+        # Every Bluetooth state change, not only a launch: 4 = off, 5 = on (24 Sep: Bluetooth turned off and on read
+        # here as two app starts until the run header took that job).
+        events.append((t, {"4": "Bluetooth off", "5": "Bluetooth on"}.get(r.group(1), f"Bluetooth state {r.group(1)}")))
     elif re.search(r"\] (Live HR banner|Strap: WRIST_)", line):
         events.append((t, line[len(t) + 3:].strip()[:110]))
     elif re.search(r"\] (Connected —|Disconnected)", line):

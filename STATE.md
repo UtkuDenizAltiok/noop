@@ -12,17 +12,18 @@ it starts and ticked when it ends. After any interruption, check every unticked 
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
 Nothing is running (24 Sep ~12:10). One step waits on Utku:
-- [ ] **Utku re-tests test 1 on build `3ad319d`**: strap on, phone locked; take the strap off and watch the Lock Screen —
-  the "–" should now come within a few seconds; put it back on — the number within ~10 s. Then the strap log. Proof:
-  his message + log: "Strap: WRIST_OFF" followed within a second by "Live HR banner: – (strap connected, no heart
-  rate)" (`hr-timeline.py`). Add the result to #2437's description (an edit, not a comment).
+- [x] **Utku re-tested on `3ad319d` (13:48–13:55, log `noop-strap-log-260924-1356.txt`)**: A) strap off → "Strap:
+  WRIST_OFF" and "Live HR banner: –" in the same second (13:48:08); he saw the dash 5–7 s later; back on → number
+  (13:51:10, after the re-wear zeros), he saw it in 10–13 s. B) Bluetooth off → "–" the same second (13:54:14); on →
+  number 13:55:01, he saw 2–3 s. #2437's description now carries this (edited ~14:05). `hr-timeline.py` fixed: it had
+  called every Bluetooth-state line an app start; runs now come from the export's run headers.
 
 Done today (details in `HISTORY.md`): his four tests of `13f96c7` read from the 11:24 log (walk away, swipe-away and
 the switch pass; WRIST_OFF named live at 10:48:03 but the dash waited for iOS); PR #2437 (`bc5da07d`, full verify
 passed, seen to fail) opened ~11:46 and its 4 upstream checks are green; the stack rebuilt on `141cbd93` with #2437 +
 #2419 net + #2420 = `3951497c`, shipped as `3ad319d` (run 35983431616).
 
-**Next safe action:** session start routine; then the line above.
+**Next safe action:** session start routine; follow #2419, #2420, #2437. Nothing is owed to Utku.
 Standing permission (RULES settled decisions): replies on our PRs and pushes to our branches need no per-item yes.
 Do not redo: PR #2437 (opened), ship `3ad319d`, the reply to ryanbr's #2422 review (24 Sep 07:11 UTC), the #2099 reply
 (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), any PR already open.
@@ -44,7 +45,7 @@ Do not redo: PR #2437 (opened), ship `3ad319d`, the reply to ryanbr's #2422 revi
 | [#2419](https://github.com/ryanbr/noop/pull/2419) | Settings → **Live notifications**: one switch each (HR, Lift Log, sync); the Lift Log banner no longer follows the HR switch | **open**, head `99abbcb7`, 5/5 checks green, no comments |
 | [#2420](https://github.com/ryanbr/noop/pull/2420) | iOS MetricKit reports → one strap-log line each (local only) | **open**, head `d81f0cc1`, green, no comments |
 | [#2422](https://github.com/ryanbr/noop/pull/2422) | live HR shown only while the strap measures it; the banner kept until its switch turns it off (11 commits — `LIVE_HR.md` §4) | merged 24 Sep, `9c99138d` (squash proven equal to `cf97a93c`); ryanbr's review answered; hardware: 3 of 4 cases pass (11:24 log), the dash-on-WRIST_OFF bug → #2437 |
-| [#2437](https://github.com/ryanbr/noop/pull/2437) | live HR banner reads what it shows once the change has landed (the WRIST_OFF dash waited ~2 min for iOS) | **open**, head `bc5da07d`, opened 24 Sep ~11:46, 4/4 checks green, no comments |
+| [#2437](https://github.com/ryanbr/noop/pull/2437) | live HR banner reads what it shows once the change has landed (the WRIST_OFF dash waited ~2 min for iOS) | **open**, head `bc5da07d`, opened 24 Sep ~11:46, 4/4 checks green, no comments; hardware-confirmed 13:48–13:55 |
 
 - **`upstream/main` is `141cbd93`** (24 Sep: #2436 BLE; before it #2422 ours, ryanbr's parity re-derive `24f2c879`, an
   Oura log line #2408, #2426/#2427 HRV, a Today label fix). #2419, #2420 and #2437 merge cleanly into it. The fork's

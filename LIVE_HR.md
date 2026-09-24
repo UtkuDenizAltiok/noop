@@ -79,7 +79,7 @@ the final cases back on 24 Sep and approved them.
 | situation | banner | how fast | proven |
 |---|---|---|---|
 | strap worn | number, pushed on change (≥ 2 s apart), re-pushed every 15 s when steady | — | yes (logs) |
-| strap off (any app state NOOP is awake or woken in) | WRIST_OFF → "–" | ~1 s | WRIST_OFF proven (11:24 log); the dash missed it until #2437 — build `3ad319d`, re-test pending |
+| strap off (any app state NOOP is awake or woken in) | WRIST_OFF → "–" | ~1 s | WRIST_OFF proven (11:24 log); **yes** with #2437 (13:48:08: WRIST_OFF and the dash sent in the same second; seen 5–7 s later) |
 | strap off, no WRIST_OFF, NOOP asleep | iOS draws "–" at the stale date | ~2 min | simulator |
 | strap back on | number again by itself | seconds | yes (logs) |
 | link down (walk away), any length | "–" at once, **kept**; number again on reconnect | at once | **yes** (11:24 log: 7 min away) |
@@ -91,9 +91,9 @@ the final cases back on 24 Sep and approved them.
 
 ## 6. Next
 
-1. **Utku re-tests test 1 on build `3ad319d`** (the other three passed on `13f96c7`): strap off with the phone locked
-   → "–" within seconds; back on → the number. In the log, "Strap: WRIST_OFF" must be followed within a second by
-   "Live HR banner: – (strap connected, no heart rate)". The result goes into #2437's description.
+1. **Done:** every case in §5 confirmed on his phone on 24 Sep (four tests on `13f96c7`, the WRIST_OFF dash and a
+   Bluetooth off/on on `3ad319d` with #2437). Swiped away: iOS does not relaunch a force-quit app for Bluetooth, so the
+   banner stays "–" until NOOP is opened — by design, not to be worked around (Utku asked, 24 Sep 14:00).
 2. **Push rate:** 15-s re-pushes while steady exist only to beat a 30-s stale date; with WRIST_OFF handled live the
    stale date is only a backstop, so a 60-s stale date could halve those pushes — decide from the real phone's timing.
 3. **The Lift Log banner's own heart rate** has no stale handling (strap off mid-session keeps its last number). Out of
