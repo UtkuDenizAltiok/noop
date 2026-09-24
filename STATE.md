@@ -17,8 +17,7 @@ Nothing is running (24 Sep ~04:35). Waiting on others:
   "–", then fed again when NOOP runs) and sends the strap log. Proof: his message + log. Read it with
   `python3 dist/tools/hr-timeline.py <log>` — the new "Live HR banner: …" and "Strap: WRIST_…" lines answer each case —
   and add the result to #2422's description (an edit, not a comment).
-- [ ] **#2422's upstream checks on `cf97a93c`**: `check` and `doc-comments` passed; the two app builds were still
-  pending at 04:36. Check `gh pr checks 2422 --repo ryanbr/noop`; a red one is ours to fix.
+- [x] **#2422's upstream checks on `cf97a93c`**: all 4 green (both app builds, check, doc-comments), 24 Sep ~04:40.
 
 **Next safe action:** session start routine; then the two lines above. Nothing else is owed.
 Standing permission (RULES settled decisions): replies on our PRs and pushes to our branches need no per-item yes.
@@ -41,7 +40,7 @@ reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), any PR already open.
 | [#2418](https://github.com/ryanbr/noop/pull/2418) | iOS stress check-in takes each R-R packet once | merged 23 Sep, `8f064df7` |
 | [#2419](https://github.com/ryanbr/noop/pull/2419) | Settings → **Live notifications**: one switch each (HR, Lift Log, sync); the Lift Log banner no longer follows the HR switch | **open**, head `99abbcb7`, 5/5 checks green, no comments |
 | [#2420](https://github.com/ryanbr/noop/pull/2420) | iOS MetricKit reports → one strap-log line each (local only) | **open**, head `d81f0cc1`, green, no comments |
-| [#2422](https://github.com/ryanbr/noop/pull/2422) | live HR shown only while the strap measures it; the banner kept until its switch turns it off (11 commits — `LIVE_HR.md` §4) | **open**, head `cf97a93c` (reworked 24 Sep), no comments; app-build checks pending at 04:36; hardware check pending |
+| [#2422](https://github.com/ryanbr/noop/pull/2422) | live HR shown only while the strap measures it; the banner kept until its switch turns it off (11 commits — `LIVE_HR.md` §4) | **open**, head `cf97a93c` (reworked 24 Sep), no comments; all 4 checks green; hardware check pending |
 
 - **`upstream/main` is `06083a0b`** (24 Sep: #2426 HRV of a refused main night, #2427 an HRV log line, a Today label
   fix — none touches a file of ours). All three open branches merge cleanly into it (checked 24 Sep ~04:35). The fork's
