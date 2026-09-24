@@ -4,15 +4,11 @@ Verified against the code at `lift-log-follow-ups` (`65b804a6`, 22 Sep 2026). Th
 (`NEXT_PR.md`) goes first; after it, each item is its own small PR. **This list is a poor predictor** — the gym
 sessions found the bugs that mattered and this list predicted almost none. Ask what happened at the gym first.
 
-## NOOP itself (not the Lift Log) — found 23 Sep 2026, not yet fixed
+## NOOP itself (not the Lift Log) — found 23 Sep 2026
 
-- **iOS stress check-in reads each R-R packet 1–2×** — FIXED on `stress-rr-once-per-packet` (`RRPacketCursor`), PR
-  prepared, waiting for Utku's yes. Original finding: `AppModel.evaluateStress` runs from the same two `@Published`
-  sinks as `ingestHR` (`$heartRate`, `$rr`), inside `willSet`, so it appends the PREVIOUS packet's intervals to
-  `rrBuf` once per packet plus once per heart-rate change, and advances the "slow" EMA baseline per call (0.98 per
-  call ≈ 25 s memory at 2 calls/s). Android runs the same detector once per history offload on `rrRecent`. Fix
-  direction: consume packets by `rrSeq` (`RRPacketObserver.swift`'s rule), once per packet. Only matters with the
-  stress check-in enabled; a behaviour choice about the baseline's speed belongs to the maintainers.
+- **The Live HR banner with the strap off the wrist** — the main open item; everything is in `LIVE_HR.md`.
+- **iOS stress check-in reads each R-R packet 1–2×** — FIXED, merged as #2418.
+- **MetricKit, local only** — done as #2420 (open).
 - **`BLEManager.uploadTimer` / `uploadIntervalSeconds`** are dead: declared and cancelled, never started (not
   `private`, so the cleanup PR's scan did not reach them).
 - **Android #2270 (OutOfMemoryError in `LiquidRender.wavePolygon`)** needs a heap profile of a session on a device;
@@ -20,7 +16,7 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
 - **Android's HR smoothing window counts LiveState emissions** (`AppViewModel.ingestHr`, window 5), not packets or
   seconds, while iOS uses a 10-s median; any field changing (a sync chunk, an event) refills it. Display only; a
   behaviour choice, so a question for the maintainers rather than a silent change.
-- **A second cleanup, if #2417 is welcomed:** internal (not `private`) app code no Swift file references —
+- **A second cleanup (#2417 was welcomed and merged):** internal (not `private`) app code no Swift file references —
   `Collector.bufferedCount`, `ImuSessionFileStore.prepareForRead`, `BLEManager.uploadTimer`/`uploadIntervalSeconds`,
   `captureRawAccel`, `clearEcgRawDataGate` (its Settings row died with the 5/MG card), `NavRouter.openTrends`/
   `openLiveSession`, `AppModel.cycleAwarenessHidden` (the views read the key through `@AppStorage`),
@@ -32,10 +28,6 @@ sessions found the bugs that mattered and this list predicted almost none. Ask w
   called since June; app-active already runs `health.sync()`, so not a bug). Framework callbacks (Bluetooth,
   document picker, scene delegate, App Intents, HealthKit workout builder) look unused and must stay. Check each
   for an Android twin or a missing UI before removing: some may be features whose entry point was never built.
-- **MetricKit, local only (idea for Utku):** iOS hands an app a daily on-device report of its own CPU time, energy,
-  hangs, disk writes and crash diagnostics. NOOP does not subscribe. Written into the strap log / Test Centre export,
-  it would give measured evidence for further battery and crash work, with nothing leaving the phone. A new
-  diagnostic, so his call.
 - Checked and clean (23 Sep): forced unwraps/`try!`/`as!` (none unguarded), network use (update check off by default,
   once a day; AI and Oura opt-in), widgets / Watch / notification dedup, formatter creation in hot paths, stale reads
   in `@Published`/`objectWillChange` sinks (only the pair #2416/#2418 fix), timer leeway (keep-alive exact on

@@ -1,8 +1,13 @@
-# Next PR — nothing prepared
+# Next PR — three open, nothing prepared
 
-**The Lift Log follow-up PR [#2403](https://github.com/ryanbr/noop/pull/2403) MERGED on 23 Sep 2026** as
-`3ada90c3`, proven identical to the submitted head over all 55 files. Rounds 3–6 are upstream. Nothing is prepared
-for the next one; this page keeps how that body was built, and what the next gym session should look at.
+**Open on `ryanbr/noop` (24 Sep 2026), all green, no comments yet:** [#2419](https://github.com/ryanbr/noop/pull/2419)
+(Live notifications switches), [#2420](https://github.com/ryanbr/noop/pull/2420) (MetricKit),
+[#2422](https://github.com/ryanbr/noop/pull/2422) (live HR shown only while measured — its description promises the
+hardware result of commits 6–8; add it when Utku's test log arrives, `LIVE_HR.md` §6.5). Their bodies are the
+`dist/private/pr-*-body.md` drafts, kept current: edit the draft, then `gh pr edit <n> --body-file`. A change of ours
+goes into the description, never a new "update" comment (`WORKFLOW.md` §5).
+
+The Lift Log's last PR, [#2403](https://github.com/ryanbr/noop/pull/2403), merged 23 Sep as `3ada90c3`.
 - **How this body was built**, for the next one: what changed since the last merge, in the order a lifter meets it,
   in plain words (Utku, 21 Sep); the gym sessions and what each showed; every new test seen to fail without its fix;
   the package, macOS, iOS and Android CI numbers; the parity refresh as its own commit, never a hand edit.

@@ -102,6 +102,13 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **23 Sep, 21:30–23:00 — the strap-off banner, round three (not finished).** Utku's 21:33 log: off the wrist the
+  5.0 goes silent, iOS suspends NOOP, and the clears came from the zeros sent when the strap went back ON — so in the
+  background the number stood until re-wear or an app open. #2422 gained: a 30-s stale date with the widget drawing
+  "–" (simulator: iOS applies it ~2 min after the push, without waking NOOP), a 30-s link grace that ends the banner
+  on a real disconnect (simulator: ended 31 s after the drop), and no banner while not measuring with NOOP on screen.
+  He asked for no banner at all with the strap off; in the background that needs NOOP awake, which nothing does.
+  His verdict: "not good at the moment" — the full brief is `LIVE_HR.md`. Build `c146351`.
 - **23 Sep, 17:00–18:00 — the off-wrist test, and the "random" banners.** Utku's log: the 5.0 went quiet off the wrist
   (link up, no 0, no WRIST_OFF) and the banner froze at 93, while at 16:02 it had sent 0 and the fix cleared it. He
   also saw Today's big number at 91 (the last banked 5-min average, drawn like a live reading) and said the banners

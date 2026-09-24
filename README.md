@@ -49,8 +49,9 @@ When the conversation is nearly full (around 90%), or before stopping for the da
 | [`FEATURE.md`](FEATURE.md) | what the Lift Log does, and every file behind it on both platforms | with features |
 | [`NEXT_PR.md`](NEXT_PR.md) | the prepared upstream PR, its reply, and the pre-flight checklist | per PR |
 | [`BACKLOG.md`](BACKLOG.md) | verified open work, ordered by value | when items move |
+| [`LIVE_HR.md`](LIVE_HR.md) | the Live HR banner with the strap off the wrist: what Utku wants, the iOS rules, what the strap does, PR #2422, what is proven, what is next | while that work is open |
 | [`HISTORY.md`](HISTORY.md) | what happened upstream, and what each real gym session found | one line per event |
-| `tools/` | `checkpoint.sh` · `upstream-check.sh` · `verify.sh` · `ship-build.sh` · `backup.sh` · `strap-log.py` · `oracle/` · `xcmerge.py` · `test-checkpoint.sh` — each explains itself in its first lines | when a method changes |
+| `tools/` | `checkpoint.sh` · `upstream-check.sh` · `verify.sh` · `ship-build.sh` · `backup.sh` · `strap-log.py` · `hr-timeline.py` · `oracle/` · `xcmerge.py` · `test-checkpoint.sh` — each explains itself in its first lines | when a method changes |
 | `memory/` | Claude Code's own notes for this project, backed up by `backup.sh`. Plain Markdown; everything in them is also in these pages, so other tools can ignore them | via `backup.sh` |
 
 The app repository's own `AGENTS.md` (read automatically by most AI coding tools) and `docs/CONTRIBUTING.md` hold

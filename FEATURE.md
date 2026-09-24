@@ -36,7 +36,8 @@
   It also outlives NOOP itself: when iOS closes NOOP and relaunches it, the session is back as the process
   starts and the banner iOS kept on the Lock Screen is picked up again. A strap step lights a dark Lock Screen and nothing more (a silent ActivityKit alert
   on the step's one update, whenever NOOP is not on screen), and logs whether it asked. It is the only banner
-  during a session: NOOP's heart-rate and sync banners stand aside. Crash-safe snapshot in UserDefaults.
+  during a session: NOOP's heart-rate and sync banners stand aside. Crash-safe snapshot in UserDefaults. Its own
+  switch, Settings → Live notifications → "Lift Log session" (#2419, open): it no longer follows the heart-rate one.
 - **Typing moves with one tap**: with the keyboard open, a tap on another field puts the cursor there; a tap
   anywhere else puts the keyboard away and still does what it was aimed at.
 - **Saved as a normal `workout`** (`source "manual"`, sport "Strength Training", `strain: nil`), so the engine
