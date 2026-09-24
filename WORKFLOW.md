@@ -1,291 +1,229 @@
 # Workflow
 
-How work on the Lift Log is done. The app repo's own `AGENTS.md` (`CLAUDE.md` points to it) and
-`docs/CONTRIBUTING.md` still apply; this
-adds what this feature and this fork need. Commands run from the app repo root; tools live in `dist/tools/`.
+How work on NOOP is done here. The app repo's own `AGENTS.md` (`CLAUDE.md` points to it) and `docs/CONTRIBUTING.md`
+still apply; this adds what this fork and Utku need. Commands run from the app repo root; tools live in `dist/tools/`,
+and each explains itself in its first lines.
 
 ## 1. Working with Utku
 
-Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) is **not a programmer**: he does not read code or use the
-terminal, installs builds from the fork's Releases page with AltStore, and tests at the gym on a WHOOP 5.0.
-Whoever works here writes the code, runs the tools and explains in plain language. His product judgement has
-corrected the engineering several times — treat it as authoritative. He wants technical questions decided,
-reviewers verified rather than obeyed, and this implementation kept unless a change is truly worth it.
+Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) is **not a programmer**: he does not read code or use the terminal,
+installs builds from the fork's releases page with AltStore, and tests on his own WHOOP 5.0 and iPhone. Whoever works
+here writes the code, runs the tools and explains in plain language. His product judgement has corrected the
+engineering several times — treat it as authoritative. He wants technical questions decided, reviewers verified
+rather than obeyed, and a working implementation kept unless a change is truly worth it.
 
-- **Finishing a change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line.
-  Never ship a broken build.
-- **Nothing public without his yes**: opening a PR, a comment in his name, an issue.
-- **Every build lands on his releases page** (`https://github.com/UtkuDenizAltiok/noop/releases`) — it is where
-  he installs from. Tell him the link and the 7-character id that ends the release title.
-- **Scope is his.** The Lift Log is an addition to NOOP: use NOOP's existing features (strap log, buzz, double-tap,
-  workouts, design tokens) instead of Lift-Log-only structures, unless strictly necessary. Upstream's
-  fundamentals (the strap log's content, rate or buffer included) are not changed for it. Build a request exactly as narrow as he words it — the Lock Screen
-  light-up is "just light up", nothing more.
+- **Finishing a change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line,
+  with the 7-character id that ends the release title. Never ship a broken build.
+- **Public steps** follow `RULES.md` (standing permission): replies and pushes on our PRs, and a PR for this journey's
+  work once verified; a new issue or a comment on someone else's thread is asked first.
+- **Ask him for evidence, step by step.** A test he runs is written as numbered steps with what he should see, and
+  ends with the strap log (More → Test Centre → Strap log → Save…). Ask him to note the times of what he saw: the log
+  proves what NOOP did, only his eyes prove what iOS drew.
 - **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
-  show him line numbers and a search he can repeat.
-- **Never delete** his things without asking; **never touch** his own comments.
+  show him line numbers and a search he can repeat. Say plainly what a log can and cannot show.
+- **Never delete** his things without asking (his strap logs in `~/Downloads` included); **never touch** his comments.
 
-## 2. Session routine
+## 2. Session routine and continuity
 
-- **Start:** `STATE.md` ("Now" first) → `RULES.md` → `bash dist/tools/checkpoint.sh status --net` (README's
-  "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh` (our PRs, upstream
-  commits touching Lift Log files on either platform, merge conflicts, open threads). The maintainers push to and
-  merge our branches, and add twins of our code, within hours.
-- **End:** replace `STATE.md`'s content with the truth, update any file the work changed, then
-  `bash dist/tools/backup.sh "what changed"`. Drafts belong in `NEXT_PR.md`, never only in a scratch folder.
+- **Start:** README's start prompt → `STATE.md` ("Now" first) → `RULES.md` → `bash dist/tools/checkpoint.sh status
+  --net` (README "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh`.
+- **End:** README "End a session".
 
-**Continuity** (22 Sep, after a usage limit, a server error and a compaction in one night left the handbook seven
-hours behind the work). A session can stop anywhere, without an end; the conversation is not a store.
-- **Journal first.** Before a step that is long (a build, a verify, CI), public (a push, a release, a PR, a comment)
-  or hard to undo (a rebase, a force-push, a migration), write it in `STATE.md` "Now" with what will prove it
-  happened (branch and commit, run id, PR number); tick it with its result when it ends. Record a PR's number or a
-  run's id the moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo",
-  and "Next safe action".
-- **Save often, upload at milestones.** `bash dist/tools/checkpoint.sh save "what"` is a local commit of the handbook
-  (and of Claude Code's memory notes, when there are any) — instant, offline, never public. `backup.sh` uploads
-  after any milestone that took real work, not only at the end; it folds the local checkpoints into its one commit.
+A session can stop anywhere, without an end (a usage limit, a server error, a compaction); the conversation is not a
+store.
+- **Journal first.** Before a step that is long (a build, a verify, CI), public (a push, a release, a PR, a comment) or
+  hard to undo (a rebase, a force-push, a migration), write it in `STATE.md` "Now" with what will prove it happened
+  (branch and commit, run id, PR number); tick it with its result when it ends. Record a PR's number or a run's id the
+  moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo", and "Next safe
+  action".
+- **Save often, upload at milestones.** `checkpoint.sh save "what"` is a local commit of the handbook (and of Claude
+  Code's memory notes) — instant, offline, never public. `backup.sh "what"` uploads after any milestone that took
+  real work; it folds the local checkpoints into one commit.
 - **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
-  `dist/private/events.log` (local); a verification's numbers go into `STATE.md`. Nothing needed later lives only
-  in the scratchpad or `$TMPDIR`, which a restart wipes: harnesses go to `tools/` (the strap-log oracle was one),
-  drafts to `NEXT_PR.md` or `private/`.
-- **Background jobs** are named in "Now" with how to check them; `checkpoint.sh status` lists long jobs still
-  running, so an old session's job is waited on or stopped, never started twice.
-- **"Continue" after an interruption is an instruction, never a question.** A usage limit, a server error or the
-  Claude app asking Utku to sign in again (22 Sep ~09:55: no API-error event was logged; the session came back as
-  a "resume") can end a turn while a step is open. The next "Continue from where you left off" means: status,
-  settle "Now", finish its open steps, report — on 22 Sep it got "No response requested" instead, and the last
-  bookkeeping waited for Utku to ask again.
-- **Other AI tools** keep the same discipline by hand: `checkpoint.sh status --net` at the start and after any
-  interruption, `checkpoint.sh save` after each milestone, README "End a session" before a fresh start.
-- **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep).** `bash dist/tools/checkpoint.sh install-hooks`
-  puts five hooks into the app repo's `.claude/settings.local.json` (excluded through `.git/info/exclude`, never
-  committed). A new, resumed or compacted session starts with "Now" and the status in its context; the handbook is
-  checkpointed after every reply, before a compaction, and when a usage limit or server error ends a turn
-  (`StopFailure`), and the next prompt after such an error is told so. `remove-hooks` undoes it. The hooks only save
-  locally and print; they never upload, block or fail. The desktop app picks a change up within about a minute,
-  in the running session too (a probe hook fired from 07:42 on 22 Sep). They change how Claude Code behaves, so
-  installing them is the owner's call: Claude Code's auto-mode guard refuses to let the agent write — or even read —
-  Claude's settings files. `bash dist/tools/test-checkpoint.sh` proves the tool and backup's folding in a sandbox
-  (31 checks; four broken guards each caught, 22 Sep).
+  `dist/private/events.log`; a verification's numbers go into `STATE.md`. Nothing needed later lives only in a scratch
+  folder or `$TMPDIR`: harnesses go to `tools/`, drafts to `private/`.
+- **Background jobs** are named in "Now" with how to check them; never started twice.
+- **"Continue" after an interruption is an instruction:** status, settle "Now", finish its open steps, report.
+- **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep 2026)** put the recovery brief into every new,
+  resumed or compacted session and checkpoint the handbook after every reply (`checkpoint.sh install-hooks` /
+  `remove-hooks`; they never upload, block or fail). Installing them is the owner's call: Claude Code's auto-mode guard
+  refuses to let the agent write — or read — Claude's settings files. `bash dist/tools/test-checkpoint.sh` proves the
+  tool in a sandbox.
+- **Other AI tools** keep the same discipline by hand: `checkpoint.sh status --net` at the start, `checkpoint.sh save`
+  after milestones, README "End a session" before a fresh start.
 
 ## 3. Verification
 
-`bash dist/tools/verify.sh` runs the whole loop, cheapest first, and names each log: package tests
-(WhoopStore, StrandAnalytics, StrandImport), doc-comment lint, i18n gate against `upstream/main`, parity ledger,
-parity ratchet, parity governance tests, `xcodegen`, macOS tests, iOS build. `--quick` skips the Xcode app
-targets. Android runs in CI: `gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref <branch>`.
+`bash dist/tools/verify.sh` runs the whole loop, cheapest first, and names each log: package tests (WhoopStore,
+StrandAnalytics, StrandImport), doc-comment lint, i18n gate against `upstream/main`, parity ledger, parity ratchet,
+parity governance tests (on a clean checkout of HEAD), `xcodegen`, macOS tests, iOS build. `--quick` skips the Xcode
+app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. Android runs in CI:
+`gh workflow run "Android CI" --repo UtkuDenizAltiok/noop --ref <branch>`.
 
-- **Anything under `android/**` needs Android CI**, a DAO signature included: the fork's testing build only
-  assembles the Android app, so a broken Kotlin test double still ships green (16 Sep).
-- **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region). They fail on
-  clean `main` too. Do not pass `-testLanguage`. `verify.sh` treats only those two as known.
-- **Build both app targets locally.** Upstream's App build CI builds the PR merged into `main`, and nothing else
-  compiles app-target Swift.
-- **A new test must be seen to fail.** Break the fix, watch the test go red, restore, compare sha256.
-- **Run the app.** Simulator walkthroughs caught a wrapped header, stale copy, a missing reload, "0" + "60" = "600".
-  Read the simulator's database to confirm what was stored:
+- **Anything under `android/**` needs Android CI**: the fork's testing build only assembles the Android app, so a
+  broken Kotlin test double still ships green.
+- **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region); they fail on clean
+  `main` too. `verify.sh` treats only those two as known.
+- **Build both app targets locally.** Nothing else compiles app-target Swift before a PR (`AGENTS.md`).
+- **A new test must be seen to fail.** Break the fix, run the test, watch it go red, restore, compare sha256. A split
+  commit series is also built commit by commit.
+- **Run the app.** Simulator walkthroughs caught layout, copy and reload bugs no test did. The simulator's database:
   `find ~/Library/Developer/CoreSimulator/Devices/<id>/data/Containers -name whoop.sqlite -path '*OpenWhoop*'`.
-- **The Lock Screen banner's life is readable in the simulator** (21 Sep): iOS's own ActivityKit log names every
-  banner created and ended — `xcrun simctl spawn <device> log show --last 2m --style compact --predicate
-  'process == "liveactivitiesd"' | grep -E "Created activity|activity ended"`. `kill -9` of the app's process is
-  how iOS closes it; `xcrun simctl launch` brings it back (in the foreground). Reinstalling the app ends its banners
-  by itself, so never install between the two steps being compared. The app's own strap log: Test Centre → Strap
-  log → Copy, then `xcrun simctl pbpaste <device>`.
-- **The Dynamic Island is visible in the simulator, but not in every screenshot** (22 Sep): `xcrun simctl io …
-  screenshot` returns the screen WITHOUT the island's overlay, while the simulator panel's own screenshot shows it.
-  The activity itself only starts while the app is on screen and something changes, so in a simulator with no strap:
-  open NOOP, advance a set (the bar's ✓), confirm `Activity started` in `liveactivitiesd`'s log, press HOME, then
-  screenshot from the panel.
-- **A layout fix is proven the same way a test is**: build the OLD layout into the same simulator, same session and
-  same values, and screenshot both. On 22 Sep that reproduced Utku's stretched island exactly, which no amount of
-  reading the code would have shown. A value the simulator cannot produce (a live heart rate, with no strap) is
-  worth a temporary hard-coded one — restored byte-identical afterwards, like a broken guard.
-- **A Live Activity's stale rendering is testable in the simulator** (23 Sep): push ONE update with a hard-coded value
-  from a throwaway copy (never commit it), press Home, and watch the island. `liveactivitiesd`'s log line "Earliest
-  nonwaking date from task \"Marking activities stale\"" says when iOS will apply it — two minutes after the push for
-  a 30-s stale date, because iOS batches it without waking the device.
-- **Simulator settings live in the app's own container:** `simctl spawn … defaults write <bundle>` writes a domain the
-  app does not read. Terminate the app and edit `$(xcrun simctl get_app_container <dev> <bundle> data)/Library/
-  Preferences/<bundle>.plist` (keys with dots: read them with Python `plistlib`, not `plutil -extract`).
-- **CPU is measurable in the simulator** (22 Sep): a simulator app is a Mac process, so
-  `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")` read 60 s apart gives its CPU-seconds a minute.
-  Compare the same screen and state before and after, with NOOP alone as the baseline. The simulator suspends NOOP
-  in the background (no strap keeps it awake), so background timing is checked in unit tests, not there.
-- **Why iOS closed NOOP is in the iPhone's own record**, not the strap log: Settings → Privacy & Security →
-  Analytics & Improvements → Analytics Data. `NOOP Staging.cpu_resource_fatal-<date>.ips` = killed for background
-  CPU; `JetsamEvent-…` = memory. Utku can share them from there. Their stacks are unsymbolicated and only 3–4
-  samples ("Heaviest stack for the target process"): count the libraries in it (SwiftUICore / AttributeGraph = view
-  updates) and read `Version:` — the 09:17 kill on 21 Sep was on an older build.
-- **Name test helpers unlike any production function** (`process(at:)`, not `run(at:)`): the parity ledger matches
-  calls to declarations by name and arity alone, so a test's `run(at: 0, segment: 200)` counted as a call of
-  `StandardHRLifecycleFlush.run/2` and failed the ledger and governance with drift in a package the branch never
-  touched (22 Sep). A drift in a package you did not touch: diff `parity_ledger.py --no-baseline` against a clean
-  `git archive` of the base.
-- **Never wait on `pgrep -f <pattern>` from a command that contains the pattern**: it finds itself and never ends
-  (three such loops ran for hours on 22 Sep). Wait on the command itself (`run_in_background`) or on its output.
-- **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`.
+- **Live Activities in the simulator:** iOS's own log names every banner created, ended and marked stale —
+  `xcrun simctl spawn <device> log show --last 2m --style compact --predicate 'process == "liveactivitiesd"'`.
+  `kill -9` of the app is how iOS closes it; reinstalling ends its banners, so never install between compared steps.
+  `simctl io screenshot` omits the Dynamic Island; the simulator panel's screenshot shows it. A value the simulator
+  cannot produce (a live heart rate) is worth a temporary hard-coded one, restored byte-identical afterwards.
+- **Simulator settings live in the app's own container:** edit `$(xcrun simctl get_app_container <dev> <bundle>
+  data)/Library/Preferences/<bundle>.plist` with Python `plistlib` (keys with dots), not `simctl … defaults write`.
+- **A layout or behaviour fix is proven like a test:** build the OLD version into the same simulator with the same
+  state, then the fix, and compare.
+- **Why iOS closed NOOP is in the iPhone's own record:** Settings → Privacy & Security → Analytics & Improvements →
+  Analytics Data. `NOOP Staging.cpu_resource_fatal-<date>.ips` = killed for background CPU; `JetsamEvent-…` = memory.
+  Their stacks are unsymbolicated and only 3–4 samples: consistent evidence, not proof.
+- **Name test helpers unlike any production function** (`RULES.md` 11). A drift in a package you did not touch: diff
+  `parity_ledger.py --no-baseline` against a clean `git archive` of the base.
+- **Never wait on `pgrep -f <pattern>` from a command that contains the pattern** — it finds itself and never ends.
+- **Strings:** confirm a new key in the compiler's `.stringsdata` and the built app's `*.lproj/Localizable.strings`;
+  all ten locales, merged on keys (`tools/xcmerge.py`), never by hand-reformatting the 6 MB catalog.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
-- **The AI tool's own session history is the last resort** after an interruption, when the handbook, git, CI and the
-  event log leave a question open. Claude Code keeps it in
-  `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl`, one JSON object per line: search the tool results
-  with Python (`json.loads` per line, then the text), not `grep -o` with a long pattern, which fails on the
-  minified lines. On 22 Sep it held the numbers of a verify run nobody had written down.
+- **The AI tool's own session history is the last resort** after an interruption: Claude Code keeps it in
+  `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl` (search it with Python, one JSON object per line).
 
 ### Reading a strap log
 
-Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and
-device data: read it locally, quote only what a finding needs, and never commit it — this handbook is public.
+Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and device
+data: read it locally, quote only what a finding needs, never commit it — this handbook is public.
 
-`python3 dist/tools/strap-log.py <log.txt>` prints three reports (or name one: `runs`, `steps`, `taps`). It is a reading aid for whoever debugs, run on a
-computer against NOOP's ordinary exported strap log; it is not part of the app and adds no log of its own.
-- **runs** — the export joins TWO stores, so it can hold 13:00 lines yet miss 21:20: first the saved endings of
-  up to three EARLIER app runs ("previous app session" — each run's last ≤1,000 lines, archived when the next
-  run starts, and only as current as its last 32-line save), then the live log of the run still open when the
-  log is saved ("current app session" — its newest 5,000 entries plus up to 256 slack; older ones are dropped). A run whose first line is not
-  "Central state: …" lost its beginning. A header's "rolled at <UTC>" is when the NEXT run started. On 16 Sep
-  this is what hid 21:15–21:54: the run started at 21:14:45 stopped logging at 21:15:05, the next started at
-  21:20:24, and by the 22:44 export its first half hour had been trimmed (58% of its entries are upstream's
-  once-a-second heart-rate line; 44 of 5,180 were the Lift Log's).
-- **steps** — every Lift Log step in EVERY run, oldest first: its time, whether the Lock Screen was asked to light
-  (and why not), the Lift Log's own notes (a session picked up after a restart, the banner picked up or waiting for
-  NOOP to be opened), and each tap a sync handed over again, matched to the live step it replays. `runs` says
-  which runs iOS relaunched in the background ("Restored CONNECTED peripheral"). On 21 Sep this is what showed
-  every step after a background relaunch unlit, "no Lift Log banner is running" (`RULES.md` 41).
-- **taps** — the strap's own console (`IMU double tap detected`, `Command Run haptics`, `Command Send Historical
-  Data`, millisecond ticks) against the app's lines: how many double-taps the strap sensed, what the app did with
-  each, tap-to-buzz delay, taps under 5 s apart (knocks, `RULES.md` 35), per step whether the Lock Screen was asked
-  to light (39), and buzzes that queued behind a sync (36). A tap Utku felt but the strap never sensed cannot be
-  fixed in the app.
+- `python3 dist/tools/hr-timeline.py <log> [--from HH:MM:SS] [--to HH:MM:SS]` — the live heart rate, readings and
+  silences, the strap's WRIST_ON/OFF, every Live HR banner step, Bluetooth on/off, app runs starting and closing.
+- `python3 dist/tools/strap-log.py <log> [runs|steps|taps]` — the export joins the saved endings of up to three earlier
+  app runs and the live log of the current one: `runs` says which runs are in the file and what each lost; `taps`
+  matches the strap's own console (millisecond ticks) to what the app did with each double-tap; `steps` is the Lift Log.
+- A log proves what NOOP did and when, to the second — never what iOS drew or when (Live Activities, the stale dash).
+- The strap's console lines (`strap: …`) arrive in bursts during a sync and carry the strap's own ticks: "wear-detection
+  moving from on-body to off-body" is the strap's own record of leaving the wrist.
 
 ## 4. Cross-platform parity
 
-Android is an independent reimplementation; analytics and stored data must be byte-identical (`CLAUDE.md`).
+Android is an independent reimplementation; analytics and stored data must be byte-identical (`AGENTS.md`).
 
-- **Kotlin twin of the figures** (`RULES.md` 33): change `LiftMetrics.kt` with `LiftMetrics.swift`, extend the
-  oracle fixture for the new edge, run `bash dist/tools/oracle/run.sh`, paste its stdout as the expected block
-  of `LiftMetricsParityOracleTest`, and keep `tools/oracle/main.swift` in step with the test's `render()`.
-  Sections the change cannot affect must come back byte-identical — that is the harness's proof.
-- **Python 3.12+** runs the parity tools (CI's version; `brew install python@3.12`). Xcode's 3.9 cannot materialize the base (no tarfile
-  extraction filter), so the ratchet, governance tests and the base comparison fail locally for that reason
-  alone; `verify.sh` marks them skipped rather than guessing.
-- **Ledger** (`python3.12 Tools/parity_ledger.py`): no finding beyond the checked-in baseline and no scan error.
-  `--no-baseline` diffs against a worktree of `upstream/main` show added findings but NOT authority drift: a
-  new twin pair (15 Sep, `isPerformed`) moves `function_pairs` in `Tools/parity_twin_map.json`, which only the
-  default run reports. The PR then carries the guarded refresh
-  (`--refresh-derived --base origin/main`) — never a hand edit.
-- **Ratchet** (`--base "$(git merge-base HEAD upstream/main)" --offline`): no new one-sided declaration. Compare
-  against the branch's OWN base: against a newer tip, upstream's own changes read as debt of ours (16 Sep: an
-  Oura constant removed upstream).
-  A new unpaired function under `Packages/**` or `android/**` is debt; per #2163 a disposition cannot settle
-  `add-unpaired-function`, so prefer not adding the identity, else implement the twin.
-- **Governance tests** (in `verify.sh`, on a clean checkout of HEAD when the tree is clean): they run upstream only
-  when parity tooling changes, so a product PR can leave them red on `main` without anyone seeing (#2229 — ours
-  did). Run in place on a base older than #2259, they also scan `Packages/*/.build` left by `swift test` and
-  report findings the branch does not have (16 Sep). Compare with `upstream/main`; they need
-  Python 3.12 to be meaningful (3.9 adds environment errors).
-- Twin claims pair by name and arity: keep one function per twin name. Never refresh the authority unasked.
+- **Oracle, not reading.** Compile the Swift side standalone over a spread of inputs and paste its stdout as the
+  expected block of the Kotlin test; sections a change cannot affect must come back byte-identical. `tools/oracle/`
+  is the harness built for `LiftMetrics` (`run.sh`) — copy its shape for any new twin.
+- **Python 3.12+** runs the parity tools (`brew install python@3.12`); Xcode's 3.9 cannot, and `verify.sh` marks those
+  steps skipped rather than guessing.
+- **Ledger:** no finding beyond the checked-in baseline and no scan error. A new twin pair moves `function_pairs` in
+  `Tools/parity_twin_map.json`; the PR then carries the guarded refresh (`--refresh-derived --base origin/main`) —
+  never a hand edit.
+- **Ratchet:** against the branch's OWN base (`--base "$(git merge-base HEAD upstream/main)" --offline`), or
+  upstream's own changes read as our debt. A new unpaired function under `Packages/**` or `android/**` is debt: port
+  its twin rather than leave it.
+- **Governance tests:** on a clean checkout of HEAD. When `main` itself has drifted (the maintainers re-derive it after
+  busy days), compare with a clean `main` checkout and say so in the PR; never refresh the authority ourselves.
 
 ## 5. GitHub etiquette and PRs
 
-- **One concern per PR**, unless later work rewrites earlier behaviour (then one PR, split into commits by
-  concern — decided for the follow-up, 21 Sep); show the verification; follow the repo's PR template.
-- **Write PRs and replies in simple, clear words** (Utku, 21 Sep): what changed and why, as a lifter would say it,
-  then the technical notes a reviewer needs. No sophisticated or AI-sounding phrasing.
+- **One concern per PR**, split into commits by concern when later work rewrites earlier behaviour; follow the repo's
+  PR template; show the verification (tests seen to fail, the verify numbers, what ran on the strap).
+- **Write PRs and replies in simple, clear words** (Utku, 21 Sep): what changed and why, as a user would say it, then
+  the technical notes a reviewer needs. No sophisticated or AI-sounding phrasing.
 - **A comment on GitHub** gets ONE concise reply posted after it, covering only its points, citing commits.
-- **A change found by us or heard off GitHub** goes into an EDIT of the description (or of our own post it
-  concerns), never a new "update" comment. The description describes the PR as it is now, not a changelog.
+- **A change found by us or heard off GitHub** goes into an EDIT of the description, never a new "update" comment. The
+  description describes the PR as it is now. PR drafts live in `dist/private/pr-<name>-body.md`.
 - **Before working on an open PR branch**, `gh pr view` it: the maintainer may have pushed to it or merged it.
-- **After a squash merge**, prove the squash equals the PR head per file, delete the branch from the fork, and
-  start the next branch from `upstream/main`.
-- **Release-note credits** and version numbers are upstream's; never bump versions on a feature branch.
+- **After a squash merge**, prove it equals the PR head (`git merge-tree --write-tree <squash>^ <head>` gives the
+  squash's own tree), delete the branch on the fork and its worktree, re-mirror `main`, rebuild the testing stack.
+- **Release-note credits** and version numbers are upstream's; never bump versions on a PR branch.
 
 ## 6. Builds for Utku's phone
 
-`bash dist/tools/ship-build.sh` — requires the work branch pushed. It rebuilds `lift-log-build` as the work
-branch + `fork/ships-template` (the commit that uploads the `.xlsx`, kept out of PRs), force-pushes it with a
-pinned lease, runs "Testing build (fork)", waits, and verifies the release: target commit, the `.ipa` and the
-template. The workflow recreates `testing-latest` BEFORE building, so a failed run leaves an EMPTY release —
-never trust a title or an exit code, only the assets. On an HTTP 5xx or a ~2-minute clone failure, rerun. The
-converse also happens (23 Sep): every attach step green, yet `gh release view` and `/releases/tags/…` listed 0 files for
-over ten minutes; the release's own `/releases/{id}/assets` list and the download URL were right. The tool reads those.
-Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`).
+The fork's testing pipeline has three layers:
+- **`testing-stack`** — every open PR of ours on top of `upstream/main`, never itself a PR. Rebuilt from scratch after
+  any merge or change: `git worktree add -b <tmp> <scratch> upstream/main`, cherry-pick each open PR (a PR whose
+  commits conflict one by one goes in as its NET diff, one commit), check `git diff --stat upstream/main` lists only
+  our files, **build it for iOS locally** (a failed CI build leaves the release EMPTY), then force-push with a pinned
+  lease.
+- **`testing-build`** — `bash dist/tools/ship-build.sh testing-stack` rebuilds it as the stack + `fork/ships-template`
+  (the commit that uploads the Lift Log's `.xlsx` program template, kept out of PRs), force-pushes it, runs "Testing
+  build (fork)", waits, and verifies the release: target commit, the `.ipa`, the template, the download. Never trust a
+  title or an exit code, only the assets (the workflow recreates `testing-latest` BEFORE building). On an HTTP 5xx or a
+  ~2-minute clone failure, rerun.
+- **`testing-latest`** — the one release (Pre-release) Utku installs from:
+  `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`, "NOOP Staging").
 
-**Just update or wipe:** just update for UI, logic, analytics or a new OPTIONAL snapshot field (pinned by
-`LiftSessionPersistenceTests`); wipe only for an edited shipped migration, a stored column changing shape or
-meaning, or a non-optional snapshot field. Since #2098 schema changes are new migrations, so wipes should not
+**Just update or wipe:** just update for UI, logic, analytics or a new optional stored field; wipe only for an edited
+shipped migration or a stored value changing shape or meaning. Schema changes are new migrations, so wipes should not
 recur. When in doubt, say wipe.
 
 ## 7. Syncing with upstream
 
 ```bash
-bash dist/tools/upstream-check.sh                     # what moved; does the work branch still merge
-git tag backup/pre-rebase <work-branch>               # LOCAL safety tag — never push tags wholesale
-git rebase upstream/main
-bash dist/tools/verify.sh                             # then prove the content (below)
-bash -c 'B=<work-branch>; OLD=$(git rev-parse origin/$B); git push --force-with-lease=$B:"$OLD" origin $B'
+bash dist/tools/upstream-check.sh [branch]            # what moved; does the branch still merge; open threads
+git tag backup/pre-rebase <branch>                    # LOCAL safety tag — never pushed
+git rebase upstream/main && NOOP_REPO=<worktree> bash dist/tools/verify.sh
+bash -c 'B=<branch>; OLD=$(git rev-parse origin/$B); git push --force-with-lease=$B:"$OLD" origin $B'
 git tag -d backup/pre-rebase
 git push origin upstream/main:refs/heads/main         # keep the fork's main a mirror (fast-forward only)
 ```
-- **Prove the rebase kept the content:** `git diff backup/pre-rebase HEAD -- <the branch's files>` shows only
-  upstream's lines and intended edits.
-- **Unstaged edits** make `git rebase --continue` fail with a misleading "edit all merge conflicts": stash just
-  those paths, continue, pop.
-- **Conflicts seen:** `Localizable.xcstrings` — merge on KEYS with `python3 dist/tools/xcmerge.py BASE HEAD
-  INCOMING OUT` (`git show :1:/:2:/:3:`), never on markers; `LiftMetrics.swift` doc comments — keep both texts,
-  including "The Kotlin twin is" lines; `RootTabView`, `NOOPWidgetBundle` — keep both.
-- **After a stacked PR is squash-merged:** `git rebase --onto upstream/main <old-dependency-tip> <branch>`.
-- Syncing the fork's `main` runs Parity Governance CI on the fork when parity tooling moved; a failure there
-  mirrors `main` upstream, not our branch.
+- **Prove a rebase kept the content:** `git diff backup/pre-rebase HEAD -- <the branch's files>` shows only upstream's
+  lines and intended edits. A PR that merges cleanly needs no rebase: upstream's CI builds it merged into `main`.
+- **Unstaged edits** make `git rebase --continue` fail with a misleading "edit all merge conflicts".
+- **Conflicts seen:** `Localizable.xcstrings` — merge on KEYS with `python3 dist/tools/xcmerge.py BASE HEAD INCOMING
+  OUT` (`git show :1:/:2:/:3:`), never on markers.
 
 ## 8. Git and fork hygiene
 
-- **The fork holds exactly:** `main` (mirror), the work branch when there is one (everything for the next Lift
-  Log PR, one commit per concern, started from `upstream/main`), one branch per open or prepared upstream PR, `noop-optimisations` (a testing-build-only stack of the prepared NOOP
-  PRs, never itself a PR),
-  `lift-log-build`, `lift-log-handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version
-  tags); one release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven to
-  equal it (§5); the three stacked branches that became `lift-log-follow-ups` were deleted on 22 Sep.
+- **The fork holds exactly:** `main` (mirror of `upstream/main`), one branch per open PR, `testing-stack`,
+  `testing-build`, `handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version tags); one
+  release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven equal (§5).
+- **Each open PR has its own worktree** beside the app repo (`~/Developer/noop-<name>`); `~/Developer/noop` stays on
+  `main`; `~/Developer/noop/dist` is this handbook.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
-- **Never start a branch by copying files from another branch.** 22 Sep: the standard-HR change was built on the
-  Lift Log branch (based on an older `upstream/main`) and copied into a worktree of the newer one, which silently
-  reverted two upstream commits inside `BLEManager.swift`; the app tests caught it as "no member
-  `sessionEndedOutcome`". Take the file from the target base (`git checkout upstream/main -- <path>`) and re-apply
-  the edit, then check `git diff upstream/main -- <path>` shows ONLY the intended lines.
-- **Before any history rewrite** — a rebase, an amend or reset of a pushed commit, a force-push — tag the old tip
-  `backup/<what>` locally; `checkpoint.sh status` lists such refs until they are deleted, so an interrupted rewrite
-  is visible.
-- **Backup tags stay local** and are deleted after the push is verified. Retired refs go into a bundle outside
-  the repo (`git bundle create`), not onto GitHub.
-- **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go
-  in `dist/private/` (ignored). Never commit `dist/` to a work branch.
-- **Splitting one file across two commits:** build the in-between file by exact text edits and stage the whole
-  file. `git apply --cached --unidiff-zero` with only some `-U0` hunks placed a later hunk by line number and put
-  two lines outside their function (21 Sep); a split commit is then built on its own before it is pushed.
-- **zsh** does not word-split `$VAR` and expands globs like `--include=*.kt`: run such commands via `bash -c`
-  with arrays. `origin/origin` is `origin/HEAD`, not a branch.
+- **Never start a branch by copying files from another branch** (it once silently reverted two upstream commits): take
+  the file from the target base and re-apply the edit, then check `git diff upstream/main -- <path>`.
+- **Before any history rewrite**, tag the old tip `backup/<what>` locally; `checkpoint.sh status` lists such refs until
+  they are deleted after the push is verified. Retired refs go into a bundle outside the repo, not onto GitHub.
+- **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go in
+  `dist/private/` (ignored). Never commit `dist/` to a work branch.
+- **zsh** does not word-split `$VAR` and expands globs like `--include=*.kt`: run such commands via `bash -c` with
+  arrays. `origin/origin` is `origin/HEAD`, not a branch.
 
 ## 9. Conventions and traps
 
-- **Design tokens only** (`StrandPalette`, `StrandFont`, `NoopMetrics`); warnings use `statusWarning`.
-- **A disabled `.noopPrimary` button does not dim itself**: add `.opacity(… NoopButtonMetrics.disabledOpacity)`.
+- **Design tokens only** (`StrandPalette`, `StrandFont`, `NoopMetrics`; Android `Palette`/`Metrics`); warnings use
+  `statusWarning`. A disabled `.noopPrimary` button does not dim itself: add `.opacity(… disabledOpacity)`.
 - **Row structs take no default parameter values**, so a new column is a compile error at every call site.
 - **Booleans are `.integer` 0/1**; any `deviceId` table goes in `deviceScopedTables`.
-- **`Localizable.xcstrings` is hand-formatted**: insert a new key as text next to its neighbours in all ten
-  locales and validate the JSON; re-serialising the 6 MB file reformats it.
 - **`onChange(of:perform:)`** stays single-parameter (the macOS 13 target); its iOS deprecation warning is known.
-- **`dismissesKeyboardOnTap`** is a UIKit window recognizer that stands aside for text inputs: a SwiftUI tap
-  gesture fired for taps in fields too, and weight → reps took two taps on the phone (fixed 16 Sep).
-- **Simulator coordinates:** take them from a screenshot of the SETTLED screen. A tap placed from a
-  mid-keyboard-animation screenshot misses and looks like a bug (16 Sep).
-- **App-target Swift is validated only by local builds** (`CLAUDE.md`); BLE behaviour only on a real strap.
+- **Simulator coordinates:** take them from a screenshot of the SETTLED screen.
+- **App-target Swift is validated only by local builds; BLE behaviour only on a real strap** (`AGENTS.md`).
 
 ## 10. Maintaining this handbook
 
-- Keep `STATE.md` true at every milestone and at the end of every session (§2 Continuity); move finished events
-  into `HISTORY.md` as one line.
-- Rules keep their numbers. Settled science is not rewritten silently.
+- Keep `STATE.md` true at every milestone and at the end of every session; move finished events into `HISTORY.md` as
+  one line. Rules keep their numbers. Settled science is not rewritten silently.
 - `bash dist/tools/backup.sh "what changed"` copies Claude Code's memory into `memory/`, commits (folding local
   checkpoints) and pushes; `--restore-memory` copies it back on a new machine. Neither it nor `checkpoint.sh` ever
-  copies from an empty memory folder.
-- After editing `checkpoint.sh` or `backup.sh`, run `bash dist/tools/test-checkpoint.sh`.
+  copies from an empty memory folder. After editing either, run `bash dist/tools/test-checkpoint.sh`.
+
+## 11. Measuring usage
+
+`RULES.md` 1: no usage claim without a number, before and after, in the PR.
+- **CPU, simulator:** a simulator app is a Mac process — `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")`
+  read 60 s apart gives its CPU-seconds a minute. Same screen and state before and after, with NOOP alone as the
+  baseline (22 Sep: 6.29 idle on Today). The simulator suspends NOOP in the background (no strap), so background timing is checked in unit
+  tests and on the phone.
+- **Memory, simulator:** `footprint <pid>` (or `vmmap --summary <pid>`) for the physical footprint; compare the same
+  screens.
+- **Instruments** (`xcrun xctrace record --template 'Time Profiler' --attach <pid>`, also Allocations, Leaks, Energy
+  Log on a device) when a number needs a cause.
+- **On Utku's phone:** iOS's MetricKit report arrives once a day (about the day before) and #2420 writes it into the
+  strap log as one line: foreground and background time, CPU time, peak memory, disk writes, hangs, and why the app
+  exited and how often; another line after a crash, a hang, a CPU or disk-write exception or a slow launch. A day's
+  log before and after a change is the real measurement; ask him for the log of a normal day.
+- **Strap and radio:** count from the strap log — history syncs ("Backfill: session started"), their triggers, the
+  once-a-second heart rate, commands sent (`→ …`), reconnects. Every exchange costs the strap's battery too.
+- **Pushes and wakes:** Live Activity pushes, widget reloads ("Widgets: N reloaded / N admitted / N offered" in the log
+  header), notifications — counted from the log, or from a unit test of the policy that decides them.

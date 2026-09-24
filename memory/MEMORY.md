@@ -1,7 +1,6 @@
-- [NOOP Lift Log project](noop-lift-log-project.md) — Utku's gym log book in NOOP; start every session with the handbook in `dist/` (README, STATE, RULES).
-- [Lift Log upstream state](lift-log-upstream-prs.md) — Lift Log PRs all merged; NOOP optimisation #2415-#2418 and #2422 (banner kept until its switch) merged, #2419/#2420/#2437 open; build 3ad319d awaits Utku's re-test — dist/LIVE_HR.md; details in `dist/STATE.md`.
-- [PR communication](lift-log-pr-communication.md) — reply after a GitHub comment; self-found or off-GitHub changes go in description edits.
-- [Ship the build](lift-log-ship-the-build.md) — `dist/tools/ship-build.sh` after every change; trust the verified assets; say "just update" or "wipe".
-- [Verify before claiming](lift-log-verify-before-claiming.md) — `dist/tools/verify.sh`, tests seen to fail, reviewer claims and rebases proven, odd tool results rechecked on a clean checkout.
-- [The handbook is mine](lift-log-docs-are-mine.md) — journal steps in STATE.md "Now" first; after ANY interruption run `dist/tools/checkpoint.sh status --net` before acting; backup at milestones.
-- [Utku's scope](lift-log-utku-scope.md) — the Lift Log uses NOOP's own features; since 23 Sep NOOP itself is optimised in separate PRs (his yes each); build requests as narrow as worded.
+- [NOOP project](noop-project.md) — journey 2 (24 Sep): make all of NOOP the best WHOOP app; start every session from the handbook in `dist/` (branch `handbook`).
+- [Working with Utku](noop-working-with-utku.md) — not a programmer; plain words; I decide tech, he owns what users see; tests as numbered steps + strap log.
+- [The handbook is mine](noop-handbook-is-mine.md) — journal steps in STATE.md "Now" first; after ANY interruption `dist/tools/checkpoint.sh status --net`; backup at milestones.
+- [Verify before claiming](noop-verify-before-claiming.md) — tests seen to fail, full `verify.sh`, usage measured, BLE proven on the strap, logs read to the second.
+- [Ship the build](noop-ship-the-build.md) — rebuild `testing-stack`, build iOS locally, `ship-build.sh testing-stack`; "just update" or "wipe" + id.
+- [PR communication](noop-pr-communication.md) — one reply after a GitHub comment; self-found changes edit the description; standing permission scope.

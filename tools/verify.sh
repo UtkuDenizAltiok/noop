@@ -7,7 +7,7 @@ set -uo pipefail
 TOOLS=$(cd "$(dirname "$0")" && pwd)
 REPO=${NOOP_REPO:-$(cd "$TOOLS/../.." && pwd)}
 cd "$REPO"
-OUT="${TMPDIR:-/tmp}/lift-verify/$(git rev-parse --short HEAD)"; DD="${TMPDIR:-/tmp}/lift-verify/derived"
+OUT="${TMPDIR:-/tmp}/noop-verify/$(git rev-parse --short HEAD)"; DD="${TMPDIR:-/tmp}/noop-verify/derived"
 mkdir -p "$OUT"
 failed=0 failures=""
 

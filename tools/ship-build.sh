@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# Ship a testing build of the work branch to Utku's phone and verify what was published.
-#   bash dist/tools/ship-build.sh [work-branch]      (default: the branch checked out in the app repo)
-# lift-log-build = work branch + fork/ships-template (uploads the .xlsx template; kept out of upstream PRs).
+# Ship a testing build to Utku's phone and verify what was published.
+#   bash dist/tools/ship-build.sh testing-stack      (any pushed branch works; the stack is what his phone runs)
+# testing-build = that branch + fork/ships-template (uploads the Lift Log's .xlsx program template; kept out of PRs).
+# How the stack is rebuilt: WORKFLOW.md §6.
 set -euo pipefail
 TOOLS=$(cd "$(dirname "$0")" && pwd)
 REPO=${NOOP_REPO:-$(cd "$TOOLS/../.." && pwd)}
 cd "$REPO"
-FORK=UtkuDenizAltiok/noop BUILD=lift-log-build WF="Testing build (fork)"
-WORK=${1:-$(git rev-parse --abbrev-ref HEAD)}
+FORK=UtkuDenizAltiok/noop BUILD=testing-build WF="Testing build (fork)"
+WORK=${1:-testing-stack}
 # One line per outcome in the event log, so an interrupted ship can be checked instead of repeated.
 trap 'rc=$?; [ $rc = 0 ] || bash "$TOOLS/checkpoint.sh" event "ship $WORK FAILED (exit $rc)${RUN:+ — run $RUN}"' EXIT
 

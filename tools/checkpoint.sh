@@ -22,7 +22,7 @@ event() {  # one line in the local event log, trimmed to its newest 1,000 lines 
   if [ "$(wc -l < "$EVENTS")" -gt 2000 ]; then tail -n 1000 "$EVENTS" > "$EVENTS.tmp" && mv "$EVENTS.tmp" "$EVENTS"; fi
 }
 
-on_handbook() { [ "$(git -C "$HB" symbolic-ref --short HEAD 2>/dev/null)" = lift-log-handbook ]; }
+on_handbook() { [ "$(git -C "$HB" symbolic-ref --short HEAD 2>/dev/null)" = handbook ]; }
 
 git_busy() {  # a rebase, merge or cherry-pick in progress, or another git holding the index, in worktree $1
   local p
@@ -40,7 +40,7 @@ sync_memory() {  # Claude Code's memory into memory/ — never from an empty fol
 save() {  # save <note> [quiet] — a local commit of whatever changed; backup.sh later uploads them as one
   local note=$1 quiet=${2:-} busy
   say() { [ -n "$quiet" ] || echo "$@"; }
-  on_handbook || { say "$HB is not the lift-log-handbook worktree: nothing saved"; return 0; }
+  on_handbook || { say "$HB is not the handbook worktree: nothing saved"; return 0; }
   busy=$(git_busy "$HB") && { say "git is busy in the handbook ($busy): nothing saved"; return 0; }
   sync_memory
   git -C "$HB" add -A >/dev/null 2>&1
@@ -60,10 +60,10 @@ status() {
   echo "== journal: open steps in STATE.md \"Now\""
   journal | grep -E '^- \[ \]' | cut -c1-160 | sed 's/^/  /' || echo "  none"
 
-  echo "== handbook (dist/, branch lift-log-handbook)"
+  echo "== handbook (dist/, branch handbook)"
   if on_handbook; then
-    echo "  last upload: $(git -C "$HB" log -1 --format='%h, %cr: %s' origin/lift-log-handbook 2>/dev/null | cut -c1-120)"
-    n=$(git -C "$HB" rev-list --count origin/lift-log-handbook..HEAD 2>/dev/null || echo '?')
+    echo "  last upload: $(git -C "$HB" log -1 --format='%h, %cr: %s' origin/handbook 2>/dev/null | cut -c1-120)"
+    n=$(git -C "$HB" rev-list --count origin/handbook..HEAD 2>/dev/null || echo '?')
     [ "$n" = 0 ] || echo "  $n local checkpoint(s) not uploaded yet — backup.sh uploads them as one commit"
     n=$(git -C "$HB" status --porcelain | awk '{print $NF}' | tr '\n' ' ')
     [ -z "$n" ] || echo "  unsaved: $n"
@@ -71,7 +71,7 @@ status() {
     for w in "$MEM"/*.md; do [ -e "$w" ] && ! cmp -s "$w" "$HB/memory/$(basename "$w")" && n=$((n + 1)); done
     [ "$n" = 0 ] || echo "  memory: $n note(s) changed since the last save"
   else
-    echo "  NOT on lift-log-handbook — checkpoints and backups are off"
+    echo "  NOT on handbook — checkpoints and backups are off"
   fi
 
   echo "== code (worktrees)"
@@ -128,7 +128,7 @@ except Exception: print("")' "$1" 2>/dev/null
 }
 
 brief() {  # what a new or compacted session must read first
-  echo "LIFT LOG — recovery brief (automatic, session $1). From dist/, the durable record: trust it over any summary"
+  echo "NOOP — recovery brief (automatic, session $1). From dist/, the durable record: trust it over any summary"
   echo "or recollection of this conversation. An unticked step below may or may not have happened: find its evidence"
   echo "(git, CI, the releases page, gh pr list) before redoing it; never repeat a push, build, PR or comment without it."
   echo "Procedure: dist/README.md \"After an interruption\". Full check: bash dist/tools/checkpoint.sh status --net"
@@ -169,7 +169,7 @@ hooks_file() {  # hooks_file install|remove — merge ours into the app repo's .
   local file="$REPO/.claude/settings.local.json" exclude
   exclude="$(git -C "$REPO" rev-parse --git-common-dir)/info/exclude"
   grep -qxF '.claude/settings.local.json' "$exclude" 2>/dev/null \
-    || printf '%s\n' '# Claude Code local settings (Lift Log checkpoint hooks) — never committed' \
+    || printf '%s\n' '# Claude Code local settings (NOOP handbook checkpoint hooks) — never committed' \
                      '.claude/settings.local.json' >> "$exclude"
   mkdir -p "$REPO/.claude"
   python3 - "$file" "$1" "$HB/tools/checkpoint.sh" <<'PY'

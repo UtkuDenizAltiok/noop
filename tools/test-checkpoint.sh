@@ -16,14 +16,14 @@ check() {  # check "what" <command…>
 git init -q --bare "$T/origin.git"
 git init -q -b main "$T/app" && cd "$T/app"
 printf 'dist/\n' > .gitignore && git add .gitignore && git commit -q -m app && git remote add origin "$T/origin.git"
-git checkout -q --orphan lift-log-handbook && git rm -rq --cached . && rm .gitignore
+git checkout -q --orphan handbook && git rm -rq --cached . && rm .gitignore
 mkdir -p tools memory && cp "$TOOLS/checkpoint.sh" "$TOOLS/backup.sh" tools/
 printf 'private/\n.DS_Store\n' > .gitignore
 printf '# State\n\n## Now — work in flight\n\n- [ ] step one ← in progress\n- [x] step zero\n\n## Upstream\n' > STATE.md
 mkdir -p "$T/mem" && echo "note a" > "$T/mem/a.md" && cp "$T/mem/a.md" memory/
-git add -A && git commit -q -m "handbook: start" && git push -q origin lift-log-handbook
-git checkout -q main && git worktree add -q dist lift-log-handbook
-git -C dist branch -q --set-upstream-to=origin/lift-log-handbook
+git add -A && git commit -q -m "handbook: start" && git push -q origin handbook
+git checkout -q main && git worktree add -q dist handbook
+git -C dist branch -q --set-upstream-to=origin/handbook
 CP="$T/app/dist/tools/checkpoint.sh"; H="$T/app/dist"
 subject() { git -C "$H" log -1 --format=%s; }
 
@@ -66,17 +66,17 @@ check "pre-compact saves and logs" bash -c '[ "$(git -C "$1" log -1 --format=%s)
 check "bad input and unknown kinds never fail" bash -c 'echo "not json" | bash "$1" hook session-start && bash "$1" hook nonsense </dev/null' _ "$CP"
 
 echo "backup folds checkpoints"
-tip=$(git -C "$H" rev-parse origin/lift-log-handbook); tree=$(git -C "$H" rev-parse HEAD^{tree})
+tip=$(git -C "$H" rev-parse origin/handbook); tree=$(git -C "$H" rev-parse HEAD^{tree})
 bash "$H/tools/backup.sh" "folded" >/dev/null 2>&1
-check "uploads exactly one commit" test "$(git -C "$H" rev-list --count "$tip"..origin/lift-log-handbook)" = 1
-check "with the backup's message" test "$(git -C "$H" log -1 --format=%s origin/lift-log-handbook)" = "handbook: folded"
-check "and every checkpointed change" test "$(git -C "$H" rev-parse origin/lift-log-handbook^{tree})" = "$tree"
+check "uploads exactly one commit" test "$(git -C "$H" rev-list --count "$tip"..origin/handbook)" = 1
+check "with the backup's message" test "$(git -C "$H" log -1 --format=%s origin/handbook)" = "handbook: folded"
+check "and every checkpointed change" test "$(git -C "$H" rev-parse origin/handbook^{tree})" = "$tree"
 check "logs the upload" grep -q 'backup .* uploaded: folded' "$H/private/events.log"
 echo "edit 6" >> "$H/STATE.md"; git -C "$H" commit -qam "a hand-made commit"
 echo "edit 7" >> "$H/STATE.md"; bash "$CP" save "after it" >/dev/null
-tip=$(git -C "$H" rev-parse origin/lift-log-handbook)
+tip=$(git -C "$H" rev-parse origin/handbook)
 bash "$H/tools/backup.sh" "kept" >/dev/null 2>&1
-check "keeps a non-checkpoint commit as it is" bash -c '[ "$(git -C "$1" log --format=%s "$2"..origin/lift-log-handbook)" = \
+check "keeps a non-checkpoint commit as it is" bash -c '[ "$(git -C "$1" log --format=%s "$2"..origin/handbook)" = \
   "$(printf "checkpoint: after it\na hand-made commit")" ]' _ "$H" "$tip"
 
 echo "install-hooks / remove-hooks (the sandbox's own settings file)"

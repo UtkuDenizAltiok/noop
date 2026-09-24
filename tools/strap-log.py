@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read an exported NOOP strap log (More → Test Centre → Strap log → Save…) the way the Lift Log needs it.
+"""Read an exported NOOP strap log (More → Test Centre → Strap log → Save…): its app runs, double-taps and Lift Log steps.
 
     python3 dist/tools/strap-log.py <log.txt>          all three reports
     python3 dist/tools/strap-log.py <log.txt> runs     which app runs the file holds, how each started, what fills them

@@ -3,7 +3,7 @@
 
     python3 dist/tools/hr-timeline.py <strap-log.txt> [--from HH:MM:SS] [--to HH:MM:SS]
 
-Built for the strap-off / strap-on work (LIVE_HR.md). It reads only lines NOOP already writes:
+Built for the Live HR banner work (features/live-hr-banner.md). It reads only lines NOOP already writes:
   - `standard-hr transport host-received hostUnixSec=…` (one a second, under the Test Centre HRV / Connection mode):
     acceptedHRRows=1 → a real reading, rejectedHRRows=1 → a 0 bpm / unreadable one;
   - `… host-received summary windowSec=… samples=…` (one a minute otherwise): how many readings a window held;
