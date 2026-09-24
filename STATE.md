@@ -43,7 +43,12 @@ Do not redo: the #2099 reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), an
 
 - **`upstream/main` is `f15360da`** (24 Sep). All three open branches merge cleanly into it, and #2419 / #2422 merge
   cleanly in either order (checked 24 Sep). The fork's `main` and the app repo's `main` mirror it.
-- ryanbr repaired the parity gate on `main` (`44ef71eb`); ledger, ratchet and governance pass again on our branches.
+- ryanbr repaired the parity gate on `main` (`44ef71eb`, 23 Sep), and it has drifted again: the fork's mirror push of
+  `f15360da` (24 Sep 01:15 UTC, run 35942122664) FAILED Parity Governance on the same two tests
+  (`test_checked_metadata_is_compact_v3_and_expands_losslessly`, `…inventory_and_baseline…`); upstream's own last run
+  was green on the older `9d85ea8b`, and its scheduled run will show it. Upstream's, not ours — none of our branches
+  touch the parity files. After a rebase onto it our `verify.sh` will fail those steps too: compare with a clean
+  `main` checkout, say so in the PR, never refresh the authority ourselves (`WORKFLOW.md` §4, §7).
 - **Open upstream, not ours to answer unasked:** #2327 (the Lift Log has no Android UI; `BACKLOG.md` 3).
 
 ## Open work
