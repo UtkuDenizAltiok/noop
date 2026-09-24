@@ -8,8 +8,11 @@ Built for the strap-off / strap-on work (LIVE_HR.md). It reads only lines NOOP a
     acceptedHRRows=1 → a real reading, rejectedHRRows=1 → a 0 bpm / unreadable one;
   - `… host-received summary windowSec=… samples=…` (one a minute otherwise): how many readings a window held;
   - `HR notify: N bpm` (every 30 s while readings flow), `HR: skin contact …`, `HR: 3 unreadable samples …`,
-    `HR: no readable heart-rate sample …` (the clears), `flush-attempt reason=background|foreground` (app state),
-    `Connected —` / `Disconnected`, `Toggle Realtime HR`.
+    `HR: no readable heart-rate sample …` (the clears), `flush-attempt reason=background|foreground|termination`
+    (app state; termination = its screen discarded), `Central state:` (a new app run), `Connected —` /
+    `Disconnected`, `Toggle Realtime HR`;
+  - from #2422's builds on (24 Sep 2026): `Live HR banner: …` (started, picked up, renewed, ended, gone, the dash
+    and back) and `Strap: WRIST_ON` / `Strap: WRIST_OFF` (the strap's own word that it went on or came off).
 A gap of minutes with no line at all while the link is up is the strap saying nothing (a WHOOP 5.0 off the wrist).
 Runs of per-second readings are folded into one line. Personal data stays local: print, do not commit, a log.
 """
@@ -44,6 +47,12 @@ for line in open(path, encoding="utf-8", errors="replace"):
         events.append((t, line[len(t) + 3:].strip()[:110]))
     elif (r := re.search(r"flush-attempt reason=(background|foreground)", line)):
         events.append((t, f"app → {r.group(1)}"))
+    elif "flush-attempt reason=termination" in line:
+        events.append((t, "app closed (its screen discarded: swiped away, or by iOS)"))
+    elif "] Central state:" in line:
+        events.append((t, "NOOP started (a new app run)"))
+    elif re.search(r"\] (Live HR banner|Strap: WRIST_)", line):
+        events.append((t, line[len(t) + 3:].strip()[:110]))
     elif re.search(r"\] (Connected —|Disconnected)", line):
         events.append((t, line[len(t) + 3:].strip()[:80]))
     elif "Toggle Realtime HR payload=" in line:

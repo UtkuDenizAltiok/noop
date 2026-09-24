@@ -248,7 +248,7 @@ and flag it.
     Utku on 23 Sep ("what if I leave my phone and walk off?"). The session lives in the phone, not the link: the
     claim on the double-tap (`AppModel.strapDoubleTapOverride`) is set when the session starts and cleared only
     when it ends — no disconnect path touches it — the rest's one-shot timers are the phone's, and the banner
-    stays (only NOOP's heart-rate banner follows `connected`). The heart rate reads "—" while the link is down and
+    stays (NOOP's heart-rate banner shows the dash while the link is down, 49). The heart rate reads "—" while the link is down and
     comes back by itself. A double-tap made out of range reaches the app later, through the reconnect's sync, and
     is deliberately NOT acted on: advancing a set minutes late would put the session on the wrong one. It is
     logged as arriving late, and a replay of a tap already handled is suppressed (22). Partly seen in the 23 Sep
@@ -258,18 +258,24 @@ and flag it.
     in-session case rests on the code above, not on evidence — one deliberate walk-away test would settle it.
     Never end or reset a session on a disconnect.
 
-49. **A heart rate is shown only while the strap is measuring it, on every surface, and the Live HR banner is kept,
-    not ended, through what it can survive** (#2422, 23 Sep 2026, three strap logs). A WHOOP 5.0 off the wrist goes
-    SILENT (no 0, no WRIST_OFF, the link up); the zeros come when it goes back ON, while it finds the pulse. With
-    nothing arriving iOS suspends NOOP, so no timer of NOOP's can clear anything: the banner's 30-s stale date makes
-    iOS itself draw the dash (`NOOPLiveActivity.shownBpm`) — in its own non-waking batch, about two minutes after the
-    last push (simulator, 23 Sep) — and a steady number is re-pushed every 15 s while readings flow. In the app, a run of three unreadable samples, ten seconds of silence or WRIST_OFF clears the live heart rate
-    through `LiveState.clearLiveHeartRate` (R-R first); Today's big number is the live heart rate or nothing. iOS lets
-    only a foreground app START a Live Activity, so ending one costs it until NOOP is opened: it ends for its switch,
-    the Lift Log banner on screen, a link down 30 s (checked inside the time iOS lends the woken app), or nothing to
-    show while NOOP is on screen (`LiveHRBannerLifecycle`) — never for a sync, a short drop, or a timer left for later
-    (a suspended app's timer fires at its next wake, typically the strap coming back). Never requested from the
-    background. Live notification switches only hide.
+49. **A heart rate is shown only while the strap is measuring it, on every surface, and the Live HR banner stays until
+    its switch removes it** (#2422, 23–24 Sep 2026, four strap logs; Utku, 24 Sep: NOOP closing the banner "when it sees
+    no HR" is illogical when only opening NOOP can bring it back — show "–"; the switch is how to be rid of it). A WHOOP
+    5.0 taken off the wrist sends WRIST_OFF about 2 s later (inferred, 24 Sep log; the new line will name it) and then
+    goes SILENT with the link up; back on, an event reaches NOOP as readings resume (WRIST_ON, presumably) and 0 bpm
+    follows for a few seconds while it finds the pulse. The app clears the live heart rate on WRIST_OFF,
+    three unreadable samples, ten seconds of silence while awake, or a dropped link (`LiveState.clearLiveHeartRate`,
+    R-R first); Today's big number is the live heart rate or nothing. The banner shows the number or "–", and the
+    change between them is pushed at once (`LiveHRBannerPushPolicy`: a dash held back by the 2-s spacing and never
+    retried left "91" standing, 24 Sep); its 30-s stale date lets iOS draw the dash (~2 min, without waking NOOP) when
+    NOOP is asleep or closed. NOOP ends it ONLY for its switch (acting at once) or the Lift Log banner on screen (40) —
+    never for a dropped link, a strap off the wrist, a sync, nothing to show on screen, or a timer
+    (`LiveHRBannerLifecycle`). iOS lets only an app on screen START one: it starts when NOOP is on screen with the strap
+    connected, before any reading if need be; one iOS ended (its ~8-h limit) or the user swiped away starts again at the
+    next open; one older than an hour is renewed at an open (new first, then the old one ends), so the 8-h limit
+    restarts. It follows the strap from process start (`LiveActivityController.follow` in `StrandiOSApp.init`), never
+    from a screen, like 41. Each step of its life and each WRIST_ON / WRIST_OFF leaves an always-on strap-log line
+    ("Live HR banner: …", "Strap: WRIST_OFF …"). Never requested from the background.
 
 ## Sources
 

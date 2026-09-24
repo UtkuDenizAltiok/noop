@@ -1,9 +1,9 @@
 # State
 
-**Updated 24 Sep 2026, end of session — NOOP optimisation: #2415–#2418 MERGED; OPEN and green: #2419 (Live
-notifications switches), #2420 (MetricKit), #2422 (live HR shown only while measured). The strap-off banner work is
-NOT finished — Utku: "not good at the moment". Read `LIVE_HR.md` first.** The only file that changes every session.
-Replace, don't append — history goes in `HISTORY.md`.
+**Updated 24 Sep 2026 ~04:35 — #2422 REWORKED to Utku's decision: the Live HR banner is never closed by NOOP; it shows
+"–" and comes back by itself; only its switch removes it. Pushed (`cf97a93c`, 11 commits) and shipped as build
+`412d1a6` (just update). OPEN: #2419, #2420, #2422. Read `LIVE_HR.md` first.** The only file that changes every
+session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
 
@@ -11,17 +11,19 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing is running (24 Sep, end of session). One step waits on Utku:
-- [ ] **Utku tests build `c146351` on his strap** (the three #2422 checks in `LIVE_HR.md` §6.5: strap off in the pocket
-  → "–" in about 2 min and the number back by itself on the wrist; strap off then open NOOP → banner gone; walk away
-  until the link drops → gone after 30 s) and sends the strap log. Proof: his message + log. Then read it with
-  `python3 dist/tools/hr-timeline.py <log>` and add the result to #2422's description.
+Nothing is running (24 Sep ~04:35). Waiting on others:
+- [ ] **Utku tests build `412d1a6`** (`LIVE_HR.md` §6.1: strap off in the pocket → "–" within seconds, back on → the
+  number; walk away until the link drops and come back → kept as "–", then the number; swipe NOOP away and wait →
+  "–", then fed again when NOOP runs) and sends the strap log. Proof: his message + log. Read it with
+  `python3 dist/tools/hr-timeline.py <log>` — the new "Live HR banner: …" and "Strap: WRIST_…" lines answer each case —
+  and add the result to #2422's description (an edit, not a comment).
+- [ ] **#2422's upstream checks on `cf97a93c`**: `check` and `doc-comments` passed; the two app builds were still
+  pending at 04:36. Check `gh pr checks 2422 --repo ryanbr/noop`; a red one is ours to fix.
 
-**Next safe action:** session start routine; then `LIVE_HR.md` §6 step 2 — add an always-on log line for WRIST_ON /
-WRIST_OFF in `FrameRouter` (on the `live-hr-off-wrist` branch), verify, ship, and ask Utku for one strap-off test with
-NOOP in the background. That single log answers whether a WHOOP 5.0 can wake NOOP when it leaves the wrist.
+**Next safe action:** session start routine; then the two lines above. Nothing else is owed.
 Standing permission (RULES settled decisions): replies on our PRs and pushes to our branches need no per-item yes.
-Do not redo: the #2099 reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), any PR already open.
+Do not redo: the #2422 rework push and description edit (24 Sep ~04:12), ship `412d1a6` (run 35946344321), the #2099
+reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), any PR already open.
 
 ## Upstream (`ryanbr/noop`)
 
@@ -39,10 +41,11 @@ Do not redo: the #2099 reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), an
 | [#2418](https://github.com/ryanbr/noop/pull/2418) | iOS stress check-in takes each R-R packet once | merged 23 Sep, `8f064df7` |
 | [#2419](https://github.com/ryanbr/noop/pull/2419) | Settings → **Live notifications**: one switch each (HR, Lift Log, sync); the Lift Log banner no longer follows the HR switch | **open**, head `99abbcb7`, 5/5 checks green, no comments |
 | [#2420](https://github.com/ryanbr/noop/pull/2420) | iOS MetricKit reports → one strap-log line each (local only) | **open**, head `d81f0cc1`, green, no comments |
-| [#2422](https://github.com/ryanbr/noop/pull/2422) | live HR shown only while the strap measures it; the banner kept through short drops, ended when it cannot show one (8 commits — `LIVE_HR.md` §4) | **open**, head `7e468f26`, green, no comments; hardware check of commits 6–8 pending |
+| [#2422](https://github.com/ryanbr/noop/pull/2422) | live HR shown only while the strap measures it; the banner kept until its switch turns it off (11 commits — `LIVE_HR.md` §4) | **open**, head `cf97a93c` (reworked 24 Sep), no comments; app-build checks pending at 04:36; hardware check pending |
 
-- **`upstream/main` is `f15360da`** (24 Sep). All three open branches merge cleanly into it, and #2419 / #2422 merge
-  cleanly in either order (checked 24 Sep). The fork's `main` and the app repo's `main` mirror it.
+- **`upstream/main` is `06083a0b`** (24 Sep: #2426 HRV of a refused main night, #2427 an HRV log line, a Today label
+  fix — none touches a file of ours). All three open branches merge cleanly into it (checked 24 Sep ~04:35). The fork's
+  `main` and the app repo's `main` mirror it.
 - ryanbr repaired the parity gate on `main` (`44ef71eb`, 23 Sep), and it has drifted again: the fork's mirror push of
   `f15360da` (24 Sep 01:15 UTC, run 35942122664) FAILED Parity Governance on the same two tests
   (`test_checked_metadata_is_compact_v3_and_expands_losslessly`, `…inventory_and_baseline…`); upstream's own last run
@@ -53,10 +56,9 @@ Do not redo: the #2099 reply (23 Sep 03:48), the #2416 reply (23 Sep ~13:35), an
 
 ## Open work
 
-**1. The Live HR banner with the strap off the wrist — `LIVE_HR.md`, the main open item.** Utku wants no heart-rate
-banner while the strap is off; iOS allows removing it only while NOOP is awake, and a WHOOP 5.0 off the wrist goes
-silent, so nothing wakes NOOP. The build does "none" on screen, iOS's "–" (~2 min) in the background. Next: the
-WRIST_OFF log line; then decide with him (the trade-off in `LIVE_HR.md` §6.4).
+**1. The Live HR banner — `LIVE_HR.md`.** Reworked to Utku's 24 Sep decision (rule 49): never closed by NOOP, "–"
+when nothing is measured, only its switch removes it. What remains is his test of `412d1a6` and, from its log, the
+push-rate question (`LIVE_HR.md` §6.2).
 
 **2. Follow #2419, #2420, #2422** (`WORKFLOW.md` §5): one reply after each review comment; after a squash merge prove
 it equals the head, delete the branch and its worktree, re-mirror `main`, rebuild `noop-optimisations`.
@@ -67,17 +69,23 @@ Android #2270 needs a device.
 **The Lift Log itself:** no open work; rounds 1–6 are upstream. The walk-away test (rule 48) is still Utku's to do.
 
 - **Work branches (NOOP, not the Lift Log), each its own worktree, all clean and pushed:** `live-hr-off-wrist` @
-  `7e468f26` (#2422, `~/Developer/noop-offwrist`), `lockscreen-switches` @ `99abbcb7` (#2419, `~/Developer/noop-lockscreen`),
+  `cf97a93c` (#2422, `~/Developer/noop-offwrist`), `lockscreen-switches` @ `99abbcb7` (#2419, `~/Developer/noop-lockscreen`),
   `metrickit-daily-report` @ `d81f0cc1` (#2420, `~/Developer/noop-metrickit`). `~/Developer/noop` is on `main`.
-- **`noop-optimisations` @ `34ebc362`** — the testing-build stack, never a PR: `3ad25885` + #2422's 8 commits +
-  #2419's NET diff (its middle commit conflicts with #2422 if cherry-picked one by one — apply
-  `git diff $(git merge-base upstream/main lockscreen-switches) lockscreen-switches`) + #2420. Check the stack's
-  `git diff --stat upstream/main` lists only our files before shipping (23 Sep: a wrong base once pulled in reversals
-  of other people's commits — caught before any build).
-- **Utku's build:** `c146351` (shipped 23 Sep 22:55, verified; just update) = that stack.
+- **`noop-optimisations` @ `21d514a3`** — the testing-build stack, never a PR: `upstream/main` `06083a0b` + #2422's
+  11 commits (cherry-picked `3ad25885..live-hr-off-wrist`) + #2419's NET diff (`git diff $(git merge-base upstream/main
+  lockscreen-switches) lockscreen-switches`; cherry-picked one by one its middle commit conflicts) + #2420. Check the
+  stack's `git diff --stat upstream/main` lists only our files before shipping, and build it for iOS locally: a failed
+  CI build leaves the release EMPTY (`WORKFLOW.md` §6).
+- **Utku's build:** `412d1a6` (shipped 24 Sep 04:31, verified; just update) = that stack + the template commit.
 
 ## Verified
 
+- **#2422 reworked (24 Sep):** full `verify.sh` on `5e579ac3` (the pushed head `cf97a93c` but for three comment lines),
+  every step passed: WhoopStore 611 · StrandAnalytics 2049 · StrandImport 327 · doc lint · i18n · ledger · ratchet ·
+  governance 124 · macOS tests 2,134 (only the two `TodayCarryOverTests`) · iOS build. Each of the new commits 7–10
+  built alone (iOS app, macOS tests). Seen to fail, restored byte-identical: number↔dash made to wait (6 failures),
+  renewal removed (3), wrist line removed (both wrist tests), the old link-down end put back (2 + 1). The build stack
+  `21d514a3` built for iOS locally before shipping.
 - **The tip `8b05e0bb` (the PR's head, rebased onto `751fa1d8`), full `verify.sh`, every step passed:** WhoopStore
   609 · StrandAnalytics 2041 · StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 · macOS tests
   2,102 (only the two `TodayCarryOverTests`) · iOS build. Android CI 35805029680 green. Every commit of the rebase
@@ -140,13 +148,13 @@ log (#2386) is merged upstream but reaches him only in a build made after it lan
 
 ## Nothing is blocked
 
-Three PRs wait on the maintainers; one hardware test waits on Utku. Nothing else is in flight.
+Three PRs wait on the maintainers; one hardware test (build `412d1a6`) waits on Utku. Nothing else is in flight.
 
 ## Next
 
-1. **Session start** (README): status `--net`, `upstream-check.sh`, then the open step in "Now".
-2. **`LIVE_HR.md` §6** in order: the WRIST_OFF log line → Utku's strap-off test → decide the background behaviour with
-   him → the push-rate question (§6.6).
+1. **Session start** (README): status `--net`, `upstream-check.sh`, then the open lines in "Now".
+2. **Utku's log of `412d1a6`** → `hr-timeline.py` → #2422's description; then `LIVE_HR.md` §6.2 (push rate) if the
+   phone's stale timing allows.
 3. **Follow the three open PRs**; rebuild `noop-optimisations` and ship after any merge or change.
 4. **Hooks (Claude Code) are installed** (22 Sep): a session starts with the recovery brief; the handbook is
    checkpointed after every reply. If a new session shows no brief, tell Utku rather than touching Claude's settings.
@@ -154,13 +162,14 @@ Three PRs wait on the maintainers; one hardware test waits on Utku. Nothing else
 
 ## The fork, exactly
 
-- Branches: `main` (mirror of `upstream/main`, `f15360da`), `lift-log-build` (the build branch, `c1463512`),
+- Branches: `main` (mirror of `upstream/main`, `06083a0b`), `lift-log-build` (the build branch, `412d1a6e`),
   `lift-log-handbook`, `live-hr-off-wrist` (#2422), `lockscreen-switches` (#2419), `metrickit-daily-report` (#2420),
   `noop-optimisations` (testing stack). Every merged PR's branch was deleted once its squash was proven equal.
 - Tags: `fork/ships-template`, `testing-latest`, plus upstream's version tags. No `backup/*` tags remain.
 - Releases: one, `testing-latest` (Pre-release), replaced by every `ship-build.sh`; Utku installs from it.
 - Local only: worktrees `~/Developer/noop` (`main`), `~/Developer/noop-offwrist`, `~/Developer/noop-lockscreen`,
   `~/Developer/noop-metrickit`, `~/Developer/noop/dist` (this handbook); `dist/private/` (the event log, PR drafts
-  `pr-*-body.md`). Utku's strap logs of 23 Sep are no longer in `~/Downloads`; their facts are in `LIVE_HR.md` §3.
+  `pr-*-body.md`; `pr-2422-body.md` is #2422's description as posted 24 Sep). Utku's strap log of 24 Sep 03:29 is in
+  `~/Downloads` (personal — never commit it); its facts are in `LIVE_HR.md` §3.
 - Simulator `281E44EC` (iPhone 17 Pro): NOOP installed from a test build; its app-container setting
   `liveActivity.enabled` = true; an old test Lift Log session is still running in it (harmless).

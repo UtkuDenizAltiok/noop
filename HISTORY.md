@@ -102,6 +102,16 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **24 Sep, 03:30–05:00 — the strap-off banner, round four: kept until its switch.** Utku's 03:29 log (build
+  `c146351`) answered the open question: the strap's console moved "on-body to off-body" at 01:33:35, an event reached
+  NOOP two seconds later, and the silence clear found the heart rate already gone — a 5.0 sends WRIST_OFF live. His
+  "91" at 01:34 was a dash push dropped by the 2-s spacing; his "–" at 03:01 came after NOOP was closed at 02:56 and
+  restarted in the background (NOOP logged nothing about the banner). His decision: NOOP never closes the banner, it
+  shows "–"; only the switch removes it. #2422 rebuilt on commit 6 (the old 7–8 dropped) with five new commits: kept
+  until its switch, number↔dash at once, fed from process start, renewed on open (iOS's 8-h limit), banner + WRIST
+  log lines. Full verify, four breaks seen to fail, each commit built alone; force-pushed as `cf97a93c`, description
+  replaced; build `412d1a6` shipped 04:31 (stack on `06083a0b`). Original upstream, for the record: the banner ended at every link drop and every sync, and froze on the
+  last number with the strap off.
 - **23 Sep, 21:30–23:00 — the strap-off banner, round three (not finished).** Utku's 21:33 log: off the wrist the
   5.0 goes silent, iOS suspends NOOP, and the clears came from the zeros sent when the strap went back ON — so in the
   background the number stood until re-wear or an app open. #2422 gained: a 30-s stale date with the widget drawing
