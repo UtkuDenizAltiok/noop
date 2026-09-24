@@ -101,7 +101,8 @@ data: read it locally, quote only what a finding needs, never commit it — this
 - **How much a log holds** (since #2386, 22 Sep 2026): every line of every app run, on disk, up to 2 MB in total
   (`StrapLogArchive`, about 20,000 lines); past that the oldest part is dropped. On Utku's phone that was about 25 hours
   on a quiet day (a 1.75 MB log, 23–24 Sep) and about 17 hours at the pace of a testing day. So one log saved each
-  morning covers roughly the day before; for a full 24 hours, save one in the evening too.
+  morning covers roughly the day before; for a full 24 hours, save one in the evening too. An update keeps the log;
+  deleting and reinstalling NOOP starts it afresh (both 24 Sep logs began at 10:31, when Utku reinstalled).
 - `python3 dist/tools/strap-log.py <log> [runs|steps|taps]` — `runs` says which app runs are in the file, how each
   started and whether its beginning was dropped; `taps` matches the strap's own console (millisecond ticks) to what
   the app did with each double-tap; `steps` is the Lift Log.
@@ -157,7 +158,9 @@ The fork's testing pipeline has three layers:
 - **`testing-latest`** — the one release (Pre-release) Utku installs from:
   `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`, "NOOP Staging").
 
-**Just update or wipe:** just update for UI, logic, analytics or a new optional stored field; wipe only for an edited
+**Just update or wipe:** "just update" means install over the existing app (AltStore), never delete it first —
+deleting NOOP erases everything it stored on the phone, history and strap log included. Just update for UI, logic,
+analytics or a new optional stored field; wipe only for an edited
 shipped migration or a stored value changing shape or meaning. Schema changes are new migrations, so wipes should not
 recur. When in doubt, say wipe.
 
