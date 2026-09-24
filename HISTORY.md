@@ -102,6 +102,13 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **24 Sep, 10:31–11:24 — Utku's four tests of `13f96c7`, and #2437.** Walk away (7 min), swipe-away and the switch
+  all behaved as designed, each step now named in the log. The strap named WRIST_OFF live at 10:48:03, ~1 s after he
+  took it off — but the banner showed the dash only ~2–3 min later: its sink on the heart rate read AppModel's median
+  inside the willSet, before AppModel's own sink had reset it (sinks on one publisher run in no promised order; our own
+  #2422 comment had assumed otherwise). Fixed the same hour as #2437: the banner reads once the change has landed
+  (`LiveHRBannerInputs.settled`); the test sees `[91, 91]` without it. He also asked why a merged PR needs a test at
+  all: CI cannot drive a strap or a Lock Screen, and this is what the test was for.
 - **24 Sep, 05:22 (03:22 UTC) — #2422 MERGED** by ryanbr as `9c99138d`, 70 minutes after the reworked push;
   `git merge-tree` of our head into its parent gives the squash's own tree. His review praised that the PR records the
   tester's reversal, checked the polarities and the push bypass, and flagged two deliberate trade-offs (240 pushes an

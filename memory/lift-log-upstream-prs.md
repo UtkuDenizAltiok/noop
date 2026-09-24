@@ -1,6 +1,6 @@
 ---
 name: lift-log-upstream-prs
-description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 and the diagnostics PR #2402 both MERGED 23 Sep; NOOP optimisation #2415-#2418 and #2422 (Live HR banner kept until its switch) merged; #2419/#2420 open; build 13f96c7 awaits Utku's strap test (dist/LIVE_HR.md). Full state in dist/STATE.md."
+description: "Where the Lift Log stands upstream — #2098, #2099, #2232, #2233, #2386 merged; the Lift Log follow-up #2403 and the diagnostics PR #2402 both MERGED 23 Sep; NOOP optimisation #2415-#2418 and #2422 (Live HR banner kept until its switch) merged; #2419/#2420/#2437 open (#2437: the WRIST_OFF dash fix from Utku's test); build 3ad319d awaits his re-test (dist/LIVE_HR.md). Full state in dist/STATE.md."
 metadata:
   node_type: memory
   type: project
@@ -24,8 +24,9 @@ that must survive if the handbook is missing (21 Sep 2026):
   #2419 (Live notifications switches), #2420 (MetricKit), #2422 (live HR shown only while measured). 24 Sep: Utku
   decided NOOP never closes the Live HR banner — "–" when nothing is measured, only its switch removes it (RULES 49);
   #2422 reworked to 11 commits and MERGED 24 Sep as `9c99138d` (ryanbr's review answered); Utku approved the final
-  cases; build `13f96c7`, his strap test pending — its full brief is `dist/LIVE_HR.md`; standing permission to reply
-  and push is in dist/RULES.md — see `dist/STATE.md`.
+  cases. His test of `13f96c7` (11:24 log): 3 of 4 right; the dash on WRIST_OFF waited ~2 min (the banner read
+  AppModel's median inside a willSet) → PR #2437 (`LiveHRBannerInputs.settled`), build `3ad319d`, his re-test pending —
+  its full brief is `dist/LIVE_HR.md`; standing permission to reply and push is in dist/RULES.md — see `dist/STATE.md`.
 - Round 4 (Utku, 21 Sep): knock window 5 s; a done set is complete without asking; each program line takes its
   heaviest done set at Save, automatically; the Lock Screen lights whenever NOOP is off screen (not gated on
   "locked"); each strap step logs its light-up; no sync banner during a session; banner layout.

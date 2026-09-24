@@ -274,7 +274,9 @@ and flag it.
     connected, before any reading if need be; one iOS ended (its ~8-h limit) or the user swiped away starts again at the
     next open; one older than an hour is renewed at an open (new first, then the old one ends), so the 8-h limit
     restarts. It follows the strap from process start (`LiveActivityController.follow` in `StrandiOSApp.init`), never
-    from a screen, like 41. Each step of its life and each WRIST_ON / WRIST_OFF leaves an always-on strap-log line
+    from a screen, like 41, and it reads what it shows once a change has landed (`LiveHRBannerInputs.settled`, #2437):
+    read inside a `@Published` willSet, AppModel's median was still the old number when WRIST_OFF cleared the heart
+    rate, and the dash waited ~2 min for iOS (24 Sep, 10:48). Each step of its life and each WRIST_ON / WRIST_OFF leaves an always-on strap-log line
     ("Live HR banner: …", "Strap: WRIST_OFF …"). Never requested from the background.
 
 ## Sources

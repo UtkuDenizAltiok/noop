@@ -41,6 +41,7 @@ next. Rule 49 in `RULES.md` is the short version.
 | 23 Sep 15:56 | switches work alone and together; a plausible HR every second until NOOP closed the link |
 | 23 Sep 17:00 | "3 unreadable samples (last 0 bpm, contact **unsupported**)" cleared the HR; later a strap-off = silence with the link up; the banner froze at 93 |
 | 23 Sep 21:33 | every strap-off in the background = minutes of no traffic; each clear came from the zeros sent when the strap went back ON |
+| 24 Sep 11:24 (build `13f96c7`, Utku's four tests) | **"Strap: WRIST_OFF; live heart rate cleared" at 10:48:03 — WRIST_OFF named, live, ~1 s after removal**, but no banner line followed and he saw the dash only ~2–3 min later: the banner read AppModel's median inside the willSet before AppModel reset it (fixed in #2437). Back on: "Strap: WRIST_ON" 10:53:35, number in ~10 s. Walk away: "–" at the drop 11:09:57, number 1 s after the reconnect 11:17:15. Swiped away 10:57:24: banner kept, "–" by 10:59 (iOS), picked up + number 1 s after opening at 10:59:34. Switch: ended 11:01:08, started 11:02:15 |
 | 24 Sep 03:29 (build `c146351`) | **01:33:35 the strap's console: "wear-detection moving from on-body to off-body"; 01:33:37 an EVENT reached NOOP** (a sync attempt, "rate-limited"); NOOP was running on screen until 01:36:57, and the ten-second silence clear that would have fired at ~01:33:47 found the heart rate already gone → **WRIST_OFF arrives live, ~2 s after removal**. An event also arrived at each strap-on as readings resumed (01:26:28, 01:37:42, 02:26:27, 03:25:52). He saw "91" at 01:34 (the dash push lost to the 2-s spacing — fixed); 02:56:03 NOOP closed (`reason=termination`), 03:01:24 started again in the background, readings from 03:01:26, the banner "–" at 03:01 (NOOP logged nothing about the banner, so why is not provable; now it logs) |
 
 So, on this strap and firmware:
@@ -78,22 +79,21 @@ the final cases back on 24 Sep and approved them.
 | situation | banner | how fast | proven |
 |---|---|---|---|
 | strap worn | number, pushed on change (≥ 2 s apart), re-pushed every 15 s when steady | — | yes (logs) |
-| strap off (any app state NOOP is awake or woken in) | WRIST_OFF → "–" | ~2 s | inferred from the 24 Sep log; the new lines will show it |
+| strap off (any app state NOOP is awake or woken in) | WRIST_OFF → "–" | ~1 s | WRIST_OFF proven (11:24 log); the dash missed it until #2437 — build `3ad319d`, re-test pending |
 | strap off, no WRIST_OFF, NOOP asleep | iOS draws "–" at the stale date | ~2 min | simulator |
 | strap back on | number again by itself | seconds | yes (logs) |
-| link down (walk away), any length | "–" at once, **kept**; number again on reconnect | at once | tests |
+| link down (walk away), any length | "–" at once, **kept**; number again on reconnect | at once | **yes** (11:24 log: 7 min away) |
 | NOOP on screen, strap off | "–", **kept** | — | tests |
-| NOOP swiped away | iOS keeps the banner; "–" by its stale date; picked up and fed when NOOP runs again | ~2 min | 24 Sep log (partly) |
+| NOOP swiped away | iOS keeps the banner; "–" by its stale date; picked up and fed when NOOP runs again | ~2 min | **yes** (11:24 log) |
 | iOS's 8-h limit / swiped off the Lock Screen | gone; started again at the next open | — | code only |
 | Lift Log session | HR banner steps aside (ended) for the gym banner, started again when NOOP is on screen after | — | earlier builds |
-| switch off | ended at once, never started | — | yes (switch), at-once: code |
+| switch off / on | ended at once / started at once (NOOP on screen) | at once | **yes** (11:24 log) |
 
 ## 6. Next
 
-1. **Utku tests build `13f96c7`:** strap off in the pocket (the "–" within seconds?), back on (number back by itself?),
-   walk away until the link drops and come back (kept, "–", then number?), close NOOP by swiping and wait (banner "–",
-   then fed again when NOOP comes back?). Then he saves the strap log; read it with `hr-timeline.py` — the new lines
-   answer every row of §5 directly. #2422 is merged: the result goes here, and into a follow-up PR if it changes anything.
+1. **Utku re-tests test 1 on build `3ad319d`** (the other three passed on `13f96c7`): strap off with the phone locked
+   → "–" within seconds; back on → the number. In the log, "Strap: WRIST_OFF" must be followed within a second by
+   "Live HR banner: – (strap connected, no heart rate)". The result goes into #2437's description.
 2. **Push rate:** 15-s re-pushes while steady exist only to beat a 30-s stale date; with WRIST_OFF handled live the
    stale date is only a backstop, so a 60-s stale date could halve those pushes — decide from the real phone's timing.
 3. **The Lift Log banner's own heart rate** has no stale handling (strap off mid-session keeps its last number). Out of
