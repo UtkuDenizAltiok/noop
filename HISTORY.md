@@ -33,3 +33,19 @@ value that looks right on screen while being wrong underneath. A real session ca
   (branches `handbook`, `testing-stack`, `testing-build`; `RULES.md`, `WORKFLOW.md`, `BACKLOG.md` rewritten; the two
   finished features moved to `features/`). First survey: a 500 ms R-R filler stored as a real beat on WHOOP 5 (#2371)
   leads the backlog; half of all history syncs are an automatic follow-up that finds nothing.
+- **24 Sep, 15:00–15:11** — Simulator baseline (Release, 120 demo days, `tools/usage.sh`): still screens cost nothing;
+  Today 7 + 22 and Sleep 7 + 17 CPU-s a minute (NOOP + render server), all of it decorative loops.
+- **24 Sep, 15:15–16:50** — The daytime sky: its breath moves ≤ 2 of 255 levels, yet it redrew at 20 fps. A first fix
+  with `paused:` measured WORSE (render server 22 → 46); a plain still `Canvas` worked. `verify.sh` lost its logs
+  mid-run: the macOS test host's `purgeImportTemp()` deletes `noop-*` in the shared temp folder (canary-proven);
+  `verify.sh` moved to `~/Library/Caches/noop-handbook/`.
+- **24 Sep, 16:30–17:03** — The hero rings: a ring since #1068 (draws `sim.level` only) but still a 60 fps loop, the
+  whole sim and the tilt sensor. Stopped once filled: Today NOOP 6.8 → 1.7, Sleep 5–7 + 17–34 → 0.01 + 0.1. Turn cut
+  off by an API error at 17:03; resumed 19:01.
+- **24 Sep, 19:05–19:45** — The night check found the sky gate too loose (no star drawn until the brightest reaches
+  opacity 0.02): the gate now follows the drawable stars. Sky + rings left the render server churning (15–51) with
+  NOOP at 0: the header sync ring's paused timeline; drawn still, 0.07.
+- **24 Sep, 20:20** — **PR #2444** "today: stop redrawing the sky and the rings while nothing moves" (3 commits: sky,
+  hero rings, header sync ring + a census that no animation timeline is merely paused). Today by day 6.7 + 22.6 →
+  0.00 + 0.11; night 6.3 → 2.0 in NOOP. Full `verify.sh` passed. Stack `3f88327f`, build **`37408cc`** shipped
+  20:42 (run 36040916843; just update).

@@ -199,6 +199,11 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 ## 9. Conventions and traps
 
+- **Never keep tool output in `$TMPDIR/noop-*`.** The macOS app (unsandboxed in tests and in the ad-hoc build) runs
+  `AppModel.purgeImportTemp()` at every launch, which deletes every `noop-*` item older than 60 s in the shared temp
+  folder: on 24 Sep a macOS test run deleted a running verify's logs and derived data, and a measurement build.
+  `verify.sh` works in `~/Library/Caches/noop-handbook/`; do the same for builds and logs.
+
 - **Design tokens only** (`StrandPalette`, `StrandFont`, `NoopMetrics`; Android `Palette`/`Metrics`); warnings use
   `statusWarning`. A disabled `.noopPrimary` button does not dim itself: add `.opacity(… disabledOpacity)`.
 - **Row structs take no default parameter values**, so a new column is a compile error at every call site.
@@ -218,10 +223,20 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 ## 11. Measuring usage
 
 `RULES.md` 1: no usage claim without a number, before and after, in the PR.
-- **CPU, simulator:** a simulator app is a Mac process — `ps -o time= -p $(pgrep -f "NOOP Staging.app/NOOP Staging")`
-  read 60 s apart gives its CPU-seconds a minute. Same screen and state before and after, with NOOP alone as the
-  baseline (22 Sep: 6.29 idle on Today). The simulator suspends NOOP in the background (no strap), so background timing is checked in unit
-  tests and on the phone.
+- **CPU, simulator: `bash dist/tools/usage.sh "<label>" 60 20`** — NOOP's CPU-seconds a minute, the simulator's render
+  server (`backboardd`) over the same window, and the footprint; each line kept in `private/usage.log`. The render
+  server matters: animation cost lands there, not in NOOP (24 Sep: Today 7 in NOOP but 22 in the render server).
+  - **Realistic data:** a Debug build launched with `--demo-seed` seeds 120 synthetic days once (`AppleDemoSeeder`,
+    DEBUG only); then install the Release build over it (the data stays) and measure Release — what the phone runs.
+  - **A/B, alternating:** install `main`, measure, install the change, measure, twice (`simctl install` + `launch`,
+    20 s settling). Noise (the simulator's own daemons) then hits both. A still screen (Trends, More) reads ~0: the
+    control.
+  - **A result that depends on the clock** (the sky by day): pin the hour in a throwaway worktree, never in the PR,
+    and say so in the PR. Change one thing at a time: fixes shift cost onto each other (24 Sep, #2444).
+  - **Nothing drawn changes** is proven the same way: `xcrun simctl io <dev> screenshot` of each build back to back and
+    a per-pixel diff (Python + PIL); the Dynamic Island and the clock are simctl noise.
+  - The simulator suspends NOOP in the background (no strap), so background timing is checked in unit tests and on
+    the phone.
 - **Memory, simulator:** `footprint <pid>` (or `vmmap --summary <pid>`) for the physical footprint; compare the same
   screens.
 - **Instruments** (`xcrun xctrace record --template 'Time Profiler' --attach <pid>`, also Allocations, Leaks, Energy

@@ -50,6 +50,9 @@ owner and decider of this journey.
 4. **Nothing runs for nothing.** No timer that ticks when nothing changes, no `@Published` that changes on a timer, no
    screen that watches more than it draws (Lift Log rule 43: iOS killed NOOP for background CPU when one did). Every
    wake of the phone and every radio exchange with the strap costs battery on both: batch, coalesce, or skip it.
+   **A paused animation is not a still view:** a `TimelineView(.animation(paused: true))` kept the render server busier
+   than the animation itself (the sky 22 → 46 CPU-s/min; the header sync ring 15–51 → 0.07 drawn still; #2444). Draw
+   the resting frame with no timeline, and pick the view rather than pausing the clock; a census now enforces it.
 5. **What must work in the background is wired at process start, never from a screen.** iOS restarts NOOP in the
    background and may build no view at all (Lift Log rule 41; the Live HR banner, #2422).
 6. **Never read another object's derived state inside a `@Published` sink.** It runs in willSet, and sinks on one

@@ -7,7 +7,11 @@ set -uo pipefail
 TOOLS=$(cd "$(dirname "$0")" && pwd)
 REPO=${NOOP_REPO:-$(cd "$TOOLS/../.." && pwd)}
 cd "$REPO"
-OUT="${TMPDIR:-/tmp}/noop-verify/$(git rev-parse --short HEAD)"; DD="${TMPDIR:-/tmp}/noop-verify/derived"
+# Not $TMPDIR: the macOS app (unsandboxed in tests and in the ad-hoc build) runs `AppModel.purgeImportTemp()` at
+# launch, which deletes every `noop-*` item older than 60 s in the shared temp folder. On 24 Sep that removed the
+# logs and the derived data of a running verify at its macos-tests step.
+WORK="${NOOP_TOOLS_DIR:-$HOME/Library/Caches/noop-handbook}"
+OUT="$WORK/verify/$(git rev-parse --short HEAD)"; DD="$WORK/verify/derived"
 mkdir -p "$OUT"
 failed=0 failures=""
 
