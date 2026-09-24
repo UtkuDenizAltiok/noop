@@ -49,3 +49,8 @@ value that looks right on screen while being wrong underneath. A real session ca
   hero rings, header sync ring + a census that no animation timeline is merely paused). Today by day 6.7 + 22.6 →
   0.00 + 0.11; night 6.3 → 2.0 in NOOP. Full `verify.sh` passed. Stack `3f88327f`, build **`37408cc`** shipped
   20:42 (run 36040916843; just update).
+- **24 Sep, 23:25** — Utku: "I accept everything you say". Issue **#2446** filed upstream: the macOS app deletes other
+  programs' `noop-*` items in the shared temp folder at launch. `BACKLOG.md` 4 (the empty follow-up sync) measured and
+  dropped: two small commands and one or two replies in the same second.
+- **25 Sep, ~00:05** — Full check-up after two cut-offs: GitHub and this Mac identical, the testing stack proven equal
+  to upstream + our four PRs, all PRs green and mergeable; ~20 GB of measuring builds cleaned.

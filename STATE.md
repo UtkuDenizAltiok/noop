@@ -1,8 +1,8 @@
 # State
 
-**Updated 24 Sep 2026 ~20:50 — Journey 2: NOOP, perfected (`RULES.md` mandate). First result: #2444, Today and Sleep
-stop redrawing what does not move. Open PRs: #2419, #2420, #2437, #2444. Utku's build: `37408cc` (just update).
-Next: his logs (before/after) and backup (#2371).** The only file that changes every session.
+**Updated 25 Sep 2026 ~00:10 — Journey 2: NOOP, perfected (`RULES.md` mandate). First result: #2444, Today and Sleep
+stop redrawing what does not move. Open PRs: #2419, #2420, #2437, #2444; our issue #2446. Utku's build: `37408cc`
+(just update). Next: his logs (before/after) and backup (#2371).** The only file that changes every session.
 Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -11,7 +11,7 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-Nothing is running (24 Sep ~20:50). Waits on Utku:
+Nothing is running (25 Sep ~00:10). Waits on Utku:
 - [ ] **Just update to `37408cc`** (#2444: Today and Sleep stop redrawing what does not move) and look it over: Today
   and Sleep look as before, the rings fill when they appear, tapping a ring still opens it, a sync still spins the
   header ring, the stars still twinkle late in the evening. Proof: his message.
@@ -21,7 +21,16 @@ Nothing is running (24 Sep ~20:50). Waits on Utku:
 - [ ] **A NOOP backup** (More → Settings → Backup & restore → Export…) for #2371: `tools/rr-fill.py` tells whether the
   strap also sends 500 ms as a real beat at ~120 bpm. Personal data: stays on this Mac, never committed.
 
-Following: **#2444** (CI all 15 green at ~20:55, no comments) — `WORKFLOW.md` §5.
+Following: **#2419, #2420, #2437, #2444** and issue **#2446** — none has a comment yet (25 Sep ~00:05).
+
+**Full check-up, 25 Sep ~00:05 (after two cut-offs by usage limits and API errors), all true:** every worktree clean
+and equal to the fork; the fork holds exactly `main` (= `upstream/main` `141cbd93`), `handbook`, `testing-stack`
+`3f88327f`, `testing-build` `37408cc4`, the four PR branches, tags `fork/ships-template` + `testing-latest`, one release
+(`37408cc`, .ipa + template); `testing-stack`'s tree is byte-identical to `upstream/main` merged with the four PR
+branches (`af26d3a1`), and `testing-build` adds only the template commit; each PR's head on GitHub = the local branch,
+all MERGEABLE, all checks green (5 · 4 · 4 · 15); #2444's text on GitHub = `private/pr-today-still-body.md`. Cleaned:
+the superseded drafts `pr-sky-body.md` / `pr-vessel-body.md`, ~20 GB of measuring builds (the pinned-hour one
+included), the canary folder; kept `~/Library/Caches/noop-handbook/verify/` (speeds up `verify.sh`).
 
 24 Sep ~23:20 — Utku: "I accept everything you say" = yes to the upstream issue proposed at 20:50 (`BACKLOG.md` 7b).
 - [x] **Issue #2446** filed on `ryanbr/noop` (~23:25): macOS `AppModel.purgeImportTemp()` deletes other programs'
@@ -65,8 +74,8 @@ checkout first; never refresh the authority ourselves.
   `$TMPDIR/noop-*`, `WORKFLOW.md` §9).
 - **Local only:** `dist/private/` (the event log; the descriptions of the open PRs, `pr-*-body.md`). Utku's strap logs
   of 24 Sep 11:24 and 13:56 are in his `~/Downloads` (his files; personal — never commit). Simulator `281E44EC`
-  (iPhone 17 Pro) has NOOP with 120 demo days (`--demo-seed`), light appearance; the measuring builds of 24 Sep are in
-  the caches folder and the session scratchpad (both disposable).
+  (iPhone 17 Pro) has NOOP with 120 demo days (`--demo-seed`), light appearance, a Release build of `today-still-at-rest`
+  installed. The measuring builds of 24 Sep were deleted on 25 Sep; rebuild them as `WORKFLOW.md` §11 says.
 
 ## Verified — the latest numbers
 
