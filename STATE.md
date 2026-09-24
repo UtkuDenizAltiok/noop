@@ -23,8 +23,15 @@ Nothing is running (24 Sep ~20:50). Waits on Utku:
 
 Following: **#2444** (CI all 15 green at ~20:55, no comments) — `WORKFLOW.md` §5.
 
-**Next safe action:** session start routine; check #2444's CI and comments; then, with Utku's backup, #2371
-(`BACKLOG.md` 1), or without it `BACKLOG.md` 4 (the empty follow-up sync) from his logs.
+24 Sep ~23:20 — Utku: "I accept everything you say" = yes to the upstream issue proposed at 20:50 (`BACKLOG.md` 7b).
+- [x] **Issue #2446** filed on `ryanbr/noop` (~23:25): macOS `AppModel.purgeImportTemp()` deletes other programs'
+  `noop-*` items in the shared temp folder (text in `private/issue-purge-temp.md`).
+
+**Next safe action:** session start routine; check #2444, #2446 and our other PRs for comments; then, with Utku's
+backup, #2371 (`BACKLOG.md` 1); with his 25/26 Sep logs, the phone before/after for #2444 and `BACKLOG.md` 5–6. Without
+either: `BACKLOG.md` 3 (review one score against the literature) or 8 (dead code, symbol by symbol). `BACKLOG.md` 4 was
+measured and dropped (24 Sep). The night sky (~22 CPU-s/min in the render server while stars twinkle) waits for
+#2444 to merge.
 Standing permission (`RULES.md`): replies and pushes on our PRs, and a verified PR for this journey's work.
 Do not redo: PR #2444 (20:20), stack `3f88327f` (pushed ~20:40), ship `37408cc` (run 36040916843, verified 20:42);
 PR #2437 and its description edit, the reply to ryanbr's #2422 review, the branch renames.

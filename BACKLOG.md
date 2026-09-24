@@ -43,6 +43,11 @@ and the measurement comes first. Each item becomes ONE small PR.
    available history (trim=0xFFFFFFFF) - caught up" at once. Find whether the first transfer already tells us it
    reached the end (its "Historical Dump Complete" / trim), so the second exchange can be skipped when it cannot find
    anything. BLE: a strap test before any PR, 4.0 behaviour kept.
+   **Measured 24 Sep, DROPPED:** the follow-up is two small commands (`→ Send Historical Data payload=00`, `→ Historical
+   Data Result ack #1`) and one or two short replies, all inside the same second, with one re-score per sync either
+   way (13:56 log, lines 1235–1243 and 2228–2236). A history transfer is hundreds of frames. It exists to catch a strap
+   that stops mid-history (#364/#451); removing it saves a few packets and risks missed history on a 4.0 nobody here
+   can test. Not worth a BLE change.
 5. **How often NOOP syncs in the background on a normal day** — from the baseline log: triggers per hour (strap
    events, periodic, foreground, connect), each a radio exchange on both devices. Only then decide whether any trigger
    is redundant.
@@ -53,7 +58,7 @@ and the measurement comes first. Each item becomes ONE small PR.
    day 6.7 + 22.6 → 0.00 + 0.11; Sleep → 0.01 + 0.1. Still animating by design: the stars at night (~22 in the render
    server, full-screen sky), the heart-rate line while live, a ring filling. Next candidates, measure first: the
    night sky's cost (a smaller layer for the stars?), other screens with `LiquidTube`/`LiquidThread` loops.
-7b. **Upstream issue to propose (ask Utku first):** `AppModel.purgeImportTemp()` assumes `temporaryDirectory` is
+7b. **Filed as #2446 (24 Sep, Utku's yes):** `AppModel.purgeImportTemp()` assumes `temporaryDirectory` is
    NOOP's sandbox; on the unsandboxed macOS build it deletes any `noop-*` item in the user's shared temp folder
    (canary-proven 24 Sep). Low harm for users; real for developer tooling.
 
