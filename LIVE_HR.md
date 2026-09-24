@@ -52,10 +52,12 @@ So, on this strap and firmware:
 `python3 dist/tools/hr-timeline.py <log> [--from HH:MM:SS] [--to HH:MM:SS]` prints the timeline, including app runs
 starting and closing and, from the next build, every "Live HR banner:" and "Strap: WRIST_…" line.
 
-## 4. What PR #2422 does (11 commits, branch `live-hr-off-wrist`, worktree `~/Developer/noop-offwrist`)
+## 4. What PR #2422 does (11 commits, merged 24 Sep as `9c99138d`)
 
 Reworked 24 Sep on commit 6: the old commits 7 (end after 30 s link down) and 8 (end on screen with no HR) were dropped.
-Head `cf97a93c`, force-pushed 24 Sep ~04:12; the description on GitHub is `dist/private/pr-2422-body.md`.
+Head `cf97a93c` **MERGED 24 Sep 03:22 UTC as `9c99138d`** (proven equal); the branch and worktree are gone. The
+description is `dist/private/pr-2422-body.md`; ryanbr's review and our reply are summarised in `HISTORY.md`. Utku read
+the final cases back on 24 Sep and approved them.
 
 | # | what |
 |---|---|
@@ -71,7 +73,7 @@ Head `cf97a93c`, force-pushed 24 Sep ~04:12; the description on GitHub is `dist/
 | 10 | **renewed on open when > 1 h old** (new first, then the old ends) — iOS's 8-h limit restarts |
 | 11 | **always-on lines**: "Live HR banner: started / picked up / renewed / ended / gone / – / heart rate again / iOS did not start it"; "Strap: WRIST_ON / WRIST_OFF [during a sync][; live heart rate cleared]" (`FrameRouter.handleWrist`) |
 
-## 5. What it does now, situation by situation (build `412d1a6`, shipped 24 Sep 04:31)
+## 5. What it does now, situation by situation (merged; builds `412d1a6` and `13f96c7`)
 
 | situation | banner | how fast | proven |
 |---|---|---|---|
@@ -88,10 +90,10 @@ Head `cf97a93c`, force-pushed 24 Sep ~04:12; the description on GitHub is `dist/
 
 ## 6. Next
 
-1. **Utku tests build `412d1a6`:** strap off in the pocket (the "–" within seconds?), back on (number back by itself?),
+1. **Utku tests build `13f96c7`:** strap off in the pocket (the "–" within seconds?), back on (number back by itself?),
    walk away until the link drops and come back (kept, "–", then number?), close NOOP by swiping and wait (banner "–",
    then fed again when NOOP comes back?). Then he saves the strap log; read it with `hr-timeline.py` — the new lines
-   answer every row of §5 directly. Add the result to #2422's description.
+   answer every row of §5 directly. #2422 is merged: the result goes here, and into a follow-up PR if it changes anything.
 2. **Push rate:** 15-s re-pushes while steady exist only to beat a 30-s stale date; with WRIST_OFF handled live the
    stale date is only a backstop, so a 60-s stale date could halve those pushes — decide from the real phone's timing.
 3. **The Lift Log banner's own heart rate** has no stale handling (strap off mid-session keeps its last number). Out of

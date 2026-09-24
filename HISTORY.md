@@ -102,6 +102,12 @@ trustworthy — keep it.
   (rule 45), and after 20:42 the Lock Screen lit 5–10 s after a double-tap while the buzz stayed immediate,
   recovering by 21:00 — every alert left the app at once, so the wait was iOS's, and the app's share of it was 409
   heart-rate pushes (rule 44). Both fixed the same evening; #2386 merged that morning as `a9717abc`.
+- **24 Sep, 05:22 (03:22 UTC) — #2422 MERGED** by ryanbr as `9c99138d`, 70 minutes after the reworked push;
+  `git merge-tree` of our head into its parent gives the squash's own tree. His review praised that the PR records the
+  tester's reversal, checked the polarities and the push bypass, and flagged two deliberate trade-offs (240 pushes an
+  hour; a banner that only its switch ends). One reply posted 09:11 with the next step for each. He also re-derived
+  the parity authority (`24f2c879`) after nine merges drifted it. Branch and worktree removed; the build stack now
+  carries only #2419 and #2420 on `4653e2a4`. Utku, the same morning, read the final cases back and approved them.
 - **24 Sep, 03:30–05:00 — the strap-off banner, round four: kept until its switch.** Utku's 03:29 log (build
   `c146351`) answered the open question: the strap's console moved "on-body to off-body" at 01:33:35, an event reached
   NOOP two seconds later, and the silence clear found the heart rate already gone — a 5.0 sends WRIST_OFF live. His
