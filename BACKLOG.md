@@ -9,7 +9,8 @@ and the measurement comes first. Each item becomes ONE small PR.
 
 - **A normal day on the phone.** Build `3ad319d` carries #2420, so iOS's MetricKit day report lands in the strap log
   once a day (foreground/background time, CPU time, peak memory, disk writes, hangs, exit reasons). Ask Utku for the
-  log of an ordinary day with NOOP left in the background: that line is the "before" for every battery claim, and the
+  log of an ordinary day with NOOP left in the background, settings unchanged (a log holds about the last day, 2 MB;
+  `WORKFLOW.md` §3): that line is the "before" for every battery claim, and the
   same log counts syncs, reconnects and pushes (`WORKFLOW.md` §11).
 - **The simulator's numbers** for the main screens (Today in the Liquid shell, Live, Sleep, Trends, More): CPU-seconds a
   minute idle and memory footprint, written into `STATE.md` "Verified". 22 Sep baseline: 6.29 CPU-s/min idle on Today.

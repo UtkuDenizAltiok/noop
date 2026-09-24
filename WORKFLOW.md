@@ -98,9 +98,13 @@ data: read it locally, quote only what a finding needs, never commit it — this
 
 - `python3 dist/tools/hr-timeline.py <log> [--from HH:MM:SS] [--to HH:MM:SS]` — the live heart rate, readings and
   silences, the strap's WRIST_ON/OFF, every Live HR banner step, Bluetooth on/off, app runs starting and closing.
-- `python3 dist/tools/strap-log.py <log> [runs|steps|taps]` — the export joins the saved endings of up to three earlier
-  app runs and the live log of the current one: `runs` says which runs are in the file and what each lost; `taps`
-  matches the strap's own console (millisecond ticks) to what the app did with each double-tap; `steps` is the Lift Log.
+- **How much a log holds** (since #2386, 22 Sep 2026): every line of every app run, on disk, up to 2 MB in total
+  (`StrapLogArchive`, about 20,000 lines); past that the oldest part is dropped. On Utku's phone that was about 25 hours
+  on a quiet day (a 1.75 MB log, 23–24 Sep) and about 17 hours at the pace of a testing day. So one log saved each
+  morning covers roughly the day before; for a full 24 hours, save one in the evening too.
+- `python3 dist/tools/strap-log.py <log> [runs|steps|taps]` — `runs` says which app runs are in the file, how each
+  started and whether its beginning was dropped; `taps` matches the strap's own console (millisecond ticks) to what
+  the app did with each double-tap; `steps` is the Lift Log.
 - A log proves what NOOP did and when, to the second — never what iOS drew or when (Live Activities, the stale dash).
 - The strap's console lines (`strap: …`) arrive in bursts during a sync and carry the strap's own ticks: "wear-detection
   moving from on-body to off-body" is the strap's own record of leaving the wrist.
