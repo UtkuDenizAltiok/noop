@@ -34,6 +34,10 @@ owner and decider of this journey.
   ~20 min of it a 7–9 s re-score after nearly every sync (~every 9 min). While NOOP is in the background a re-score
   runs at most every 30 minutes; opening the app runs one at once; the morning's scores come within ~30 minutes of
   the night ending. Sent upstream as its own PR, which the maintainers may decline; the fork keeps it either way.
+- **Android is tested on GitHub, not on the Mac; the fork keeps all of upstream's checks (Utku, 28 Sep 2026).** He
+  declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
+  CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
+  him); a failure email caused by upstream's own drift is explained, not silenced.
 - **The Lift Log and the Live HR banner are finished** (24 Sep 2026). Their pages list what they rely on; an
   optimisation touching their code keeps every rule there.
 

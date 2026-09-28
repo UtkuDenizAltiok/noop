@@ -70,6 +70,13 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
 - **Build both app targets locally.** Nothing else compiles app-target Swift before a PR (`AGENTS.md`).
 - **A new test must be seen to fail.** Break the fix, run the test, watch it go red, restore, compare sha256. A split
   commit series is also built commit by commit.
+  - **Fail, never crash.** The macOS tests run inside a test copy of NOOP ("NOOP Staging", from the build cache): it
+    opens on Utku's screen, starts Bluetooth, and a crashing test makes macOS show him "quit unexpectedly" (28 Sep: a
+    new test read `logged[0]` of an empty list while its fix was switched off). Read possibly-empty results with
+    `.first ?? …`, never by index.
+  - **A failing run on GitHub emails Utku.** Every run on his fork (push, dispatch, schedule) that fails sends him an
+    email, including a deliberate seen-to-fail run. Tell him BEFORE starting one, and delete its throwaway branch
+    after. Android has no local route here (`RULES.md`, 28 Sep); Swift tests always run locally.
 - **Run the app.** Simulator walkthroughs caught layout, copy and reload bugs no test did. The simulator's database:
   `find ~/Library/Developer/CoreSimulator/Devices/<id>/data/Containers -name whoop.sqlite -path '*OpenWhoop*'`.
 - **Live Activities in the simulator:** iOS's own log names every banner created, ended and marked stale —

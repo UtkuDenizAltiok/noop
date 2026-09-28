@@ -62,6 +62,9 @@ platform (the ledger pairs and compares them), pinned by the same literals in `W
 - [x] Android CI 36408713200 on `87ea199a`: success. Full `verify.sh` on `87ea199a`: every step passed (ledger, ratchet,
   governance 124 included).
 - [x] **PR #2569** opened 28 Sep (`rr-whoop5-fill` `87ea199a` → `ryanbr/noop` `main`), body `private/pr-rr-fill-body.md`.
+- [x] #2569 went CONFLICTING (upstream `da4526f7` re-derived `Tools/parity_twin_map.json`): rebased (patch identical),
+  refresh regenerated → `283616b4` + `a5afb4c0`, force-pushed (pinned lease, old `87ea199a`).
+- [x] Android CI 36419269478 on `a5afb4c0`: success; full `verify.sh` on `a5afb4c0`: every step passed; PR description edited.
 
 **Ship 2 of 28 Sep (both changes):**
 - [x] Stack `9bde6246` = `upstream/main` `3c6172de` + spacing (`ccdd0718`) + #2371 (`9bde6246`): iOS BUILD SUCCEEDED

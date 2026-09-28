@@ -121,6 +121,12 @@ B. **BUILT 28 Sep (branch `rr-whoop5-fill` `b4b862e9`, both platforms, shipped i
    `Repository.swift` 3.5k, `WhoopBleClient.kt` 8.7k. Size alone is not a defect; split only where it removes real
    duplication or a real bug risk, one concern per PR, never as a drive-by.
 
+10. **The macOS unit tests start the whole app, Bluetooth included** (seen 28 Sep: `StrandTests` runs hosted in
+   "NOOP Staging", whose log shows a `CBCentralManager` created and a window opened on the developer's Mac). A test
+   run should not touch real Bluetooth: on a desk near the strap it could compete with the phone for it (not
+   observed; the logs show no connect). Candidate upstream PR: when hosting unit tests, skip BLE start and the
+   windows. Check first how upstream wants it (issue or their test setup); app-target Swift, build both apps.
+
 ## 4. Reliability (open upstream, watch or help)
 
 - **#2387 / #1466** — syncs that take "ages" (iOS, WHOOP 4.0); the maintainers are on it (#2390 merged). Utku has a 5.0:

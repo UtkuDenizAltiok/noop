@@ -74,3 +74,8 @@ value that looks right on screen while being wrong underneath. A real session ca
   #2371, run 36405967857).
 - **28 Sep, ~12:40** — Upstream re-derived its parity authority (`0e524b38`); `rr-whoop5-fill` rebased, derived refresh
   committed (`87ea199a`), full verify passed every step, Android CI green: **PR #2569** opened (#2371).
+- **28 Sep, ~13:00–13:45** — Utku's questions: GitHub failure emails (upstream's parity drift on the fork's `main`, my
+  missing Room `41.json`, a deliberate seen-to-fail run), a macOS "quit unexpectedly" (my test crashed the test-host
+  NOOP while its fix was off; fixed before any commit), closed #2419/#2437 in the PR bar (dismissed; merged via
+  #2480/#2481). #2569 went conflicting on upstream's re-derivation: rebased, refreshed (`a5afb4c0`), all green again.
+  He declined a local Android SDK and switching off the fork's parity check (`RULES.md`).
