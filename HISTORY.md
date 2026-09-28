@@ -79,3 +79,8 @@ value that looks right on screen while being wrong underneath. A real session ca
   NOOP while its fix was off; fixed before any commit), closed #2419/#2437 in the PR bar (dismissed; merged via
   #2480/#2481). #2569 went conflicting on upstream's re-derivation: rebased, refreshed (`a5afb4c0`), all green again.
   He declined a local Android SDK and switching off the fork's parity check (`RULES.md`).
+- **28 Sep, 14:30–16:45** — Utku: lower usage by cheaper work, not less work (the 30-min spacing stays). Profiled a
+  re-score on his backup in the simulator (Time Profiler): `dayStreamFingerprint` was 44% of a warm pass. One-walk
+  rewrite, both platforms, equivalence tests vs the replaced statement, seen to fail on both (Android via a
+  pre-announced throwaway run): warm pass 1.6 → 1.2 s CPU. **PR #2574**. Found: iOS ends NOOP several times a day
+  (each relaunch = a cold pass); the sleep stager over-predicts deep (+5 pp vs PSG, upstream's SleepPSG).

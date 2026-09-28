@@ -121,6 +121,16 @@ B. **BUILT 28 Sep (branch `rr-whoop5-fill` `b4b862e9`, both platforms, shipped i
    `Repository.swift` 3.5k, `WhoopBleClient.kt` 8.7k. Size alone is not a defect; split only where it removes real
    duplication or a real bug risk, one concern per PR, never as a drive-by.
 
+9b. **iOS ends NOOP several times a day; each restart costs a COLD re-score** (28 Sep log: runs ended 17:26, 19:06,
+   22:00, each on `standard-hr transport flush-attempt reason=termination`, i.e. iOS told the app it was closing, and
+   the strap's next event relaunched it in the background; 25 Sep: 10 runs in 19 h; MetricKit 26 Sep: "exits: normal
+   4", peak memory 339 MB). A cold pass is ~3× a warm one (sim, his data: 4.4 vs 1.2 s CPU) because the per-day
+   reuse cache lives in memory (`IntelligenceEngine.dayScanCache`). Ideas: (a) persist that cache (and its config
+   signature) so a relaunch starts warm — same scores, upstream named it the remaining lever in #1538; (b) find why
+   iOS ends the app (ask Utku whether he swipes NOOP away or AltStore refreshes it; the next MetricKit day lines);
+   (c) the termination flush logs no "flush-succeeded" — check the last ~10 s of live rows are not lost (history
+   offload should cover them); (d) 339 MB peak memory in the background — measure where (a cold pass holds whole
+   windows).
 10. **The macOS unit tests start the whole app, Bluetooth included** (seen 28 Sep: `StrandTests` runs hosted in
    "NOOP Staging", whose log shows a `CBCentralManager` created and a window opened on the developer's Mac). A test
    run should not touch real Bluetooth: on a desk near the strap it could compete with the phone for it (not

@@ -34,6 +34,13 @@ owner and decider of this journey.
   ~20 min of it a 7–9 s re-score after nearly every sync (~every 9 min). While NOOP is in the background a re-score
   runs at most every 30 minutes; opening the app runs one at once; the morning's scores come within ~30 minutes of
   the night ending. Sent upstream as its own PR, which the maintainers may decline; the fork keeps it either way.
+- **Lower usage by doing the same work cheaper, never by doing less of it (Utku, 28 Sep 2026, afternoon).** "Don't
+  reduce usage just by limiting the actual work NOOP does; achieve better things with lower usage." So an
+  optimisation keeps every result and its freshness and makes the computation, the reads or the radio cheaper; a
+  change that skips or delays work is a last resort, stated as such to him. He then clarified: the 30-minute re-score
+  spacing STAYS (and goes upstream as planned); the point is not to improve the app mainly by that kind of change.
+  Also his: work on the biometrics and the strap connection —
+  "better than the original WHOOP" — each change with evidence (rules 2, 12).
 - **Android is tested on GitHub, not on the Mac; the fork keeps all of upstream's checks (Utku, 28 Sep 2026).** He
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails

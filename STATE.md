@@ -1,6 +1,6 @@
 # State
 
-**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 15 PRs merged; open: #2569 (#2371).
+**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 15 PRs merged; open: #2569 (#2371), #2574 (cheaper re-score fingerprint).
 Utku's build: `eeac53e3` = upstream `3c6172de` + the background re-score spacing (`BACKLOG.md` A, `rescore-spacing`)
 + the #2371 500 ms fill mark (`BACKLOG.md` B, `rr-whoop5-fill`), neither a PR yet. Next: his strap log of the morning
 of 29 Sep, then PR A; PR B once upstream re-derives its parity authority.** The
@@ -32,7 +32,7 @@ Waits on Utku:
 - Tests: 42 policy/scheduler tests pass; with the rule off 5 assertions fail (seen; sha restored). Full `verify.sh`
   on `d1f8c9bd` passed except the parity ratchet and governance 1/124, which fail identically on clean `4cdae213`
   (upstream drift; fork CI shows it on `main`).
-- [ ] **PR upstream after the 29 Sep log** confirms it on the phone (RULES 7). Draft `private/pr-rescore-spacing-body.md`
+- [ ] **PR upstream after the 29/30 Sep logs** confirm it on the phone (RULES 7; Utku confirmed 28 Sep pm: keep the spacing). Draft `private/pr-rescore-spacing-body.md`
   (fill PHONE_RESULT; rebase on `upstream/main` first if it moved; journal the PR number the moment it exists).
 
 **`BACKLOG.md` B (#2371), built 28 Sep:** refined on his backup (5-bpm buckets, same-second `hrSample`): the 500
@@ -72,21 +72,34 @@ platform (the ledger pairs and compares them), pinned by the same literals in `W
 - [x] Shipped `eeac53e3` (run 36405967857), verified on the releases page 28 Sep 12:07 (.ipa + template); scratch
   worktree removed. Told Utku "just update" (the v47 migration is additive).
 
-**Next safe action:** (1) `upstream-check.sh` + upstream's Parity Governance CI (`gh run list --repo ryanbr/noop
---workflow "Parity Governance CI" --limit 3`): once `main` passes again, rebase `rr-whoop5-fill`, run
-`parity_ledger.py --refresh-derived --base upstream/main` (commit the refreshed derived files), `verify.sh`, open PR B.
-(2) When Utku's 29 Sep log arrives: read it (deferral lines, passes/h, when the night's score landed, MetricKit), fill
-PHONE_RESULT, rebase, open PR A. (3) Meanwhile `BACKLOG.md` A option (1) or the next backlog item.
-The data is in Utku's files in `~/Downloads` (`noop-strap-log-260925-1303.txt`, `…260927-1248.txt`,
-`…260928-0913.txt`, `NOOP-backup-2026-09-28.noopbak`: personal, never commit, never upload).
-Standing permission (`RULES.md`): replies and pushes on our PRs, and a verified PR for this journey's work.
-Do not redo: ships `8fac9a26` (run 36398385255) and `eeac53e3` (run 36405967857), stack pushes `d0fe1231` and
-`9bde6246`, fork `main` mirror to `424bc304`, pushes of `rescore-spacing` `d1f8c9bd` and `rr-whoop5-fill` `a5afb4c0` (PR #2569),
-the deleted throwaway branch `tmp-rr-fill-broken`.
+**`BACKLOG.md` A option (1), cheaper passes (28 Sep pm), branch `rescore-cheaper` (worktree `~/Developer/noop-rescore-cheaper`):**
+- Harness: throwaway worktree `~/Library/Caches/noop-handbook/prof` + `prof.patch` (AppModel: 25 s wait, 8 forced passes,
+  a 600 s synthetic offload before each warm pass, strap-log lines mirrored to NSLog); `prof-run.sh`; simulator
+  281E44EC holds a COPY of his backup DB (demo DB + prefs saved in `~/Library/Caches/noop-handbook/sim-demo-backup`,
+  put back when done). Time Profiler: `prof.trace`, `prof-agg.py`, `prof-callers.py`.
+- Baseline (upstream `424bc304`, sim, Release): warm pass 1.6 s CPU (1.9–2.1 s elapsed), cold 5.0 s. Of 7 warm passes'
+  11.8 s CPU: `dayStreamFingerprint` 5.1 s (44%: five rr COUNT scans with a table lookup per row), rr reads 1.1 s,
+  hr/grav/steps reads 0.8 s, other fingerprints 0.7 s, GRDB by-name column lookup (`String.lowercased`) 0.3 s.
+- [x] (1) committed `022a0fea` on `rescore-cheaper` (Swift + Kotlin, equivalence tests vs the replaced statement; Swift
+  seen to fail: 106 failures with the suspect filter dropped). Pushed; Android CI 36426678021 green. A/B (A = upstream
+  `0c982899`, B = branch; `prof`, `prof-b`; logs `ab-*.log`), 2 rounds: warm 1.6 → 1.2 s CPU (−25%), elapsed 2.0 → 1.6 s,
+  cold 5.0/4.7 → 4.4/4.2 s; cache decisions identical. Draft `private/pr-rescore-fingerprint-body.md`.
+- [x] Full `verify.sh` on `022a0fea`: every step passed.
+- [x] Android seen-to-fail (Utku told first): run 36434511659 failed exactly `dayFingerprintOneWalkMatchesTheFiveSubSelects` (1 of 6,535); throwaway branch deleted.
+- [x] **PR #2574** opened 28 Sep (`rescore-cheaper` `022a0fea`), body `private/pr-rescore-fingerprint-body.md`.
+- Plan: (1) one combined rr scan in `dayStreamFingerprint` (Python on his data: 199 → 78 ms per 54 h window,
+  identical values), Swift + Kotlin; (2) positional column reads in the hot stream reads; re-measure; then cross-pass
+  reuse of the day windows if still worth it.
+
+**Next safe action:** `BACKLOG.md` A option (1): make each re-score pass cheaper with byte-identical scores — profile a
+pass (simulator, demo data; `analyzeRecent` cost lines), find where the ~7 s goes (prep 2.1 + score 0.1 + postLoop 0.9
+of 6.7 s on his phone, ~3.6 s not broken out), cut it, prove scores identical (oracle over demo data before/after).
+Then biometrics and the connection (his 28 Sep afternoon ask). Utku saves strap logs on 29 and 30 Sep mornings.
+#2569: answer any review once (standing permission).
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open: **#2569** (#2371, the WHOOP 5 500 ms fill mark, both platforms; opened 28 Sep). Merged (15): #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
+Open: **#2569** (#2371, the WHOOP 5 500 ms fill mark, both platforms; opened 28 Sep), **#2574** (the day fingerprint's R-R figures in one walk: warm re-score −25% CPU; both platforms; 28 Sep). Merged (15): #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
 (via #2481), #2444 (`HISTORY.md`). Our issue #2446 was fixed upstream in #2453. How ryanbr merges and what he asks
 for: `WORKFLOW.md` §5. The parity gate on `main` drifts after busy merge days and the maintainers re-derive it: if our
 `verify.sh` fails ledger/governance after a rebase, compare with a clean `main` checkout first; never refresh the
