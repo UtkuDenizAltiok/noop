@@ -81,7 +81,7 @@ The data is in Utku's files in `~/Downloads` (`noop-strap-log-260925-1303.txt`, 
 `…260928-0913.txt`, `NOOP-backup-2026-09-28.noopbak`: personal, never commit, never upload).
 Standing permission (`RULES.md`): replies and pushes on our PRs, and a verified PR for this journey's work.
 Do not redo: ships `8fac9a26` (run 36398385255) and `eeac53e3` (run 36405967857), stack pushes `d0fe1231` and
-`9bde6246`, fork `main` mirror to `3c6172de`, pushes of `rescore-spacing` `d1f8c9bd` and `rr-whoop5-fill` `b4b862e9`,
+`9bde6246`, fork `main` mirror to `053e73ed`, pushes of `rescore-spacing` `d1f8c9bd` and `rr-whoop5-fill` `a5afb4c0` (PR #2569),
 the deleted throwaway branch `tmp-rr-fill-broken`.
 
 ## Our PRs upstream (`ryanbr/noop`)
@@ -94,8 +94,8 @@ authority ourselves.
 
 ## The fork, exactly
 
-- **Branches:** `main` (mirror of `upstream/main`, `3c6172de`), `handbook` (this), `rescore-spacing` @ `d1f8c9bd` and
-  `rr-whoop5-fill` @ `b4b862e9` (PRs to come), `testing-stack` @ `9bde6246` (`main` + both), `testing-build` @
+- **Branches:** `main` (mirror of `upstream/main`, `053e73ed`), `handbook` (this), `rescore-spacing` @ `d1f8c9bd` and
+  `rr-whoop5-fill` @ `a5afb4c0` (PR #2569), `testing-stack` @ `9bde6246` (`main` + both), `testing-build` @
   `eeac53e3` (the stack + `fork/ships-template`).
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`.
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`),
