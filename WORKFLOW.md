@@ -19,6 +19,9 @@ rather than obeyed, and a working implementation kept unless a change is truly w
 - **Ask him for evidence, step by step.** A test he runs is written as numbered steps with what he should see, and
   ends with the strap log (More → Test Centre → Strap log → Save…). Ask him to note the times of what he saw: the log
   proves what NOOP did, only his eyes prove what iOS drew.
+- **Write a test step only from what was seen working** (in the simulator or the code path), never from a guess about
+  the UI. On 24 Sep three of my steps were wrong and cost him time: a ring tap gives no vibration on his phone, Today
+  has no pull-to-sync (syncs are automatic), and the night stars are too faint to see (≤ ~10% opacity by design).
 - **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
   show him line numbers and a search he can repeat. Say plainly what a log can and cannot show.
 - **Never delete** his things without asking (his strap logs in `~/Downloads` included); **never touch** his comments.
@@ -138,6 +141,12 @@ Android is an independent reimplementation; analytics and stored data must be by
 - **A change found by us or heard off GitHub** goes into an EDIT of the description, never a new "update" comment. The
   description describes the PR as it is now. PR drafts live in `dist/private/pr-<name>-body.md`.
 - **Before working on an open PR branch**, `gh pr view` it: the maintainer may have pushed to it or merged it.
+- **How ryanbr merges (Sep 2026):** often a rebase through a PR of his own (#2480 carried #2419, #2481 #2437) so our
+  commits keep their authorship, with his corrections on top; our PR then shows CLOSED, not MERGED. He cannot push to
+  our fork (`Permission … denied` although `maintainer_can_modify` is true). **Rebase a PR branch onto current `main`
+  before a long review** (his note on #2419): a stale base made him resolve our conflicts by hand.
+- **Proving a merged branch is in:** `git merge-tree --write-tree` of `upstream/main` with the branch gives
+  `upstream/main`'s own tree when nothing of ours is missing; a difference that is only his comment rewordings is fine.
 - **After a squash merge**, prove it equals the PR head (`git merge-tree --write-tree <squash>^ <head>` gives the
   squash's own tree), delete the branch on the fork and its worktree, re-mirror `main`, rebuild the testing stack.
 - **Release-note credits** and version numbers are upstream's; never bump versions on a PR branch.

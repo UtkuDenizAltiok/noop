@@ -54,3 +54,11 @@ value that looks right on screen while being wrong underneath. A real session ca
   dropped: two small commands and one or two replies in the same second.
 - **25 Sep, ~00:05** — Full check-up after two cut-offs: GitHub and this Mac identical, the testing stack proven equal
   to upstream + our four PRs, all PRs green and mergeable; ~20 GB of measuring builds cleaned.
+- **25–27 Sep** — Upstream took everything: #2419 via #2480 and #2437 via #2481 (26 Sep, rebased, authorship kept,
+  ryanbr's doc corrections and long praise on top), **#2420 and #2444 merged 27 Sep**, and #2446 fixed upstream in
+  #2453 (scratch in a folder named for the bundle; legacy scratch swept by exact prefixes). 15 PRs of ours merged.
+- **28 Sep** — Utku's check of `37408cc`: all fine; three of my test steps described things the app does not do (ring
+  vibration, pull-to-sync, visible stars). His logs: MetricKit 26 Sep = CPU 1 h 36 m in 23 h 28 m of background; a
+  sync every ~9 min and a 7–9 s CPU re-score after most, each re-reading 30 h of raw data (`BACKLOG.md` A). His backup
+  settled #2371: the 500 ms filler appears only below ~110 bpm, never at 110–130 (`BACKLOG.md` B). Fork tidied (four
+  merged branches retired, `main` mirrored to `4cdae213`); `tools/rr-fill.py` opens WAL backups (immutable).

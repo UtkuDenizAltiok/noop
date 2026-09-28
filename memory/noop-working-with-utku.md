@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ed340050-008d-44ae-be66-66b9c198334f
-  modified: 2026-09-24T12:36:13.162Z
+  modified: 2026-09-28T07:30:22.173Z
 ---
 
 Utku Deniz Altiok owns the product and tests it on his own WHOOP 5.0 and iPhone. He does not read code or use the
@@ -24,6 +24,9 @@ obeyed.
   concern per PR.
 - A test for him is numbered steps with what he should see, ending with More → Test Centre → Strap log → Save…; ask
   him to note the times. A log proves what NOOP did and when; only his eyes prove what iOS drew. Say so plainly.
+- Every step in a test must describe behaviour I have seen work (simulator or code path), never a guess about the UI:
+  on 24 Sep three of my steps were wrong (no ring-tap vibration on his phone, no pull-to-sync on Today, night stars
+  too faint to see) and he had to report that "nothing is wrong, but it is not as you say".
 - When his reading of evidence differs from mine, re-read it fully, then show exact lines and a search he can repeat.
   He pushes back hard when a claim looks unproven — answer with what is proven and what is not.
 - Never delete his things (his strap logs in ~/Downloads) or touch his comments without asking.

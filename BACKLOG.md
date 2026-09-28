@@ -15,9 +15,39 @@ and the measurement comes first. Each item becomes ONE small PR.
 - **The simulator's numbers** — DONE 24 Sep (`STATE.md` "Verified"): still screens cost nothing; Today and Sleep cost
   7 + 22 and 7 + 17 CPU-s/min (NOOP + render server) from decorative loops redrawing unchanged pictures → #2444.
 
+## Top of the list (28 Sep 2026, from Utku's logs of 25–28 Sep and his backup)
+
+A. **Background battery: every post-sync re-score re-reads 30 h of raw data.** MetricKit, 26 Sep (build `37408cc`):
+   foreground 1 m 54 s, background 23 h 28 m, **CPU 1 h 36 m**, disk writes 193 MB. In the 27–28 Sep logs a history
+   sync starts every ~9 min (≈17 sessions/h with the auto-continue follow-ups) and ~7 re-scores/h follow
+   (`trigger=post-offload`), each **7–9 s CPU at every hour of day and night** (median 2.1 s on 25 Sep → 7.4 s 27 Sep →
+   8.4 s 28 Sep): ~20 CPU-min a day. One pass (28 Sep log, lines 9491–9539): `analyzeRecent windows hr[read=101325
+   served=0] rr[read=73041 served=0 reuseOff=1]`, `sleep-detect … hr=101325 rr=73041 grav/skin/steps=101342
+   window=30h`, prep 2.1 s, postLoop 0.87 s (score2 0.6 s), done 6.7 s, cost 6.9 s CPU, "scored 5 night(s)". So each
+   pass reads ~475k rows (a 30 h window of five 1 Hz streams) and re-runs sleep detection with nothing reused
+   (`served=0`). Work: read `IntelligenceEngine` / `Repository` re-score + `analyzeRecent` windows and the
+   `served`/`reuseOff` reuse; make the window incremental (read only rows newer than the last pass) or skip a pass that
+   cannot change a score; measure with the demo data (the simulator can replay a pass) and on the phone (the cost
+   line + MetricKit). **Code pointers (28 Sep, `4cdae213`):** `SlidingStreamWindow` (StrandAnalytics) reuses rows only
+   WITHIN one pass; each pass builds new windows (`IntelligenceEngine.swift` ~1855 logs them), and a WHOOP 5 R-R read
+   passes `allowReuse: false` by design (transport choice is range-dependent). Options, in order: (1) keep the day
+   window across passes and re-read only what an offload can have touched (`Backfill` logs the landed range/frontier);
+   (2) space background post-offload passes (e.g. ≥ 30 min unless a night just ended or the app is in front) — a
+   behaviour change to explain to Utku first; (3) both. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000 rows per
+   line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
+B. **#2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
+   13–15× its neighbours on both channels (v18 526 of 236,669; standard 383 of 207,227). By the strap's own HR that
+   second: 70–90 bpm 40–46×, 90–110 bpm 12–14×, **110–130 bpm 0.9× (no excess)**; runs up to 10–11 in a row in
+   history. So the strap never uses the filler at exercise rates, and a real 500 ms beat there is as common as its
+   neighbours. Fix: mark `rrMs == 500` as suspect (`tsSuspect = 1`, read-filtered everywhere, raw row kept) when the
+   strap's HR that same second is < 110, on the three WHOOP 5 ingest paths (v18 history, type-40 realtime, standard
+   0x2A37) and their Kotlin twins, oracle-proven, plus a migration that marks existing rows the same way (a new
+   versioned migration + Room twin + test). The PR carries these counts (no personal data beyond counts). Readers
+   hurt today: `RhythmScreener` (ectopy counted on purpose) and `SleepStagerV2`'s RSA term.
+
 ## 1. Measurements that are wrong (biometrics — "better than WHOOP")
 
-1. **A 500 ms R-R filler stored as a real heartbeat interval on WHOOP 5** — upstream #2371 (21 Sep, open, no PR, no
+1. **A 500 ms R-R filler stored as a real heartbeat interval on WHOOP 5** — see B at the top (answered 28 Sep) — upstream #2371 (21 Sep, open, no PR, no
    comment). An exact `rrMs = 500` appears ~20× more often than its neighbours on both 5.0 transports (v18 history and
    the standard profile) and is stored as a real interval with `tsSuspect` NULL, so it enters HRV, stress and recovery.
    Utku's strap is a 5.0. Work: confirm on his own data (a `.noopbak` or the database of a build), find where both
@@ -53,12 +83,12 @@ and the measurement comes first. Each item becomes ONE small PR.
    is redundant.
 6. **The Live HR banner's steady re-push** every 15 s exists only to beat a 30-s stale date; with WRIST_OFF handled
    live (#2437), a 60-s stale date would halve it (`features/live-hr-banner.md` §6). Decide from the baseline log.
-7. **The Liquid Today animation** — DONE in #2444 (24 Sep): the sky while no star can be drawn, the hero rings once
+7. **The Liquid Today animation** — DONE in #2444 (merged 27 Sep): the sky while no star can be drawn, the hero rings once
    filled (a ring since #1068, yet a 60 fps loop + the sim + the tilt sensor) and the paused header sync ring. Today by
    day 6.7 + 22.6 → 0.00 + 0.11; Sleep → 0.01 + 0.1. Still animating by design: the stars at night (~22 in the render
    server, full-screen sky), the heart-rate line while live, a ring filling. Next candidates, measure first: the
    night sky's cost (a smaller layer for the stars?), other screens with `LiquidTube`/`LiquidThread` loops.
-7b. **Filed as #2446 (24 Sep, Utku's yes):** `AppModel.purgeImportTemp()` assumes `temporaryDirectory` is
+7b. **DONE: filed as #2446 (24 Sep), fixed upstream in #2453 (25 Sep):** `AppModel.purgeImportTemp()` assumes `temporaryDirectory` is
    NOOP's sandbox; on the unsandboxed macOS build it deletes any `noop-*` item in the user's shared temp folder
    (canary-proven 24 Sep). Low harm for users; real for developer tooling.
 

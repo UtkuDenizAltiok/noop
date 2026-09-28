@@ -36,7 +36,8 @@ if zipfile.is_zipfile(src):
     db_path = os.path.join(tmp, names[0])
 else:
     db_path = src
-db = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+# immutable: a backup is a WAL-mode file with no -wal/-shm beside it, which a plain read-only open refuses.
+db = sqlite3.connect(f"file:{db_path}?mode=ro&immutable=1", uri=True)
 
 CHANNELS = {5: "v18 history", 6: "live type-40", 7: "standard 0x2A37"}
 BANDS = [(0, 70), (70, 90), (90, 110), (110, 130), (130, 250)]
