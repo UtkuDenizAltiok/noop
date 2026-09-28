@@ -1,6 +1,6 @@
 # State
 
-**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 16 PRs merged (#2569 on 28 Sep); open: #2574 (cheaper re-score fingerprint).
+**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 16 PRs merged (#2569 on 28 Sep); open: #2574 (cheaper re-score fingerprint), #2575 (stager twiddle table).
 Utku's build: `1ad53536` = upstream `0c982899` (incl. merged #2569) + the re-score spacing (`rescore-spacing`, PR after
 his logs) + the one-walk fingerprint (#2574). Next: his strap log of the morning
 of 29 Sep, then PR A; PR B once upstream re-derives its parity authority.** The
@@ -65,6 +65,24 @@ worktree retired. Evidence and method: `private/pr-rr-fill-body.md`.
 never in the repo):** [ ] download; [ ] `Tools/SleepPSG` baseline report on `upstream/main`; then variants for the
 deep bias (+5.18 pp pooled) — kappa AND stage fractions (README: #348 was reverted for a fraction regression).
 
+**Stager DFT table (28 Sep evening), branch `stager-dft-table` (worktree `~/Developer/noop-stager-dft`):** cold pass
+profile: `SleepStagerV2.respRegularity` = 0.64 s of 5.0 s (13%, `__sincos_stret`): per 30 s epoch a band DFT
+(~53 bins × ~836 points) recomputes the same cos/sin. Plan: per-night table keyed by grid length n, built with the
+very same expressions → bit-identical; Swift + Kotlin; test vs a verbatim copy of the old function over random beat
+windows (exact ==) and whole-night `stageSession` labels; measure cold pass + a growing-night pass.
+- [x] Committed `7c298e93` (Swift `RespDFT` + Kotlin `RespDft`, twins declared, derived refresh: pairs 206→207, ledger
+  OK, ratchet 0). Swift equivalence test passes release + debug; a 1-ulp-off table → 2,125 failures (sha restored).
+  `Tools/SleepPSG` swift test (port validation): 33 pass. Dataset `~/datasets/motion-and-heart-rate-…-1.0.0` ready.
+- [x] Pushed; Android CI 36451847215 green. [x] Seen-to-fail on Android: run 36453411204 failed exactly `tableReturnsTheSameValueAsRecomputingEveryFactor` (1 of 6,536); branch deleted. [x] A/C cold pass (2 rounds, logs `ac-*.log`): 4.9/5.0 → 4.5/4.4 s CPU (−10%), warm unchanged. [x] `verify.sh` on `7c298e93`: every step passed. [x] seen-to-fail on
+  Android. [x] **PR #2575** opened 28 Sep (`stager-dft-table` `7c298e93`).
+
+**Sleep staging vs PSG (28 Sep evening), branch `psg-priors` (worktree `~/Developer/noop-psg`, Tools only so far):**
+- Baseline on `0c982899` (`~/Library/Caches/noop-handbook/psg-baseline.txt`): kappa 0.363; pooled fractions wake
+  4.15/9.07, deep 18.94/13.76, REM 26.44/21.98 (pred/truth). Upstream's own "#348-A base priors" variant (deep 0.18→0.15,
+  awake 0.10→0.34): kappa 0.363, biases wake +0.31, deep +1.19, REM +1.39, wake sens 30.8→44.5, REM F1 0.575→0.558.
+- [ ] Split (deep only / awake only / both), per-subject win counts, Utku's nights vs the band state; then decide
+  (RULES 2: a physiological change; #348 history — likely a default-off Experimental switch or a proposal to upstream).
+
 **Next safe action:** `BACKLOG.md` A option (1): make each re-score pass cheaper with byte-identical scores — profile a
 pass (simulator, demo data; `analyzeRecent` cost lines), find where the ~7 s goes (prep 2.1 + score 0.1 + postLoop 0.9
 of 6.7 s on his phone, ~3.6 s not broken out), cut it, prove scores identical (oracle over demo data before/after).
@@ -73,7 +91,7 @@ Then biometrics and the connection (his 28 Sep afternoon ask). Utku saves strap 
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open: **#2574** (the day fingerprint's R-R figures in one walk: warm re-score −25% CPU; both platforms; 28 Sep). Merged (16): #2569 (#2371, 28 Sep), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
+Open: **#2574** (the day fingerprint's R-R figures in one walk: warm re-score −25% CPU; both platforms; 28 Sep), **#2575** (the RSA transform's twiddle factors once per night: cold re-score −10% CPU, bit-identical; both platforms; 28 Sep). Merged (16): #2569 (#2371, 28 Sep), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
 (via #2481), #2444 (`HISTORY.md`). Our issue #2446 was fixed upstream in #2453. How ryanbr merges and what he asks
 for: `WORKFLOW.md` §5. The parity gate on `main` drifts after busy merge days and the maintainers re-derive it: if our
 `verify.sh` fails ledger/governance after a rebase, compare with a clean `main` checkout first; never refresh the

@@ -84,3 +84,9 @@ value that looks right on screen while being wrong underneath. A real session ca
   rewrite, both platforms, equivalence tests vs the replaced statement, seen to fail on both (Android via a
   pre-announced throwaway run): warm pass 1.6 → 1.2 s CPU. **PR #2574**. Found: iOS ends NOOP several times a day
   (each relaunch = a cold pass); the sleep stager over-predicts deep (+5 pp vs PSG, upstream's SleepPSG).
+- **28 Sep, 17:00–19:30** — #2569 merged (tree == ours). Shipped `1ad5353` (spacing + #2574 + merged #2569). Cold-pass
+  profile: `SleepStagerV2.respRegularity` recomputed ~45M cos/sin a night (13%): per-night twiddle table, bit-identical
+  on both platforms, cold pass −10%: **PR #2575**. PhysioNet sleep-accel downloaded (Utku's yes); SleepPSG baseline
+  reproduced (kappa 0.363, deep +5.17 pp); per-subject split on branch `psg-priors` (`9787f7ed`): the deep prior alone
+  (0.18→0.15) helps 21/31 kappa, 19/31 deep error; the awake half repeats #437. On his nights deep ~30% → ~27%, REM
+  31–40% of sleep (REM needs R-R truth to fix).
