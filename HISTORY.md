@@ -62,3 +62,5 @@ value that looks right on screen while being wrong underneath. A real session ca
   sync every ~9 min and a 7–9 s CPU re-score after most, each re-reading 30 h of raw data (`BACKLOG.md` A). His backup
   settled #2371: the 500 ms filler appears only below ~110 bpm, never at 110–130 (`BACKLOG.md` B). Fork tidied (four
   merged branches retired, `main` mirrored to `4cdae213`); `tools/rr-fill.py` opens WAL backups (immutable).
+- **28 Sep, ~10:00** — Utku: yes to background re-scores at most every 30 minutes, as its own upstream PR (he is not
+  sure the maintainers want it). Session closed for a reset with everything recorded; build `0ad5ba9` on his page.

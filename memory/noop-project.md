@@ -15,7 +15,8 @@ with better algorithms and biometrics where I can — "more robust and reliable 
 owner and decider of the journey. Journey 1 (the Lift Log gym log book and the Live HR banner, 2–24 Sep) is finished:
 11 PRs merged upstream; its reference lives in `dist/features/`. By 28 Sep, 15 of ours are merged (journey 2 so far:
 #2420 MetricKit lines, #2444 Today still at rest) and our bug report #2446 was fixed upstream; the handbook's
-`BACKLOG.md` "Top of the list" holds the next two (background re-score cost, #2371).
+`BACKLOG.md` "Top of the list" holds the next two (background re-score cost, #2371). 28 Sep: Utku said yes to
+background re-scores at most every 30 min, as its own upstream PR (`RULES.md` settled decisions).
 
 **Start every session with the handbook in `dist/`** (a worktree of the public branch `handbook`): `README.md` (its
 start prompt), `STATE.md` ("Now" first), `RULES.md`, `WORKFLOW.md`, `BACKLOG.md`; then

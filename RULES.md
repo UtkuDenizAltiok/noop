@@ -30,6 +30,10 @@ owner and decider of this journey.
   `upstream-check.sh` and the open issues and PRs before starting, and never duplicate or undo their work. Work they
   already did (#2293 re-scoring, widget/Watch/notification dedup, Today's leaf isolation, the Liquid motion gate) is
   left alone unless measured wrong.
+- **Background re-scores at most every 30 minutes (Utku, 28 Sep 2026).** His MetricKit day showed 1 h 36 m of CPU,
+  ~20 min of it a 7–9 s re-score after nearly every sync (~every 9 min). While NOOP is in the background a re-score
+  runs at most every 30 minutes; opening the app runs one at once; the morning's scores come within ~30 minutes of
+  the night ending. Sent upstream as its own PR, which the maintainers may decline; the fork keeps it either way.
 - **The Lift Log and the Live HR banner are finished** (24 Sep 2026). Their pages list what they rely on; an
   optimisation touching their code keeps every rule there.
 

@@ -20,9 +20,15 @@ Waits on Utku:
 - [ ] **Strap logs** saved on two mornings after installing it (More → Test Centre → Strap log → Save…, AirDrop to the
   Mac): their MetricKit day lines are the "after" for upstream's background fix and the "before" for `BACKLOG.md` A.
 
+**Utku's decisions of 28 Sep (settled, `RULES.md`):** YES to spacing background re-scores **at most every 30 minutes**
+(`BACKLOG.md` A option 2); opening the app still runs a pass at once, and the morning's scores must not wait longer
+than about 30 minutes after the night ends. **PR it upstream as its own change** — he does not know whether the
+maintainers want it, so the PR states the trade-off plainly with his numbers and stays easy to accept or decline.
+Also available if data is needed: **More → Settings → Backup & restore → Export CSV…** (a WHOOP-format zip).
+
 **Next safe action:** session start routine (README), then `BACKLOG.md` A: measure one re-score pass in the simulator
-(demo data), read `IntelligenceEngine`'s post-offload re-score and the windows, decide option (1)/(2)/(3), explain any
-behaviour change to Utku first. Then B (#2371) as its own PR, both platforms, oracle-proven. The data for both is in
+(demo data), read `IntelligenceEngine`'s post-offload re-score and the windows; implement the 30-minute spacing (his
+yes) as PR 1 and, if it proves worthwhile, the incremental window (option 1) as PR 2. Then B (#2371) as its own PR, both platforms, oracle-proven. The data for both is in
 Utku's files in `~/Downloads` (`noop-strap-log-260925-1303.txt`, `…260927-1248.txt`, `…260928-0913.txt`,
 `NOOP-backup-2026-09-28.noopbak`: personal, never commit, never upload).
 Standing permission (`RULES.md`): replies and pushes on our PRs, and a verified PR for this journey's work.

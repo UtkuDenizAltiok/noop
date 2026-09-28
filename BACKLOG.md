@@ -32,8 +32,8 @@ A. **Background battery: every post-sync re-score re-reads 30 h of raw data.** M
    WITHIN one pass; each pass builds new windows (`IntelligenceEngine.swift` ~1855 logs them), and a WHOOP 5 R-R read
    passes `allowReuse: false` by design (transport choice is range-dependent). Options, in order: (1) keep the day
    window across passes and re-read only what an offload can have touched (`Backfill` logs the landed range/frontier);
-   (2) space background post-offload passes (e.g. ≥ 30 min unless a night just ended or the app is in front) — a
-   behaviour change to explain to Utku first; (3) both. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000 rows per
+   (2) space background post-offload passes ≥ 30 min unless a night just ended or the app is in front — **Utku said
+   YES (28 Sep); do it first, as its own upstream PR** (`RULES.md` settled decisions); (3) both. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000 rows per
    line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
 B. **#2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
    13–15× its neighbours on both channels (v18 526 of 236,669; standard 383 of 207,227). By the strap's own HR that
