@@ -41,7 +41,9 @@ A. **Background battery: every post-sync re-score re-reads 30 h of raw data.** M
    cache warm (`reused=4/5`: prep 2.1 s + score 0.1 s + postLoop 0.9 s of a 6.7 s pass; ~3.6 s not broken out) —
    option (1) targets that. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000
    rows per line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
-B. **#2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
+B. **BUILT 28 Sep (branch `rr-whoop5-fill` `b4b862e9`, both platforms, shipped in `eeac53e3`): threshold refined to
+   HR < 100 (5-bpm buckets), 873 rows marked on his backup, nightly RMSSD +0.1..0.3%; PR waits on upstream's parity
+   re-derivation (`STATE.md`).** #2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
    13–15× its neighbours on both channels (v18 526 of 236,669; standard 383 of 207,227). By the strap's own HR that
    second: 70–90 bpm 40–46×, 90–110 bpm 12–14×, **110–130 bpm 0.9× (no excess)**; runs up to 10–11 in a row in
    history. So the strap never uses the filler at exercise rates, and a real 500 ms beat there is as common as its

@@ -1,8 +1,9 @@
 # State
 
 **Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 15 PRs merged, none open.
-Utku's build: `8fac9a26` = upstream `fcc384d2` + the background re-score spacing (`BACKLOG.md` A, branch
-`rescore-spacing`, not yet a PR). Next: his strap log from the morning of 29 Sep, then the PR; then #2371 (B).** The
+Utku's build: `eeac53e3` = upstream `3c6172de` + the background re-score spacing (`BACKLOG.md` A, `rescore-spacing`)
++ the #2371 500 ms fill mark (`BACKLOG.md` B, `rr-whoop5-fill`), neither a PR yet. Next: his strap log of the morning
+of 29 Sep, then PR A; PR B once upstream re-derives its parity authority.** The
 only file that changes every session. Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -11,12 +12,11 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-- [x] **Shipped `8fac9a26`** (`testing-stack` `d0fe1231` = `upstream/main` `fcc384d2` + the spacing commit, built for
-  iOS locally first, pinned-lease push): run 36398385255, verified on the releases page 28 Sep 10:54 (.ipa +
-  template). Nothing is running.
+- Nothing is running. Latest ship: `eeac53e3` (below). Earlier today: `8fac9a26` (run 36398385255, spacing only).
 
 Waits on Utku:
-- [ ] **Just update to `8fac9a26`** (replaces `0ad5ba97`; includes upstream's 28 Sep fixes). Told 28 Sep ~10:55.
+- [ ] **Just update to `eeac53e3`** (the re-score spacing + #2371 on upstream `3c6172de`; replaces `8fac9a26`, which he
+  may not have installed yet). Told 28 Sep ~12:10.
 - [ ] **Strap log on the morning of 29 Sep**, saved soon after he first opens NOOP (More → Test Centre → Strap log →
   Save…, AirDrop), plus the time he woke. It is the "after" for the spacing (the `re-score: deferred … at most every
   30 min` lines, passes per hour, when the night's score landed) and its MetricKit day line the first "after" for
@@ -35,15 +35,47 @@ Waits on Utku:
 - [ ] **PR upstream after the 29 Sep log** confirms it on the phone (RULES 7). Draft `private/pr-rescore-spacing-body.md`
   (fill PHONE_RESULT; rebase on `upstream/main` first if it moved; journal the PR number the moment it exists).
 
-**Next safe action:** until the log arrives, `BACKLOG.md` B (#2371) on its own branch: flag `rrMs == 500` as suspect
-(`tsSuspect = 1`) when the strap's HR that second is < 110, at `StreamStore.insert` (the batch carries the same-second
-HR on all three WHOOP 5 paths) + the Kotlin twin + a versioned migration (Room twin) + tests; `rr-fill.py` numbers of
-28 Sep are in `BACKLOG.md` B (channel 6, live type-40, has no rows in his data: say so). Then A option (1).
+**`BACKLOG.md` B (#2371), built 28 Sep:** refined on his backup (5-bpm buckets, same-second `hrSample`): the 500
+excess is 33–37× at 80–94 bpm, 3× at 95–99, 1.7× (4 rows) at 100–104, none from 105 → threshold **HR < 100** (not 110).
+No 500 lacks a same-second HR; channel 6 has 0 rows and is never scored, so the rule covers channels **5 and 7** only.
+After each R-R insert (only for a batch holding a WHOOP 5 500) one statement sets `tsSuspect = 1` where `rrMs = 500 AND
+srcChannel IN (5, 7) AND tsSuspect IS NULL AND` same-second `hrSample.bpm < 100`; the same condition over the table
+runs once as GRDB `v47-rr-whoop5-fill` / Room `MIGRATION_40_41` (version 41, committed `41.json`). SQL is one literal per
+platform (the ledger pairs and compares them), pinned by the same literals in `Whoop5RrFillTests` / `Whoop5RrFillTest`;
+`Whoop5RRSqliteTest` runs the same cases through the production insert. Draft: `private/pr-rr-fill-body.md` (complete).
+- [x] Worktree `~/Developer/noop-rr-fill`, branch `rr-whoop5-fill` from `upstream/main` `ff00b38e`; commit `e364c68b`.
+  WhoopStore 629 pass; new tests seen to fail (insert rule off: 3; migration off: 1; sha restored). On a COPY of his
+  backup: 873 rows marked (ch5 508, ch7 365; 18+18 500s at >= 100 bpm kept); 138/508 ch5 fills passed the HRV cleaner
+  (radius 2), nightly RMSSD +0.1..+0.3% without them (`scratchpad` scripts, counts only). Ledger: our findings resolved
+  by 2 dispositions (DAO method, `migrate/1#39`); `--refresh-derived` blocked only by main's authority drift.
+- [x] Full `verify.sh` on `e364c68b`: packages (629 / 2071 / 327), doc lint, i18n, macOS 2,239 (the two known), iOS build
+  pass; ledger/ratchet/governance fail — ratchet as on `main`; ledger + 1 extra governance test = our DAO method
+  awaiting `--refresh-derived`, which main's broken authority blocks (upstream's 04:37 schedule failed 28 Sep).
+- [x] Android CI 36403411510: our tests passed; `WhoopDatabaseUpgradeTest` needed the committed Room `41.json`
+  (= `40.json` with the version line only). Amended → `b4b862e9`, pushed with a pinned lease.
+- [x] Android CI 36404612920 on `b4b862e9`: success (build + unit tests).
+- [x] Seen to fail on Android: throwaway branch with the fix off, CI 36405114857: exactly our 4 tests failed of
+  6,526 (3 insert-rule + the migration wiring). Branch deleted from the fork and locally.
+- [ ] PR for B only after upstream re-derives the parity authority: rebase, `--refresh-derived --base upstream/main`,
+  verify, fill ANDROID_RESULT / VERIFY_RESULT in `private/pr-rr-fill-body.md`, PR (number here at once).
+
+**Ship 2 of 28 Sep (both changes):**
+- [x] Stack `9bde6246` = `upstream/main` `3c6172de` + spacing (`ccdd0718`) + #2371 (`9bde6246`): iOS BUILD SUCCEEDED
+  locally, pushed to `testing-stack` (pinned lease, old `d0fe1231`). Fork `main` = `3c6172de`.
+- [x] Shipped `eeac53e3` (run 36405967857), verified on the releases page 28 Sep 12:07 (.ipa + template); scratch
+  worktree removed. Told Utku "just update" (the v47 migration is additive).
+
+**Next safe action:** (1) `upstream-check.sh` + upstream's Parity Governance CI (`gh run list --repo ryanbr/noop
+--workflow "Parity Governance CI" --limit 3`): once `main` passes again, rebase `rr-whoop5-fill`, run
+`parity_ledger.py --refresh-derived --base upstream/main` (commit the refreshed derived files), `verify.sh`, open PR B.
+(2) When Utku's 29 Sep log arrives: read it (deferral lines, passes/h, when the night's score landed, MetricKit), fill
+PHONE_RESULT, rebase, open PR A. (3) Meanwhile `BACKLOG.md` A option (1) or the next backlog item.
 The data is in Utku's files in `~/Downloads` (`noop-strap-log-260925-1303.txt`, `…260927-1248.txt`,
 `…260928-0913.txt`, `NOOP-backup-2026-09-28.noopbak`: personal, never commit, never upload).
 Standing permission (`RULES.md`): replies and pushes on our PRs, and a verified PR for this journey's work.
-Do not redo: ship `8fac9a26` (run 36398385255), the stack push `d0fe1231`, the fork `main` mirror to `fcc384d2`,
-the push of `rescore-spacing` `d1f8c9bd`.
+Do not redo: ships `8fac9a26` (run 36398385255) and `eeac53e3` (run 36405967857), stack pushes `d0fe1231` and
+`9bde6246`, fork `main` mirror to `3c6172de`, pushes of `rescore-spacing` `d1f8c9bd` and `rr-whoop5-fill` `b4b862e9`,
+the deleted throwaway branch `tmp-rr-fill-broken`.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -55,12 +87,12 @@ authority ourselves.
 
 ## The fork, exactly
 
-- **Branches:** `main` (mirror of `upstream/main`, `fcc384d2`), `handbook` (this), `rescore-spacing` @ `d1f8c9bd`
-  (PR to come), `testing-stack` @ `d0fe1231` (`main` + that commit), `testing-build` @ `8fac9a26` (the stack +
-  `fork/ships-template`).
+- **Branches:** `main` (mirror of `upstream/main`, `3c6172de`), `handbook` (this), `rescore-spacing` @ `d1f8c9bd` and
+  `rr-whoop5-fill` @ `b4b862e9` (PRs to come), `testing-stack` @ `9bde6246` (`main` + both), `testing-build` @
+  `eeac53e3` (the stack + `fork/ships-template`).
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`.
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`),
-  `~/Developer/noop-rescore-spacing` (`rescore-spacing`). Build folders and verify
+  `~/Developer/noop-rescore-spacing` (`rescore-spacing`), `~/Developer/noop-rr-fill` (`rr-whoop5-fill`). Build folders and verify
   logs: `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`, `WORKFLOW.md` §9).
 - **Local only:** `dist/private/` (the event log, `usage.log`, old PR texts). Utku's logs and backup are his files in
   `~/Downloads`. Simulator `281E44EC` (iPhone 17 Pro) has NOOP with 120 demo days (`--demo-seed`), light appearance.

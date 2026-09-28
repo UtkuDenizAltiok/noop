@@ -68,3 +68,7 @@ value that looks right on screen while being wrong underneath. A real session ca
   (`d1f8c9bd`): one rule in `RescoreBackgroundPolicy.decide`; replay of his logs 900 → 250 CPU-s; tests seen to fail;
   verify passed bar upstream's parity drift. Fork `main` → `fcc384d2`; shipped `8fac9a2` (run 36398385255). PR waits
   on his 29 Sep strap log.
+- **28 Sep, 11:00–12:10** — #2371 (`BACKLOG.md` B) built on `rr-whoop5-fill` (`b4b862e9`), both platforms: threshold
+  refined to HR < 100 on his backup; 873 rows marked, nightly RMSSD +0.1–0.3%; tests seen to fail on both platforms
+  (Android via a throwaway CI branch). PR waits on upstream's parity authority repair. Shipped `eeac53e` (spacing +
+  #2371, run 36405967857).
