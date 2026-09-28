@@ -1,10 +1,9 @@
 # State
 
-**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 16 PRs merged (#2569 on 28 Sep); open: #2574 (cheaper re-score fingerprint), #2575 (stager twiddle table).
-Utku's build: `1ad53536` = upstream `0c982899` (incl. merged #2569) + the re-score spacing (`rescore-spacing`, PR after
-his logs) + the one-walk fingerprint (#2574). Next: his strap log of the morning
-of 29 Sep, then PR A; PR B once upstream re-derives its parity authority.** The
-only file that changes every session. Replace, don't append — history goes in `HISTORY.md`.
+**Updated 28 Sep 2026, end of session 2 — Journey 2: NOOP, perfected (`RULES.md` mandate). 16 PRs merged (#2569 on
+28 Sep). Open: #2574, #2575, #2576 (all green, no review yet). Utku's build: `769113c0`. Waiting on his strap logs of
+29 and 30 Sep; then the spacing PR.** The only file that changes every session. Replace, don't append — history goes in
+`HISTORY.md`.
 
 ## Now — work in flight
 
@@ -12,131 +11,84 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-- Nothing is running. Latest ship: `eeac53e3` (below). Earlier today: `8fac9a26` (run 36398385255, spacing only).
+- **Nothing is running.** Last ship: `769113c0` (run 36462113779, verified on the releases page 28 Sep ~20:25).
 
 Waits on Utku:
-- [ ] **Just update to `1ad53536`** (upstream `0c982899` incl. merged #2569 + the 30-min spacing + the one-walk
-  fingerprint #2574; replaces `eeac53e3`). Told 28 Sep ~17:10.
-- [ ] **Strap log on the morning of 29 Sep**, saved soon after he first opens NOOP (More → Test Centre → Strap log →
-  Save…, AirDrop), plus the time he woke. It is the "after" for the spacing (the `re-score: deferred … at most every
-  30 min` lines, passes per hour, when the night's score landed) and its MetricKit day line the first "after" for
-  upstream's strap-log fix. A second morning's log if the first is thin.
+- [ ] **Just update to `769113c0`** = `upstream/main` `0c982899` + the 30-min spacing + #2574 + #2575 + #2576. Told 28 Sep
+  ~20:30. Visible change: deep sleep a few points lower (the intended #2576); nothing else he should notice.
+- [ ] **Strap logs on the mornings of 29 and 30 Sep** (More → Test Centre → Strap log → Save…, AirDrop) plus his wake
+  time. Read them for: `re-score: deferred … at most every 30 min` lines and passes per hour (spacing), `re-score: cost`
+  per pass (#2574/#2575 on the phone), when the night's score landed after waking, and the MetricKit day lines (28 and
+  29 Sep: first "after" for upstream's strap-log fix and ours). `dist/tools/rescore-profile/passes.py <log>` counts
+  passes/CPU; `hr-timeline.py` / `strap-log.py` as usual.
+- [ ] **REM truth dataset: his choice** (asked 28 Sep, not yet answered in detail): DREAMT (100 patients, wrist IBI +
+  accel + PSG, best match, RESTRICTED: he must register at physionet.org and sign the DUA himself), MIT-BIH slpdb (18 OSA,
+  632 MB, open, beats annotated, no motion), HMC (151 patients, 12.9 GB, open, raw ECG, no motion). Download nothing
+  until he names one (standing ask: name, source, size first).
 
-**`BACKLOG.md` A, PR 1 — background re-score spacing** (Utku's yes of 28 Sep, `RULES.md`):
-- Branch `rescore-spacing` `d1f8c9bd` on `4cdae213`, pushed to the fork, worktree `~/Developer/noop-rescore-spacing`.
-  One rule in `RescoreBackgroundPolicy.decide` (iOS-only, upstream #1557): a backgrounded offload whose last pass
-  STARTED < 30 min ago defers (debt recorded; the next offload past the spacing, the processing task or the next
-  foreground settles it). Not while a pass runs here (#1681 path untouched). Foreground, macOS, Android unchanged.
-- Measured by replaying his logs (`private/passes.py`): 27–28 Sep 113 passes / 900 CPU-s → 32 / 250; 26–27 Sep
-  103 / 754 → 32 / 226; 24–25 Sep 153 / 360 → 51 / 92.
-- Tests: 42 policy/scheduler tests pass; with the rule off 5 assertions fail (seen; sha restored). Full `verify.sh`
-  on `d1f8c9bd` passed except the parity ratchet and governance 1/124, which fail identically on clean `4cdae213`
-  (upstream drift; fork CI shows it on `main`).
-- [ ] **PR upstream after the 29/30 Sep logs** confirm it on the phone (RULES 7; Utku confirmed 28 Sep pm: keep the spacing). Draft `private/pr-rescore-spacing-body.md`
-  (fill PHONE_RESULT; rebase on `upstream/main` first if it moved; journal the PR number the moment it exists).
-
-**`BACKLOG.md` B (#2371): DONE — PR #2569 merged 28 Sep 12:20Z** (tree == our branch; `HISTORY.md`). Branch and
-worktree retired. Evidence and method: `private/pr-rr-fill-body.md`.
-
-**`BACKLOG.md` A option (1), cheaper passes (28 Sep pm), branch `rescore-cheaper` (worktree `~/Developer/noop-rescore-cheaper`):**
-- Harness: throwaway worktree `~/Library/Caches/noop-handbook/prof` + `prof.patch` (AppModel: 25 s wait, 8 forced passes,
-  a 600 s synthetic offload before each warm pass, strap-log lines mirrored to NSLog); `prof-run.sh`; simulator
-  281E44EC holds a COPY of his backup DB (demo DB + prefs saved in `~/Library/Caches/noop-handbook/sim-demo-backup`,
-  put back when done). Time Profiler: `prof.trace`, `prof-agg.py`, `prof-callers.py`.
-- Baseline (upstream `424bc304`, sim, Release): warm pass 1.6 s CPU (1.9–2.1 s elapsed), cold 5.0 s. Of 7 warm passes'
-  11.8 s CPU: `dayStreamFingerprint` 5.1 s (44%: five rr COUNT scans with a table lookup per row), rr reads 1.1 s,
-  hr/grav/steps reads 0.8 s, other fingerprints 0.7 s, GRDB by-name column lookup (`String.lowercased`) 0.3 s.
-- [x] (1) committed `022a0fea` on `rescore-cheaper` (Swift + Kotlin, equivalence tests vs the replaced statement; Swift
-  seen to fail: 106 failures with the suspect filter dropped). Pushed; Android CI 36426678021 green. A/B (A = upstream
-  `0c982899`, B = branch; `prof`, `prof-b`; logs `ab-*.log`), 2 rounds: warm 1.6 → 1.2 s CPU (−25%), elapsed 2.0 → 1.6 s,
-  cold 5.0/4.7 → 4.4/4.2 s; cache decisions identical. Draft `private/pr-rescore-fingerprint-body.md`.
-- [x] Full `verify.sh` on `022a0fea`: every step passed.
-- [x] Android seen-to-fail (Utku told first): run 36434511659 failed exactly `dayFingerprintOneWalkMatchesTheFiveSubSelects` (1 of 6,535); throwaway branch deleted.
-- [x] **PR #2574** opened 28 Sep (`rescore-cheaper` `022a0fea`), body `private/pr-rescore-fingerprint-body.md`.
-- Plan: (1) one combined rr scan in `dayStreamFingerprint` (Python on his data: 199 → 78 ms per 54 h window,
-  identical values), Swift + Kotlin; (2) positional column reads in the hot stream reads; re-measure; then cross-pass
-  reuse of the day windows if still worth it.
-
-**Ship 3 (28 Sep evening):** [x] stack `f15e6efe` = `upstream/main` `0c982899` + spacing (`e79687e0`) + fingerprint
-(`f15e6efe`), iOS BUILD SUCCEEDED locally, pushed (pinned lease, old `9bde6246`). [x] Shipped `1ad53536` (run
-36435795605), verified on the releases page 28 Sep ~17:10; scratch worktree removed; Utku told "just update".
-
-**Sleep staging vs PSG (Utku's yes, 28 Sep ~17:00, to download PhysioNet sleep-accel, 577 MB, to `~/datasets`,
-never in the repo):** [ ] download; [ ] `Tools/SleepPSG` baseline report on `upstream/main`; then variants for the
-deep bias (+5.18 pp pooled) — kappa AND stage fractions (README: #348 was reverted for a fraction regression).
-
-**Stager DFT table (28 Sep evening), branch `stager-dft-table` (worktree `~/Developer/noop-stager-dft`):** cold pass
-profile: `SleepStagerV2.respRegularity` = 0.64 s of 5.0 s (13%, `__sincos_stret`): per 30 s epoch a band DFT
-(~53 bins × ~836 points) recomputes the same cos/sin. Plan: per-night table keyed by grid length n, built with the
-very same expressions → bit-identical; Swift + Kotlin; test vs a verbatim copy of the old function over random beat
-windows (exact ==) and whole-night `stageSession` labels; measure cold pass + a growing-night pass.
-- [x] Committed `7c298e93` (Swift `RespDFT` + Kotlin `RespDft`, twins declared, derived refresh: pairs 206→207, ledger
-  OK, ratchet 0). Swift equivalence test passes release + debug; a 1-ulp-off table → 2,125 failures (sha restored).
-  `Tools/SleepPSG` swift test (port validation): 33 pass. Dataset `~/datasets/motion-and-heart-rate-…-1.0.0` ready.
-- [x] Pushed; Android CI 36451847215 green. [x] Seen-to-fail on Android: run 36453411204 failed exactly `tableReturnsTheSameValueAsRecomputingEveryFactor` (1 of 6,536); branch deleted. [x] A/C cold pass (2 rounds, logs `ac-*.log`): 4.9/5.0 → 4.5/4.4 s CPU (−10%), warm unchanged. [x] `verify.sh` on `7c298e93`: every step passed. [x] seen-to-fail on
-  Android. [x] **PR #2575** opened 28 Sep (`stager-dft-table` `7c298e93`).
-
-**Sleep staging vs PSG (28 Sep evening), branch `psg-priors` (worktree `~/Developer/noop-psg`, Tools only so far):**
-- Baseline on `0c982899` (`~/Library/Caches/noop-handbook/psg-baseline.txt`): kappa 0.363; pooled fractions wake
-  4.15/9.07, deep 18.94/13.76, REM 26.44/21.98 (pred/truth). Upstream's own "#348-A base priors" variant (deep 0.18→0.15,
-  awake 0.10→0.34): kappa 0.363, biases wake +0.31, deep +1.19, REM +1.39, wake sens 30.8→44.5, REM F1 0.575→0.558.
-- [ ] Split (deep only / awake only / both), per-subject win counts, Utku's nights vs the band state; then decide
-  (RULES 2: a physiological change; #348 history — likely a default-off Experimental switch or a proposal to upstream).
-
-**Next safe action:** `BACKLOG.md` A option (1): make each re-score pass cheaper with byte-identical scores — profile a
-pass (simulator, demo data; `analyzeRecent` cost lines), find where the ~7 s goes (prep 2.1 + score 0.1 + postLoop 0.9
-of 6.7 s on his phone, ~3.6 s not broken out), cut it, prove scores identical (oracle over demo data before/after).
-Then biometrics and the connection (his 28 Sep afternoon ask). Utku saves strap logs on 29 and 30 Sep mornings.
-#2569: answer any review once (standing permission).
+**Next safe action:** session start (README). Then, in order: (1) `upstream-check.sh` — answer any review on #2574 /
+#2575 / #2576 ONCE (standing permission; `WORKFLOW.md` §5), rebase if one conflicts (twin-map refreshes conflict on
+busy days: take upstream's file, re-run `parity_ledger.py --refresh-derived --base upstream/main`); after a merge,
+prove the tree, retire the branch, rebuild the stack, ship. (2) When his logs arrive: read them (above), fill
+PHONE_RESULT in `private/pr-rescore-spacing-body.md`, rebase `rescore-spacing` on `upstream/main`, `verify.sh`, open
+the spacing PR. (3) If he picks a REM dataset: ask/confirm its size, download to `~/datasets`, build a harness the way
+`Tools/SleepPSG` does. (4) Otherwise `BACKLOG.md` in order.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open: **#2574** (the day fingerprint's R-R figures in one walk: warm re-score −25% CPU; both platforms; 28 Sep), **#2575** (the RSA transform's twiddle factors once per night: cold re-score −10% CPU, bit-identical; both platforms; 28 Sep). Merged (16): #2569 (#2371, 28 Sep), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
-(via #2481), #2444 (`HISTORY.md`). Our issue #2446 was fixed upstream in #2453. How ryanbr merges and what he asks
-for: `WORKFLOW.md` §5. The parity gate on `main` drifts after busy merge days and the maintainers re-derive it: if our
-`verify.sh` fails ledger/governance after a rebase, compare with a clean `main` checkout first; never refresh the
-authority ourselves.
+Open (all 28 Sep, green, mergeable, no comments at 20:30):
+- **#2574** `rescore-cheaper` `022a0fea` — the day fingerprint's five R-R figures in one walk: warm re-score 1.6 → 1.2 s
+  CPU (sim, his data), byte-identical fingerprint. Both platforms. Body `private/pr-rescore-fingerprint-body.md`.
+- **#2575** `stager-dft-table` `7c298e93` — `SleepStagerV2.respRegularity`'s twiddle factors once per night (table per
+  grid length): cold re-score 4.9/5.0 → 4.5/4.4 s CPU, bit-identical. Both platforms; derived twin map refreshed.
+  Body `private/pr-stager-dft-body.md`.
+- **#2576** `psg-priors` `9787f7ed` + `9482462b` — `Tools/SleepPSG` section 7 (per-subject priors), then the deep base
+  prior 0.18 → 0.15 (PSG n = 31: kappa 0.363 → 0.371, deep bias +5.17 → +1.32 pp, wake/REM identical; Utku's yes).
+  Both platforms + pins; README updated. Body `private/pr-deep-prior-body.md`. Touches `SleepStagerV2` like #2575:
+  whichever merges second may need a rebase (+ twin-map refresh).
+Not yet a PR: `rescore-spacing` `d1f8c9bd` (on `4cdae213`; rebase first). Merged (16): #2569 (#2371), #2029, #2098,
+#2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437 (via #2481), #2444. Issue #2446 fixed
+upstream in #2453. The parity gate on `main` drifts after busy merge days and the maintainers re-derive it (they did,
+`0e524b38`, 28 Sep): compare with a clean `main` checkout before blaming a branch; never refresh the authority ourselves.
 
 ## The fork, exactly
 
-- **Branches:** `main` (mirror of `upstream/main`, `424bc304`), `handbook` (this), `rescore-spacing` @ `d1f8c9bd` (PR after his logs),
-  `rescore-cheaper` @ `022a0fea` (PR #2574), `testing-stack` @ `f15e6efe` (`main` + spacing + fingerprint), `testing-build` @
-  `1ad53536` (the stack + `fork/ships-template`).
+- **Branches:** `main` (mirror of `upstream/main` `0c982899`), `handbook` (this), `rescore-spacing` `d1f8c9bd`,
+  `rescore-cheaper` `022a0fea` (#2574), `stager-dft-table` `7c298e93` (#2575), `psg-priors` `9482462b` (#2576),
+  `testing-stack` `7bc5f64a` (`main` + those four), `testing-build` `769113c0` (the stack + `fork/ships-template`).
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`.
-- **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`),
-  `~/Developer/noop-rescore-spacing` (`rescore-spacing`), `~/Developer/noop-rescore-cheaper` (`rescore-cheaper`). Build folders and verify
-  logs: `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`, `WORKFLOW.md` §9).
-- **Local only:** `dist/private/` (the event log, `usage.log`, old PR texts). Utku's logs and backup are his files in
-  `~/Downloads`. Simulator `281E44EC` (iPhone 17 Pro) has NOOP with 120 demo days (`--demo-seed`), light appearance.
+- **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per branch above:
+  `~/Developer/noop-rescore-spacing`, `-rescore-cheaper`, `-stager-dft`, `-psg`. Build folders and verify logs:
+  `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`, `WORKFLOW.md` §9).
+- **Local only:** `dist/private/` (event log, `usage.log`, PR drafts). Utku's logs and backup: his files in
+  `~/Downloads` (personal: never commit, never upload). PhysioNet sleep-accel (his yes): `~/datasets/motion-and-heart-
+  rate-from-a-wrist-worn-wearable-and-labeled-sleep-from-polysomnography-1.0.0` (+ the zip). Simulator `281E44EC`
+  (iPhone 17 Pro) holds NOOP's 120 demo days again, light appearance, but the INSTALLED app is the throwaway profiling
+  build: reinstall a clean Release before any screen measurement.
 
 ## Verified — the latest numbers
 
-- **#2444 on `d38a1473`**, full `verify.sh`, every step passed: WhoopStore 611 · StrandAnalytics 2056 · StrandImport 327
-  · doc lint · i18n · ledger · ratchet · governance 124 · macOS 2,151 (only the two `TodayCarryOverTests`) · iOS build;
-  StrandDesign 111. Simulator, Release, demo data, alternating A/B: Today by day **6.72/6.47 + 22.65/22.50 → 0.00/0.00
-  + 0.11/0.11**; Sleep 4.96/6.92 + 34.37/17.43 → 0.01/0.01 + 0.06/0.12; Today at night (dark, stars) 6.31 + 22.14 →
-  1.95 + 22.66. Pixels vs `main`: ≤ 2 levels (breath phase), header ring identical. Stars twinkle at night (20:04).
-  Each test seen to fail (sky gate 1,665 / 411; ring premise + clock; census names upstream's 3 paused timelines).
-- **Simulator baseline, 24 Sep 15:04–15:11** (`main` `141cbd93`, Release, iPhone 17 Pro `281E44EC`, iOS 26.5, demo data
-  of 120 days from `--demo-seed`, no strap; `tools/usage.sh`, 60 s after 10 s settling; raw lines in
-  `private/usage.log`). CPU-s a minute, NOOP · render server (backboardd) · footprint:
-  Today (Liquid) **7.03 · 21.86** · 66 MB; Sleep **7.24 · 17.04** · 96 MB; Trends 0.01 · 0.01 · 87 MB; Coach 0.00 · 0.01
-  · 79 MB; More 0.00 · 0.01 · 93 MB; Live (no strap) 0.00 · 0.01 · 111 MB (footprint grows as tabs are visited; one
-  run, in that order). A still screen costs nothing; the two animated screens are all of it. Debug is heavier (Today
-  10.5 · 21.0, still loading). 22 Sep, Today, NOOP alone: 6.29 (Debug, no demo data) — not comparable.
-- **Phone (MetricKit, 26 Sep, build `37408cc`):** foreground 1 m 54 s, background 23 h 28 m, CPU 1 h 36 m, peak memory
-  339 MB, disk writes 193 MB. The baseline to beat (`BACKLOG.md` A). No earlier day line exists.
-- **#2371 on Utku's 5.0 (backup of 28 Sep):** the 500 ms filler only below ~110 bpm (`BACKLOG.md` B).
-- **Re-score spacing `d1f8c9bd`**, full `verify.sh`: WhoopStore 624 · StrandAnalytics 2070 · StrandImport 327 · doc
-  lint · i18n · ledger · macOS 2,231 (only the two `TodayCarryOverTests`) · iOS build; ratchet + governance 1/124 fail
-  identically on clean `4cdae213` (upstream drift). Replay of his logs: 900 → 250 background re-score CPU-s (27–28 Sep).
+- **Re-score cost, simulator, his backup** (`dist/tools/rescore-profile/`, Release, 7 warm passes after a synthetic
+  offload): upstream `0c982899` warm 1.6 s CPU / cold 4.7–5.0 s. Time Profiler: `dayStreamFingerprint` 44% of warm
+  (→ #2574: 1.2 s), `respRegularity` 13% of cold (→ #2575: 4.4–4.5 s). After #2574 the next costs are the fingerprint
+  itself (25%, one R-R walk per night with a table lookup per row) and re-reading today's R-R window (17%). On his phone a
+  warm pass costs ~3× the simulator (6.9 s CPU in the 28 Sep log).
+- **Sleep staging vs PSG** (`Tools/SleepPSG`, sleep-accel n = 31): upstream kappa 0.363, deep 18.94 % vs 13.76 %, REM
+  26.44 % vs 21.98 %, wake 4.15 % vs 9.07 % (pooled). With #2576: kappa 0.371, deep 15.09 %. His four nights (port, with
+  R-R): deep 28–32 % → 26–27 % of sleep; REM 31–40 % of sleep (not addressed: needs R-R truth).
+- **Last full `verify.sh` runs, all steps passed:** #2574 `022a0fea`, #2575 `7c298e93`, #2576 `9482462b` (WhoopStore
+  629–631 · StrandAnalytics 2081–2083 · StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 124 · macOS
+  2,244 with only the two `TodayCarryOverTests` · iOS build). Each new test seen to fail on both platforms.
+- **Phone (MetricKit, 26 Sep, build `37408cc`):** background 23 h 28 m, CPU 1 h 36 m, peak memory 339 MB, disk writes
+  193 MB, exits normal 4. The baseline to beat; re-scoring was ~15 CPU-min of it. His restarts of NOOP are mostly his
+  own swipes (asked 28 Sep).
+- Earlier numbers (#2444 animation, the 24 Sep simulator screen baseline): `HISTORY.md` and PR #2444.
 
 ## Next
 
-1. **Session start** (README): status `--net`, `upstream-check.sh`, then the lines in "Now".
-2. **`BACKLOG.md` A** — spacing shipped in `8fac9a26`; PR after his 29 Sep log. Then option (1), the incremental
-   window, if the log shows passes still worth cutting.
-3. **`BACKLOG.md` B** — #2371, the 500 ms filler, both platforms (can start before the log arrives).
-4. Then the rest of `BACKLOG.md`: the night sky's render cost, a score reviewed against the literature, dead code.
+1. Session start (README), then "Next safe action" above.
+2. `BACKLOG.md` A — read the logs; the spacing PR; decide whether cross-pass window reuse is still worth it.
+3. `BACKLOG.md` 9b — a relaunch costs a cold pass; persisting the day cache is the lever if relaunches stay frequent.
+4. REM calibration once a truth dataset with heartbeats is chosen.
 5. Every change: measure before/after, `verify.sh`, PR, rebuild `testing-stack`, ship, tell Utku "just update".
 6. At the end of every session: README "End a session".

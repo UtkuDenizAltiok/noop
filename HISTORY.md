@@ -90,3 +90,10 @@ value that looks right on screen while being wrong underneath. A real session ca
   reproduced (kappa 0.363, deep +5.17 pp); per-subject split on branch `psg-priors` (`9787f7ed`): the deep prior alone
   (0.18→0.15) helps 21/31 kappa, 19/31 deep error; the awake half repeats #437. On his nights deep ~30% → ~27%, REM
   31–40% of sleep (REM needs R-R truth to fix).
+- **28 Sep, 19:30–20:30** — Utku: yes to proposing the deep prior and to asking about a REM dataset. Deep base prior
+  0.18 → 0.15 on both platforms with pins, SleepPSG shipped config/variants/README updated (pooled kappa 0.363 → 0.371,
+  deep bias +5.17 → +1.32 pp, wake/REM identical): **PR #2576**. REM truth options found: DREAMT (wrist IBI + accel,
+  restricted: Utku must register and sign a DUA), MIT-BIH slpdb (18 OSA, 632 MB, open), HMC (151, 12.9 GB, open).
+- **28 Sep, 20:30** — Shipped `769113c` (spacing + #2574 + #2575 + #2576; run 36462113779). All three open PRs green,
+  no review yet. Session closed for a /clear: profiling harness kept in `tools/rescore-profile/`, throwaway worktrees
+  removed, simulator demo data restored, STATE rewritten.

@@ -256,7 +256,10 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 - **Memory, simulator:** `footprint <pid>` (or `vmmap --summary <pid>`) for the physical footprint; compare the same
   screens.
 - **Instruments** (`xcrun xctrace record --template 'Time Profiler' --attach <pid>`, also Allocations, Leaks, Energy
-  Log on a device) when a number needs a cause.
+  Log on a device) when a number needs a cause. For a simulator process pass `--device <udid>`; export the
+  `time-profile` table and aggregate it with `tools/rescore-profile/prof-agg.py` (28 Sep: it found the two costs
+  behind #2574 and #2575 in one run each). A re-score is measured on a COPY of a real backup, not the demo data,
+  which has no raw streams (`tools/rescore-profile/run.sh`).
 - **On Utku's phone:** iOS's MetricKit report arrives once a day (about the day before) and #2420 writes it into the
   strap log as one line: foreground and background time, CPU time, peak memory, disk writes, hangs, and why the app
   exited and how often; another line after a crash, a hang, a CPU or disk-write exception or a slow launch. A day's

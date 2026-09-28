@@ -15,57 +15,27 @@ and the measurement comes first. Each item becomes ONE small PR.
 - **The simulator's numbers** — DONE 24 Sep (`STATE.md` "Verified"): still screens cost nothing; Today and Sleep cost
   7 + 22 and 7 + 17 CPU-s/min (NOOP + render server) from decorative loops redrawing unchanged pictures → #2444.
 
-## Top of the list (28 Sep 2026, from Utku's logs of 25–28 Sep and his backup)
+## Top of the list (end of 28 Sep 2026)
 
-A. **Background battery: every post-sync re-score re-reads 30 h of raw data.** MetricKit, 26 Sep (build `37408cc`):
-   foreground 1 m 54 s, background 23 h 28 m, **CPU 1 h 36 m**, disk writes 193 MB. In the 27–28 Sep logs a history
-   sync starts every ~9 min (≈17 sessions/h with the auto-continue follow-ups) and ~7 re-scores/h follow
-   (`trigger=post-offload`), each **7–9 s CPU at every hour of day and night** (median 2.1 s on 25 Sep → 7.4 s 27 Sep →
-   8.4 s 28 Sep): ~20 CPU-min a day. One pass (28 Sep log, lines 9491–9539): `analyzeRecent windows hr[read=101325
-   served=0] rr[read=73041 served=0 reuseOff=1]`, `sleep-detect … hr=101325 rr=73041 grav/skin/steps=101342
-   window=30h`, prep 2.1 s, postLoop 0.87 s (score2 0.6 s), done 6.7 s, cost 6.9 s CPU, "scored 5 night(s)". So each
-   pass reads ~475k rows (a 30 h window of five 1 Hz streams) and re-runs sleep detection with nothing reused
-   (`served=0`). Work: read `IntelligenceEngine` / `Repository` re-score + `analyzeRecent` windows and the
-   `served`/`reuseOff` reuse; make the window incremental (read only rows newer than the last pass) or skip a pass that
-   cannot change a score; measure with the demo data (the simulator can replay a pass) and on the phone (the cost
-   line + MetricKit). **Code pointers (28 Sep, `4cdae213`):** `SlidingStreamWindow` (StrandAnalytics) reuses rows only
-   WITHIN one pass; each pass builds new windows (`IntelligenceEngine.swift` ~1855 logs them), and a WHOOP 5 R-R read
-   passes `allowReuse: false` by design (transport choice is range-dependent). Options, in order: (1) keep the day
-   window across passes and re-read only what an offload can have touched (`Backfill` logs the landed range/frontier);
-   (2) space background post-offload passes ≥ 30 min unless a night just ended or the app is in front — **Utku said
-   YES (28 Sep); do it first, as its own upstream PR** (`RULES.md` settled decisions); (3) both. **(2) built 28 Sep**
-   (branch `rescore-spacing`, `d1f8c9bd`; one rule in `RescoreBackgroundPolicy.decide`, no "night just ended"
-   exception: the delay is bounded by the spacing + one offload, and opening the app scores at once). Replay of his
-   logs: 900 → 250 CPU-s (27–28 Sep). Shipped in `8fac9a26`; the PR waits on one night's log from his phone.
-   Passes also re-score an in-progress night each time (the growing `totalSleepMin`), and cost ~7 s with the day
-   cache warm (`reused=4/5`: prep 2.1 s + score 0.1 s + postLoop 0.9 s of a 6.7 s pass; ~3.6 s not broken out) —
-   option (1) targets that. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000
-   rows per line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
-B. **BUILT 28 Sep (branch `rr-whoop5-fill` `b4b862e9`, both platforms, shipped in `eeac53e3`): threshold refined to
-   HR < 100 (5-bpm buckets), 873 rows marked on his backup, nightly RMSSD +0.1..0.3%; PR waits on upstream's parity
-   re-derivation (`STATE.md`).** #2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
-   13–15× its neighbours on both channels (v18 526 of 236,669; standard 383 of 207,227). By the strap's own HR that
-   second: 70–90 bpm 40–46×, 90–110 bpm 12–14×, **110–130 bpm 0.9× (no excess)**; runs up to 10–11 in a row in
-   history. So the strap never uses the filler at exercise rates, and a real 500 ms beat there is as common as its
-   neighbours. Fix: mark `rrMs == 500` as suspect (`tsSuspect = 1`, read-filtered everywhere, raw row kept) when the
-   strap's HR that same second is < 110, on the three WHOOP 5 ingest paths (v18 history, type-40 realtime, standard
-   0x2A37) and their Kotlin twins, oracle-proven, plus a migration that marks existing rows the same way (a new
-   versioned migration + Room twin + test). The PR carries these counts (no personal data beyond counts). Readers
-   hurt today: `RhythmScreener` (ectopy counted on purpose) and `SleepStagerV2`'s RSA term.
+A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; a 7–9 s re-score after nearly
+   every ~10-min sync, ~15 CPU-min a day in the background (27–28 Sep log: 113 passes / 900 CPU-s). Done so far:
+   (2) the 30-min background spacing (Utku's yes; `rescore-spacing`, shipped; PR after his 29/30 Sep logs; replay
+   900 → 250 CPU-s); cheaper passes with identical results — #2574 (day fingerprint in one walk: warm pass −25%) and
+   #2575 (stager twiddle table: cold pass −10%), both from Time Profiler runs on his backup
+   (`tools/rescore-profile/`). Open: the fingerprint is still the largest warm cost (25%: one R-R walk per night, a
+   table lookup per row; a covering index was rejected: disk + write cost); re-reading today's 54 h R-R window each
+   pass (17%) is option (1), cross-pass window reuse — decide from his logs whether it is still worth its complexity;
+   by-name GRDB column reads cost ~4% (`String.lowercased`), a small positional-read change.
+B. **DONE: #2371, the 500 ms filler** — PR #2569 merged 28 Sep (threshold HR < 100 from his backup; 873 rows marked).
+C. **Sleep staging against PSG** (`Tools/SleepPSG`, PhysioNet sleep-accel in `~/datasets`). Deep over-call: #2576
+   (deep prior 0.15, Utku's yes). Still wrong: REM (+4.5 pp on PSG; 31–40 % of sleep on his nights) and wake (−4.9 pp,
+   but #348's awake prior over-calls individuals, the #437 shape). REM hinges on the RSA R-R term, which sleep-accel
+   cannot exercise: needs PSG with heartbeats — DREAMT (best; Utku must register and sign) or MIT-BIH slpdb / HMC
+   (open, no wrist motion). His choice pending.
 
 ## 1. Measurements that are wrong (biometrics — "better than WHOOP")
 
-1. **A 500 ms R-R filler stored as a real heartbeat interval on WHOOP 5** — see B at the top (answered 28 Sep) — upstream #2371 (21 Sep, open, no PR, no
-   comment). An exact `rrMs = 500` appears ~20× more often than its neighbours on both 5.0 transports (v18 history and
-   the standard profile) and is stored as a real interval with `tsSuspect` NULL, so it enters HRV, stress and recovery.
-   Utku's strap is a 5.0. Work: confirm on his own data (a `.noopbak` or the database of a build), find where both
-   transports bank R-R (`Packages/WhoopProtocol`, `Packages/WhoopStore`, Android twins), decide flag vs drop with the
-   maintainers' existing `tsSuspect` convention, both platforms, oracle-proven, and a test with the histogram's shape.
-   **24 Sep:** not only hygiene — `RhythmScreener` keeps ectopy on purpose (a fake 500 among ~900 ms beats reads as an
-   irregular beat) and `SleepStagerV2`'s RSA breathing term clamps 300–2000 only (a spike pushes deep → REM); the
-   nightly HRV/Charge do filter it. The open question is whether the strap ALSO sends 500 as a real beat at ~120 bpm:
-   `python3 dist/tools/rr-fill.py <backup.noopbak>` splits the spike by the strap's own HR that second. Waits on
-   Utku's backup (More → Settings → Backup & restore → Export…).
+1. **DONE 28 Sep: the WHOOP 5 500 ms R-R filler** (#2371) — PR #2569 merged; see B at the top.
 2. **Android's live-HR smoothing counts emissions, not time** (`AppViewModel.ingestHr`, window 5) while iOS takes a
    10-s median: any unrelated state change refills Android's window. Display only; a parity question for the
    maintainers before a change.

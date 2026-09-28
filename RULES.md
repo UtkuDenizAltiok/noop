@@ -41,6 +41,11 @@ owner and decider of this journey.
   spacing STAYS (and goes upstream as planned); the point is not to improve the app mainly by that kind of change.
   Also his: work on the biometrics and the strap connection —
   "better than the original WHOOP" — each change with evidence (rules 2, 12).
+- **Deep-sleep base prior 0.18 → 0.15 (Utku, 28 Sep 2026, evening): propose upstream and ship to his build.** Evidence:
+  PhysioNet sleep-accel PSG, n = 31 (upstream's `Tools/SleepPSG`): kappa up for 21/31 subjects, |deep bias| down for
+  19/31, wake and REM untouched; on his four nights deep ~30% → ~27% of sleep. The awake half of #348-A is NOT taken
+  (it repeats #437). REM (31–40% of his sleep) needs PSG with heartbeats: a second PhysioNet dataset, asked about with
+  its name, source and size before any download (his yes to asking).
 - **Android is tested on GitHub, not on the Mac; the fork keeps all of upstream's checks (Utku, 28 Sep 2026).** He
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
