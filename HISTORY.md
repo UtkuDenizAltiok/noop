@@ -64,3 +64,7 @@ value that looks right on screen while being wrong underneath. A real session ca
   merged branches retired, `main` mirrored to `4cdae213`); `tools/rr-fill.py` opens WAL backups (immutable).
 - **28 Sep, ~10:00** — Utku: yes to background re-scores at most every 30 minutes, as its own upstream PR (he is not
   sure the maintainers want it). Session closed for a reset with everything recorded; build `0ad5ba9` on his page.
+- **28 Sep, 10:10–10:55** — Background re-score spacing (`BACKLOG.md` A option 2) built on `rescore-spacing`
+  (`d1f8c9bd`): one rule in `RescoreBackgroundPolicy.decide`; replay of his logs 900 → 250 CPU-s; tests seen to fail;
+  verify passed bar upstream's parity drift. Fork `main` → `fcc384d2`; shipped `8fac9a2` (run 36398385255). PR waits
+  on his 29 Sep strap log.

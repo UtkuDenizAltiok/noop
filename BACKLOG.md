@@ -33,8 +33,14 @@ A. **Background battery: every post-sync re-score re-reads 30 h of raw data.** M
    passes `allowReuse: false` by design (transport choice is range-dependent). Options, in order: (1) keep the day
    window across passes and re-read only what an offload can have touched (`Backfill` logs the landed range/frontier);
    (2) space background post-offload passes ≥ 30 min unless a night just ended or the app is in front — **Utku said
-   YES (28 Sep); do it first, as its own upstream PR** (`RULES.md` settled decisions); (3) both. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000 rows per
-   line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
+   YES (28 Sep); do it first, as its own upstream PR** (`RULES.md` settled decisions); (3) both. **(2) built 28 Sep**
+   (branch `rescore-spacing`, `d1f8c9bd`; one rule in `RescoreBackgroundPolicy.decide`, no "night just ended"
+   exception: the delay is bounded by the spacing + one offload, and opening the app scores at once). Replay of his
+   logs: 900 → 250 CPU-s (27–28 Sep). Shipped in `8fac9a26`; the PR waits on one night's log from his phone.
+   Passes also re-score an in-progress night each time (the growing `totalSleepMin`), and cost ~7 s with the day
+   cache warm (`reused=4/5`: prep 2.1 s + score 0.1 s + postLoop 0.9 s of a 6.7 s pass; ~3.6 s not broken out) —
+   option (1) targets that. Upstream fixed a separate background cost on 28 Sep (the strap-log view rebuilt ~5,000
+   rows per line: `d6d79693`, `2772e235`); check the next MetricKit day before claiming either.
 B. **#2371, the 500 ms filler — answered by Utku's backup (WHOOP 5.0, 28 Sep, `tools/rr-fill.py`):** exact 500 ms is
    13–15× its neighbours on both channels (v18 526 of 236,669; standard 383 of 207,227). By the strap's own HR that
    second: 70–90 bpm 40–46×, 90–110 bpm 12–14×, **110–130 bpm 0.9× (no excess)**; runs up to 10–11 in a row in
