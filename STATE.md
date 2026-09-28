@@ -21,18 +21,17 @@ Waits on Utku:
   per pass (#2574/#2575 on the phone), when the night's score landed after waking, and the MetricKit day lines (28 and
   29 Sep: first "after" for upstream's strap-log fix and ours). `dist/tools/rescore-profile/passes.py <log>` counts
   passes/CPU; `hr-timeline.py` / `strap-log.py` as usual.
-- [ ] **REM truth dataset: his choice** (asked 28 Sep, not yet answered in detail): DREAMT (100 patients, wrist IBI +
-  accel + PSG, best match, RESTRICTED: he must register at physionet.org and sign the DUA himself), MIT-BIH slpdb (18 OSA,
-  632 MB, open, beats annotated, no motion), HMC (151 patients, 12.9 GB, open, raw ECG, no motion). Download nothing
-  until he names one (standing ask: name, source, size first).
+- [ ] **DREAMT for REM (`BACKLOG.md` C):** he registers at physionet.org, signs the DREAMT data use agreement and
+  downloads `participant_info.csv` + the `data_64Hz` folder into `~/datasets/dreamt/` himself (steps given 28 Sep; never
+  enter his credentials). Its DUA forbids sharing: local only, aggregates only. Then build a harness like `Tools/SleepPSG`
+  (64 Hz files: TIMESTAMP, IBI ms, ACC_X/Y/Z, HR, Sleep_Stage every 30 s).
 
 **Next safe action:** session start (README). Then, in order: (1) `upstream-check.sh` — answer any review on #2574 /
 #2575 / #2576 ONCE (standing permission; `WORKFLOW.md` §5), rebase if one conflicts (twin-map refreshes conflict on
 busy days: take upstream's file, re-run `parity_ledger.py --refresh-derived --base upstream/main`); after a merge,
 prove the tree, retire the branch, rebuild the stack, ship. (2) When his logs arrive: read them (above), fill
 PHONE_RESULT in `private/pr-rescore-spacing-body.md`, rebase `rescore-spacing` on `upstream/main`, `verify.sh`, open
-the spacing PR. (3) If he picks a REM dataset: ask/confirm its size, download to `~/datasets`, build a harness the way
-`Tools/SleepPSG` does. (4) Otherwise `BACKLOG.md` in order.
+the spacing PR. (3) When DREAMT is in `~/datasets/dreamt/`: a harness the way `Tools/SleepPSG` is built, REM first. (4) Otherwise `BACKLOG.md` in order.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -59,12 +58,12 @@ upstream in #2453. The parity gate on `main` drifts after busy merge days and th
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`.
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per branch above:
   `~/Developer/noop-rescore-spacing`, `-rescore-cheaper`, `-stager-dft`, `-psg`. Build folders and verify logs:
-  `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`, `WORKFLOW.md` §9).
+  `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`, `WORKFLOW.md` §9); it holds only `verify/` (logs of the open
+  branches + `derived`, verify's build cache) and `builds/stack-ios` (the stack's iOS build cache): both safe to delete.
 - **Local only:** `dist/private/` (event log, `usage.log`, PR drafts). Utku's logs and backup: his files in
   `~/Downloads` (personal: never commit, never upload). PhysioNet sleep-accel (his yes): `~/datasets/motion-and-heart-
-  rate-from-a-wrist-worn-wearable-and-labeled-sleep-from-polysomnography-1.0.0` (+ the zip). Simulator `281E44EC`
-  (iPhone 17 Pro) holds NOOP's 120 demo days again, light appearance, but the INSTALLED app is the throwaway profiling
-  build: reinstall a clean Release before any screen measurement.
+  rate-from-a-wrist-worn-wearable-and-labeled-sleep-from-polysomnography-1.0.0` (2.2 GB). Simulator `281E44EC`
+  (iPhone 17 Pro): a clean Release of `main` `0c982899` over NOOP's 120 demo days (`--demo-seed`), light appearance.
 
 ## Verified — the latest numbers
 
@@ -88,7 +87,7 @@ upstream in #2453. The parity gate on `main` drifts after busy merge days and th
 
 1. Session start (README), then "Next safe action" above.
 2. `BACKLOG.md` A — read the logs; the spacing PR; decide whether cross-pass window reuse is still worth it.
-3. `BACKLOG.md` 9b — a relaunch costs a cold pass; persisting the day cache is the lever if relaunches stay frequent.
-4. REM calibration once a truth dataset with heartbeats is chosen.
+3. `BACKLOG.md` B — a relaunch costs a cold pass; persisting the day cache is the lever if relaunches stay frequent.
+4. `BACKLOG.md` C — REM against DREAMT once he has downloaded it.
 5. Every change: measure before/after, `verify.sh`, PR, rebuild `testing-stack`, ship, tell Utku "just update".
 6. At the end of every session: README "End a session".

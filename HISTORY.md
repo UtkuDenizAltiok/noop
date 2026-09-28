@@ -97,3 +97,6 @@ value that looks right on screen while being wrong underneath. A real session ca
 - **28 Sep, 20:30** — Shipped `769113c` (spacing + #2574 + #2575 + #2576; run 36462113779). All three open PRs green,
   no review yet. Session closed for a /clear: profiling harness kept in `tools/rescore-profile/`, throwaway worktrees
   removed, simulator demo data restored, STATE rewritten.
+- **28 Sep, ~23:30** — Cleanup for a fresh agent: ~16 GB of throwaway builds, profiling traces, logs and the scratch
+  copy of his backup deleted; merged-PR drafts removed from `private/`; simulator reinstalled clean from `main`;
+  `BACKLOG.md` rewritten (live / watch / done), STATE rewritten; Utku chose DREAMT for REM (he registers and downloads).

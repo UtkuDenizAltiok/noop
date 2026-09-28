@@ -146,7 +146,8 @@ Android is an independent reimplementation; analytics and stored data must be by
   the technical notes a reviewer needs. No sophisticated or AI-sounding phrasing.
 - **A comment on GitHub** gets ONE concise reply posted after it, covering only its points, citing commits.
 - **A change found by us or heard off GitHub** goes into an EDIT of the description, never a new "update" comment. The
-  description describes the PR as it is now. PR drafts live in `dist/private/pr-<name>-body.md`.
+  description describes the PR as it is now. PR drafts live in `dist/private/pr-<name>-body.md` and are deleted once
+  the PR is merged or closed (the text lives on GitHub).
 - **Before working on an open PR branch**, `gh pr view` it: the maintainer may have pushed to it or merged it.
 - **How ryanbr merges (Sep 2026):** often a rebase through a PR of his own (#2480 carried #2419, #2481 #2437) so our
   commits keep their authorship, with his corrections on top; our PR then shows CLOSED, not MERGED. He cannot push to
