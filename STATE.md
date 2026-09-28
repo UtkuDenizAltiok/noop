@@ -1,6 +1,6 @@
 # State
 
-**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 15 PRs merged, none open.
+**Updated 28 Sep 2026 (session 2) — Journey 2: NOOP, perfected (`RULES.md` mandate). 15 PRs merged; open: #2569 (#2371).
 Utku's build: `eeac53e3` = upstream `3c6172de` + the background re-score spacing (`BACKLOG.md` A, `rescore-spacing`)
 + the #2371 500 ms fill mark (`BACKLOG.md` B, `rr-whoop5-fill`), neither a PR yet. Next: his strap log of the morning
 of 29 Sep, then PR A; PR B once upstream re-derives its parity authority.** The
@@ -56,8 +56,12 @@ platform (the ledger pairs and compares them), pinned by the same literals in `W
 - [x] Android CI 36404612920 on `b4b862e9`: success (build + unit tests).
 - [x] Seen to fail on Android: throwaway branch with the fix off, CI 36405114857: exactly our 4 tests failed of
   6,526 (3 insert-rule + the migration wiring). Branch deleted from the fork and locally.
-- [ ] PR for B only after upstream re-derives the parity authority: rebase, `--refresh-derived --base upstream/main`,
-  verify, fill ANDROID_RESULT / VERIFY_RESULT in `private/pr-rr-fill-body.md`, PR (number here at once).
+- [x] Upstream re-derived its authority (`0e524b38`). Fork `main` mirrored; `rr-whoop5-fill` rebased (content proven
+  unchanged), refresh committed → `936e60e1` + `87ea199a`; ledger OK (292 baselined), ratchet 0 errors; force-pushed
+  (pinned lease, old `b4b862e9`); backup tag deleted.
+- [x] Android CI 36408713200 on `87ea199a`: success. Full `verify.sh` on `87ea199a`: every step passed (ledger, ratchet,
+  governance 124 included).
+- [x] **PR #2569** opened 28 Sep (`rr-whoop5-fill` `87ea199a` → `ryanbr/noop` `main`), body `private/pr-rr-fill-body.md`.
 
 **Ship 2 of 28 Sep (both changes):**
 - [x] Stack `9bde6246` = `upstream/main` `3c6172de` + spacing (`ccdd0718`) + #2371 (`9bde6246`): iOS BUILD SUCCEEDED
@@ -79,7 +83,7 @@ the deleted throwaway branch `tmp-rr-fill-broken`.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-None open. Merged (15): #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
+Open: **#2569** (#2371, the WHOOP 5 500 ms fill mark, both platforms; opened 28 Sep). Merged (15): #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via #2480), #2420, #2422, #2437
 (via #2481), #2444 (`HISTORY.md`). Our issue #2446 was fixed upstream in #2453. How ryanbr merges and what he asks
 for: `WORKFLOW.md` §5. The parity gate on `main` drifts after busy merge days and the maintainers re-derive it: if our
 `verify.sh` fails ledger/governance after a rebase, compare with a clean `main` checkout first; never refresh the

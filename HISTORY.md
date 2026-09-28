@@ -72,3 +72,5 @@ value that looks right on screen while being wrong underneath. A real session ca
   refined to HR < 100 on his backup; 873 rows marked, nightly RMSSD +0.1–0.3%; tests seen to fail on both platforms
   (Android via a throwaway CI branch). PR waits on upstream's parity authority repair. Shipped `eeac53e` (spacing +
   #2371, run 36405967857).
+- **28 Sep, ~12:40** — Upstream re-derived its parity authority (`0e524b38`); `rr-whoop5-fill` rebased, derived refresh
+  committed (`87ea199a`), full verify passed every step, Android CI green: **PR #2569** opened (#2371).
