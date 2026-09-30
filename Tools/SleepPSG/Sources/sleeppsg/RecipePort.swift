@@ -62,6 +62,11 @@ struct RecipeConfig: Equatable {
 
     // RSA respiration-regularity weight.
     var respWeight: Double
+    /// How the RSA z enters the emissions. `.symmetric` is the shipped `deep += w·z, rem −= w·z`;
+    /// `.regularOnly` uses max(z, 0), so only REGULAR breathing is evidence (for deep, against REM);
+    /// `.remOnly` moves REM alone (`rem −= w·z`), leaving deep and light level.
+    enum RespShape { case symmetric, regularOnly, remOnly }
+    var respShape: RespShape = .symmetric
 
     /// Dead-zone (± this z) on the cardiac terms of the AWAKE emission. 0 disables it, which is the
     /// shipped state — `dz` is then the identity, so the shipped emission is reproduced exactly.
@@ -466,7 +471,14 @@ enum V2Recipe {
             }
             for s in stageNames { em[s]! += pr[s]! }
             if f.jerkMax > f.jerkScale * cfg.jerkFloorGateMult { em["awake"]! += cfg.motionGateBoost }
-            if let rg = f.respReg { let z = zrg(rg); em["deep"]! += cfg.respWeight * z; em["rem"]! -= cfg.respWeight * z }
+            if let rg = f.respReg {
+                let z = zrg(rg)
+                switch cfg.respShape {
+                case .symmetric: em["deep"]! += cfg.respWeight * z; em["rem"]! -= cfg.respWeight * z
+                case .regularOnly: em["deep"]! += cfg.respWeight * max(z, 0); em["rem"]! -= cfg.respWeight * max(z, 0)
+                case .remOnly: em["rem"]! -= cfg.respWeight * z
+                }
+            }
             seq.append(em)
         }
 
