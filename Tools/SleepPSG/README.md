@@ -211,17 +211,18 @@ epoch, the mean z is +0.29 in deep, +0.06 in light, −0.09 in wake and −0.25 
 epoch scores higher than a REM epoch" is 0.658, light against REM 0.597, and per subject NREM against REM
 has a median AUC of 0.559, above 0.5 for 50 of 71 subjects.
 
-**Is it weighted right?** Not at 0.6. Light epochs sit near z = 0 with the same spread as every other stage,
-so a symmetric ±0.6·z moves light epochs into deep on one side and into REM on the other. With R-R live
-against withheld: pooled κ 0.217 → 0.208, per-subject κ lower for 55 subjects and higher for 38, REM
-16.2 → 19.9 % of the night (truth 10.5 %), deep 10.7 → 12.8 % (truth 3.4 %). Per subject, against the
-shipped recipe:
+**Is it weighted right?** It was not at 0.6, and `respWeight` is now 0.3 on this evidence. Light epochs sit
+near z = 0 with the same spread as every other stage, so a symmetric ±0.6·z moved light epochs into deep on
+one side and into REM on the other. At 0.6, with R-R live against withheld: pooled κ 0.217 → 0.208,
+per-subject κ lower for 55 subjects and higher for 38, REM 16.2 → 19.9 % of the night (truth 10.5 %), deep
+10.7 → 12.8 % (truth 3.4 %). Per subject, against the recipe at 0.6 (section 8 now prints the same rows
+against the shipped 0.3):
 
-| RSA term | mean κ | κ better / worse | mean \|deep bias\| | mean \|REM bias\| | REM % of sleep (truth 14.0) |
+| RSA term | mean κ | κ better / worse than 0.6 | mean \|deep bias\| | mean \|REM bias\| | REM % of sleep (truth 14.0) |
 |---|---|---|---|---|---|
-| symmetric 0.6 (shipped) | 0.204 | — | 10.60 | 11.16 | 21.4 |
+| symmetric 0.6 (before) | 0.204 | — | 10.60 | 11.16 | 21.4 |
 | symmetric 0.45 | 0.207 | 58 / 30 | 10.27 | 10.47 | 20.0 |
-| symmetric 0.3 | 0.216 | 61 / 28 | 9.76 | 9.74 | 18.4 |
+| **symmetric 0.3 (shipped)** | **0.216** | **61 / 28** | **9.76** | **9.74** | **18.4** |
 | symmetric 0.2 | 0.217 | 58 / 35 | 9.51 | 9.57 | 17.6 |
 | off | 0.216 | 55 / 38 | 9.18 | 9.77 | 17.4 |
 | regular breathing only (max(z, 0)), 0.6 | 0.190 | 38 / 54 | 13.23 | 7.78 | 14.2 |
@@ -232,7 +233,7 @@ least 80 % of the beats (n = 41: 31 / 10). The measured separation says the same
 two equal-variance classes a unit of z is worth d′ log-odds, and d′ = √2·Φ⁻¹(AUC) is 0.58 for deep against
 REM (the term's slope there is 2 × respWeight) and 0.35 for light against REM (slope respWeight), i.e. a
 weight of about 0.29–0.35, not 0.6. "Regular breathing only" fixes the REM share but floods deep; "REM side
-only" keeps the REM over-call.
+only" keeps the REM over-call. sleep-accel has no R-R, so every other section is unchanged by the weight.
 
 ---
 
