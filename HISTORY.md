@@ -100,3 +100,6 @@ value that looks right on screen while being wrong underneath. A real session ca
 - **28 Sep, ~23:30** — Cleanup for a fresh agent: ~16 GB of throwaway builds, profiling traces, logs and the scratch
   copy of his backup deleted; merged-PR drafts removed from `private/`; simulator reinstalled clean from `main`;
   `BACKLOG.md` rewritten (live / watch / done), STATE rewritten; Utku chose DREAMT for REM (he registers and downloads).
+- **29–30 Sep** — Utku registered at PhysioNet and downloaded DREAMT `data_64Hz` (100 participants, 14 GB) with a
+  helper script; all 100 files verified against PhysioNet's SHA-256. Script deleted (it put the password on the
+  command line; he chose not to worry about that password).

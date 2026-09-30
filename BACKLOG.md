@@ -27,7 +27,7 @@ C. **Sleep staging against PSG** (`Tools/SleepPSG`, PhysioNet sleep-accel in `~/
    (deep prior 0.15, Utku's yes). Still wrong: REM (+4.5 pp on PSG; 31–40 % of sleep on his nights) and wake (−4.9 pp;
    #348's awake prior fixes the pooled share but over-calls individuals, the #437 shape). REM hinges on the RSA R-R term,
    which sleep-accel cannot exercise: needs PSG with heartbeats. DREAMT (100 patients, wrist IBI + accel + PSG labels)
-   is the pick; Utku registers and downloads it himself (steps given 28 Sep), into `~/datasets/dreamt/`. Its data use
+   is downloaded and verified in `~/datasets/dreamt/` (100 participants, 30 Sep). Its data use
    agreement forbids sharing: local only, never in the repo, results as aggregates.
 
 ## Next candidates

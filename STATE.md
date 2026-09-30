@@ -21,17 +21,20 @@ Waits on Utku:
   per pass (#2574/#2575 on the phone), when the night's score landed after waking, and the MetricKit day lines (28 and
   29 Sep: first "after" for upstream's strap-log fix and ours). `dist/tools/rescore-profile/passes.py <log>` counts
   passes/CPU; `hr-timeline.py` / `strap-log.py` as usual.
-- [ ] **DREAMT for REM (`BACKLOG.md` C):** he registers at physionet.org, signs the DREAMT data use agreement and
-  downloads `participant_info.csv` + the `data_64Hz` folder into `~/datasets/dreamt/` himself (steps given 28 Sep; never
-  enter his credentials). Its DUA forbids sharing: local only, aggregates only. Then build a harness like `Tools/SleepPSG`
-  (64 Hz files: TIMESTAMP, IBI ms, ACC_X/Y/Z, HR, Sleep_Stage every 30 s).
+- [x] **DREAMT is downloaded and verified (30 Sep):** `~/datasets/dreamt/` = `participant_info.csv` (100 participants:
+  age, sex, BMI, AHI, sleep disorders) + `data_64Hz/S0xx_whole_df.csv` (100 files, 14 GB; columns TIMESTAMP, BVP, IBI
+  ms, EDA, TEMP, ACC_X/Y/Z, HR, Sleep_Stage every 30 s: P/W/N1/N2/N3/R/Missing) + `SHA256SUMS.txt`; all 100 match
+  PhysioNet's SHA-256 (its file has ONE space before the path: `sed 's/ /  /'` before `shasum -c`). Its data use
+  agreement forbids sharing: local only, never in the repo, results as aggregates. Sleep-clinic patients (many with
+  apnoea): read AHI before generalising.
 
 **Next safe action:** session start (README). Then, in order: (1) `upstream-check.sh` — answer any review on #2574 /
 #2575 / #2576 ONCE (standing permission; `WORKFLOW.md` §5), rebase if one conflicts (twin-map refreshes conflict on
 busy days: take upstream's file, re-run `parity_ledger.py --refresh-derived --base upstream/main`); after a merge,
 prove the tree, retire the branch, rebuild the stack, ship. (2) When his logs arrive: read them (above), fill
 PHONE_RESULT in `private/pr-rescore-spacing-body.md`, rebase `rescore-spacing` on `upstream/main`, `verify.sh`, open
-the spacing PR. (3) When DREAMT is in `~/datasets/dreamt/`: a harness the way `Tools/SleepPSG` is built, REM first. (4) Otherwise `BACKLOG.md` in order.
+the spacing PR. (3) `BACKLOG.md` C: a DREAMT harness the way `Tools/SleepPSG` is built (the E4's IBI → R-R, ACC → gravity, HR),
+the shipped `SleepStagerV2` against the PSG labels, REM first; per subject, kappa AND stage fractions. (4) Otherwise `BACKLOG.md` in order.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
