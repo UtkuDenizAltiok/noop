@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ed340050-008d-44ae-be66-66b9c198334f
-  modified: 2026-09-28T07:30:22.173Z
+  modified: 2026-10-01T11:00:00.000Z
 ---
 
 Utku Deniz Altiok owns the product and tests it on his own WHOOP 5.0 and iPhone. He does not read code or use the
@@ -30,5 +30,10 @@ obeyed.
 - When his reading of evidence differs from mine, re-read it fully, then show exact lines and a search he can repeat.
   He pushes back hard when a claim looks unproven — answer with what is proven and what is not.
 - Never delete his things (his strap logs in ~/Downloads) or touch his comments without asking.
+- He cannot keep records of taking the band off or swiping NOOP away (1 Oct: "you decide"): read those gaps from
+  the strap log (WRIST_OFF, app runs), never ask him to log them; design for both as normal use.
+- When he says "you decide", decide and say what was decided in one line (1 Oct: the handbook history scrub).
+- Nothing personal on the public handbook branch, however mild (per-night times or HR, where he sleeps): numbers as
+  aggregates only; check a commit before it goes public, and fix a slip at once.
 
 See [[noop-project]].

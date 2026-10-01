@@ -5,7 +5,10 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Top of the list (30 Sep 2026)
+## Top of the list (1 Oct 2026)
+
+**First: the frozen Live HR banner** (`features/live-hr-banner.md` §6.0) — a banner iOS ended (8-h limit, or an app
+update) lingers up to 4 h showing an old number beside the live one. Small iOS-only fix, proven in the simulator first.
 
 A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
    CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1

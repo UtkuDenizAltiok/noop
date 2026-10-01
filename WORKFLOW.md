@@ -68,6 +68,12 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
 - **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region); they fail on clean
   `main` too. `verify.sh` treats only those two as known.
 - **Build both app targets locally.** Nothing else compiles app-target Swift before a PR (`AGENTS.md`).
+- **Commit before `verify.sh`, and run one at a time.** Its governance step checks a clean checkout of HEAD, so an
+  uncommitted change is not what it tests; and two runs share the build cache and the macOS test host, so overlapping
+  runs give results that cannot be trusted (1 Oct). `verify.sh` does not stop at a failed step: a first run can still be
+  writing while a second starts.
+- **xcodegen rewrites `StrandiOS/Resources/Info.plist`** (a `stalebattery` task entry upstream's committed plist lacks):
+  `git checkout` it after every build; never commit it (1 Oct it slipped into an amend and had to be taken out).
 - **A new test must be seen to fail.** Break the fix, run the test, watch it go red, restore, compare sha256. A split
   commit series is also built commit by commit.
   - **Fail, never crash.** The macOS tests run inside a test copy of NOOP ("NOOP Staging", from the build cache): it
@@ -226,7 +232,9 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 - **Row structs take no default parameter values**, so a new column is a compile error at every call site.
 - **Booleans are `.integer` 0/1**; any `deviceId` table goes in `deviceScopedTables`.
 - **`onChange(of:perform:)`** stays single-parameter (the macOS 13 target); its iOS deprecation warning is known.
-- **Simulator coordinates:** take them from a screenshot of the SETTLED screen.
+- **Simulator coordinates:** take them from a screenshot of the SETTLED screen. The iOS Simulator tool's screenshot can
+  trail a tap by a second or two: wait ~3 s after a tap before reading the screen, or a later tap lands on the wrong
+  view (1 Oct: a late "Got it" turned the next tap into Customize Today). Points = screenshot pixels ÷ 3 on iPhone 17 Pro.
 - **App-target Swift is validated only by local builds; BLE behaviour only on a real strap** (`AGENTS.md`).
 
 ## 10. Maintaining this handbook

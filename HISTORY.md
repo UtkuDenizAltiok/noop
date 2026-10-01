@@ -119,3 +119,7 @@ value that looks right on screen while being wrong underneath. A real session ca
   **#2617** cleanup (15 Swift + 5 Kotlin unreferenced declarations, parity debt down); **#2618** "Use my resonance
   pace" was read by nothing (iOS ignored it, Android always 5.5); screen sweep → **#2619** light-appearance night sky
   held still (its stars lift a pixel ≤ 1.34 levels; Today 2 + 22 → 0.01 + 0.02 CPU-s/min).
+- **1 Oct, morning** — Utku saw two Live HR banners (09:48). His log (build 429 = `a8d25c1`, updated 30 Sep 23:50):
+  a banner iOS ENDS (its 8-h limit at 08:45, or the app update at ~23:41) stays on the Lock Screen up to 4 h, frozen,
+  beside the fresh one NOOP starts — fix planned (`features/live-hr-banner.md` §6.0). #2618's Kotlin test seen to fail
+  on the fork (run 36837267848, 1 of 6,591), description edited. Backup copies deleted; session 3 handed over.
