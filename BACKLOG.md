@@ -5,30 +5,40 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Top of the list (end of 28 Sep 2026)
+## Top of the list (30 Sep 2026)
 
-A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; a 7–9 s re-score after nearly
-   every ~10-min sync, ~15 CPU-min a day in the background (27–28 Sep log: 113 passes / 900 CPU-s). Done: the 30-min
-   background spacing (Utku's yes; `rescore-spacing`, shipped; PR after his 29/30 Sep logs; replay 900 → 250 CPU-s);
-   cheaper passes with identical results — #2574 (day fingerprint in one walk: warm pass −25%) and #2575 (stager
-   twiddle table: cold pass −10%), both found with Time Profiler on his backup (`tools/rescore-profile/`). Open: the
-   fingerprint is still the largest warm cost (25%: one R-R walk per night, a table lookup per row; a covering index
-   was rejected for its disk and write cost); re-reading today's 54 h R-R window each pass (17%) could be kept across
-   passes (option 1) — decide from his logs whether that is still worth its complexity; by-name GRDB column reads cost
-   ~4% (`String.lowercased`), a small positional-read change. Upstream's own 28 Sep strap-log fix also lands in these
-   logs: read the MetricKit day lines before claiming a number.
-B. **A relaunch costs a cold pass.** iOS relaunches NOOP in the background after it ends (his swipes, mostly: asked
+A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
+   CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1
+   passes and 15–18 CPU-s an hour; MetricKit 29 Sep CPU 1 h 10 m. A backgrounded pass costs ~8 s CPU against ~1.5 s in
+   the foreground for the same work (every stage ~6×, same rows read; consistent with iOS's efficiency cores), so
+   CPU-seconds overstate background energy; iOS's own energy numbers are the better judge. Open: the fingerprint is
+   still the largest warm cost (25 %); keeping today's R-R window across passes (17 %) — with passes now ~2.5 an hour,
+   worth it only if a measurement says so. By-name GRDB reads ~4 %. Disk writes 193–201 MB a day (MetricKit 26 and 29
+   Sep) for a few MB of new rows: find what writes (strap log rewrites? WAL checkpoints?) before guessing.
+B. **Cold passes: midnight and relaunches** (29–30 Sep logs). The first pass after midnight reused 0 of 7 days (33 s CPU,
+   53 s elapsed, backgrounded): the day rollover seems to invalidate every cached night; find which key moves (the
+   window, a baseline, the day index) — the same scores, cheaper, is the aim. iOS's relaunch at 03:01 cost a cold
+   pass of 20 s CPU with the background assertion EXPIRED mid-pass (iOS was about to suspend it). Two foreground
+   relaunches cost ~5 s each. **A relaunch costs a cold pass.** iOS relaunches NOOP in the background after it ends (his swipes, mostly: asked
    28 Sep); the per-day reuse cache is in memory (`IntelligenceEngine.dayScanCache`), so the first pass re-scores every
    night (sim, his data: 4.4 vs 1.2 s CPU warm). Persisting that cache with its config signature would make a relaunch
    warm with the same scores (upstream named it the remaining lever in #1538). Worth it only if his logs show many
    relaunches. Also check: the termination flush logs no `flush-succeeded` (are the last ~10 s of live rows lost, or
    does history cover them?), and the 339 MB peak memory in the background (MetricKit 26 Sep).
-C. **Sleep staging against PSG** (`Tools/SleepPSG`, PhysioNet sleep-accel in `~/datasets`). Deep over-call: #2576
-   (deep prior 0.15, Utku's yes). Still wrong: REM (+4.5 pp on PSG; 31–40 % of sleep on his nights) and wake (−4.9 pp;
-   #348's awake prior fixes the pooled share but over-calls individuals, the #437 shape). REM hinges on the RSA R-R term,
-   which sleep-accel cannot exercise: needs PSG with heartbeats. DREAMT (100 patients, wrist IBI + accel + PSG labels)
-   is downloaded and verified in `~/datasets/dreamt/` (100 participants, 30 Sep). Its data use
-   agreement forbids sharing: local only, never in the repo, results as aggregates.
+C. **Sleep staging against PSG** (`Tools/SleepPSG`: PhysioNet sleep-accel and, since 30 Sep, DREAMT in `~/datasets/dreamt`,
+   restricted: local only, aggregates only). Deep over-call: #2576 (deep prior 0.15). The RSA term: `dreamt-psg`
+   (respWeight 0.6 → 0.3; DREAMT section 8: 61/28 subjects, Utku's yes 30 Sep). Still open: (a) REM stays over-called
+   with the term off too (DREAMT REM/sleep 17.4 vs 14.0; his nights 27 % with the term off): the REM emission, the
+   clock ramp or the transition rows — section 8 per stratum before any change, and never a base rate fitted to
+   DREAMT (#437). (b) Wake is badly under-called on DREAMT (6.9 vs 25.1 % of the night; sleep-accel −4.9 pp) — the
+   #437 trap on the other side: a clinical cohort's wake is not a healthy night's. (c) The per-night z-score blows a
+   near-constant feature up to ±10 (the V2-flag synthetic night, sd 0.00016): a floor on the z-score's sd would stop
+   a feature with no spread from voting at all; test it on DREAMT and sleep-accel before proposing.
+D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the evening re-detected the previous night
+   67 min earlier (#1284 "heal", total sleep +29 min); the only new data was that evening's rows. Which start is right
+   is ambiguous (the added hour looks like restless time in bed); that later data can move an earlier night's onset is
+   the question. Reproduce on the 30 Sep backup (detection with the stream cut before vs after that evening) before
+   anything; check upstream's own sleep-detection commits since 0c982899 (4a827f90, 7f1e42f7, b9e1a3ce).
 
 ## Next candidates
 

@@ -103,3 +103,12 @@ value that looks right on screen while being wrong underneath. A real session ca
 - **29–30 Sep** — Utku registered at PhysioNet and downloaded DREAMT `data_64Hz` (100 participants, 14 GB) with a
   helper script; all 100 files verified against PhysioNet's SHA-256. Script deleted (it put the password on the
   command line; he chose not to worry about that password).
+- **28–29 Sep** — Upstream merged #2575 (`f411030e`), #2576 (`bbeb20e8`) and #2574 (`5e204fab`); all three proven in by
+  `merge-tree` on 30 Sep, their branches and worktrees retired, fork `main` mirrored to `7f396e98`.
+- **30 Sep** — His strap logs of 29–30 Sep read: the 30-min spacing held (2.5–3.1 passes and 15–18 CPU-s an hour,
+  from 6.8 and 54); a backgrounded pass costs ~8 s CPU against ~1.5 s in the foreground for the same work; MetricKit
+  29 Sep CPU 1 h 10 m (26 Sep 1 h 36 m). **#2612** opened (the spacing, rebased on `7f396e98`, full verify green).
+- **30 Sep** — DREAMT in `Tools/SleepPSG` (reader + section 8, R-R live for the first time against PSG): the RSA term is
+  informative (AUC deep–REM 0.658) but twice too strong; `respWeight` 0.6 → 0.3 raises per-subject kappa for 61 of 100
+  and lowers it for 28. His six nights (`tools/his-nights/`): REM 31.9 → 29.3 % of sleep. Utku's yes; **#2613** opened
+  (two commits, both platforms, pins, golden regenerated; Android CI green).

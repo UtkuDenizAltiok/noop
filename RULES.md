@@ -48,6 +48,12 @@ owner and decider of this journey.
   its name, source and size before any download (his yes to asking). He then chose DREAMT (free; he registers, signs
   its data use agreement and downloads it himself — never his credentials in our hands). Datasets live in
   `~/datasets`, never in the repo; a restricted one (DREAMT) is used locally and reported only as aggregates.
+- **RSA respiration weight 0.6 → 0.3 (Utku, 30 Sep 2026): propose upstream and ship to his build.** Evidence: DREAMT
+  (PSG with the E4's R-R, n = 100, `Tools/SleepPSG` section 8): the breathing-regularity feature separates the stages
+  the assumed way (AUC deep–REM 0.658) but at 0.6 moved light epochs into deep and REM; 0.3 raises per-subject kappa for
+  61 and lowers it for 28, and matches the weight the separation implies (0.29–0.35). Lower weights and "off" score
+  within 0.001 on DREAMT but its deep truth is 3.4 % (a clinical cohort), so 0.3 is where it stops. On his six nights
+  REM 31.9 → 29.3 % of sleep. DREAMT is restricted: local only, aggregates only, nothing fitted to its base rates.
 - **Android is tested on GitHub, not on the Mac; the fork keeps all of upstream's checks (Utku, 28 Sep 2026).** He
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
