@@ -34,6 +34,11 @@ C. **Sleep staging against PSG** (`Tools/SleepPSG`: PhysioNet sleep-accel and, s
    #437 trap on the other side: a clinical cohort's wake is not a healthy night's. (c) The per-night z-score blows a
    near-constant feature up to ±10 (the V2-flag synthetic night, sd 0.00016): a floor on the z-score's sd would stop
    a feature with no spread from voting at all; test it on DREAMT and sleep-accel before proposing.
+   **Tried 1 Oct (do not repeat blind):** joint logistic REM-vs-light weights, both PSG sets: hrVar 0.35/0.34 (recipe
+   0.6), move −0.28/−0.23 (−0.6), clock 2.24/2.19 (1.0), hr 0.87 vs 0.26 (cohorts disagree). Run through the recipe
+   (local sections 9/10 on `noop-dreamt`, uncommitted): clock ×1.5–2 explodes REM (45–62 % of sleep); hrVar 0.35 fixes
+   sleep-accel's REM share (27.6 → 23.7 vs 24.2) at neutral κ (16/14) but nothing on DREAMT; move −0.25 helps DREAMT
+   (51/38), hurts sleep-accel (12/17). Per-epoch logistic weights do not transfer to the HMM. No REM change.
 D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the evening re-detected the previous night
    67 min earlier (#1284 "heal", total sleep +29 min); the only new data was that evening's rows. Which start is right
    is ambiguous (the added hour looks like restless time in bed); that later data can move an earlier night's onset is
@@ -42,6 +47,12 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
+0. **Waiting on Utku's yes (visible):** (a) a swiped-away reminder — one local notification rescheduled ~3 h ahead
+   at each sync, so it fires only if NOOP stopped (the only mechanism iOS still delivers after a force-quit; quiet
+   delivery at night); (b) iOS's missing "deleted sleep" list — #65 built `Repository.dismissedSleepManagementWindows`
+   / `allowSleepReDetection` but no screen; Android has it (#515), so on iOS a deleted night cannot come back once the
+   undo banner goes. Both need strings in 10 locales (Android's #515 strings can seed them).
+
 1. **A score reviewed against the literature, one per session** — recovery, strain, HRV (RMSSD windowing, artefact
    rejection), resting HR, respiration, SpO2. Read `StrandAnalytics` for it, its tests and open issues, compare with
    published methods, propose only what evidence supports (`RULES.md` 2); test against truth where a dataset exists.
@@ -49,8 +60,10 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    connect) from his logs; each is a radio exchange on both devices. Then decide whether any trigger is redundant.
 3. **The Live HR banner's steady re-push** every 15 s exists only to beat a 30-s stale date; with WRIST_OFF handled live
    (#2437), a 60-s stale date would halve it (`features/live-hr-banner.md` §6). Decide from his logs.
-4. **The night sky's render cost** (~22 CPU-s/min in the render server with the stars animating, #2444 left it by
-   design): a smaller layer for the stars? Other screens with `LiquidTube`/`LiquidThread` loops. Measure first.
+4. **The night sky's render cost.** Light appearance: fixed in #2619 (its stars lift a pixel ≤ 1.34 levels; 1.9–2.2 +
+   22.1 → 0.00 + 0.02 CPU-s/min). Dark appearance, by design (visible twinkle), 1 Oct 03:41: NOOP 1.97 + render 21.82
+   CPU-s/min on Today. Lever: the twinkle at 10 fps instead of 20 (pow(sin,6) flares last ~0.5 s), ~half the cost —
+   a visible-quality trade, Utku's call. Sweep 1 Oct (light, night): Trends/Sleep/Coach/More 0.00 + 0.01–0.02.
 5. **A second dead-code cleanup** (#2417 removed 707 lines and was welcomed). Unreferenced on 24 Sep (`141cbd93`, whole-
    word grep, Swift app + packages / Android main), re-check each on today's `main` and Android (`RULES.md` 9):
    `Collector.bufferedCount`, `ImuSessionFileStore.prepareForRead`, `BLEManager.uploadIntervalSeconds`,
@@ -63,6 +76,12 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    `clearEcgRawDataGate`, `clearKey`, `availableKeys`, `recalibrateChargeBaseline`. On Android only
    (`cycleAwarenessHidden`, `numericJournalSeries`): likely iOS features without an entry point — ask before removing.
    `periphery` (Homebrew) scans for unused Swift declarations.
+5b. **Next cleanup round:** Android's animated `LiquidSky` composable has no call site (only `LiquidSkyStatic` is
+   used); `NavRouter.openTrends` / `openLiveSession` and `BehaviorStore.didRecalibrateCharge` were KEPT on purpose
+   (named hooks) — re-check only if their surfaces are dropped. The midnight cold re-score (`configDropped
+   (sleepConsistency)`) is correct invalidation; cheaper only by splitting `analyzeDay` into a config-free part
+   (streams, staging, HRV) and a cheap config-dependent score — a two-platform refactor, ~2 % of daily CPU for him,
+   more for 21-night users (the pass risks iOS's background deadline, #1538).
 6. **The macOS unit tests start the whole app, Bluetooth included** (28 Sep: `StrandTests` runs hosted in "NOOP
    Staging", which creates a `CBCentralManager` and opens a window on the developer's Mac; no connect seen). Candidate
    upstream PR: skip BLE start and windows when hosting unit tests. Check how upstream wants it first; build both apps.

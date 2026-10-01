@@ -112,3 +112,10 @@ value that looks right on screen while being wrong underneath. A real session ca
   informative (AUC deep–REM 0.658) but twice too strong; `respWeight` 0.6 → 0.3 raises per-subject kappa for 61 of 100
   and lowers it for 28. His six nights (`tools/his-nights/`): REM 31.9 → 29.3 % of sleep. Utku's yes; **#2613** opened
   (two commits, both platforms, pins, golden regenerated; Android CI green).
+- **1 Oct, night** — Utku away until Friday noon; asked for general optimisation. Findings: sync cadence is no radio
+  lever (#1007); the midnight cold re-score is correct invalidation (refactor-only lever); REM emission variants on
+  both PSG sets — none improves both, no change; re-score memory 77 MB steady / 144 MB peak on his data (MetricKit's
+  358 MB is elsewhere, no kills). Handbook history scrubbed of three per-night lines (his "you decide").
+  **#2617** cleanup (15 Swift + 5 Kotlin unreferenced declarations, parity debt down); **#2618** "Use my resonance
+  pace" was read by nothing (iOS ignored it, Android always 5.5); screen sweep → **#2619** light-appearance night sky
+  held still (its stars lift a pixel ≤ 1.34 levels; Today 2 + 22 → 0.01 + 0.02 CPU-s/min).
