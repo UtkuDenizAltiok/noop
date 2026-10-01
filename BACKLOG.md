@@ -50,12 +50,18 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
-0. **Waiting on Utku's yes (visible):** (a) a swiped-away reminder — one local notification rescheduled ~3 h ahead
-   at each sync, so it fires only if NOOP stopped (the only mechanism iOS still delivers after a force-quit; quiet
-   delivery at night); (b) iOS's missing "deleted sleep" list — #65 built `Repository.dismissedSleepManagementWindows`
-   / `allowSleepReDetection` but no screen; Android has it (#515), so on iOS a deleted night cannot come back once the
-   undo banner goes. Both need strings in 10 locales (Android's #515 strings can seed them).
-
+0. **Utku said YES (1 Oct) — build next, one PR each:**
+   (a) **Silent swiped-away reminder (iOS only).** After every completed sync (and on each app-state change) replace one
+   pending local notification (fixed identifier) due 3 h later, `interruptionLevel = .passive`, no sound: "NOOP hasn't
+   synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, on by
+   default. A pure policy (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
+   simulator proof that the request is pending and replaced (log one line when it is first armed, Test Centre for the
+   rest); on the phone, swipe NOOP away and see it ~3 h later. Android needs none (foreground service) — say so.
+   (b) **iOS deleted-sleep list (#65/#515 parity).** `Repository.dismissedSleepManagementWindows()` +
+   `allowSleepReDetection` exist with no screen. Mirror Android's card (`AppViewModel.recomputeDeletedSleep` /
+   the hide action, `SleepScreen`): each deleted night "d MMM, HH:mm–HH:mm" with bring back (lift the tombstone, then
+   re-score) and hide; reuse Android's #515 strings and translations for all locales. Simulator walkthrough: delete a
+   demo night, wait past the undo, bring it back.
 1. **A score reviewed against the literature, one per session** — recovery, strain, HRV (RMSSD windowing, artefact
    rejection), resting HR, respiration, SpO2. Read `StrandAnalytics` for it, its tests and open issues, compare with
    published methods, propose only what evidence supports (`RULES.md` 2); test against truth where a dataset exists.

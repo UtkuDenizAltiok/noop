@@ -123,3 +123,4 @@ value that looks right on screen while being wrong underneath. A real session ca
   a banner iOS ENDS (its 8-h limit at 08:45, or the app update at ~23:41) stays on the Lock Screen up to 4 h, frozen,
   beside the fresh one NOOP starts — fix planned (`features/live-hr-banner.md` §6.0). #2618's Kotlin test seen to fail
   on the fork (run 36837267848, 1 of 6,591), description edited. Backup copies deleted; session 3 handed over.
+- **1 Oct, ~11:15** — Utku: YES to the silent swiped-away reminder and to iOS's deleted-sleep list (RULES, BACKLOG 0).

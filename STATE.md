@@ -17,10 +17,12 @@ it starts and ticked when it ends. After any interruption, check every unticked 
 Waits on Utku:
 - [ ] **Just update to `d6b998c`** (told 1 Oct ~11:00). After installing, if two Live HR banners show, tap the X on the
   Lock Screen group and open NOOP once (the frozen-banner bug below; fixed next session).
-- [ ] **Saturday 3 Oct: strap logs (the morning's, plus any saved since), the export zip and the `.noopbak` backup**
-  (Settings → Backup & Restore). Read them per "Next safe action" (3).
-- [ ] **His yes/no (asked 1 Oct, not yet answered):** (a) the swiped-away reminder notification, (b) iOS's missing
-  deleted-sleep list (`BACKLOG.md` 0). Visible features: build only what he says yes to.
+- [ ] **Saturday 3 Oct: two strap logs (saved Friday noon and Saturday noon), the export zip and the `.noopbak` backup**
+  (Settings → Backup & Restore, Saturday noon). Read them per "Next safe action" (3).
+- [x] **His answers (1 Oct ~11:15): YES to both** — (a) the swiped-away reminder, SILENT; (b) iOS's deleted-sleep list,
+  like Android's. Specs in `RULES.md` (settled decisions) and `BACKLOG.md` 0.
+- **His plan:** strap logs saved Friday 2 Oct noon and Saturday 3 Oct noon, backup + export Saturday noon, then the
+  new session with the start prompt. Upstream may move before then: step 1 below handles it.
 - **Context (Utku, 30 Sep–1 Oct):** his nights are atypical for a while, no training; he sometimes takes the band off
   at night and sometimes swipes NOOP away, and cannot keep a record of it ("you decide"): read gaps from the log
   (WRIST_OFF, app runs), never ask him to log them. Judge a staging change by re-staging the SAME night with old and
@@ -37,7 +39,9 @@ Waits on Utku:
    with 26 Sep 1 h 36 m and 29 Sep 1 h 10 m CPU), `grep 'Live HR banner'` (the bug's shape on `d6b998c`),
    `bash dist/tools/his-nights/run.sh <copy of noop-backup.sqlite>` (his nights with RSA 0.3: REM/deep/light), cold
    passes (`analyzeRecent dayCache reused=0`), WRIST_OFF gaps at night. Write numbers into "Verified" below.
-4. His answers on (a)/(b) → build what he says yes to (strings in all locales; Android twin where Android has the code).
+4. Build his two yeses, one PR each (`BACKLOG.md` 0): the frozen-banner fix's PR first, then (b) the deleted-sleep list
+   (mirror Android #515's card and strings), then (a) the silent reminder. Each: simulator proof, tests seen to fail,
+   `verify.sh` alone, PR, then ONE rebuilt stack + ship for all of them.
 5. `BACKLOG.md` in order.
 
 ## Our PRs upstream (`ryanbr/noop`)
@@ -104,7 +108,7 @@ A PR that removes or adds a twin may need `parity_ledger.py --refresh-derived --
 ## Next
 
 1. Session start (README), then "Next safe action" above — the frozen-banner fix first, then his files.
-2. Utku's answers on the reminder notification and the deleted-sleep list (`BACKLOG.md` 0).
+2. Build his two yeses: the iOS deleted-sleep list and the silent swiped-away reminder (`BACKLOG.md` 0).
 3. `BACKLOG.md` in order (B: cold-pass refactor only if worth it; D: night start moved by later data; C: wake/REM).
 4. Every change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
 5. At the end of every session: README "End a session".

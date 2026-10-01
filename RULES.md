@@ -54,6 +54,13 @@ owner and decider of this journey.
   61 and lowers it for 28, and matches the weight the separation implies (0.29–0.35). Lower weights and "off" score
   within 0.001 on DREAMT but its deep truth is 3.4 % (a clinical cohort), so 0.3 is where it stops. On his six nights
   REM 31.9 → 29.3 % of sleep. DREAMT is restricted: local only, aggregates only, nothing fitted to its base rates.
+- **Two new features, Utku's yes (1 Oct 2026):** (a) **a silent swiped-away reminder** — one local notification,
+  fixed identifier, rescheduled ~3 h ahead at every completed sync (and app-state change), delivered with no sound and
+  no screen wake (`.passive`), with a Settings switch (on by default); it fires only if NOOP stopped syncing (swiped
+  away, or the strap away 3 h) and says so plainly. iOS only: Android's foreground service survives a swipe. (b) **The
+  iOS deleted-sleep list, like Android's (#515)** — deleted nights listed with "bring back" (`allowSleepReDetection` +
+  re-score) and hide; on iOS a deleted night could only be undone for a few seconds. Both upstream as separate PRs;
+  the fork keeps them either way.
 - **Android is tested on GitHub, not on the Mac; the fork keeps all of upstream's checks (Utku, 28 Sep 2026).** He
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
