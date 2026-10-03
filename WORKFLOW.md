@@ -74,7 +74,8 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
   writing while a second starts.
 - **xcodegen rewrites `StrandiOS/Resources/Info.plist`** (a `stalebattery` task entry upstream's committed plist lacks):
   `git checkout` it after every build; never commit it (1 Oct it slipped into an amend and had to be taken out).
-- **A new test must be seen to fail.** Break the fix, run the test, watch it go red, restore, compare sha256. A split
+- **A new test must be seen to fail.** Break the fix, run the test, watch it go red, restore, compare sha256. A NEW
+  (untracked) file cannot be restored with `git checkout`: record its sha256 first and reverse the edit by hand. A split
   commit series is also built commit by commit.
   - **Fail, never crash.** The macOS tests run inside a test copy of NOOP ("NOOP Staging", from the build cache): it
     opens on Utku's screen, starts Bluetooth, and a crashing test makes macOS show him "quit unexpectedly" (28 Sep: a
@@ -92,6 +93,15 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
   cannot produce (a live heart rate) is worth a temporary hard-coded one, restored byte-identical afterwards.
 - **Simulator settings live in the app's own container:** edit `$(xcrun simctl get_app_container <dev> <bundle>
   data)/Library/Preferences/<bundle>.plist` with Python `plistlib` (keys with dots), not `simctl … defaults write`.
+  The simulator's `cfprefsd` caches them: terminate the app, edit, then kill the cache (`kill $(xcrun simctl spawn
+  <dev> launchctl list | awk '/cfprefsd.xpc.daemon/{print $1}')`) before launching, or the app reads old values
+  (3 Oct). The app writes its own defaults to disk lazily: wait a few seconds before reading them back.
+- **The iOS Simulator tool's taps do not flip SwiftUI `Toggle`s** (3 Oct: new and long-standing switches alike; rows,
+  buttons and tabs work). Prove a switch's effect through its other triggers, or a temporary launch argument in an
+  uncommitted build, restored byte-identical (sha256) afterwards.
+- **A throwaway harness build** (fixed values, launch arguments, `NSLog("NOOPH …")` lines read with `simctl spawn
+  <dev> log show --predicate 'eventMessage CONTAINS "NOOPH"'`) is how the Live Activity facts in
+  `features/live-hr-banner.md` §6.0 were proven: a detached worktree, never committed, deleted after.
 - **A layout or behaviour fix is proven like a test:** build the OLD version into the same simulator with the same
   state, then the fix, and compare.
 - **Why iOS closed NOOP is in the iPhone's own record:** Settings → Privacy & Security → Analytics & Improvements →

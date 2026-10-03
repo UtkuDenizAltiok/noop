@@ -93,20 +93,20 @@ the final cases back on 24 Sep and approved them.
 
 ## 6. Open ideas — only if measured or asked
 
-0. **FIX NEXT (found 1 Oct): a banner iOS has ended stays on the Lock Screen, frozen on its last number, for up to
-   4 hours**, next to the fresh one NOOP starts: Utku saw two ("85 bpm · Charge 20 %" frozen, "102 bpm · 22 %" live,
-   09:48). Apple: after the 8-hour limit the system ends a Live Activity and removes it from the Dynamic Island, but it
-   remains on the Lock Screen up to four more hours. His 1 Oct log (build 429 = `a8d25c1`): `00:45:31 renewed` →
-   no open overnight, so no renewal → `08:45:32 gone from the Lock Screen (ended by iOS…)` (exactly 8 h) → `09:19:31
-   started` → two on screen. Same shape at an app update: `23:40:51 renewed` (old install) → update ~23:41 →
-   `23:43:18 started` (NOT "picked up": the update had ended the old one) → a frozen twin until ~03:40. A frozen
-   number shown as live HR breaks "two readouts of one fact" (`AGENTS.md`).
-   **Fix:** when NOOP finds its banner no longer showing (`!isShowing`, the "gone" path) and whenever it starts one,
-   dismiss every NOOP activity in `.ended` state with `end(nil, dismissalPolicy: .immediate)` (one pure helper picks
-   which: ended, not ours-and-active). **Prove first, in the simulator:** that `Activity.activities` still lists an
-   activity ended with `.default` policy, and that `end(nil, .immediate)` on it removes it (`liveactivitiesd` log,
-   `WORKFLOW.md` §3; a temporary hard-coded HR lets the banner start without a strap). Then the phone: open NOOP
-   after the 8-h limit or after an update, and only one banner should remain (the log says "dismissed the ended one").
+0. **FIXED in #2659 (3 Oct 2026): a banner iOS has ended stayed on the Lock Screen, frozen on its last number**, next
+   to the fresh one NOOP starts (Utku, 1 Oct 09:48: "85 bpm" frozen beside "102 bpm"; his log: renewed 00:45:31 →
+   `08:45:32 gone` = iOS's 8-h limit → `09:19:31 started` → two banners). Simulator facts (iOS 27 SDK, a harness with a
+   fixed HR and `end(nil, .default)` standing in for iOS's end): an ended banner IS listed in `Activity.activities`
+   (also from a new run) with state `.ended` and its last content; iOS keeps it 4 h ("Dismissing activity platters"
+   +14,400 s); an update to it is DROPPED ("update for a zombie activity"), so it can never show the dash;
+   `end(nil, .immediate)` discards it; an app reinstall discards even a live banner. **The fix:** NOOP removes an
+   ended banner whenever it sees one — in the "gone" check, when looking for one to pick up (also in the background
+   after a relaunch) — and after starting a fresh banner removes every other one (this also performs the renewal's
+   removal). `LiveHRBannerLifecycle.removes(_:besideFresh:)` decides; log lines "ended by iOS" / "gone from the Lock
+   Screen (dismissed)" and "removed one iOS had ended, which could only show its last number". What Utku sees: after
+   the 8-h limit (only reached when NOOP is not opened for 8 h) the banner goes away instead of freezing; it comes
+   back when NOOP is opened. **Phone check still open:** the next time the limit is reached, his log should show
+   those lines and only one banner after opening NOOP.
 
 1. **Push rate:** 15-s re-pushes while steady exist only to beat a 30-s stale date. With WRIST_OFF handled live the
    stale date is only a backstop, so a 60-s stale date would halve those pushes (120 an hour). ryanbr raised the push

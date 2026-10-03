@@ -9,9 +9,10 @@ NOOP is an offline, on-device companion app for WHOOP straps: it pairs over Blue
 and computes recovery, strain, HRV and sleep itself. **The journey (since 24 Sep 2026): make the whole of NOOP the best
 app for WHOOP straps** — correct, fast, low usage on the phone and the strap, clean code, and better measurements and
 algorithms wherever evidence supports them. Product owner and tester: Utku Deniz Altiok (a WHOOP 5.0 on an iPhone).
-Engineering: AI coding sessions (Claude Code) working with him — but nothing here depends on one person, machine or AI
-model: these pages, the tools and the fork's branches are the whole project memory. The first journey (the Lift Log
-and the Live HR banner, 2–24 Sep 2026) is finished; `features/` keeps what it built.
+Engineering: AI coding sessions working with him (Claude Code until 3 Oct 2026; since then a friend with ChatGPT) —
+but nothing here depends on one person, machine or AI model: these pages, the tools and the fork's branches are the
+whole project memory. The first journey (the Lift Log and the Live HR banner, 2–24 Sep 2026) is finished; `features/`
+keeps what it built.
 
 ## Start a session — the prompt (any AI, any person)
 
@@ -59,10 +60,28 @@ When the conversation is nearly full (around 90%), or before stopping for the da
 The app repository's own `AGENTS.md` (read automatically by most AI coding tools) and `docs/CONTRIBUTING.md` hold
 upstream's rules for all code; these pages add what this fork and Utku need.
 
+## Handover (3 Oct 2026): a new engineer, with ChatGPT
+
+Utku handed the engineering to a friend who works with ChatGPT 6.1. Utku stays the product owner and tester (his
+WHOOP 5.0 and iPhone). Everything needed is in these pages and the fork; nothing lives in a Claude conversation.
+
+1. **Access** (Utku grants it): collaborator on `UtkuDenizAltiok/noop` to push branches, run the fork's workflows and
+   ship builds to his releases page. Our open upstream PRs are in Utku's GitHub name: a reply on them is his account's
+   (ask him how he wants it; new PRs can come from the friend's own account and fork).
+2. **Machine:** "Set up on a new machine" below; skip the two Claude-only lines (`--restore-memory`, `install-hooks`).
+   The app repo's `AGENTS.md` (read automatically by ChatGPT/Codex agents) holds upstream's code rules.
+3. **Start every session with the start prompt above**, pasted into ChatGPT as the first message, plus a task if any.
+   If ChatGPT cannot run commands on the Mac, it names them and the person runs them and pastes the output back.
+4. **Keep the discipline by hand** (no hooks outside Claude Code): `bash dist/tools/checkpoint.sh status --net` at the
+   start, `checkpoint.sh save "what"` after each milestone, `backup.sh "what"` when a milestone took real work, and
+   "End a session" before stopping. The journal in `STATE.md` "Now" is what lets the next session resume.
+5. **Where it stands:** `STATE.md` (first page to read), then `BACKLOG.md` for what to do next. `memory/` holds Claude's
+   own notes; everything in them is also in these pages, so it can be ignored.
+
 ## Working with any AI
 
-- **What the AI needs:** to read files and run shell commands on a Mac with Xcode (Claude Code, Codex, Gemini CLI,
-  Cursor, Aider and the like). A chat-only AI can read these pages — they are public — and plan, but a person then runs
+- **What the AI needs:** to read files and run shell commands on a Mac with Xcode (Claude Code, ChatGPT/Codex,
+  Gemini CLI, Cursor, Aider and the like). A chat-only AI can read these pages — they are public — and plan, but a person then runs
   the commands it names.
 - **The memory is these pages, never the AI's own.** An AI's built-in memory or chat history is a convenience at best;
   anything that matters is written here (`WORKFLOW.md` §2).

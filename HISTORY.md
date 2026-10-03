@@ -124,3 +124,14 @@ value that looks right on screen while being wrong underneath. A real session ca
   beside the fresh one NOOP starts — fix planned (`features/live-hr-banner.md` §6.0). #2618's Kotlin test seen to fail
   on the fork (run 36837267848, 1 of 6,591), description edited. Backup copies deleted; session 3 handed over.
 - **1 Oct, ~11:15** — Utku: YES to the silent swiped-away reminder and to iOS's deleted-sleep list (RULES, BACKLOG 0).
+- **2 Oct** — ryanbr merged #2612 (30-min background re-score spacing), #2617 (dead code), #2618 (resonance pace),
+  #2619 (still light-appearance sky), rebase merges, no comments; proven in by `merge-tree` 3 Oct, branches retired.
+- **3 Oct, session 4** — Frozen Live HR banner fixed: simulator proof that iOS still lists an ended banner, drops any
+  update to it ("zombie") and discards it on `end(nil, .immediate)`; before/after on the simulator (frozen 85 stacked
+  over live 102 → one banner); PR **#2659**. His files read (2–3 Oct logs, backup, export): re-score ~24–32 CPU-s/h,
+  cold relaunch + midnight passes 127 of 415 CPU-s, queued "forced" duplicates after offloads (BACKLOG A), MetricKit
+  payloads empty, no frozen banner (renewed every open), 12 radio timeouts 03:06–03:21 (no action). His two yeses
+  built, each with tests seen to fail, a simulator proof and a full verify: the iOS deleted-sleep list (**#2660**) and
+  the silent sync reminder (**#2661**). Stack `b6202262` shipped as **`3772b93`** (run 37136378349); "just update".
+- **3 Oct, 18:19** — Utku handed the project over: a friend continues with ChatGPT 6.1. Session 4 finished the work
+  in flight and readied the handbook for any AI (README "Handover").

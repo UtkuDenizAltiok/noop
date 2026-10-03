@@ -5,10 +5,11 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Top of the list (1 Oct 2026)
+## Top of the list (3 Oct 2026)
 
-**First: the frozen Live HR banner** (`features/live-hr-banner.md` §6.0) — a banner iOS ended (8-h limit, or an app
-update) lingers up to 4 h showing an old number beside the live one. Small iOS-only fix, proven in the simulator first.
+**Done this session:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
+(item 0; their PRs and the ship are in `STATE.md`). **First next:** whatever the maintainers say on #2613, #2659 and
+the two new PRs; then the phone checks named in `STATE.md` "Next"; then A–D below.
 
 A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
    CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1
@@ -16,9 +17,19 @@ A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a
    the foreground for the same work (every stage ~6×, same rows read; consistent with iOS's efficiency cores), so
    CPU-seconds overstate background energy; iOS's own energy numbers are the better judge. Open: the fingerprint is
    still the largest warm cost (25 %); keeping today's R-R window across passes (17 %) — with passes now ~2.5 an hour,
-   worth it only if a measurement says so. By-name GRDB reads ~4 %. Disk writes 193–201 MB a day (MetricKit 26 and 29
+   worth it only if a measurement says so. By-name GRDB reads ~4 %.
+   **3 Oct logs (build 429):** 39 passes / 362 CPU-s in 15 h (2 Oct) and 42 / 415 in 13 h (3 Oct), ~24–32 CPU-s an
+   hour. **New finding — queued duplicates:** an offload that completes while a pass runs is queued (#899-A) and,
+   when that pass ends, re-runs as a full `trigger=forced` pass with neither `skipIfUnchanged` nor the 30-min spacing
+   (`IntelligenceEngine.analyzeRecent`'s `defer` re-arm; `RescoreBackgroundPolicy.decide` exempts `passInProgress`
+   from spacing, #1681). Five such pairs on 2–3 Oct, ~40 CPU-s. Upstream PR #2646 (kavemang, open 3 Oct) rewrites
+   that very block: wait for it, then consider routing the re-arm through `RescoreBackgroundScheduler.run` when
+   backgrounded (debt recorded, settled by the next offload past the spacing). Live HR flushes move the
+   fingerprint every minute, so `newData=yes` nearly always and `skipIfUnchanged` alone would not help. Disk writes 193–201 MB a day (MetricKit 26 and 29
    Sep) for a few MB of new rows: find what writes (strap log rewrites? WAL checkpoints?) before guessing.
-B. **Cold passes: midnight and relaunches** (29–30 Sep logs). The first pass after midnight reused 0 of 7 days (33 s CPU,
+B. **Cold passes: midnight and relaunches** (29–30 Sep logs; 3 Oct: the 23:25 background relaunch cost 58.5 s, its
+   queued twin another 34.4 s cold again — `configDropped(sleepConsistency)` after the first pass changed it — and
+   midnight 34.1 s: 127 of the night's 415 CPU-s). The first pass after midnight reused 0 of 7 days (33 s CPU,
    53 s elapsed, backgrounded): the day rollover seems to invalidate every cached night; find which key moves (the
    window, a baseline, the day index) — the same scores, cheaper, is the aim. iOS's relaunch at 03:01 cost a cold
    pass of 20 s CPU with the background assertion EXPIRED mid-pass (iOS was about to suspend it). Two foreground
@@ -50,7 +61,9 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
-0. **Utku said YES (1 Oct) — build next, one PR each:**
+0. **Utku said YES (1 Oct) — BUILT 3 Oct** (`ios-sync-reminder`, `ios-deleted-sleep`; PRs in `STATE.md`). The specs
+   below are what was built; phone checks still open: swipe NOOP away and see the reminder ~3 h later; delete a
+   night, then bring it back from the list.
    (a) **Silent swiped-away reminder (iOS only).** After every completed sync (and on each app-state change) replace one
    pending local notification (fixed identifier) due 3 h later, `interruptionLevel = .passive`, no sound: "NOOP hasn't
    synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, on by
@@ -98,6 +111,16 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    median). Display only; a parity question for the maintainers before a change.
 8. **The largest files** (`BLEManager.swift` 7.4k lines, `TodayView.swift` 6.0k, `IntelligenceEngine.swift` 3.5k,
    `Repository.swift` 3.5k, `WhoopBleClient.kt` 8.7k): split only where it removes real duplication or bug risk.
+
+9. **iOS deletion markers are not in the `.noopbak` backup** (found 3 Oct): Android's `dismissedSleep` rows travel in
+   its database; iOS keeps `sleep.dismissedSessions` (and now `…hiddenFromList`) in the defaults, outside
+   `BackupSettings`. A restore on iOS brings deleted nights back. Fix needs the byte-identical whitelist contract
+   (`AGENTS.md`): ask the maintainers how they want it first.
+10. **Android's Polish and Portuguese deleted-sleep strings** use the computer sense of "sleep" ("uśpienie",
+    "suspensão"; one pt line keeps "sleep" in English); iOS has the corrected ones since `ios-deleted-sleep`. A small
+    Android strings PR.
+11. **MetricKit payloads came empty on 2–3 Oct** (begin = end, "exits: none"), after full ones on 26 and 29 Sep.
+    Check whether a reinstall/update resets MetricKit's window before relying on it for a before/after.
 
 ## Upstream reliability to watch (help only with evidence from his logs)
 

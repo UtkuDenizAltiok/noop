@@ -1,9 +1,10 @@
 # State
 
-**Updated 1 Oct 2026, ~11:00, end of session 3 — Journey 2: NOOP, perfected (`RULES.md` mandate). 19 PRs merged. Open
-(5, all clean on `upstream/main` `7f396e98`, no comments yet): #2612, #2613, #2617, #2618, #2619. On the releases page:
-`d6b998c`; Utku's phone still runs `a8d25c1` (build 429). Next session: Saturday 3 Oct, with his strap logs, export and
-backup.** The only file that changes every session. Replace, don't append — history goes in `HISTORY.md`.
+**Updated 3 Oct 2026, ~19:45, end of session 4 — HANDOVER.** Utku handed the engineering to a friend who works with
+ChatGPT 6.1 (README "Handover"); this page is where the next session starts. Journey 2: NOOP, perfected (`RULES.md`
+mandate). **23 PRs merged; open: #2613, #2659, #2660, #2661.** On the releases page: `3772b93` (all four); Utku's
+phone: build 429 (`a8d25c1` or `d6b998c`, both 429) until he updates. The only file that changes every session.
+Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
 
@@ -11,73 +12,69 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-- **Nothing is running.** Last ship: `d6b998c` (run 36802279087, verified on the releases page 1 Oct 03:59) =
-  `upstream/main` `7f396e98` + #2612 + #2613 + #2617 + #2618 + #2619 (`testing-stack` `cb97eb2c`).
+- **Nothing is running.** Last ship: `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
+  `6ce65730` + #2613 + #2659 + #2660 + #2661 (`testing-stack` `b6202262`).
 
-Waits on Utku:
-- [ ] **Just update to `d6b998c`** (told 1 Oct ~11:00). After installing, if two Live HR banners show, tap the X on the
-  Lock Screen group and open NOOP once (the frozen-banner bug below; fixed next session).
-- [ ] **Saturday 3 Oct: two strap logs (saved Friday noon and Saturday noon), the export zip and the `.noopbak` backup**
-  (Settings → Backup & Restore, Saturday noon). Read them per "Next safe action" (3).
-- [x] **His answers (1 Oct ~11:15): YES to both** — (a) the swiped-away reminder, SILENT; (b) iOS's deleted-sleep list,
-  like Android's. Specs in `RULES.md` (settled decisions) and `BACKLOG.md` 0.
-- **His plan:** strap logs saved Friday 2 Oct noon and Saturday 3 Oct noon, backup + export Saturday noon, then the
-  new session with the start prompt. Upstream may move before then: step 1 below handles it.
+Waits on Utku (ask him for the strap log after each, More → Test Centre → Strap log → Save…):
+- [ ] **Just update to `3772b93`** (told 3 Oct ~19:45). No wipe: nothing stored changes shape.
+- [ ] **Silent sync reminder** (#2661): More → Automations → "Sync reminder" is on. Swipe NOOP away; about 3 hours
+  later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
+  shows, check Settings → Notifications → NOOP Staging is allowed. The log line: "Sync reminder: armed for …".
+- [ ] **Deleted-sleep list** (#2660): Sleep → edit a night → Delete; after the undo strip goes, a "Deleted sleep
+  windows" card lists it; "Recompute this night" brings it back (from raw data), "Hide" removes the row only.
+- [ ] **Banner** (#2659): when NOOP has not been opened for 8 hours (overnight), after opening it only ONE banner
+  should be on the Lock Screen; the log then shows "Live HR banner: ended by iOS" and "removed one iOS had ended".
 - **Context (Utku, 30 Sep–1 Oct):** his nights are atypical for a while, no training; he sometimes takes the band off
   at night and sometimes swipes NOOP away, and cannot keep a record of it ("you decide"): read gaps from the log
   (WRIST_OFF, app runs), never ask him to log them. Judge a staging change by re-staging the SAME night with old and
   new code (`tools/his-nights/`), never night against night; recovery/HRV dips these days are real.
 
-**Next safe action (Saturday), in order:**
-1. Session start (README): `checkpoint.sh status --net`, `upstream-check.sh`. Answer any review on our five PRs ONCE
-   (`WORKFLOW.md` §5); after a merge prove the tree (`merge-tree`), retire the branch + worktree, rebuild the stack.
-2. **Fix the frozen Live HR banner** (`features/live-hr-banner.md` §6.0, evidence there): simulator proof that an
-   `.ended` activity is listed and `end(nil, .immediate)` removes it; pure helper + test seen to fail; `verify.sh`
-   (alone); PR; rebuild `testing-stack`; `ship-build.sh`; tell him "just update" + id.
-3. **His files:** copy/unzip the `.noopbak` into the scratchpad (never the repo; delete after). `strap-log.py runs`,
-   `rescore-profile/passes.py` (spacing still ≥ 30 min, CPU/h), `grep MetricKit` (30 Sep, 1 Oct, 2 Oct days; compare
-   with 26 Sep 1 h 36 m and 29 Sep 1 h 10 m CPU), `grep 'Live HR banner'` (the bug's shape on `d6b998c`),
-   `bash dist/tools/his-nights/run.sh <copy of noop-backup.sqlite>` (his nights with RSA 0.3: REM/deep/light), cold
-   passes (`analyzeRecent dayCache reused=0`), WRIST_OFF gaps at night. Write numbers into "Verified" below.
-4. Build his two yeses, one PR each (`BACKLOG.md` 0): the frozen-banner fix's PR first, then (b) the deleted-sleep list
-   (mirror Android #515's card and strings), then (a) the silent reminder. Each: simulator proof, tests seen to fail,
-   `verify.sh` alone, PR, then ONE rebuilt stack + ship for all of them.
-5. `BACKLOG.md` in order.
+**Next safe action, in order:**
+1. Session start (README; for the new engineer, README "Handover" first): `checkpoint.sh status --net`,
+   `upstream-check.sh`. Answer any review on our four open PRs ONCE (`WORKFLOW.md` §5; they are in Utku's GitHub
+   name: ask him how replies are to be made); after a merge prove it in (`merge-tree`), retire the branch + worktree,
+   rebuild the stack, ship.
+2. Utku's results from the three checks above, from his strap log.
+3. `BACKLOG.md` "Top of the list", then A–D and the numbered candidates (9–11 are new, 3 Oct).
+
+Not done in session 4 (from the Saturday plan): `tools/his-nights/run.sh` on the 3 Oct backup (his nights at RSA 0.3).
+The backup copy was deleted; ask Utku for a fresh `.noopbak` when that is needed.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open (fork-PR checks wait for the maintainers' approval; no comments yet at 11:00 1 Oct; all merge cleanly):
-- **#2612** `rescore-spacing` `47254b18` — background offload re-scores at most every 30 min. Phone result in body.
+Open (fork-PR checks wait for the maintainers' approval; no comments at 19:45 3 Oct; each merges cleanly on
+`6ce65730`, and all four together):
 - **#2613** `dreamt-psg` `7b638413` + `ca008aba` — `Tools/SleepPSG` reads DREAMT (section 8), then `respWeight`
   0.6 → 0.3 (61/28 subjects). Android CI 36712653602 green. Body `private/pr-rsa-weight-body.md`.
-- **#2617** `dead-code-2` `332d3dac` + `4d3e6c89` — 15 Swift + 5 Kotlin unreferenced declarations; parity refresh
-  (unpaired properties 165 → 162, constants 598 → 597). Android CI 36796672883 green. Body `private/pr-dead-code-2-body.md`.
-- **#2618** `resonance-pace-pref` `194b0687` — "Use my resonance pace" decides the check-in's pace (both platforms).
-  Android CI 36797831432 green; seen to fail on both platforms (Kotlin: fork run 36837267848, 1 of 6,591). Body
-  `private/pr-resonance-pace-body.md`.
-- **#2619** `sky-light-still` `7e7cf01f` — light-appearance night sky drawn still (iOS only; Android draws only the
-  static sky). Body `private/pr-sky-light-body.md`.
-Merged (19): #2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
-#2480), #2420, #2422, #2437 (via #2481), #2444. Issue #2446 fixed upstream in #2453. The parity gate on `main` drifts
-after busy merge days and the maintainers re-derive it: compare with a clean `main` checkout before blaming a branch.
-A PR that removes or adds a twin may need `parity_ledger.py --refresh-derived --base upstream/main` (as #2617 did).
+- **#2659** `live-hr-ended` `a64d8474` — remove a Live HR banner iOS has ended (it stays frozen on its last number).
+  iOS only. Body `private/pr-live-hr-ended-body.md`.
+- **#2660** `ios-deleted-sleep` `3869d0b2` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
+  Body `private/pr-deleted-sleep-body.md`.
+- **#2661** `ios-sync-reminder` `60793987` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
+  Body `private/pr-sync-reminder-body.md`.
+Merged (23): #2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
+#2480), #2420, #2422, #2437 (via #2481), #2444, #2612, #2617, #2618, #2619. Issue #2446 fixed upstream in #2453. The
+parity gate on `main` drifts after busy merge days and the maintainers re-derive it: compare with a clean `main`
+checkout before blaming a branch. A PR that removes or adds a twin may need
+`parity_ledger.py --refresh-derived --base upstream/main` (as #2617 did).
 
 ## The fork, exactly
 
-- **Branches:** `main` (mirror of `upstream/main` `7f396e98`), `handbook` (this), `rescore-spacing`, `dreamt-psg`,
-  `dead-code-2`, `resonance-pace-pref`, `sky-light-still` (one per open PR), `testing-stack` `cb97eb2c` (`main` + those
-  five), `testing-build` `d6b998c9` (the stack + `fork/ships-template`).
+- **Branches:** `main` (mirror of `upstream/main` `6ce65730`), `handbook` (this), `dreamt-psg`, `live-hr-ended`,
+  `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR), `testing-stack` `b6202262` (`main` + those four),
+  `testing-build` `3772b938` (the stack + `fork/ships-template`).
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
   only: `backup/handbook-pre-scrub` (the handbook before the 1 Oct history scrub; never push it).
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per PR branch:
-  `~/Developer/noop-rescore-spacing`, `-dreamt`, `-dead-code`, `-resonance`, `-sky`. Build folders, logs and reports:
-  `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`): `verify/`, `builds/stack-ios`, `his-nights/` (its
-  build), `dreamt/` (aggregates only), `*.out` run logs. All safe to delete. xcodegen rewrites
-  `StrandiOS/Resources/Info.plist` (a `stalebattery` entry upstream's plist lacks): discard it, never commit it.
+  `~/Developer/noop-dreamt`, `-banner`, `-deleted-sleep`, `-sync-reminder`. Build folders, logs and reports:
+  `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`): `verify/`, `builds/`, `his-nights/`, `dreamt/`
+  (aggregates only), `*.out` run logs. All safe to delete. xcodegen rewrites `StrandiOS/Resources/Info.plist` (a
+  `stalebattery` entry upstream's plist lacks): discard it, never commit it.
 - **Local only:** `dist/private/` (event log, `usage.log`, PR drafts). Utku's logs and backup in `~/Downloads`
-  (personal: never commit, never upload); copies of a backup go in the session scratchpad and are deleted after use (none exist now). Datasets in
-  `~/datasets`: sleep-accel (2.2 GB) and DREAMT v2.2.0 (14 GB; restricted, aggregates only). Simulator `281E44EC`
-  (iPhone 17 Pro): Release `main` `7f396e98` over NOOP's 120 demo days (re-seeded 1 Oct), light appearance.
+  (personal: never commit, never upload); copies go in the session scratchpad and are deleted after use (none exist
+  now). Datasets in `~/datasets`: sleep-accel (2.2 GB) and DREAMT v2.2.0 (14 GB; restricted, aggregates only).
+  Simulator `281E44EC` (iPhone 17 Pro): a Debug build of `ios-sync-reminder` over NOOP's demo data, with a seeded
+  `lastSyncedAt` and one deletion marker (30 Sep, hidden); re-seed or reinstall Release `main` before measuring.
 
 ## Verified — the latest numbers
 
@@ -86,6 +83,8 @@ A PR that removes or adds a twin may need `parity_ledger.py --refresh-derived --
   foreground one ~1.5 s for the same work. Cold passes: midnight 33 s CPU (0/7 days reused), iOS relaunch 20 s
   (assertion expired), foreground relaunch 5 s.
   1 Oct log (`a8d25c1`, 30 Sep 12:24 → 1 Oct 10:29, a gap 12:49–19:38): 47 passes / 326 CPU-s (bg 266).
+  2–3 Oct logs (build 429): 39 passes / 362 CPU-s in 15 h and 42 / 415 in 13 h (~24–32 CPU-s/h); cold relaunch +
+  midnight 127 of the 415; queued forced duplicates ~40 CPU-s (`BACKLOG.md` A, B). MetricKit payloads empty those days.
 - **Phone (MetricKit):** 26 Sep (`37408cc`) background 23 h 28 m, CPU 1 h 36 m, peak 339 MB, writes 193 MB; 29 Sep
   (`769113c0`) foreground 14 m, background 4 h 25 m, CPU 1 h 10 m, peak 358 MB, writes 201 MB, hangs 2, exits normal 4.
 - **Re-score cost, simulator, his backup** (`dist/tools/rescore-profile/`): upstream `0c982899` warm 1.6 s / cold
@@ -99,7 +98,9 @@ A PR that removes or adds a twin may need `parity_ledger.py --refresh-derived --
   vs 25.1 %, deep 12.8 % vs 3.4 %, REM 19.9 % vs 10.5 % of the night; at 0.3 (#2613) per-subject kappa 0.204 → 0.216,
   61/28 subjects. His six nights (`dist/tools/his-nights/`): deep 21.6 / REM 31.9 / light 46.5 % of sleep → 21.2 / 29.3
   / 49.5 at 0.3; REM stays ~27 % even with the term off (`BACKLOG.md` C).
-- **Last full `verify.sh` runs, all steps passed:** #2617 `4d3e6c89` (run alone), #2618 `194b0687`, #2619 `7e7cf01f`
+- **Last full `verify.sh` runs, all steps passed (3 Oct, on `6ce65730`):** #2659 `a64d8474` (macOS 2,271), #2660
+  `3869d0b2` (2,273), #2661 `60793987` (2,272) — WhoopStore 632 · StrandAnalytics 2114 · StrandImport 327 · doc lint · i18n ·
+  ledger · ratchet · governance 127 · macOS with only the two `TodayCarryOverTests` · iOS build. Earlier: #2617 `4d3e6c89` (run alone), #2618 `194b0687`, #2619 `7e7cf01f`
   (1 Oct); #2612 `47254b18`, #2613 `29f43bb2` (then `ca008aba`, test comments only: its tests + doc lint re-run) —
   WhoopStore 631 · StrandAnalytics 2102–2103 · StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 127 ·
   macOS 2,254–2,260 with only the two `TodayCarryOverTests` · iOS build. Never run two verifies at once (shared build
@@ -107,8 +108,8 @@ A PR that removes or adds a twin may need `parity_ledger.py --refresh-derived --
 
 ## Next
 
-1. Session start (README), then "Next safe action" above — the frozen-banner fix first, then his files.
-2. Build his two yeses: the iOS deleted-sleep list and the silent swiped-away reminder (`BACKLOG.md` 0).
-3. `BACKLOG.md` in order (B: cold-pass refactor only if worth it; D: night start moved by later data; C: wake/REM).
-4. Every change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
-5. At the end of every session: README "End a session".
+1. "Next safe action" above.
+2. `BACKLOG.md` in order (A: queued duplicate re-scores after #2646; B: cold passes; D: night start moved by later
+   data; C: wake/REM; 9: iOS deletion markers missing from the backup).
+3. Every change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
+4. At the end of every session: README "End a session".

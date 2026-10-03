@@ -65,6 +65,11 @@ owner and decider of this journey.
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
   him); a failure email caused by upstream's own drift is explained, not silenced.
+- **Handover (Utku, 3 Oct 2026):** the engineering passes to a friend who works with ChatGPT. The mandate, these
+  settled decisions and the engineering rules carry over unchanged, and whoever does the engineering is the owner and
+  decider of the technical work in the same way; Utku stays the product owner and tester (README "Handover").
+- **A Live HR banner iOS has ended is removed, not left frozen** (3 Oct 2026, #2659): it can only show its last
+  number, and rule 49 (`features/live-hr-banner.md`) allows a heart rate only while the strap measures it.
 - **The Lift Log and the Live HR banner are finished** (24 Sep 2026). Their pages list what they rely on; an
   optimisation touching their code keeps every rule there.
 
