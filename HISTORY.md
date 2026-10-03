@@ -135,3 +135,7 @@ value that looks right on screen while being wrong underneath. A real session ca
   the silent sync reminder (**#2661**). Stack `b6202262` shipped as **`3772b93`** (run 37136378349); "just update".
 - **3 Oct, 18:19** — Utku handed the project over: a friend continues with ChatGPT 6.1. Session 4 finished the work
   in flight and readied the handbook for any AI (README "Handover").
+- **3 Oct, 13:51 and 19:34** — two usage-limit interruptions mid-work. Each time the journal ("Now"), `checkpoint.sh
+  status --net` and the event log showed exactly what had completed (PR #2659 opened; ship `3772b93` verified at
+  19:38), so nothing was repeated or lost. A waiting loop left behind by the second (it watched for a word the ship
+  tool never prints) was stopped; `WORKFLOW.md` §2 now names each tool's last words. Handbook uploaded for the handover.

@@ -75,7 +75,10 @@ WHOOP 5.0 and iPhone). Everything needed is in these pages and the fork; nothing
 4. **Keep the discipline by hand** (no hooks outside Claude Code): `bash dist/tools/checkpoint.sh status --net` at the
    start, `checkpoint.sh save "what"` after each milestone, `backup.sh "what"` when a milestone took real work, and
    "End a session" before stopping. The journal in `STATE.md` "Now" is what lets the next session resume.
-5. **Where it stands:** `STATE.md` (first page to read), then `BACKLOG.md` for what to do next. `memory/` holds Claude's
+5. **Prove the setup before the first change:** `gh auth status`; `git -C ~/Developer/noop push --dry-run origin main`
+   (write access); `bash dist/tools/checkpoint.sh status --net`; `bash dist/tools/verify.sh --quick` on `main` (the
+   Swift packages and the parity tools; the full run adds the Xcode app targets and takes ~15 min).
+6. **Where it stands:** `STATE.md` (first page to read), then `BACKLOG.md` for what to do next. `memory/` holds Claude's
    own notes; everything in them is also in these pages, so it can be ignored.
 
 ## Working with any AI

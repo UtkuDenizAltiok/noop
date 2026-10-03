@@ -45,7 +45,10 @@ store.
 - **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
   `dist/private/events.log`; a verification's numbers go into `STATE.md`. Nothing needed later lives only in a scratch
   folder or `$TMPDIR`: harnesses go to `tools/`, drafts to `private/`.
-- **Background jobs** are named in "Now" with how to check them; never started twice.
+- **Background jobs** are named in "Now" with how to check them; never started twice. A loop that waits for a job must
+  wait for the words the tool really prints last: `verify.sh` ends with `logs: …` then `all steps passed` or the
+  failed steps; `ship-build.sh` ends with `shipped <id> …` or a `FAILED` event. A loop waiting for any other word
+  never ends (3 Oct: one waited for "verified" after the ship had succeeded).
 - **"Continue" after an interruption is an instruction:** status, settle "Now", finish its open steps, report.
 - **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep 2026)** put the recovery brief into every new,
   resumed or compacted session and checkpoint the handbook after every reply (`checkpoint.sh install-hooks` /
@@ -182,7 +185,8 @@ The fork's testing pipeline has three layers:
   any merge or change: `git worktree add -b <tmp> <scratch> upstream/main`, cherry-pick each open PR (a PR whose
   commits conflict one by one goes in as its NET diff, one commit), check `git diff --stat upstream/main` lists only
   our files, **build it for iOS locally** (a failed CI build leaves the release EMPTY), then force-push with a pinned
-  lease.
+  lease. Then point the LOCAL branch at it too (`git branch -f testing-stack <tmp>`): `ship-build.sh` refuses to start
+  while the local `testing-stack` differs from the fork's (3 Oct: "push testing-stack first"), then delete `<tmp>`.
 - **`testing-build`** — `bash dist/tools/ship-build.sh testing-stack` rebuilds it as the stack + `fork/ships-template`
   (the commit that uploads the Lift Log's `.xlsx` program template, kept out of PRs), force-pushes it, runs "Testing
   build (fork)", waits, and verifies the release: target commit, the `.ipa`, the template, the download. Never trust a
