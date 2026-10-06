@@ -155,3 +155,5 @@ value that looks right on screen while being wrong underneath. A real session ca
 - **6 Oct — current-state cleanup.** Obsolete session-4 wording removed; release details moved out of Now into the fork record. Prompt/links/instruction checks passed and code worktrees stayed clean; no app change or new release.
 
 - **6 Oct — #2660 review addressed.** Rebased onto `9f98f811`, preserved upstream catalogue entries, unhid fresh deletions including cap-evicted hidden markers, and made recompute copy name only the marker change and the 21-day scan; actual Repository regression seen failing then passing, full local verification and fresh simulator walkthrough passed; `e9ee598e` pushed and one review reply posted.
+
+- **6 Oct 2026:** #2661 rebased onto `9f98f811` and unset reminder made opt-in at `7f9fc7aa`; saved choices preserved. Old fallback failed the new test; full local gates, 2,271 Mac tests (two skips, zero failures), iOS build and fresh simulator OFF check passed. Pushed, description updated and one review reply verified. Combined stack `a5168502` compiled for iOS.

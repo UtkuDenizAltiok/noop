@@ -72,8 +72,10 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
 
 - **Anything under `android/**` needs Android CI**: the fork's testing build only assembles the Android app, so a
   broken Kotlin test double still ships green.
-- **Expected:** exactly two macOS failures, `TodayCarryOverTests` (English language, German region); they fail on clean
-  `main` too. `verify.sh` treats only those two as known.
+- **Current Mac, 6 Oct:** full macOS suites passed with zero failures and two existing skips for optional external
+  fixtures. The old Mac's two locale-dependent `TodayCarryOverTests` failures (English language, German region)
+  were baseline exceptions; `verify.sh` still recognises that class. Compare any new failure with clean `main`,
+  and report the actual result rather than expecting the old locale failures.
 - **Build both app targets locally.** Nothing else compiles app-target Swift before a PR (`AGENTS.md`).
 - **Commit before `verify.sh`, and run one at a time.** Its governance step checks a clean checkout of HEAD, so an
   uncommitted change is not what it tests; and two runs share the build cache and the macOS test host, so overlapping

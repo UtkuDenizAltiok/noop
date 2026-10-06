@@ -8,11 +8,10 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 ## Top of the list (checked 6 Oct 2026)
 
 **Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
-(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **Mac setup is verified. First next:**
-address the 4 Oct review on #2660 and its catalogue conflict; then assess the default-OFF request on #2661 against
-the existing default-ON choice and decide with evidence. #2613 is still open with no comments. Then rebuild the stale
-testing stack, ship,
-and collect the phone checks named in `STATE.md`. No app improvement was made during restoration.
+(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **6 Oct:** #2660 review and catalogue
+conflict addressed, fully verified, pushed and replied to. #2661 now defaults OFF for unset preferences (explicit
+choices survive); full verification, simulator check and publication are complete. Next: verify the current integration
+stack in fork CI, ship, and collect the phone checks named in State.
 
 **Direction delegated to ChatGPT/Codex, 6 Oct:** choose the next investigation by correctness risk, user impact and
 available evidence. Fix silent wrong data and restore/data-loss hazards first (including item 9); make performance
@@ -75,8 +74,8 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    night, then bring it back from the list.
    (a) **Silent swiped-away reminder (iOS only).** After every completed sync (and on each app-state change) replace one
    pending local notification (fixed identifier) due 3 h later, `interruptionLevel = .passive`, no sound: "NOOP hasn't
-   synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, on by
-   default. A pure policy (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
+   synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, **off by
+   default since 6 Oct** (a prior battery-alert permission grant is not consent to this new reminder). A pure policy (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
    simulator proof that the request is pending and replaced (log one line when it is first armed, Test Centre for the
    rest); on the phone, swipe NOOP away and see it ~3 h later. Android needs none (foreground service) — say so.
    (b) **iOS deleted-sleep list (#65/#515 parity).** `Repository.dismissedSleepManagementWindows()` +

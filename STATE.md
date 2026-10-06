@@ -23,18 +23,18 @@ The short `xcodebuild -sdk` process seen by status was a tool probe, not a retai
   cleared and explains the 21-day/raw-data limits. The actual Repository test reproduced both standing and cap-evicted hidden entries: 5 tests, 4 expected assertions failed on the old code; log `deleted-sleep-review/regression-before.log`. Copy updated in all ten locales.
 - [x] Committed fix `e9ee598e`; run full `verify.sh` alone with `NOOP_REPO=~/Developer/noop-deleted-sleep`; restore generated plist.
   Mac suite green: 2,272 tests, two existing skips, zero failures (the old locale exceptions did not fail on this Mac). Package tests 632/2,135/327, import skip 1, all lint/i18n/parity gates and 127 governance tests green. iOS build passed; full run completed, all steps passed at `e9ee598e`. Compiler extraction and all ten built macOS/iOS locales contain both new keys. Simulator: old 50-day marker clears with truthful note; real fresh delete over an orphan hidden token is visible after undo expires, hidden token gone; Hide retains the marker. Evidence screenshot `deleted-sleep-review/fresh-delete.png`.
-- [x] Publish verified #2660 head `e9ee598e` with pinned lease, edit its description from `private/pr-deleted-sleep-body.md`, and reply once to the 4 Oct review. Remote head/body/reply verified; reply `issuecomment-6016821944`. PR is mergeable and all six upstream checks are running on the new head; not green yet. Safety tag deleted after the push was verified.
-- [ ] Address #2661 default: choose OFF for an unset preference, preserve explicit ON/OFF, pin with a test seen
-  to fail: 4 tests, the unset-default assertion fails on the original ON fallback (`sync-reminder-review/regression-before.log`). Fix committed as `7f9fc7aa`; full verification is next. Push/edit/reply once after verification.
-- [ ] Rebuild testing-stack from current upstream and open PRs, build iOS locally, then use `ship-build.sh` and verify
-  release assets. Record branch/commit/run IDs as they exist. Save/upload handbook and confirm final status.
+- [x] Publish verified #2660 head `e9ee598e` with pinned lease, edit its description from `private/pr-deleted-sleep-body.md`, and reply once to the 4 Oct review. Remote head/body/reply verified; reply `issuecomment-6016821944`. PR is mergeable; all six upstream checks succeeded on the new head. Safety tag deleted after the push was verified.
+- [x] Address #2661 default: choose OFF for an unset preference, preserve explicit ON/OFF, pin with a test seen
+  to fail: 4 tests, the unset-default assertion fails on the original ON fallback (`sync-reminder-review/regression-before.log`). Fix committed as `7f9fc7aa`; full verification completed: packages 632/2135/327 (import skip 1), all gates and governance 127, macOS 2,271 (two skips, zero failures), iOS build passed. App launched in the seeded simulator with its reminder preference unset; Mac unlocked and native UI confirmed the unset reminder OFF with the three-hour/no-sound copy. Screenshot `sync-reminder-review/default-off.png`. Published with pinned lease; description and exactly one reply verified (`issuecomment-6017174678`); safety tag removed.
+- [ ] Prepare the local stack in cache `builds/review-stack`, temporary branch `codex/testing-stack-review`,
+  from current upstream plus `dreamt-psg`, verified #2660 and the committed #2661 fix. Prepared as `a5168502` on `9f98f811`; all six PR commits cherry-picked cleanly and net diff is exactly 23 PR files. Combined local iOS build passed (exec 52669, `builds/review-stack-ios.log`); generated plist will be restored. After #2661 publication and a fresh upstream/PR reconciliation, pinned-lease push the stack, point local `testing-stack` at it and dispatch Android and Swift Packages CI once for this exact head. Record run IDs, require all expected jobs green, then use `ship-build.sh` and verify assets. Record branch/commit/run IDs as they exist. Save/upload handbook and confirm final status.
 
 **Decision:** address both review findings; keep the normal 21-day analysis window, since extending a single
 recompute to scan years of history is disproportionate. Describe what actually succeeded instead.
 **Reminder decision (6 Oct):** unset defaults OFF. Existing battery-alert permission is not consent to a new
 recurring sync reminder. Preserve every explicitly saved preference; Utku can enable it in Automations. This
 supersedes the earlier default-ON choice and meets upstream's opt-in automation contract.
-**Next safe action:** full #2661 verification, finish #2660 simulator checks, then verified pushes/replies. No public action yet. A premature run at `eebb4550` was stopped before app tests after the copy script failed its formatting assertion; copy was fixed and the commit amended. Do not treat that stopped run as verification. Safety tag `backup/deleted-sleep-review` retained until verified push.
+**Next safe action:** push and test the current combined stack `a5168502`. #2661 `7f9fc7aa` is published/replied; its fresh simulator screen is confirmed OFF. Combined iOS build passed at `a5168502`. #2660 is complete with all six upstream checks green; do not repeat its reply. Fresh upstream/PR check still shows base `9f98f811` and all three PRs open. Use local safety tags before the two testing branch rewrites; dispatch each CI workflow once, record exact-head run IDs, then ship after green. The premature #2660 run at `eebb4550` was stopped before app tests after a copy-script formatting assertion; only the successful `e9ee598e` run is verification.
 
 ## Phone — pending checks from the 3 Oct handover
 
@@ -42,11 +42,11 @@ These are historical waits, not unfinished Mac setup. The current phone install 
 Ask Utku for the strap log after each (More → Test Centre → Strap log → Save…):
 
 - [ ] **Just update to `3772b93`** (told 3 Oct ~19:45). No wipe: nothing stored changes shape.
-- [ ] **Silent sync reminder** (#2661): More → Automations → "Sync reminder" is on. Swipe NOOP away; about 3 hours
+- [ ] **Silent sync reminder** (#2661): More → Automations → turn "Sync reminder" on (unset default is now OFF). Swipe NOOP away; about 3 hours
   later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
   shows, check Settings → Notifications → NOOP Staging is allowed. The log line: "Sync reminder: armed for …".
 - [ ] **Deleted-sleep list** (#2660): Sleep → edit a night → Delete; after the undo strip goes, a "Deleted sleep
-  windows" card lists it; "Recompute this night" brings it back (from raw data), "Hide" removes the row only.
+  windows" card lists it; "Recompute this night" clears its marker (recent nights return only if raw data supports them), "Hide" removes the row only.
 - [ ] **Banner** (#2659): when NOOP has not been opened for 8 hours (overnight), after opening it only ONE banner
   should be on the Lock Screen; the log then shows "Live HR banner: ended by iOS" and "removed one iOS had ended".
 - **Context (Utku, 30 Sep–1 Oct):** his nights are atypical for a while, no training; he sometimes takes the band off
@@ -56,15 +56,12 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
 
 ## Next safe action, in order
 
-1. Next app task: address the 4 Oct review on #2660 (fresh deletion must unhide its row, and recompute copy must not promise
-   an old night was reprocessed), explain the two success messages, then resolve its catalogue conflict with current upstream.
-   Work in `~/Developer/noop-deleted-sleep`; verify before any push or reply. Setup and the ownership transition are complete.
-2. Assess #2661's 4 Oct request for default OFF against the existing default ON, notification behaviour and user benefit.
-   ChatGPT/Codex decides the best behaviour, explains it to Utku and records the reason for any changed choice.
-   #2613 has no review/comment. Reviews have been read, not answered in the setup/ownership tasks.
-3. Once the PR work is verified, rebuild the stale testing stack on current upstream and ship. The existing release remains
-   on GitHub; no new staging release was published during restoration. Then collect the pending phone checks/logs and
-   choose the next investigation from `BACKLOG.md` by correctness risk, user impact and available evidence.
+1. Finish #2661's default-OFF revision at `7f9fc7aa`: full verification, simulator check, pinned-lease push and one
+   review reply. #2660 is now verified, pushed, replied to and mergeable; upstream CI is running.
+2. Rebuild the testing stack from current upstream and the remaining PRs, check its iOS build locally and its
+   Android/Swift package tests in fork CI, then ship and verify release assets.
+3. Collect the pending phone checks/logs and choose the next investigation by correctness risk, user impact and
+   evidence. Backup deletion markers (item 9) remain a data-integrity candidate; personal datasets are absent.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -74,10 +71,10 @@ Open (checked 6 Oct on `upstream/main` `9f98f811`; fork-PR CI approval is separa
 - **#2660** `ios-deleted-sleep` `e9ee598e` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
   Body restored from GitHub in `private/pr-deleted-sleep-body.md`. Rebased onto `9f98f811`; catalogue conflict resolved by key, all upstream entries preserved.
   Review addressed 6 Oct: fresh delete unhides its row; recompute reports marker cleared and names the 21-day scan;
-  two success notes explained. Full local verification + simulator passed; pushed/replied once. Upstream checks running.
-- **#2661** `ios-sync-reminder` `60793987` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
+  two success notes explained. Full local verification + simulator passed; pushed/replied once. All six upstream checks passed.
+- **#2661** `ios-sync-reminder` `7f9fc7aa` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
   Body restored from GitHub in `private/pr-sync-reminder-body.md`. Merges cleanly. Review 4 Oct asks for default OFF;
-  the existing settled default ON has not been changed. #2613 also merges cleanly and has no review/comment.
+  unset default changed to OFF after assessing existing battery-alert permission; explicit saved choices remain. Full local verification and fresh simulator OFF check passed; pushed and replied once. Upstream checks are starting. #2613 also merges cleanly and has no review/comment.
 Merged (24): #2659 (4 Oct, `a6f1fe08`; squash and current-main merge-tree proofs are exact),
 #2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
 #2480), #2420, #2422, #2437 (via #2481), #2444, #2612, #2617, #2618, #2619. Issue #2446 fixed upstream in #2453. The
