@@ -12,6 +12,9 @@ not need to read code or use the terminal. Explain changes and findings in plain
 and carry each task through. His real-device observations and later instructions take precedence over assumptions.
 When new evidence changes a settled decision, record why; do not automatically defer to a reviewer or repeat an old choice.
 
+- **Every final response ends with simple next steps for Utku:** one to three short numbered actions, with the
+  expected result when he is checking something. Say "No action needed" when appropriate, followed by what comes next.
+  Avoid invented chores, repeated setup and unnecessary test requests.
 - **Finishing an app change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line,
   with the 7-character id that ends the release title. Never ship a broken build.
 - **Public steps** follow `RULES.md` (standing permission): replies and pushes on our PRs, and a PR for this journey's
@@ -32,7 +35,9 @@ When new evidence changes a settled decision, record why; do not automatically d
 
 - **Start:** the local Codex entry → handbook `AGENTS.md` and README → `STATE.md` ("Now" first) → `RULES.md` →
   `bash dist/tools/checkpoint.sh status --net` (README "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh`.
-- **End:** README "End a session".
+- **Prompts:** the two canonical copy-and-paste prompts are in README "Your two default session prompts".
+- **End:** README "End a session". Close at a safe milestone while enough room remains; keep checkpoints current so
+  an abrupt limit can be recovered by the start prompt. A requested stop triggers handover, not new app work.
 
 A session can stop anywhere, without an end (a usage limit, a server error, a compaction); the conversation is not a
 store.

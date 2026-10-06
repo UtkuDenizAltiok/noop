@@ -5,8 +5,7 @@ The working agreement is in README and RULES; Journey 2 continues with its measu
 **24 PRs merged; open: #2613, #2660, #2661.**
 #2659 merged on 4 Oct. The fork's releases page still holds `3772b93` (all four original changes; assets checked 6 Oct).
 Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
-The only file that changes every session.
-Replace, don't append — history goes in `HISTORY.md`.
+Keep the current state concise; completed milestones belong in `HISTORY.md`.
 
 ## Now — work in flight
 
@@ -14,13 +13,10 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**No engineering work is in flight.** ChatGPT/Codex ownership and the local/GitHub working arrangement are complete.
-The handbook is the single durable project memory; its AGENTS entry and four ignored local Codex entries are ready.
-Checkpoint/backup/installer checks passed. All four code worktrees are clean and match the fork; no local job is running.
-The simulator remains shut down. No application code, PR reply or staging release changed during this transition.
-
-- **Last ship (historical):** `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
-  `6ce65730` + #2613 + #2659 + #2660 + #2661 (`testing-stack` `b6202262`).
+**No engineering work is in flight.** The standard start/end prompts are in README, and the simple next-steps rule
+is consistent across AGENTS, README, RULES and WORKFLOW. Ownership and local Codex instruction entries are ready.
+Prompt requirements, links and the public diff were checked; all four code worktrees are clean and match the fork.
+No local job is running. The simulator is shut down. No app code, PR reply or staging release changed in this work.
 
 ## Phone — pending checks from the 3 Oct handover
 
@@ -52,9 +48,6 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
    on GitHub; no new staging release was published during restoration. Then collect the pending phone checks/logs and
    choose the next investigation from `BACKLOG.md` by correctness risk, user impact and available evidence.
 
-Not done in session 4 (from the Saturday plan): `tools/his-nights/run.sh` on the 3 Oct backup (his nights at RSA 0.3).
-The backup copy was deleted; ask Utku for a fresh `.noopbak` when that is needed.
-
 ## Our PRs upstream (`ryanbr/noop`)
 
 Open (checked 6 Oct on `upstream/main` `9f98f811`; fork-PR CI approval is separate from mergeability):
@@ -81,6 +74,9 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   Fork `live-hr-ended` is proven merged and retired; private archive bundle verified (no banner worktree was recreated).
   `testing-stack` `b6202262` and `testing-build` `3772b938` were restored unchanged. They are the 3 Oct stack/build
   on `6ce65730`, including the now-merged #2659, and need rebuilding after the next verified PR work.
+- **Last staging release:** `3772b93`, run 37136378349 (3 Oct), based on upstream `6ce65730` plus the four original
+  changes (#2613, #2659, #2660, #2661) via `testing-stack` `b6202262`. IPA/template verified on the release page on 3 Oct;
+  original assets checked again on 6 Oct. No new staging release was published by the setup or handbook work.
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
   only on the previous Mac: `backup/handbook-pre-scrub` (not present here; never push it).
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per PR branch:
@@ -98,6 +94,12 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   Create fresh demo state before measuring; this simulator has not been seeded or paired with a strap.
 
 ## Verified — the latest numbers
+
+- **Session continuity, 6 Oct:** two canonical start/end prompts saved in README; every final response ends with
+  one to three simple numbered next steps, or "No action needed" plus what comes next. Recovery uses saved state and
+  actual Git/PR/CI/release evidence. End-of-session handling preserves unfinished work and names failed backups.
+  Prompt requirements, instruction consistency, local README links and expected public paths checked; four clean code
+  worktrees still point to the canonical handbook AGENTS. Evidence: `private/session-prompts-checks.log`.
 
 - **ChatGPT/Codex transition, 6 Oct:** mandate and product/technical decision authority recorded in README/RULES;
   canonical handbook `AGENTS.md` added, and `codex-setup.sh` installed ignored local entries in all four code worktrees.

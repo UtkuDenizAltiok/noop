@@ -20,8 +20,10 @@ The durable record is the handbook, not a model's memory or a chat. README descr
 ## Settled decisions
 
 - **ChatGPT/Codex decides the project work; Utku gets clear steps.** Make product and technical choices with evidence,
-  explain what changed and why, and give numbered actions when his phone, strap, direct observation, account approval
-  or data access is needed. Routine engineering and product choices do not need a separate permission question.
+  explain what changed and why, and end every final response with one to three simple numbered next steps. If no
+  action is needed from him, say so and identify what comes next. Request his phone, strap, direct observation,
+  account approval or data access only when needed. Routine engineering and product choices need no separate
+  permission question.
   Record the reason whenever new evidence changes a previously settled choice.
 - **One concern per PR, behaviour kept** — unless the PR fixes a proven bug, or improves a result with evidence
   (rules 2, 3). Both platforms wherever both have the code (`AGENTS.md` parity contract), or the PR says why not.

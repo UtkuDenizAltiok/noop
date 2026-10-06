@@ -22,10 +22,35 @@ builds with AltStore, and does not need to read code or use the terminal. Give h
 phone, strap, direct observation or account approval is required. His later instructions and observed results prevail.
 Record a changed decision with its reason so that future sessions do not revive an old choice.
 
+**Every final response ends with simple next steps.** Give one to three short numbered actions for Utku. Include
+what he should see when an action needs a check. If he has nothing to do, say "No action needed" and name what comes
+next. Keep the steps specific and avoid repeating setup or tests that are already complete.
+
 Existing standing permission covers our branches, verified project PRs, replies on our own PRs, the handbook and
 verified testing releases. Other public messages still require explicit authorisation. Upstream maintainers decide
 what they merge; the fork can retain a justified product choice. Preserve upstream's scope, privacy, parity and
 engineering rules. This agreement concerns this project; tool access comes from the current signed-in environment.
+
+## Your two default session prompts
+
+Use these in a Codex chat for the local NOOP project. These are the canonical prompts; the procedures below explain
+what they require. An optional task can be added after the start prompt.
+
+**Start or resume a session — copy this:**
+
+```text
+Continue NOOP in ~/Developer/noop. Own the project decisions under our handbook's mandate. Read the app's AGENTS.md, then the handbook at dist/: AGENTS.md, README.md, STATE.md (Now first), RULES.md, WORKFLOW.md and BACKLOG.md. Run the handbook's checkpoint.sh status --net and upstream-check.sh. Reconcile unfinished work against Git, PRs, CI, releases and logs before repeating any action. Follow the interruption procedure if the previous session stopped abruptly. Choose the next task from the saved state and current evidence, and carry it through unless I give a different task. Explain plainly. End every final response with simple numbered next steps for me; if no action is needed, say so.
+```
+
+**End a session — copy this:**
+
+```text
+Close this NOOP session and prepare a clean handover. Follow dist/README.md's End a session procedure. Stop starting new work and park current work safely. Make STATE.md accurate about completed and unfinished work, decisions, verification, Git/PR/release state, running jobs and the exact next safe action. Move finished events into HISTORY.md and update other handbook pages only where facts changed. Preserve useful unfinished code and private files. Save a checkpoint, upload the handbook, and verify the final state with checkpoint.sh status --net. Report what is saved, any remaining blocker and whether it is safe to start fresh. Finish with simple numbered next steps for me.
+```
+
+Use the end prompt while the session still has room to complete its handover, including when stopping for the day.
+After an abrupt cutoff, use the start prompt in the next chat; it recovers from the durable record and actual state.
+Checkpointing at milestones keeps that recovery possible even when a final handover could not run.
 
 ## The durable record
 
@@ -57,11 +82,6 @@ Run the installer again after creating a new code worktree. A fresh clone on ano
 3. If Now has unfinished steps, follow "After an interruption" before doing anything new.
 4. Choose the next task from State, the backlog and current evidence. A task supplied by Utku takes precedence.
 5. Journal each long, public or hard-to-undo step before acting; checkpoint after milestones; upload at meaningful milestones.
-
-Utku can start a chat in the NOOP project with simply:
-
-> Continue NOOP. Read the handbook, check the current state, choose the next task and carry it through. Explain plainly
-> and give me the next steps when you need my phone or strap.
 
 ## Set up on a new machine
 
@@ -98,13 +118,17 @@ both Apple app targets when changing app code. Build folders and logs belong und
 
 ## End a session
 
-1. Park safely. Wait for running work or name it in Now with its ID and how to check it.
+1. Stop starting new work and park safely. Wait for running work or name it in Now with its ID and how to check it.
+   Preserve useful unfinished code. Record its branch, commit, uncommitted/unpushed state and remaining verification;
+   upload verified code only. Keep personal files private and retained.
 2. Move finished steps into History and make State true. Leave unfinished steps with clear evidence and the next action.
 3. Update any rules, workflow, backlog or feature contracts whose facts changed.
 4. Run `bash dist/tools/backup.sh "what changed"` to upload the handbook; it folds local checkpoints into one milestone.
 5. Run `bash dist/tools/checkpoint.sh status --net`: clean/pushed worktrees, saved/uploaded handbook and no stray jobs,
    or explicitly record each exception in Now.
-6. Tell Utku what is ready, what remains and the next action. Say when it is safe to start a fresh chat.
+6. Tell Utku what is saved, what remains and whether it is safe to start a fresh chat. End with one to three simple
+   numbered next steps. If upload or verification is blocked, save a local checkpoint, record the exact blocker and
+   resume action in State, and report that limitation; do not describe the work as fully backed up.
 
 ## What makes a change worth shipping
 
