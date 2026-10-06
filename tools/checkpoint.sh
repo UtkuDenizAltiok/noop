@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
-# Checkpoints and recovery: what is true right now, and a local save of this handbook that costs nothing.
-#   bash dist/tools/checkpoint.sh status [--net]    the ground truth after any interruption (read-only; --net asks GitHub)
-#   bash dist/tools/checkpoint.sh save ["note"]     commit this handbook + Claude Code's memory LOCALLY (no upload)
-#   bash dist/tools/checkpoint.sh event "text"      add a line to private/events.log (verify, ship and backup do)
-#   bash dist/tools/checkpoint.sh install-hooks     let Claude Code call `hook` by itself (Utku's choice: README)
-#   bash dist/tools/checkpoint.sh remove-hooks      undo install-hooks
-#   bash dist/tools/checkpoint.sh hook <kind>       what those hooks run; reads Claude Code's JSON on stdin
-# The journal is STATE.md's "Now" section, written by hand BEFORE each long, public or hard-to-undo step
-# (WORKFLOW.md §2). This tool only shows the evidence to check it against, and saves; it never uploads.
-# macOS bash 3.2: no associative arrays, no mapfile.
+# Checkpoints and recovery for the NOOP handbook. No external memory or agent hooks.
+#   bash dist/tools/checkpoint.sh status [--net]    journal, Git, jobs; --net adds GitHub evidence
+#   bash dist/tools/checkpoint.sh save "note"       save the handbook LOCALLY; does not upload
+#   bash dist/tools/checkpoint.sh event "text"      record local evidence in ignored private/events.log
+#   bash dist/tools/checkpoint.sh brief             print the recovery brief and local status
+# Write long/public/hard-to-undo steps in STATE.md "Now" before acting. backup.sh folds checkpoints on upload.
 set -uo pipefail
 HB=$(cd "$(dirname "$0")/.." && pwd)
 REPO=$(cd "$HB/.." && pwd)
-MEM=${CLAUDE_MEMORY_DIR:-$HOME/.claude/projects/$(printf '%s' "$REPO" | tr '/' '-')/memory}
-PRIV="$HB/private"; EVENTS="$PRIV/events.log"; MARK="$PRIV/interrupted"
+PRIV="$HB/private"; EVENTS="$PRIV/events.log"
 FORK=UtkuDenizAltiok/noop UPSTREAM=ryanbr/noop
 
 event() {  # one line in the local event log, trimmed to its newest 1,000 lines past 2,000
@@ -32,21 +27,16 @@ git_busy() {  # a rebase, merge or cherry-pick in progress, or another git holdi
   return 1
 }
 
-sync_memory() {  # Claude Code's memory into memory/ — never from an empty folder, which would erase the copy
-  ls "$MEM"/*.md >/dev/null 2>&1 || return 0
-  mkdir -p "$HB/memory" && rm -f "$HB"/memory/*.md && cp "$MEM"/*.md "$HB/memory/"
-}
-
-save() {  # save <note> [quiet] — a local commit of whatever changed; backup.sh later uploads them as one
-  local note=$1 quiet=${2:-} busy
-  say() { [ -n "$quiet" ] || echo "$@"; }
-  on_handbook || { say "$HB is not the handbook worktree: nothing saved"; return 0; }
-  busy=$(git_busy "$HB") && { say "git is busy in the handbook ($busy): nothing saved"; return 0; }
-  sync_memory
-  git -C "$HB" add -A >/dev/null 2>&1
-  if git -C "$HB" diff --cached --quiet; then say "nothing to save"; return 0; fi
-  git -C "$HB" commit -q --no-verify -m "checkpoint: $note" >/dev/null 2>&1 || { say "commit failed"; return 0; }
-  say "saved $(git -C "$HB" rev-parse --short HEAD) locally: $(git -C "$HB" diff --name-only HEAD~1 HEAD | tr '\n' ' ')"
+save() {
+  local note=$1 busy
+  on_handbook || { echo "$HB is not the handbook worktree: nothing saved"; return 1; }
+  if busy=$(git_busy "$HB"); then
+    echo "git is busy in the handbook ($busy): nothing saved"; return 1
+  fi
+  git -C "$HB" add -A || return 1
+  if git -C "$HB" diff --cached --quiet; then echo "nothing to save"; return 0; fi
+  git -C "$HB" commit -q -m "checkpoint: $note" || { echo "commit failed"; return 1; }
+  echo "saved $(git -C "$HB" rev-parse --short HEAD) locally: $(git -C "$HB" diff --name-only HEAD~1 HEAD | tr '\n' ' ')"
 }
 
 journal() {  # STATE.md's "Now" section, as written
@@ -67,9 +57,7 @@ status() {
     [ "$n" = 0 ] || echo "  $n local checkpoint(s) not uploaded yet — backup.sh uploads them as one commit"
     n=$(git -C "$HB" status --porcelain | awk '{print $NF}' | tr '\n' ' ')
     [ -z "$n" ] || echo "  unsaved: $n"
-    n=0
-    for w in "$MEM"/*.md; do [ -e "$w" ] && ! cmp -s "$w" "$HB/memory/$(basename "$w")" && n=$((n + 1)); done
-    [ "$n" = 0 ] || echo "  memory: $n note(s) changed since the last save"
+
   else
     echo "  NOT on handbook — checkpoints and backups are off"
   fi
@@ -121,14 +109,8 @@ status() {
     2>/dev/null || echo "  (gh failed)"
 }
 
-field() {  # a field of the hook's JSON input, flattened to one line
-  printf '%s' "$INPUT" | python3 -c 'import json, sys
-try: print(" ".join(str(json.load(sys.stdin).get(sys.argv[1], "")).split())[:300])
-except Exception: print("")' "$1" 2>/dev/null
-}
-
 brief() {  # what a new or compacted session must read first
-  echo "NOOP — recovery brief (automatic, session $1). From dist/, the durable record: trust it over any summary"
+  echo "NOOP — recovery brief. From dist/, the durable record: trust it over any summary"
   echo "or recollection of this conversation. An unticked step below may or may not have happened: find its evidence"
   echo "(git, CI, the releases page, gh pr list) before redoing it; never repeat a push, build, PR or comment without it."
   echo "Procedure: dist/README.md \"After an interruption\". Full check: bash dist/tools/checkpoint.sh status --net"
@@ -139,78 +121,10 @@ brief() {  # what a new or compacted session must read first
   status
 }
 
-hook() {  # hook <kind> — never blocks and never fails: an error here must not stop Claude Code
-  if [ -t 0 ]; then INPUT=""; else INPUT=$(cat); fi
-  case "$1" in
-    session-start)  # startup, resume, clear or compact: put the journal and the ground truth into context
-      local source; source=$(field source); event "session start (${source:-unknown})"
-      brief "${source:-start}" ;;
-    pre-compact)
-      event "compaction ($(field trigger)): checkpoint"; save "before compaction" quiet ;;
-    api-error)  # StopFailure: a usage limit or server error ended the turn mid-work
-      local what; what="$(field error_type): $(field error_message)"
-      event "turn ended by an API error — $what"; save "turn ended by an API error" quiet
-      printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$what" > "$MARK" ;;
-    prompt)  # UserPromptSubmit: only speaks after an API error ended the last turn
-      [ -f "$MARK" ] || return 0
-      echo "NOTE (automatic): the previous turn was cut off by an API error ($(cat "$MARK"))."
-      echo "Before continuing, check what really happened — STATE.md \"Now\" against the status below — and do not"
-      echo "repeat a step that already completed."
-      echo
-      status
-      rm -f "$MARK" ;;
-    stop) save "after a reply" quiet ;;
-    *) echo "unknown hook kind: $1" >&2 ;;
-  esac
-  return 0
-}
-
-hooks_file() {  # hooks_file install|remove — merge ours into the app repo's .claude/settings.local.json
-  local file="$REPO/.claude/settings.local.json" exclude
-  exclude="$(git -C "$REPO" rev-parse --git-common-dir)/info/exclude"
-  grep -qxF '.claude/settings.local.json' "$exclude" 2>/dev/null \
-    || printf '%s\n' '# Claude Code local settings (NOOP handbook checkpoint hooks) — never committed' \
-                     '.claude/settings.local.json' >> "$exclude"
-  mkdir -p "$REPO/.claude"
-  python3 - "$file" "$1" "$HB/tools/checkpoint.sh" <<'PY'
-import json, os, sys
-path, mode, tool = sys.argv[1:4]
-# Ours: the checkpoint hooks, and the one-off probe left in this file while these were set up (22 Sep).
-ours = lambda h: "checkpoint.sh" in h.get("command", "") or "hook-probe" in h.get("command", "")
-settings = json.load(open(path)) if os.path.exists(path) and os.path.getsize(path) else {}
-hooks = settings.get("hooks", {})
-for event in list(hooks):
-    groups = [dict(g, hooks=[h for h in g.get("hooks", []) if not ours(h)]) for g in hooks[event]]
-    hooks[event] = [g for g in groups if g["hooks"]]
-    if not hooks[event]:
-        del hooks[event]
-if mode == "install":
-    for event, kind, timeout in [("SessionStart", "session-start", 30), ("UserPromptSubmit", "prompt", 15),
-                                 ("Stop", "stop", 30), ("PreCompact", "pre-compact", 60),
-                                 ("StopFailure", "api-error", 30)]:
-        command = 'bash "%s" hook %s' % (tool, kind)
-        hooks.setdefault(event, []).append({"hooks": [{"type": "command", "command": command, "timeout": timeout}]})
-settings.pop("hooks", None)
-if hooks:
-    settings["hooks"] = hooks
-if settings:
-    with open(path + ".tmp", "w") as f:
-        json.dump(settings, f, indent=2)
-        f.write("\n")
-    os.replace(path + ".tmp", path)
-elif os.path.exists(path):
-    os.remove(path)
-print("%s: %s" % ("installed" if mode == "install" else "removed", path))
-print("hooks now: " + (", ".join(sorted(hooks)) or "none"))
-PY
-}
-
 case "${1:-status}" in
   status) status "${2:-}" ;;
-  save) save "${2:-by hand}"; event "checkpoint: ${2:-by hand}" ;;
+  save) save "${2:-by hand}" && event "checkpoint: ${2:-by hand}" ;;
   event) shift; event "$*" ;;
-  hook) hook "${2:-}" ;;
-  install-hooks) hooks_file install && event "hooks installed" ;;
-  remove-hooks) hooks_file remove && event "hooks removed" ;;
-  *) sed -n '2,10p' "$0"; exit 1 ;;
+  brief) brief manual ;;
+  *) sed -n '2,7p' "$0"; exit 1 ;;
 esac

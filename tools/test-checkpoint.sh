@@ -1,100 +1,91 @@
 #!/usr/bin/env bash
-# Self-test for checkpoint.sh and backup.sh's folding, in a throwaway sandbox: a fake app repo, this handbook's
-# tools in a worktree of it, a local bare "origin" and a fake memory folder. Touches nothing real, needs no network.
+# Test checkpoints, backup folding and the local Codex installer in disposable Git repositories.
+# Uses a local bare origin; no GitHub, agent settings or personal data are touched.
 #   bash dist/tools/test-checkpoint.sh
-set -uo pipefail
+set -euo pipefail
 TOOLS=$(cd "$(dirname "$0")" && pwd)
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
-export CLAUDE_MEMORY_DIR="$T/mem" GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
+export GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@t GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@t
 fails=0
-check() {  # check "what" <command…>
+check() {
   local what=$1; shift
   if "$@" >/dev/null 2>&1; then echo "  ok    $what"; else echo "  FAIL  $what"; fails=$((fails + 1)); fi
 }
 
-# The sandbox.
 git init -q --bare "$T/origin.git"
-git init -q -b main "$T/app" && cd "$T/app"
-printf 'dist/\n' > .gitignore && git add .gitignore && git commit -q -m app && git remote add origin "$T/origin.git"
-git checkout -q --orphan handbook && git rm -rq --cached . && rm .gitignore
-mkdir -p tools memory && cp "$TOOLS/checkpoint.sh" "$TOOLS/backup.sh" tools/
+git init -q -b main "$T/app"
+cd "$T/app"
+printf 'dist/\n' > .gitignore
+printf '# Upstream rules\n' > AGENTS.md
+git add .gitignore AGENTS.md && git commit -q -m app
+git remote add origin "$T/origin.git"
+git checkout -q --orphan handbook && git rm -rq --cached . && rm .gitignore AGENTS.md
+mkdir -p tools
+cp "$TOOLS/checkpoint.sh" "$TOOLS/backup.sh" "$TOOLS/codex-setup.sh" tools/
 printf 'private/\n.DS_Store\n' > .gitignore
-printf '# State\n\n## Now — work in flight\n\n- [ ] step one ← in progress\n- [x] step zero\n\n## Upstream\n' > STATE.md
-mkdir -p "$T/mem" && echo "note a" > "$T/mem/a.md" && cp "$T/mem/a.md" memory/
-git add -A && git commit -q -m "handbook: start" && git push -q origin handbook
+printf '# Handbook instructions\n' > AGENTS.md
+printf '# State\n\n## Now — work in flight\n\n- [ ] step one\n- [x] step zero\n\n## Upstream\n' > STATE.md
+git add -A && git commit -q -m 'handbook: start' && git push -q origin handbook
 git checkout -q main && git worktree add -q dist handbook
 git -C dist branch -q --set-upstream-to=origin/handbook
-CP="$T/app/dist/tools/checkpoint.sh"; H="$T/app/dist"
+H="$T/app/dist"; CP="$H/tools/checkpoint.sh"; INSTALL="$H/tools/codex-setup.sh"
 subject() { git -C "$H" log -1 --format=%s; }
 
-echo "status"
-out=$(bash "$CP" status 2>&1)
-check "runs and lists the open journal step" grep -q 'step one' <<<"$out"
-check "does not list a ticked step" bash -c '! grep -q "step zero" <<<"$1"' _ "$out"
-check "names both worktrees' state" grep -q 'app: main @' <<<"$out"
+echo status
+out=$(bash "$CP" status)
+check 'reports an unfinished journal step' grep -q 'step one' <<<"$out"
+check 'does not report a completed journal step' bash -c '! grep -q "step zero" <<<"$1"' _ "$out"
+check 'reports the code checkout' grep -q 'app: main @' <<<"$out"
+out=$(bash "$CP" brief)
+check 'recovery brief includes the current journal' bash -c 'grep -q "recovery brief" <<<"$1" && grep -q "step one" <<<"$1"' _ "$out"
 
-echo "save"
-echo "edit 1" >> "$H/STATE.md"; bash "$CP" save "first" >/dev/null
-check "commits locally as a checkpoint" test "$(subject)" = "checkpoint: first"
-check "logs the event" grep -q 'checkpoint: first' "$H/private/events.log"
-check "keeps private/ out of git" bash -c '! git -C "$1" ls-files | grep -q private' _ "$H"
-echo "note a2" > "$T/mem/a.md"; bash "$CP" save "memory" >/dev/null
-check "copies changed memory in" grep -q 'note a2' "$H/memory/a.md"
-mv "$T/mem" "$T/mem-away"; mkdir "$T/mem"; echo "edit 2" >> "$H/STATE.md"; bash "$CP" save "empty memory" >/dev/null
-check "never erases the copy from an empty memory folder" test -f "$H/memory/a.md"
-rm -rf "$T/mem"; mv "$T/mem-away" "$T/mem"
-touch "$(git -C "$H" rev-parse --git-path index.lock)"; echo "edit 3" >> "$H/STATE.md"
-check "stands aside while git is busy" bash -c 'bash "$1" save busy | grep -q busy' _ "$CP"
-rm -f "$(git -C "$H" rev-parse --git-path index.lock)"
+echo save
+mkdir -p "$H/private"; printf 'private data\n' > "$H/private/personal.txt"
+echo 'edit 1' >> "$H/STATE.md"; bash "$CP" save first >/dev/null
+check 'saves a local checkpoint' test "$(subject)" = 'checkpoint: first'
+check 'records its event' grep -q 'checkpoint: first' "$H/private/events.log"
+check 'excludes private files from the commit' bash -c '[ -z "$(git -C "$1" ls-files private)" ]' _ "$H"
+before=$(git -C "$H" rev-parse HEAD); bash "$CP" save unchanged >/dev/null
+check 'an unchanged save creates no commit' test "$(git -C "$H" rev-parse HEAD)" = "$before"
+lock=$(git -C "$H" rev-parse --git-path index.lock)
+touch "$lock"; echo 'edit 2' >> "$H/STATE.md"
+check 'a busy index returns failure' bash -c '! bash "$1" save busy' _ "$CP"
+check 'a failed save records no success event' bash -c '! grep -q "checkpoint: busy" "$1"' _ "$H/private/events.log"
+rm "$lock"; bash "$CP" save second >/dev/null
+git -C "$H" checkout -q --detach HEAD
+check 'saving outside handbook returns failure' bash -c '! bash "$1" save detached' _ "$CP"
+git -C "$H" checkout -q handbook
+check 'unknown commands return failure' bash -c '! bash "$1" obsolete' _ "$CP"
+check 'removed hook commands do not run' bash -c '! bash "$1" hook stop' _ "$CP"
+check 'removed restore interface does not publish' bash -c '! bash "$1" --restore-memory' _ "$H/tools/backup.sh"
 
-echo "hooks"
-out=$(echo '{"source":"compact"}' | bash "$CP" hook session-start)
-check "session start prints the brief and the journal" bash -c 'grep -q "recovery brief" <<<"$1" && grep -q "step one" <<<"$1"' _ "$out"
-check "session start is logged with its source" grep -q 'session start (compact)' "$H/private/events.log"
-echo '{"error_type":"rate_limit","error_message":"Rate limit exceeded"}' | bash "$CP" hook api-error
-check "an API error checkpoints the unsaved edit" test "$(subject)" = "checkpoint: turn ended by an API error"
-check "an API error leaves a mark for the next prompt" grep -q rate_limit "$H/private/interrupted"
-out=$(echo '{}' | bash "$CP" hook prompt)
-check "the next prompt is told, with the status" bash -c 'grep -q "cut off by an API error (.*rate_limit" <<<"$1" && grep -q "== code" <<<"$1"' _ "$out"
-check "only once" test -z "$(echo '{}' | bash "$CP" hook prompt)"
-before=$(git -C "$H" rev-parse HEAD); echo '{}' | bash "$CP" hook stop
-check "stop with nothing changed makes no commit" test "$(git -C "$H" rev-parse HEAD)" = "$before"
-echo "edit 4" >> "$H/STATE.md"; echo '{}' | bash "$CP" hook stop
-check "stop saves a change" test "$(subject)" = "checkpoint: after a reply"
-echo "edit 5" >> "$H/STATE.md"; echo '{"trigger":"auto"}' | bash "$CP" hook pre-compact
-check "pre-compact saves and logs" bash -c '[ "$(git -C "$1" log -1 --format=%s)" = "checkpoint: before compaction" ] && grep -q "compaction (auto)" "$1/private/events.log"' _ "$H"
-check "bad input and unknown kinds never fail" bash -c 'echo "not json" | bash "$1" hook session-start && bash "$1" hook nonsense </dev/null' _ "$CP"
-
-echo "backup folds checkpoints"
-tip=$(git -C "$H" rev-parse origin/handbook); tree=$(git -C "$H" rev-parse HEAD^{tree})
-bash "$H/tools/backup.sh" "folded" >/dev/null 2>&1
-check "uploads exactly one commit" test "$(git -C "$H" rev-list --count "$tip"..origin/handbook)" = 1
-check "with the backup's message" test "$(git -C "$H" log -1 --format=%s origin/handbook)" = "handbook: folded"
-check "and every checkpointed change" test "$(git -C "$H" rev-parse origin/handbook^{tree})" = "$tree"
-check "logs the upload" grep -q 'backup .* uploaded: folded' "$H/private/events.log"
-echo "edit 6" >> "$H/STATE.md"; git -C "$H" commit -qam "a hand-made commit"
-echo "edit 7" >> "$H/STATE.md"; bash "$CP" save "after it" >/dev/null
+echo 'backup folding'
+tip=$(git -C "$H" rev-parse origin/handbook); tree=$(git -C "$H" rev-parse 'HEAD^{tree}')
+bash "$H/tools/backup.sh" folded >/dev/null 2>&1
+check 'uploads checkpoints as exactly one milestone' test "$(git -C "$H" rev-list --count "$tip"..origin/handbook)" = 1
+check 'uses the milestone subject' test "$(subject)" = 'handbook: folded'
+check 'retains every saved change' test "$(git -C "$H" rev-parse 'origin/handbook^{tree}')" = "$tree"
+check 'records the verified upload' grep -q 'backup .* uploaded: folded' "$H/private/events.log"
+echo 'edit 3' >> "$H/STATE.md"; git -C "$H" commit -qam 'a hand-made commit'
+echo 'edit 4' >> "$H/STATE.md"; bash "$CP" save 'after it' >/dev/null
 tip=$(git -C "$H" rev-parse origin/handbook)
-bash "$H/tools/backup.sh" "kept" >/dev/null 2>&1
-check "keeps a non-checkpoint commit as it is" bash -c '[ "$(git -C "$1" log --format=%s "$2"..origin/handbook)" = \
-  "$(printf "checkpoint: after it\na hand-made commit")" ]' _ "$H" "$tip"
+bash "$H/tools/backup.sh" kept >/dev/null 2>&1
+check 'preserves non-checkpoint commit history' bash -c '[ "$(git -C "$1" log --format=%s "$2"..origin/handbook)" = "$(printf "checkpoint: after it\na hand-made commit")" ]' _ "$H" "$tip"
+check 'handbook is clean and uploaded' bash -c '[ -z "$(git -C "$1" status --porcelain)" ] && [ "$(git -C "$1" rev-parse HEAD)" = "$(git -C "$1" rev-parse origin/handbook)" ]' _ "$H"
 
-echo "install-hooks / remove-hooks (the sandbox's own settings file)"
-S="$T/app/.claude/settings.local.json"; mkdir -p "$T/app/.claude"
-printf '{"permissions":{"allow":["Bash(ls)"]},"hooks":{"PostToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"echo hook-probe"}]}]}}' > "$S"
-bash "$CP" install-hooks >/dev/null; bash "$CP" install-hooks >/dev/null
-check "keeps other settings" grep -q 'Bash(ls)' "$S"
-check "drops the probe" bash -c '! grep -q hook-probe "$1"' _ "$S"
-check "adds the five hooks once, pointing at this tool" python3 -c '
-import json, sys; h = json.load(open(sys.argv[1]))["hooks"]
-assert sorted(h) == ["PreCompact", "SessionStart", "Stop", "StopFailure", "UserPromptSubmit"], h
-assert all(len(v) == 1 and sys.argv[2] in v[0]["hooks"][0]["command"] for v in h.values())' "$S" "$CP"
-check "git ignores the file" git -C "$T/app" check-ignore -q .claude/settings.local.json
-bash "$CP" remove-hooks >/dev/null
-check "remove keeps other settings, drops hooks" python3 -c '
-import json, sys; s = json.load(open(sys.argv[1])); assert "hooks" not in s and s["permissions"]' "$S"
-printf '{"hooks":{}}' > "$S"; bash "$CP" install-hooks >/dev/null; bash "$CP" remove-hooks >/dev/null
-check "a file holding only our hooks is removed" test ! -e "$S"
+echo 'Codex entry files'
+git -C "$T/app" worktree add -q -b example "$T/app-pr" main
+bash "$INSTALL" >/dev/null
+check 'configures main and PR worktrees' bash -c '[ -f "$1/AGENTS.override.md" ] && [ -f "$2/AGENTS.override.md" ]' _ "$T/app" "$T/app-pr"
+check 'points to the canonical handbook and upstream rules' bash -c 'grep -qF "$2/AGENTS.md" "$1" && grep -q "upstream" "$1"' _ "$T/app/AGENTS.override.md" "$H"
+check 'the handbook uses its own tracked AGENTS' test ! -e "$H/AGENTS.override.md"
+check 'entry files do not dirty app checkouts' bash -c '[ -z "$(git -C "$1" status --porcelain)" ] && [ -z "$(git -C "$2" status --porcelain)" ]' _ "$T/app" "$T/app-pr"
+before=$(shasum -a 256 "$T/app/AGENTS.override.md"); bash "$INSTALL" >/dev/null
+check 'reinstallation is idempotent' test "$(shasum -a 256 "$T/app/AGENTS.override.md")" = "$before"
+check 'the shared ignore rule is installed once' test "$(grep -c '^/AGENTS.override.md$' "$T/app/.git/info/exclude")" = 1
+printf 'Custom local instructions\n' > "$T/app-pr/AGENTS.override.md"
+check 'refuses unrelated local instructions' bash -c '! bash "$1"' _ "$INSTALL"
+check 'preserves unrelated instructions byte for byte' test "$(cat "$T/app-pr/AGENTS.override.md")" = 'Custom local instructions'
 
-[ $fails = 0 ] && echo "all checks passed" || echo "$fails check(s) FAILED"
-exit $fails
+if [ "$fails" = 0 ]; then echo 'all checks passed'; else echo "$fails check(s) FAILED"; fi
+exit "$fails"

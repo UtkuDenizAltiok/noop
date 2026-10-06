@@ -1,24 +1,14 @@
 #!/usr/bin/env bash
-# Back up this handbook, with Claude Code's memory for the project, to the public handbook branch.
+# Upload the public NOOP handbook. Local checkpoints are folded into one milestone commit.
 #   bash dist/tools/backup.sh "what changed" ["extra commit paragraph"]
-#   bash dist/tools/backup.sh --restore-memory          (new machine: copy memory/ back for Claude Code)
-# Memory lives in $CLAUDE_MEMORY_DIR, by default Claude Code's folder for ~/Developer/noop.
-# Local checkpoints (checkpoint.sh save, or its hooks) go up folded into this one commit.
+# Only handbook files are staged. Personal data and drafts belong in ignored private/.
 set -euo pipefail
 HB=$(cd "$(dirname "$0")/.." && pwd)
-MEM=${CLAUDE_MEMORY_DIR:-$HOME/.claude/projects/$(cd "$HB/.." && pwd | tr '/' '-')/memory}
-
-if [ "${1:-}" = "--restore-memory" ]; then
-  mkdir -p "$MEM" && cp "$HB"/memory/*.md "$MEM"/ && echo "memory restored to $MEM"; exit 0
-fi
 MSG=${1:?usage: backup.sh "what changed"}
+case "$MSG" in -*) echo 'usage: backup.sh "what changed"' >&2; exit 1 ;; esac
 
 cd "$HB"
 [ "$(git symbolic-ref --short HEAD 2>/dev/null)" = handbook ] || { echo "$HB is not the handbook worktree"; exit 1; }
-# Never copy from an empty folder: that would erase the backed-up notes.
-if ls "$MEM"/*.md >/dev/null 2>&1; then rm -f memory/*.md && mkdir -p memory && cp "$MEM"/*.md memory/
-else echo "no memory notes at $MEM; memory/ left as it is"; fi
-
 # Fold local checkpoint commits into this one, so the public history keeps one commit per backup — only when every
 # local commit is a checkpoint and sits on the fork's tip; anything else is uploaded as it is.
 git fetch -q origin handbook

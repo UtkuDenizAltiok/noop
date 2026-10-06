@@ -1,18 +1,18 @@
 # Workflow
 
-How work on NOOP is done here. The app repo's own `AGENTS.md` (`CLAUDE.md` points to it) and `docs/CONTRIBUTING.md`
+How work on NOOP is done here. The app repo's own `AGENTS.md` and `docs/CONTRIBUTING.md`
 still apply; this adds what this fork and Utku need. Commands run from the app repo root; tools live in `dist/tools/`,
 and each explains itself in its first lines.
 
 ## 1. Working with Utku
 
-Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) is **not a programmer**: he does not read code or use the terminal,
-installs builds from the fork's releases page with AltStore, and tests on his own WHOOP 5.0 and iPhone. Whoever works
-here writes the code, runs the tools and explains in plain language. His product judgement has corrected the
-engineering several times — treat it as authoritative. He wants technical questions decided, reviewers verified
-rather than obeyed, and a working implementation kept unless a change is truly worth it.
+ChatGPT/Codex owns project execution and makes the product and technical decisions under `RULES.md`'s mandate.
+Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) uses a WHOOP 5.0 and an iPhone, installs builds with AltStore, and does
+not need to read code or use the terminal. Explain changes and findings in plain language, decide routine matters,
+and carry each task through. His real-device observations and later instructions take precedence over assumptions.
+When new evidence changes a settled decision, record why; do not automatically defer to a reviewer or repeat an old choice.
 
-- **Finishing a change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line,
+- **Finishing an app change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line,
   with the 7-character id that ends the release title. Never ship a broken build.
 - **Public steps** follow `RULES.md` (standing permission): replies and pushes on our PRs, and a PR for this journey's
   work once verified; a new issue or a comment on someone else's thread is asked first.
@@ -24,12 +24,14 @@ rather than obeyed, and a working implementation kept unless a change is truly w
   has no pull-to-sync (syncs are automatic), and the night stars are too faint to see (≤ ~10% opacity by design).
 - **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
   show him line numbers and a search he can repeat. Say plainly what a log can and cannot show.
-- **Never delete** his things without asking (his strap logs in `~/Downloads` included); **never touch** his comments.
+- **Project cleanup is delegated.** Remove redundant project documentation and tooling after retaining useful facts;
+  Git history is the recovery record. Personal health data, backups and unrelated files are outside routine cleanup.
+  Preserve Utku's own comments.
 
 ## 2. Session routine and continuity
 
-- **Start:** README's start prompt → `STATE.md` ("Now" first) → `RULES.md` → `bash dist/tools/checkpoint.sh status
-  --net` (README "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh`.
+- **Start:** the local Codex entry → handbook `AGENTS.md` and README → `STATE.md` ("Now" first) → `RULES.md` →
+  `bash dist/tools/checkpoint.sh status --net` (README "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh`.
 - **End:** README "End a session".
 
 A session can stop anywhere, without an end (a usage limit, a server error, a compaction); the conversation is not a
@@ -39,9 +41,8 @@ store.
   (branch and commit, run id, PR number); tick it with its result when it ends. Record a PR's number or a run's id the
   moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo", and "Next safe
   action".
-- **Save often, upload at milestones.** `checkpoint.sh save "what"` is a local commit of the handbook (and of Claude
-  Code's memory notes) — instant, offline, never public. `backup.sh "what"` uploads after any milestone that took
-  real work; it folds the local checkpoints into one commit.
+- **Save often, upload at milestones.** `checkpoint.sh save "what"` commits the handbook locally, without uploading.
+  `backup.sh "what"` uploads after a milestone that took real work; it folds the local checkpoints into one commit.
 - **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
   `dist/private/events.log`; a verification's numbers go into `STATE.md`. Nothing needed later lives only in a scratch
   folder or `$TMPDIR`: harnesses go to `tools/`, drafts to `private/`.
@@ -50,13 +51,11 @@ store.
   failed steps; `ship-build.sh` ends with `shipped <id> …` or a `FAILED` event. A loop waiting for any other word
   never ends (3 Oct: one waited for "verified" after the ship had succeeded).
 - **"Continue" after an interruption is an instruction:** status, settle "Now", finish its open steps, report.
-- **Hooks (Claude Code only; installed on Utku's Mac since 22 Sep 2026)** put the recovery brief into every new,
-  resumed or compacted session and checkpoint the handbook after every reply (`checkpoint.sh install-hooks` /
-  `remove-hooks`; they never upload, block or fail). Installing them is the owner's call: Claude Code's auto-mode guard
-  refuses to let the agent write — or read — Claude's settings files. `bash dist/tools/test-checkpoint.sh` proves the
-  tool in a sandbox.
-- **Other AI tools** keep the same discipline by hand: `checkpoint.sh status --net` at the start, `checkpoint.sh save`
-  after milestones, README "End a session" before a fresh start.
+- **One project memory:** the handbook. Codex loads the local entry file installed by `codex-setup.sh`; the entry
+  requires reading upstream's AGENTS and this handbook. Re-run the installer after adding worktrees. Use checkpoint
+  and backup explicitly; do not depend on hooks or copy notes from another agent's memory folder.
+- **Failed saves are failures.** `checkpoint.sh save` returns an error while Git is busy, on the wrong branch, or
+  when the commit fails. Resolve that cause before treating a milestone as saved.
 
 ## 3. Verification
 
@@ -117,8 +116,7 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
   all ten locales, merged on keys (`tools/xcmerge.py`), never by hand-reformatting the 6 MB catalog.
 - **After an Xcode update**, the license must be accepted (Utku) and the first verify run read for new warnings.
 - **Report faithfully:** a failing step is named with its log; a skipped step is said to be skipped.
-- **The AI tool's own session history is the last resort** after an interruption: Claude Code keeps it in
-  `~/.claude/projects/-Users-utk-Developer-noop/<session>.jsonl` (search it with Python, one JSON object per line).
+- **Chat history is the last resort** after an interruption. State, Git, release assets, CI and local evidence come first.
 
 ### Reading a strap log
 
@@ -223,13 +221,14 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
   `testing-build`, `handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version tags); one
   release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven equal (§5).
 - **Each open PR has its own worktree** beside the app repo (`~/Developer/noop-<name>`); `~/Developer/noop` stays on
-  `main`; `~/Developer/noop/dist` is this handbook.
+  `main`; `~/Developer/noop/dist` is this handbook. Run `bash ~/Developer/noop/dist/tools/codex-setup.sh` after adding
+  code worktrees; their local instruction entries stay ignored through the shared Git exclude file.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
 - **Never start a branch by copying files from another branch** (it once silently reverted two upstream commits): take
   the file from the target base and re-apply the edit, then check `git diff upstream/main -- <path>`.
 - **Before any history rewrite**, tag the old tip `backup/<what>` locally; `checkpoint.sh status` lists such refs until
   they are deleted after the push is verified. Retired refs go into a bundle outside the repo, not onto GitHub.
-- **This handbook branch is PUBLIC.** Only the handbook, `memory/` and `tools/`; drafts and anything personal go in
+- **This handbook branch is PUBLIC.** Only the handbook, feature contracts and tools; drafts and anything personal go in
   `dist/private/` (ignored). Never commit `dist/` to a work branch.
 - **zsh** does not word-split `$VAR` and expands globs like `--include=*.kt`: run such commands via `bash -c` with
   arrays. `origin/origin` is `origin/HEAD`, not a branch.
@@ -255,9 +254,11 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 - Keep `STATE.md` true at every milestone and at the end of every session; move finished events into `HISTORY.md` as
   one line. Rules keep their numbers. Settled science is not rewritten silently.
-- `bash dist/tools/backup.sh "what changed"` copies Claude Code's memory into `memory/`, commits (folding local
-  checkpoints) and pushes; `--restore-memory` copies it back on a new machine. Neither it nor `checkpoint.sh` ever
-  copies from an empty memory folder. After editing either, run `bash dist/tools/test-checkpoint.sh`.
+- `bash dist/tools/backup.sh "what changed"` commits and pushes the handbook, folding local checkpoint commits into
+  one milestone. `checkpoint.sh save "what"` saves locally. Neither tool imports external agent memories or edits
+  agent settings. After editing either, run `bash dist/tools/test-checkpoint.sh`; it also checks the local Codex installer.
+- Keep the local Codex entries reproducible with `codex-setup.sh`. The canonical fork instructions live in handbook
+  `AGENTS.md`; upstream's AGENTS remains the source of upstream rules. Refuse to overwrite an unrelated local override.
 
 ## 11. Measuring usage
 

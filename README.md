@@ -1,172 +1,116 @@
-# NOOP — handbook
+# NOOP — our project handbook
 
-Everything behind this fork's work on NOOP that is not code: the purpose, the rules, how a change is made, measured,
-verified, shipped and sent upstream, and where the work stands. The code lives in
-[`UtkuDenizAltiok/noop`](https://github.com/UtkuDenizAltiok/noop), a fork of [`ryanbr/noop`](https://github.com/ryanbr/noop);
-this handbook lives on its branch [`handbook`](https://github.com/UtkuDenizAltiok/noop/tree/handbook).
+The mission is to make NOOP the best WHOOP companion app: correct, reliable, efficient, optimised, clean and sleek,
+with biometrics as close to measured truth as the evidence supports. NOOP runs offline and on the device. The work
+covers the app, its algorithms, storage, connection, battery use and user experience; progress is judged by evidence
+and real use.
 
-NOOP is an offline, on-device companion app for WHOOP straps: it pairs over Bluetooth, keeps everything on the phone
-and computes recovery, strain, HRV and sleep itself. **The journey (since 24 Sep 2026): make the whole of NOOP the best
-app for WHOOP straps** — correct, fast, low usage on the phone and the strap, clean code, and better measurements and
-algorithms wherever evidence supports them. Product owner and tester: Utku Deniz Altiok (a WHOOP 5.0 on an iPhone).
-Engineering: AI coding sessions working with him (Claude Code until 3 Oct 2026; since then a friend with ChatGPT) —
-but nothing here depends on one person, machine or AI model: these pages, the tools and the fork's branches are the
-whole project memory. The first journey (the Lift Log and the Live HR banner, 2–24 Sep 2026) is finished; `features/`
-keeps what it built.
+Code: [UtkuDenizAltiok/noop](https://github.com/UtkuDenizAltiok/noop), forked from
+[ryanbr/noop](https://github.com/ryanbr/noop). This handbook is on the fork's
+[handbook branch](https://github.com/UtkuDenizAltiok/noop/tree/handbook), checked out at `~/Developer/noop/dist`.
+The Lift Log and Live HR banner are finished features; their contracts live in `features/`.
 
-## Start a session — the prompt (any AI, any person)
+## Working agreement — 6 October 2026
 
-Paste this as the first message of a new session, whoever you are and whatever AI you use; write a task under it, or
-leave it out and the session continues with the next item.
+**ChatGPT/Codex owns the project work and decides its direction.** Utku has delegated prioritisation, product and
+technical choices, implementation, verification, cleanup, releases and documentation. Decide routine matters and
+complete the work. Explain what changed, why, what was verified and what Utku needs to do next in plain language.
+Do not turn ordinary engineering or product choices into approval requests.
 
-> You are working on NOOP, an offline companion app for WHOOP straps (fork https://github.com/UtkuDenizAltiok/noop of
-> ryanbr/noop). Our journey: make the whole of NOOP the best app for WHOOP straps — perfect, optimized, clean, sleek,
-> efficient, fast and low usage (memory, CPU, GPU, battery) on both the strap and the iPhone, with better algorithms and
-> biometrics wherever the evidence supports it. You are the owner and decider of the technical work. The project's
-> complete memory is its handbook: the `handbook` branch of that fork, checked out locally at `~/Developer/noop/dist/`.
-> Read `README.md`, then `STATE.md` (its "Now" section first), `RULES.md`, `WORKFLOW.md` and `BACKLOG.md`; trust these
-> pages over anything you assume or remember. If you can run commands: on a new machine follow README "Set up on a new
-> machine"; then, from `~/Developer/noop`, run `bash dist/tools/checkpoint.sh status --net` and
-> `bash dist/tools/upstream-check.sh`, and if "Now" has open steps follow README "After an interruption" before
-> anything else. If you cannot run commands, say so and give me the exact commands to run. Then tell me in a few plain
-> sentences where things stand and what is next, and carry on with the next item unless I give you a task below. How
-> we work: I am not a programmer — explain in plain language and make the technical decisions yourself; verify by
-> running things, never by assuming; measure before and after every optimisation; write each long, public or
-> hard-to-undo step into `STATE.md` "Now" before doing it and tick it after; ship every app change as a build on my
-> GitHub releases page and tell me "just update" or "wipe" with its id; you may push our branches, reply on our PRs and
-> open PRs for this journey's work once verified, but ask me before any new issue or any comment elsewhere; and before
-> the session ends follow README "End a session".
+**Utku is our real-world tester and the source of user feedback.** He uses a WHOOP 5.0 and an iPhone, installs staging
+builds with AltStore, and does not need to read code or use the terminal. Give him a short numbered sequence when his
+phone, strap, direct observation or account approval is required. His later instructions and observed results prevail.
+Record a changed decision with its reason so that future sessions do not revive an old choice.
 
-## End a session — the prompt
+Existing standing permission covers our branches, verified project PRs, replies on our own PRs, the handbook and
+verified testing releases. Other public messages still require explicit authorisation. Upstream maintainers decide
+what they merge; the fork can retain a justified product choice. Preserve upstream's scope, privacy, parity and
+engineering rules. This agreement concerns this project; tool access comes from the current signed-in environment.
 
-When the conversation is nearly full (around 90%), or before stopping for the day, paste:
+## The durable record
 
-> We are near the end of this session. Follow `dist/README.md` → "End a session" now, then tell me it is safe to
-> start a fresh session.
+The handbook is the project memory, maintained locally and on GitHub. A new chat must be able to continue from these
+files alone. There is no separate agent-memory copy to keep in sync. Removed duplicate memories remain recoverable
+from Git history. The app checkout's `AGENTS.md` and `docs/CONTRIBUTING.md` hold upstream's rules.
 
-## The pages
+| File | Purpose |
+|---|---|
+| [AGENTS.md](AGENTS.md) | Short instructions for ChatGPT/Codex; entry point for every session |
+| [STATE.md](STATE.md) | Work in flight, PRs, branches, releases, verified evidence and the next action |
+| [RULES.md](RULES.md) | Mandate, delegated authority, settled decisions and stable engineering rules |
+| [WORKFLOW.md](WORKFLOW.md) | How to verify, measure, communicate, maintain Git and ship |
+| [BACKLOG.md](BACKLOG.md) | Specific investigations and improvements, ordered using current evidence |
+| [HISTORY.md](HISTORY.md) | Finished milestones and lessons, one line per event |
+| [features/](features/) | Contracts for the finished Lift Log and Live HR banner |
+| [tools/](tools/) | Checkpoint, backup, upstream checks, Codex setup, verification, shipping and measurement helpers |
+| `private/` | Ignored local evidence and drafts; never uploaded |
 
-| file | what it answers | changes |
-|---|---|---|
-| [`STATE.md`](STATE.md) | "Now": the work in flight, step by step; then our PRs, the fork, the build on Utku's phone, what is verified, what is next | every step that matters |
-| [`RULES.md`](RULES.md) | the mandate, the settled decisions and the numbered engineering rules — break one and the change is wrong | rarely |
-| [`WORKFLOW.md`](WORKFLOW.md) | how work is done: Utku, continuity, verification, reading a strap log, parity, PRs, builds, syncing, git, measuring usage | when a method changes |
-| [`BACKLOG.md`](BACKLOG.md) | what to improve next, ordered by value, each with its evidence | when items move |
-| [`HISTORY.md`](HISTORY.md) | what happened, one line per event, both journeys | one line per event |
-| [`features/`](features) | finished features and the rules that keep them right: `lift-log.md` (the gym log book), `live-hr-banner.md` | when one changes |
-| `tools/` | `checkpoint.sh` · `upstream-check.sh` · `verify.sh` · `ship-build.sh` · `backup.sh` · `strap-log.py` · `hr-timeline.py` · `usage.sh` (simulator CPU/render/memory) · `rr-fill.py` (the #2371 R-R filler in a backup) · `rescore-profile/` (re-score passes in the simulator on a real store: `run.sh`, `prof.patch`, Time Profiler aggregation, `passes.py` for strap logs) · `his-nights/` (his recorded nights re-staged with `SleepStagerV2` and recipe variants, from a backup copy) · `sleeppsg-rem/` (the local REM analysis sections for `Tools/SleepPSG`, as a patch) · `oracle/` · `xcmerge.py` · `test-checkpoint.sh` — each explains itself in its first lines | when a method changes |
-| `memory/` | Claude Code's own notes for this project, backed up by `backup.sh`; everything in them is also in these pages | via `backup.sh` |
+## Start a session
 
-The app repository's own `AGENTS.md` (read automatically by most AI coding tools) and `docs/CONTRIBUTING.md` hold
-upstream's rules for all code; these pages add what this fork and Utku need.
+Local Codex entry files are installed by `tools/codex-setup.sh` in every code worktree. They require reading both
+upstream's `AGENTS.md` and this handbook's `AGENTS.md`, without adding fork instructions to the upstream mirror.
+Codex's instruction-file discovery is described in [official OpenAI documentation](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+Run the installer again after creating a new code worktree. A fresh clone on another machine needs the setup below.
 
-## Handover (3 Oct 2026): a new engineer, with ChatGPT
+1. Read this README, `STATE.md` (Now first), `RULES.md`, `WORKFLOW.md` and `BACKLOG.md`.
+2. From `~/Developer/noop`, run `bash dist/tools/checkpoint.sh status --net` and `bash dist/tools/upstream-check.sh`.
+3. If Now has unfinished steps, follow "After an interruption" before doing anything new.
+4. Choose the next task from State, the backlog and current evidence. A task supplied by Utku takes precedence.
+5. Journal each long, public or hard-to-undo step before acting; checkpoint after milestones; upload at meaningful milestones.
 
-Utku handed the engineering to a friend who works with ChatGPT 6.1. Utku stays the product owner and tester (his
-WHOOP 5.0 and iPhone). Everything needed is in these pages and the fork; nothing lives in a Claude conversation.
+Utku can start a chat in the NOOP project with simply:
 
-1. **Access** (Utku grants it): collaborator on `UtkuDenizAltiok/noop` to push branches, run the fork's workflows and
-   ship builds to his releases page. Our open upstream PRs are in Utku's GitHub name: a reply on them is his account's
-   (ask him how he wants it; new PRs can come from the friend's own account and fork).
-2. **Machine:** "Set up on a new machine" below; skip the two Claude-only lines (`--restore-memory`, `install-hooks`).
-   The app repo's `AGENTS.md` (read automatically by ChatGPT/Codex agents) holds upstream's code rules.
-3. **Start every session with the start prompt above**, pasted into ChatGPT as the first message, plus a task if any.
-   If ChatGPT cannot run commands on the Mac, it names them and the person runs them and pastes the output back.
-4. **Keep the discipline by hand** (no hooks outside Claude Code): `bash dist/tools/checkpoint.sh status --net` at the
-   start, `checkpoint.sh save "what"` after each milestone, `backup.sh "what"` when a milestone took real work, and
-   "End a session" before stopping. The journal in `STATE.md` "Now" is what lets the next session resume.
-5. **Prove the setup before the first change:** `gh auth status`; `git -C ~/Developer/noop push --dry-run origin main`
-   (write access); `bash dist/tools/checkpoint.sh status --net`; `bash dist/tools/verify.sh --quick` on `main` (the
-   Swift packages and the parity tools; the full run adds the Xcode app targets and takes ~15 min).
-6. **Where it stands:** `STATE.md` (first page to read), then `BACKLOG.md` for what to do next. `memory/` holds Claude's
-   own notes; everything in them is also in these pages, so it can be ignored.
-
-## Working with any AI
-
-- **What the AI needs:** to read files and run shell commands on a Mac with Xcode (Claude Code, ChatGPT/Codex,
-  Gemini CLI, Cursor, Aider and the like). A chat-only AI can read these pages — they are public — and plan, but a person then runs
-  the commands it names.
-- **The memory is these pages, never the AI's own.** An AI's built-in memory or chat history is a convenience at best;
-  anything that matters is written here (`WORKFLOW.md` §2).
-- **Tool-specific extras are optional and marked.** Claude Code: its notes in `memory/` (restored with
-  `backup.sh --restore-memory`) and automatic checkpoints (`checkpoint.sh install-hooks`, installed on Utku's Mac). Any
-  other tool: run `checkpoint.sh status --net` at the start and `checkpoint.sh save "what"` after each milestone.
+> Continue NOOP. Read the handbook, check the current state, choose the next task and carry it through. Explain plainly
+> and give me the next steps when you need my phone or strap.
 
 ## Set up on a new machine
 
+Use a Mac with Xcode, its accepted license, completed first-launch setup and an installed iOS Simulator runtime.
+Install `xcodegen`, `gh` and `python@3.12` through Homebrew; sign in with `gh auth login`.
+Android validation runs in the fork's CI; no local Android SDK is required for this workflow.
+
 ```bash
-git clone https://github.com/UtkuDenizAltiok/noop.git ~/Developer/noop && cd ~/Developer/noop
-git remote add upstream https://github.com/ryanbr/noop.git && git fetch --all
-git worktree add dist handbook                  # this handbook, in the app repo's gitignored dist/
-git worktree add ../noop-<name> <branch>        # one per open PR listed in STATE.md
-bash dist/tools/backup.sh --restore-memory      # Claude Code only
-bash dist/tools/checkpoint.sh install-hooks     # Claude Code only, optional: automatic checkpoints (WORKFLOW.md §2)
+git clone https://github.com/UtkuDenizAltiok/noop.git ~/Developer/noop
+cd ~/Developer/noop
+git remote add upstream https://github.com/ryanbr/noop.git
+git fetch --all
+git worktree add dist handbook
+# Add one sibling worktree per open PR in STATE.md, then:
+bash dist/tools/codex-setup.sh
+gh auth status
+git push --dry-run origin main
+bash dist/tools/checkpoint.sh status --net
+bash dist/tools/upstream-check.sh
+bash dist/tools/verify.sh --quick
 ```
-Requires a Mac with Xcode (license accepted; after every Xcode update open Xcode once and agree, and install an iOS
-Simulator runtime), `brew install xcodegen gh python@3.12`, and `gh auth login`. Python 3.12 is what the parity tools
-need. No Android SDK is needed locally: Android runs in the fork's CI.
 
-**Access.** Reading needs nothing. Pushing branches, shipping builds to the releases page and backing up this handbook
-need write access to `UtkuDenizAltiok/noop` (Utku adds a collaborator). Opening upstream PRs needs a GitHub account.
-
-## Every session
-
-1. Read `STATE.md` — its "Now" section first — then `RULES.md`; `WORKFLOW.md` and `BACKLOG.md` when starting work.
-2. `bash dist/tools/checkpoint.sh status --net`. If "Now" has open steps, follow "After an interruption" below before
-   anything else. Then `bash dist/tools/upstream-check.sh`: the maintainers merge fast and fix things themselves.
-3. Work, journal first (`WORKFLOW.md` §2): measure, change, verify (`verify.sh`), ship (`ship-build.sh`), and write
-   each long, public or hard-to-undo step into "Now" before it starts; `checkpoint.sh save "what"` after each
-   milestone.
-4. After a milestone that took real work: bring `STATE.md` (and any page that changed) up to date, then
-   `bash dist/tools/backup.sh "what changed"`. At the end, "End a session" below.
-
-## End a session
-
-Before a fresh session (`/clear`, a new chat, another person), so it can start from these pages alone:
-
-1. **Park safely.** Start nothing new. A job still running (a build, CI, a verify) is either waited for or written into
-   "Now" with its id and how to check it.
-2. **Settle "Now" in `STATE.md`.** Each finished step becomes one line in `HISTORY.md`; an unfinished one stays
-   unticked, saying what proves whether it happened; "Next safe action" says exactly where to resume. With nothing in
-   flight, "Now" says so.
-3. **Make the rest of `STATE.md` true:** our PRs, the testing stack and the build on Utku's phone, what is verified,
-   what is next.
-4. **Update any other page whose facts changed:** `RULES.md` (a new decision), `WORKFLOW.md` (a method), `BACKLOG.md`,
-   `features/`. Claude Code only: its memory notes, if a lasting fact changed.
-5. **Upload:** `bash dist/tools/backup.sh "what changed"`.
-6. **Check:** `bash dist/tools/checkpoint.sh status --net` shows the journal as intended, nothing unsaved or not
-   uploaded in the handbook, every worktree clean and pushed (or its state named in "Now"), and no stray job.
-7. **Tell Utku** in plain words what was done, what is next, and that it is safe to start fresh.
+Configure the Git author to the person whose account is contributing. Write access to the fork is required for
+backups, branches and releases. A public read-only clone is enough for reading. Run the full verification and build
+both Apple app targets when changing app code. Build folders and logs belong under `~/Library/Caches/noop-handbook`.
 
 ## After an interruption
 
-A usage limit, a server error, a compaction of the conversation, a crash or a new session: the work may have stopped
-anywhere, and a summary of the conversation may be wrong. These pages and the tools, not recollection, say where it
-stands. In order:
+1. Run `checkpoint.sh status --net`. Read Now against the actual Git state, jobs, CI, PRs and release assets.
+2. Read every uncommitted code diff before touching it. Settle each open step with evidence: completed, pending or partly done.
+3. Never repeat a push, PR, comment, release or long-running job merely because the conversation summary is incomplete.
+4. Use `checkpoint.sh brief` for the local recovery brief. The event log is in ignored `private/events.log`.
+5. Resume from the next safe action. Chat history is a last resort, not the project record.
 
-1. **See what is true:** `bash dist/tools/checkpoint.sh status --net` — the open journal steps, unsaved or unuploaded
-   handbook changes, each worktree (branch, commit, pushed or not, uncommitted files, an unfinished rebase or merge,
-   leftover safety refs), jobs still running, the last events, fork CI, the build on the releases page, our PRs.
-2. **Settle each open step in "Now"** against that evidence (and `git log`, `gh pr list`, the release title): if it
-   happened, tick it with its result; if not, it is still to do; if it is half-done, finish or undo that one step.
-3. **Never repeat a public or outward step without evidence that it did not happen** — a push, a build, a PR, a
-   comment, anything in Utku's name. A job still running is waited on, not restarted.
-4. **Uncommitted code** in a worktree is read (`git diff`) before anything else touches that worktree.
-5. **Still unsure?** The AI tool's own session history is the last resort (Claude Code's: `WORKFLOW.md` §3). Otherwise
-   ask Utku.
-6. Continue from "Next safe action", updating "Now" as you go.
+## End a session
 
-## The rules that matter most
+1. Park safely. Wait for running work or name it in Now with its ID and how to check it.
+2. Move finished steps into History and make State true. Leave unfinished steps with clear evidence and the next action.
+3. Update any rules, workflow, backlog or feature contracts whose facts changed.
+4. Run `bash dist/tools/backup.sh "what changed"` to upload the handbook; it folds local checkpoints into one milestone.
+5. Run `bash dist/tools/checkpoint.sh status --net`: clean/pushed worktrees, saved/uploaded handbook and no stray jobs,
+   or explicitly record each exception in Now.
+6. Tell Utku what is ready, what remains and the next action. Say when it is safe to start a fresh chat.
 
-- **Offline, on-device, no invented numbers** (`AGENTS.md`). A figure is shown only when it was measured; an estimate
-  says so.
-- **Measure before and after.** No usage claim without a number (`RULES.md` 1, `WORKFLOW.md` §11).
-- **A physiological number changes only with evidence** that tracks a varying truth, never one matching night
-  (`RULES.md` 2).
-- **Swift and Kotlin move together**, byte-identical, proven by an oracle (`AGENTS.md`, `WORKFLOW.md` §4).
-- **Verify by running.** A test is seen to fail without its fix; the whole `verify.sh` loop passes; BLE behaviour is
-  proven on a real strap (`WORKFLOW.md` §3).
-- **Every change reaches Utku's phone** as a build on his releases page, and real use decides (`RULES.md` 12).
-- **The memory is written down.** Each step that matters goes into `STATE.md` "Now" before it happens (`WORKFLOW.md` §2).
-- **The fork stays exact** — a mirror `main`, a branch per open PR, the testing stack and build, this handbook — and
-  this branch is public: nothing personal, no unapproved drafts (`WORKFLOW.md` §8).
+## What makes a change worth shipping
+
+Correctness and data integrity come first. Reduce CPU, memory, rendering and radio cost while preserving results and
+freshness. Validate physiological changes against ground truth across varied recordings, not one matching night.
+Improve clarity and usability alongside those fixes. Clean up code when it removes real duplication or risk.
+Keep Swift/Kotlin analytics and stored data byte-identical, build both Apple targets, and test strap behaviour on
+hardware. App changes reach Utku as a verified testing release with "just update" or "wipe" and its build ID.
+Handbook-only changes need no app release. The detailed evidence and procedures live in Rules and Workflow.

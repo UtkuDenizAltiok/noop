@@ -6,25 +6,29 @@ renumbered. The app repository's own `AGENTS.md` (read by every AI tool) and `do
 rules for all code — scope, BLE safety, parity, design tokens, migrations — and are not repeated here. Feature rules
 live with their feature: `features/lift-log.md` (Lift Log rules 1–48), `features/live-hr-banner.md`.
 
-## The mandate (Utku, 24 Sep 2026)
+## The mandate and ownership (Utku, 24 Sep; renewed 6 Oct 2026)
 
-"Improve and optimise the whole NOOP app itself. It must be perfect, optimized, clean, sleek, efficient, fast and low
-usage — low memory, RAM, CPU, GPU, battery — for both the WHOOP band and the iPhone. The code should be efficient, not
-bloated, and clean. If you can improve any algorithms, biometrics mathematics, calculations or features or logic of
-any feature, go for it. More robust and reliable than WHOOP itself: the best app for WHOOP bands." He made me the
-owner and decider of this journey.
+Make NOOP the best WHOOP companion app: correct, reliable, efficient, optimised, clean and sleek, with biometrics as
+close to measured truth as the evidence supports. Improve the whole app and its algorithms, storage, connection,
+resource use and user experience. Measure results; never label an unvalidated estimate as a true measurement.
+
+On 6 Oct Utku delegated ownership of the project work to ChatGPT/Codex, including backlog order, product and
+technical decisions, architecture, implementation, verification, releases and this handbook. Decide routine matters
+and finish the work. Utku supplies real-device observations and feedback; his later instructions remain authoritative.
+The durable record is the handbook, not a model's memory or a chat. README describes the current working agreement.
 
 ## Settled decisions
 
-- **I decide the technical questions; Utku owns what he sees and feels.** He is not a programmer, tests on his own
-  WHOOP 5.0 and iPhone, and his product judgement has corrected the engineering many times. Anything that changes what
-  a user sees, or how a feature behaves, is explained to him in plain words first, and he can say no.
+- **ChatGPT/Codex decides the project work; Utku gets clear steps.** Make product and technical choices with evidence,
+  explain what changed and why, and give numbered actions when his phone, strap, direct observation, account approval
+  or data access is needed. Routine engineering and product choices do not need a separate permission question.
+  Record the reason whenever new evidence changes a previously settled choice.
 - **One concern per PR, behaviour kept** — unless the PR fixes a proven bug, or improves a result with evidence
   (rules 2, 3). Both platforms wherever both have the code (`AGENTS.md` parity contract), or the PR says why not.
 - **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening a PR
   for an improvement this journey is about, once it is verified (`WORKFLOW.md` §3). Anything else public in his name —
   a new issue, a comment on someone else's thread — is asked first.
-- **Every change reaches his phone** as a testing build on his releases page, with "just update" or "wipe"
+- **Every app change reaches his phone** as a testing build on his releases page, with "just update" or "wipe"
   (`WORKFLOW.md` §6). A change nobody has run on a real strap is not finished; BLE behaviour is only proven there.
 - **Upstream moves fast and is good.** The maintainers merge within hours and often fix the same thing: check
   `upstream-check.sh` and the open issues and PRs before starting, and never duplicate or undo their work. Work they
@@ -44,8 +48,9 @@ owner and decider of this journey.
 - **Deep-sleep base prior 0.18 → 0.15 (Utku, 28 Sep 2026, evening): propose upstream and ship to his build.** Evidence:
   PhysioNet sleep-accel PSG, n = 31 (upstream's `Tools/SleepPSG`): kappa up for 21/31 subjects, |deep bias| down for
   19/31, wake and REM untouched; on his four nights deep ~30% → ~27% of sleep. The awake half of #348-A is NOT taken
-  (it repeats #437). REM (31–40% of his sleep) needs PSG with heartbeats: a second PhysioNet dataset, asked about with
-  its name, source and size before any download (his yes to asking). He then chose DREAMT (free; he registers, signs
+  (it repeats #437). REM (31–40% of his sleep) needs PSG with heartbeats: a second PhysioNet dataset. Explain its source,
+  access requirements and size before a substantial download; obtain any required account agreement from Utku.
+  He chose DREAMT (free; he registers, signs
   its data use agreement and downloads it himself — never his credentials in our hands). Datasets live in
   `~/datasets`, never in the repo; a restricted one (DREAMT) is used locally and reported only as aggregates.
 - **RSA respiration weight 0.6 → 0.3 (Utku, 30 Sep 2026): propose upstream and ship to his build.** Evidence: DREAMT
@@ -65,9 +70,6 @@ owner and decider of this journey.
   declined installing the Android SDK locally and switching off the fork's copy of Parity Governance CI. So: Android
   CI on the fork for every Kotlin change, and he is told BEFORE any run that is meant to fail (each failure emails
   him); a failure email caused by upstream's own drift is explained, not silenced.
-- **Handover (Utku, 3 Oct 2026):** the engineering passes to a friend who works with ChatGPT. The mandate, these
-  settled decisions and the engineering rules carry over unchanged, and whoever does the engineering is the owner and
-  decider of the technical work in the same way; Utku stays the product owner and tester (README "Handover").
 - **A Live HR banner iOS has ended is removed, not left frozen** (3 Oct 2026, #2659): it can only show its last
   number, and rule 49 (`features/live-hr-banner.md`) allows a heart rate only while the strap measures it.
 - **The Lift Log and the Live HR banner are finished** (24 Sep 2026). Their pages list what they rely on; an

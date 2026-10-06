@@ -1,6 +1,0 @@
-- [NOOP project](noop-project.md) — journey 2 (24 Sep): make all of NOOP the best WHOOP app; handed to a friend with ChatGPT 3 Oct; the handbook in `dist/` is the truth.
-- [Working with Utku](noop-working-with-utku.md) — not a programmer; plain words; I decide tech, he owns what users see; tests as numbered steps + strap log.
-- [The handbook is mine](noop-handbook-is-mine.md) — journal steps in STATE.md "Now" first; after ANY interruption `dist/tools/checkpoint.sh status --net`; backup at milestones.
-- [Verify before claiming](noop-verify-before-claiming.md) — tests seen to fail, full `verify.sh`, usage measured, BLE proven on the strap, logs read to the second.
-- [Ship the build](noop-ship-the-build.md) — rebuild `testing-stack`, build iOS locally, `ship-build.sh testing-stack`; "just update" or "wipe" + id.
-- [PR communication](noop-pr-communication.md) — one reply after a GitHub comment; self-found changes edit the description; standing permission scope.

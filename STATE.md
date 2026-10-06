@@ -1,7 +1,8 @@
 # State
 
-**Updated 6 Oct 2026 — Mac environment restored and verified with Codex.** The 3 Oct handover and its rules still
-apply (README "Handover"). Journey 2: NOOP, perfected (`RULES.md` mandate). **24 PRs merged; open: #2613, #2660, #2661.**
+**Updated 6 Oct 2026 — ChatGPT/Codex owns project direction and execution.** Mac setup is restored and verified.
+The working agreement is in README and RULES; Journey 2 continues with its measured evidence and feature contracts.
+**24 PRs merged; open: #2613, #2660, #2661.**
 #2659 merged on 4 Oct. The fork's releases page still holds `3772b93` (all four original changes; assets checked 6 Oct).
 Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
 The only file that changes every session.
@@ -13,9 +14,10 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**No engineering work is in flight.** Mac restoration, repository reconciliation, quick baseline verification,
-app builds and fork CI are complete. All four code worktrees are clean and match the fork. No local build/test job
-is running; the simulator is shut down. No app improvement, PR reply or new staging release was made.
+**No engineering work is in flight.** ChatGPT/Codex ownership and the local/GitHub working arrangement are complete.
+The handbook is the single durable project memory; its AGENTS entry and four ignored local Codex entries are ready.
+Checkpoint/backup/installer checks passed. All four code worktrees are clean and match the fork; no local job is running.
+The simulator remains shut down. No application code, PR reply or staging release changed during this transition.
 
 - **Last ship (historical):** `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
   `6ce65730` + #2613 + #2659 + #2660 + #2661 (`testing-stack` `b6202262`).
@@ -42,12 +44,13 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
 
 1. Next app task: address the 4 Oct review on #2660 (fresh deletion must unhide its row, and recompute copy must not promise
    an old night was reprocessed), explain the two success messages, then resolve its catalogue conflict with current upstream.
-   Work in `~/Developer/noop-deleted-sleep`; verify before any push or reply. Restoration itself is complete.
-2. #2661 has a 4 Oct review asking for default OFF; the fork's settled choice is default ON. Explain that product decision
-   to Utku before changing it. #2613 has no review/comment. Reviews have been read, not answered in the setup task.
+   Work in `~/Developer/noop-deleted-sleep`; verify before any push or reply. Setup and the ownership transition are complete.
+2. Assess #2661's 4 Oct request for default OFF against the existing default ON, notification behaviour and user benefit.
+   ChatGPT/Codex decides the best behaviour, explains it to Utku and records the reason for any changed choice.
+   #2613 has no review/comment. Reviews have been read, not answered in the setup/ownership tasks.
 3. Once the PR work is verified, rebuild the stale testing stack on current upstream and ship. The existing release remains
    on GitHub; no new staging release was published during restoration. Then collect the pending phone checks/logs and
-   continue `BACKLOG.md` A–D.
+   choose the next investigation from `BACKLOG.md` by correctness risk, user impact and available evidence.
 
 Not done in session 4 (from the Saturday plan): `tools/his-nights/run.sh` on the 3 Oct backup (his nights at RSA 0.3).
 The backup copy was deleted; ask Utku for a fresh `.noopbak` when that is needed.
@@ -85,7 +88,8 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`): `verify/`, `builds/`, `his-nights/`, `dreamt/`
   (aggregates only), `*.out` run logs. All safe to delete. xcodegen rewrites `StrandiOS/Resources/Info.plist` (a
   `stalebattery` entry upstream's plist lacks): discard it, never commit it.
-- **Local only:** `dist/private/` restored for event logs, PR drafts, setup evidence and a temporary toolchain.
+- **Local only:** `dist/private/` holds event logs, PR drafts and setup evidence. The redundant bootstrap toolchain was removed
+  after Homebrew tools and the active GitHub credential helper were verified.
   Personal logs/backups and datasets were not recovered from Git. Before personal-data analysis, obtain a fresh `.noopbak`
   and the needed logs; never commit or upload them. The previous Mac had sleep-accel (2.2 GB) and DREAMT v2.2.0
   (14 GB, restricted); neither dataset is installed on this Mac and no restricted dataset was downloaded.
@@ -94,6 +98,13 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   Create fresh demo state before measuring; this simulator has not been seeded or paired with a strap.
 
 ## Verified — the latest numbers
+
+- **ChatGPT/Codex transition, 6 Oct:** mandate and product/technical decision authority recorded in README/RULES;
+  canonical handbook `AGENTS.md` added, and `codex-setup.sh` installed ignored local entries in all four code worktrees.
+  Seven redundant agent-memory files and their copy/hook interfaces were removed after retaining useful facts in the
+  handbook; Git history preserves them. Checkpoint/backup/installer sandbox passed 28 checks, shell syntax passed,
+  and the public diff and local README links were checked. Evidence: `private/codex-transition-tool-tests.log` and
+  `private/codex-transition-public.diff`. Upstream code and the previously verified app baseline are unchanged.
 
 - **Mac setup baseline, 6 Oct, clean `main` `9f98f811`:** `verify.sh --quick` passed every step on full Xcode:
   WhoopStore 632, StrandAnalytics 2135, StrandImport 327 (one existing skip), zero failures; doc lint, i18n, parity ledger,
@@ -147,7 +158,7 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 ## Next
 
 1. "Next safe action" above.
-2. `BACKLOG.md` in order (A: queued duplicate re-scores after #2646; B: cold passes; D: night start moved by later
-   data; C: wake/REM; 9: iOS deletion markers missing from the backup).
-3. Every change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
+2. Choose from `BACKLOG.md` by correctness risk, user impact and evidence: item 9 (backup deletion markers), A (queued
+   duplicate re-scores after #2646), B (cold passes), D (night start moved by later data), C (wake/REM).
+3. Every app change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
 4. At the end of every session: README "End a session".

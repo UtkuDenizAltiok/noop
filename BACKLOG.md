@@ -9,9 +9,16 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 **Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
 (item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **Mac setup is verified. First next:**
-address the 4 Oct review on #2660 and its catalogue conflict; then settle the default-OFF request on #2661 against
-Utku's existing default-ON choice. #2613 is still open with no comments. Then rebuild the stale testing stack, ship,
-and collect the phone checks named in `STATE.md` "Next" before A–D below. No app improvement was made during restoration.
+address the 4 Oct review on #2660 and its catalogue conflict; then assess the default-OFF request on #2661 against
+the existing default-ON choice and decide with evidence. #2613 is still open with no comments. Then rebuild the stale
+testing stack, ship,
+and collect the phone checks named in `STATE.md`. No app improvement was made during restoration.
+
+**Direction delegated to ChatGPT/Codex, 6 Oct:** choose the next investigation by correctness risk, user impact and
+available evidence. Fix silent wrong data and restore/data-loss hazards first (including item 9); make performance
+changes only after measurement; improve biometrics against varied ground-truth recordings; improve clarity and
+clean up code where it removes real duplication or risk. A–D retain their evidence and remain performance/science
+candidates, rather than an instruction to pursue them blindly. Record the chosen task and reason in `STATE.md`.
 
 A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
    CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1
@@ -98,7 +105,8 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    `BehaviorStore.didRecalibrateCharge`, `JournalCatalog.setSortIndex`, `SkinTempBackfillWalker.totalAttempted`,
    `HealthKitBridge.foregroundCatchUp`. Live elsewhere (not dead): `uploadTimer`, `captureRawAccel`,
    `clearEcgRawDataGate`, `clearKey`, `availableKeys`, `recalibrateChargeBaseline`. On Android only
-   (`cycleAwarenessHidden`, `numericJournalSeries`): likely iOS features without an entry point — ask before removing.
+   (`cycleAwarenessHidden`, `numericJournalSeries`): likely iOS features without an entry point — verify the intended
+   feature surface and preserve its behaviour before deciding whether to remove them.
    `periphery` (Homebrew) scans for unused Swift declarations.
 5b. **Next cleanup round:** Android's animated `LiquidSky` composable has no call site (only `LiquidSkyStatic` is
    used); `NavRouter.openTrends` / `openLiveSession` and `BehaviorStore.didRecalibrateCharge` were KEPT on purpose
