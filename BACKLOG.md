@@ -5,20 +5,14 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Top of the list (checked 6 Oct 2026)
+## Priority — 7 Oct 2026
 
-**Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
-(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **6 Oct:** #2660 review and catalogue
-conflict addressed, fully verified, pushed and replied to. #2661 now defaults OFF for unset preferences (explicit
-choices survive); full verification, simulator check and publication are complete. The current integration stack
-passed local iOS and fork Android/Swift CI; **`6de9d6d`**, base 12.0.0, shipped and its assets were verified. Next:
-collect the phone checks named in State and investigate deletion-marker backup/restore (item 9).
+Documentation/file organisation is complete; upstream #2717 is green and awaits merge. Phone checks live in
+[State](STATE.md). Next, investigate **item 9: deleted-sleep markers missing from fresh backup restores**. It risks silently
+wrong data and needs no personal dataset. Then choose from A/B/D/C using new logs or ground truth, not remembered
+results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
 
-**Direction delegated to ChatGPT/Codex, 6 Oct:** choose the next investigation by correctness risk, user impact and
-available evidence. Fix silent wrong data and restore/data-loss hazards first (including item 9); make performance
-changes only after measurement; improve biometrics against varied ground-truth recordings; improve clarity and
-clean up code where it removes real duplication or risk. A–D retain their evidence and remain performance/science
-candidates, rather than an instruction to pursue them blindly. Record the chosen task and reason in `STATE.md`.
+## Performance and science evidence
 
 A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
    CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1
@@ -73,21 +67,6 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
-0. **Utku said YES (1 Oct) — BUILT 3 Oct** (`ios-sync-reminder`, `ios-deleted-sleep`; PRs in `STATE.md`). The specs
-   below are what was built; phone checks still open: swipe NOOP away and see the reminder ~3 h later; delete a
-   night, then bring it back from the list.
-   (a) **Silent swiped-away reminder (iOS only).** After every completed sync (and on each app-state change) replace one
-   pending local notification (fixed identifier) due 3 h later, `interruptionLevel = .passive`, no sound: "NOOP hasn't
-   synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, **off by
-   default since 6 Oct** (a prior battery-alert permission grant is not consent to this new reminder). A pure policy
-   (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
-   simulator proof that the request is pending and replaced (log one line when it is first armed, Test Centre for the
-   rest); on the phone, swipe NOOP away and see it ~3 h later. Android needs none (foreground service) — say so.
-   (b) **iOS deleted-sleep list (#65/#515 parity).** `Repository.dismissedSleepManagementWindows()` +
-   `allowSleepReDetection` exist with no screen. Mirror Android's card (`AppViewModel.recomputeDeletedSleep` /
-   the hide action, `SleepScreen`): each deleted night "d MMM, HH:mm–HH:mm" with bring back (lift the tombstone, then
-   re-score) and hide; reuse Android's #515 strings and translations for all locales. Simulator walkthrough: delete a
-   demo night, wait past the undo, bring it back.
 1. **A score reviewed against the literature, one per session** — recovery, strain, HRV (RMSSD windowing, artefact
    rejection), resting HR, respiration, SpO2. Read `StrandAnalytics` for it, its tests and open issues, compare with
    published methods, propose only what evidence supports (`RULES.md` 2); test against truth where a dataset exists.
@@ -105,7 +84,7 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    `NavRouter.openTrends`/`openLiveSession`,
    `BiofeedbackPrefs.clearLockedPace`/`useResonancePace`, `SleepView.napMaxHours`, `BatteryGuidedCapture.currentStatus`,
    `CoachBriefScheduler.widgetBriefText`/`widgetBriefDate`, `AICoach.aiCoachPrivacyNote`, `Profile.avatarImage`,
-   `Repository.hasAnyHistory`/`dismissedSleepManagementWindows`/`allowSleepReDetection`,
+   `Repository.hasAnyHistory`,
    `BehaviorStore.didRecalibrateCharge`, `JournalCatalog.setSortIndex`, `SkinTempBackfillWalker.totalAttempted`,
    `HealthKitBridge.foregroundCatchUp`. Live elsewhere (not dead): `uploadTimer`, `captureRawAccel`,
    `clearEcgRawDataGate`, `clearKey`, `availableKeys`, `recalibrateChargeBaseline`. On Android only
@@ -146,7 +125,9 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 - **#2384** — Android live HR stops updating on a 5.0/MG. **#2270** — Android OutOfMemoryError in
   `LiquidRender.wavePolygon`. Android; no device here.
 
-## Done or dropped
+## Completed or rejected — do not repeat
+
+These are historical findings; the release and active PRs live in State.
 
 - **#2371, the WHOOP 5 500 ms R-R filler** — #2569 merged 28 Sep (HR < 100 from his backup; 873 rows marked).
 - **The Liquid Today animation** — #2444 merged 27 Sep (Today by day 6.7 + 22.6 → 0.00 + 0.11 CPU-s/min).

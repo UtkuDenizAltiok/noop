@@ -6,29 +6,23 @@ renumbered. The app repository's own `AGENTS.md` (read by every AI tool) and `do
 rules for all code — scope, BLE safety, parity, design tokens, migrations — and are not repeated here. Feature rules
 live with their feature: `features/lift-log.md` (Lift Log rules 1–48), `features/live-hr-banner.md`.
 
-## The mandate and ownership (Utku, 24 Sep; renewed 6 Oct 2026)
+## Authority and communication
 
-Make NOOP the best WHOOP companion app: correct, reliable, efficient, optimised, clean and sleek, with biometrics as
-close to measured truth as the evidence supports. Improve the whole app and its algorithms, storage, connection,
-resource use and user experience. Measure results; never label an unvalidated estimate as a true measurement.
+Utku delegates project ownership to ChatGPT/Codex (6–7 Oct 2026): priorities, product/technical choices,
+implementation, verification, cleanup, documentation, releases and the full PR lifecycle. Decide routine matters and
+finish the work. Prioritise correctness/data integrity, efficiency with unchanged results, evidence-backed biometrics
+and clear design. The handbook is the durable memory; Utku's later instructions prevail.
 
-On 6 Oct Utku delegated ownership of the project work to ChatGPT/Codex, including backlog order, product and
-technical decisions, architecture, implementation, verification, releases and this handbook. Decide routine matters
-and finish the work. Utku supplies real-device observations and feedback; his later instructions remain authoritative.
-The durable record is the handbook, not a model's memory or a chat. README describes the current working agreement.
+Explain plainly and end every final response with one to three simple numbered next steps. If no action is needed,
+say so and name the next work. Request phone/strap evidence, account approval or data access only when needed.
+Record the reason when a settled decision changes. Upstream maintainers decide what they merge.
 
 ## Settled decisions
 
-- **ChatGPT/Codex decides the project work; Utku gets clear steps.** Make product and technical choices with evidence,
-  explain what changed and why, and end every final response with one to three simple numbered next steps. If no
-  action is needed from him, say so and identify what comes next. Request his phone, strap, direct observation,
-  account approval or data access only when needed. Routine engineering and product choices need no separate
-  permission question.
-  Record the reason whenever new evidence changes a previously settled choice.
 - **One concern per PR, behaviour kept** — unless the PR fixes a proven bug, or improves a result with evidence
   (rules 2, 3). Both platforms wherever both have the code (`AGENTS.md` parity contract), or the PR says why not.
-- **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening a PR
-  for an improvement this journey is about, once it is verified (`WORKFLOW.md` §3). Anything else public in his name —
+- **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening relevant verified PRs
+  and their complete review/fix cycle (explicitly renewed 7 Oct) (`WORKFLOW.md` §3). Anything else public in his name —
   a new issue, a comment on someone else's thread — is asked first.
 - **Every app change reaches his phone** as a testing build on his releases page, with "just update" or "wipe and reinstall from zero"
   (`WORKFLOW.md` §6). A change nobody has run on a real strap is not finished; BLE behaviour is only proven there.

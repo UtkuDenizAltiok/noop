@@ -113,7 +113,7 @@ brief() {  # what a new or compacted session must read first
   echo "NOOP — recovery brief. From dist/, the durable record: trust it over any summary"
   echo "or recollection of this conversation. An unticked step below may or may not have happened: find its evidence"
   echo "(git, CI, the releases page, gh pr list) before redoing it; never repeat a push, build, PR or comment without it."
-  echo "Procedure: dist/README.md \"After an interruption\". Full check: bash dist/tools/checkpoint.sh status --net"
+  echo "Procedure: dist/SESSIONS.md \"After an interruption\". Full check: bash dist/tools/checkpoint.sh status --net"
   echo
   echo "STATE.md \"Now\":"
   journal | sed 's/^/  /'

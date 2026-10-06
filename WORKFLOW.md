@@ -6,73 +6,17 @@ and each explains itself in its first lines.
 
 ## 1. Working with Utku
 
-ChatGPT/Codex owns project execution and makes the product and technical decisions under `RULES.md`'s mandate.
-Utku Deniz Altiok (GitHub `UtkuDenizAltiok`) uses a WHOOP 5.0 and an iPhone, installs builds with AltStore, and does
-not need to read code or use the terminal. Explain changes and findings in plain language, decide routine matters,
-and carry each task through. His real-device observations and later instructions take precedence over assumptions.
-When new evidence changes a settled decision, record why; do not automatically defer to a reviewer or repeat an old choice.
+Authority and standing permissions live in [Rules](RULES.md). Utku uses a WHOOP 5.0 and iPhone, installs via AltStore
+and does not need code or terminal chores. Give one to three direct steps for needed observations; state the expected
+result and end phone tests with a strap log: More → App → Test Centre → Strap log → Save….
 
-- **Every final response ends with simple next steps for Utku:** one to three short numbered actions, with the
-  expected result when he is checking something. Say "No action needed" when appropriate, followed by what comes next.
-  Avoid invented chores, repeated setup and unnecessary test requests.
-- **Finishing an app change means shipping a build** (§6) and telling him **"just update"** or **"wipe"** in one line,
-  with the 7-character id that ends the release title. Never ship a broken build.
-- **Public steps** follow `RULES.md` (standing permission): replies and pushes on our PRs, and a PR for this journey's
-  work once verified; a new issue or a comment on someone else's thread is asked first.
-- **Ask him for evidence, step by step.** A test he runs is written as numbered steps with what he should see, and
-  ends with the strap log (More → Test Centre → Strap log → Save…). Ask him to note the times of what he saw: the log
-  proves what NOOP did, only his eyes prove what iOS drew.
-- **Write a test step only from what was seen working** (in the simulator or the code path), never from a guess about
-  the UI. On 24 Sep three of my steps were wrong and cost him time: a ring tap gives no vibration on his phone, Today
-  has no pull-to-sync (syncs are automatic), and the night stars are too faint to see (≤ ~10% opacity by design).
-- **He reads the evidence himself.** When his reading of a file differs from yours, re-read it completely, then
-  show him line numbers and a search he can repeat. Say plainly what a log can and cannot show.
-- **Project cleanup is delegated.** Remove redundant project documentation and tooling after retaining useful facts;
-  Git history is the recovery record. Personal health data, backups and unrelated files are outside routine cleanup.
-  Preserve Utku's own comments.
+Use UI paths proven in code or the simulator. A log proves app activity, not what iOS drew; ask what he actually saw.
+Do not request a day-by-day wear/activity record. Preserve his comments and personal files during cleanup.
 
 ## 2. Session routine and continuity
 
-- **Start:** the local Codex entry → handbook `AGENTS.md` and README → `STATE.md` ("Now" first) → `RULES.md` →
-  `bash dist/tools/checkpoint.sh status --net` (README "After an interruption" when "Now" has open steps) → `bash dist/tools/upstream-check.sh`.
-- **Prompts:** the two canonical copy-and-paste prompts are in README "Your two default session prompts".
-- **End:** README "End a session". Close at a safe milestone while enough room remains; keep checkpoints current so
-  an abrupt limit can be recovered by the start prompt. A requested stop triggers handover, not new app work.
-
-A session can stop anywhere, without an end (a usage limit, a server error, a compaction); the conversation is not a
-store.
-- **Journal first.** Before a step that is long (a build, a verify, CI), public (a push, a release, a PR, a comment) or
-  hard to undo (a rebase, a force-push, a migration), write it in `STATE.md` "Now" with what will prove it happened
-  (branch and commit, run id, PR number); tick it with its result when it ends. Record a PR's number or a run's id the
-  moment it exists. "Now" also carries what was asked, decisions not yet in `RULES.md`, "Do not redo", and "Next safe
-  action".
-- **Save often, upload at milestones.** `checkpoint.sh save "what"` commits the handbook locally, without uploading.
-  `backup.sh "what"` uploads after a milestone that took real work; it folds the local checkpoints into one commit.
-- **Evidence is written down, not remembered.** `verify.sh`, `ship-build.sh` and `backup.sh` each add a line to
-  `dist/private/events.log`; a verification's numbers go into `STATE.md`. Nothing needed later lives only in a scratch
-  folder or `$TMPDIR`: harnesses go to `tools/`, drafts to `private/`.
-- **Background jobs** are named in "Now" with how to check them; never started twice. A loop that waits for a job must
-  wait for the words the tool really prints last: `verify.sh` ends with `logs: …` then `all steps passed` or the
-  failed steps; `ship-build.sh` ends with `shipped <id> …` or a `FAILED` event. A loop waiting for any other word
-  never ends (3 Oct: one waited for "verified" after the ship had succeeded).
-- **"Continue" after an interruption is an instruction:** status, settle "Now", finish its open steps, report.
-- **One project memory:** the handbook. Codex loads the local entry file installed by `codex-setup.sh`; the entry
-  requires reading upstream's AGENTS and this handbook. Re-run the installer after adding worktrees. Use checkpoint
-  and backup explicitly; do not depend on hooks or copy notes from another agent's memory folder.
-- **Failed saves are failures.** `checkpoint.sh save` returns an error while Git is busy, on the wrong branch, or
-  when the commit fails. Resolve that cause before treating a milestone as saved.
-- **Unattended Mac work (Utku, 6 Oct):** recommend power connected and lid open. Codex Settings (`Cmd+,`) → General
-  → **Prevent sleep while running** keeps local tasks awake. For native UI checks, macOS Lock Screen → **Turn display
-  off on power adapter when inactive** → Never, with automatic screen saver disabled, avoids idle locking without
-  removing the password policy. Closed-lid work requires Apple's supported external-display setup. Do not claim
-  settings were applied merely because advice was given; our UI tool blocks controlling Codex itself.
-  Sources: [Codex settings](https://learn.chatgpt.com/docs/reference/settings),
-  [Mac sleep settings](https://support.apple.com/en-euro/guide/mac-help/mchle41a6ccd/mac),
-  [closed-lid accessories](https://support.apple.com/en-us/102282).
-- **Context visible in every session:** Codex Settings → General → **Show context window usage** is an app preference
-  confirmed in the installed app. `/status` reports chat context usage and rate limits separately
-  ([official commands](https://learn.chatgpt.com/docs/reference/slash-commands)). This does not replace milestone
-  checkpoints or handover; never invent remaining context numbers.
+[Sessions](SESSIONS.md) owns prompts, start/end procedures, recovery, checkpoints and Mac setup. Keep current work in
+[State](STATE.md); do not duplicate it here. Handbook maintenance is in §10.
 
 ## 3. Verification
 
@@ -117,9 +61,8 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
   The simulator's `cfprefsd` caches them: terminate the app, edit, then kill the cache (`kill $(xcrun simctl spawn
   <dev> launchctl list | awk '/cfprefsd.xpc.daemon/{print $1}')`) before launching, or the app reads old values
   (3 Oct). The app writes its own defaults to disk lazily: wait a few seconds before reading them back.
-- **The iOS Simulator tool's taps do not flip SwiftUI `Toggle`s** (3 Oct: new and long-standing switches alike; rows,
-  buttons and tabs work). Prove a switch's effect through its other triggers, or a temporary launch argument in an
-  uncommitted build, restored byte-identical (sha256) afterwards.
+- **If simulator controls do not flip a SwiftUI toggle**, prove its effect through another trigger or a temporary
+  launch argument, then restore the source byte-identical (sha256). The 3 Oct simulator tool had this limitation.
 - **A throwaway harness build** (fixed values, launch arguments, `NSLog("NOOPH …")` lines read with `simctl spawn
   <dev> log show --predicate 'eventMessage CONTAINS "NOOPH"'`) is how the Live Activity facts in
   `features/live-hr-banner.md` §6.0 were proven: a detached worktree, never committed, deleted after.
@@ -139,7 +82,7 @@ app targets. For a worktree: `NOOP_REPO=<worktree> bash dist/tools/verify.sh`. A
 
 ### Reading a strap log
 
-Utku saves it from More → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and device
+Utku saves it from More → App → Test Centre → Strap log → Save… and attaches the `.txt`. It holds personal health and device
 data: read it locally, quote only what a finding needs, never commit it — this handbook is public.
 
 - `python3 dist/tools/hr-timeline.py <log> [--from HH:MM:SS] [--to HH:MM:SS]` — the live heart rate, readings and
@@ -198,8 +141,9 @@ Android is an independent reimplementation; analytics and stored data must be by
 ## 6. Builds for Utku's phone
 
 The fork's testing pipeline has three layers:
-- **`testing-stack`** — every open PR of ours on top of `upstream/main`, never itself a PR. Rebuilt from scratch after
-  any merge or change: `git worktree add -b <tmp> <scratch> upstream/main`, cherry-pick each open PR (a PR whose
+- **`testing-stack`** — every open app PR of ours on top of `upstream/main`, never itself a PR. Documentation-only
+  branches need no app rebuild/release unless they change build or validation inputs. Rebuild after an app merge or
+  change: `git worktree add -b <tmp> <scratch> upstream/main`, cherry-pick each app PR (a PR whose
   commits conflict one by one goes in as its NET diff, one commit), check `git diff --stat upstream/main` lists only
   our files, **build it for iOS locally** (a failed CI build leaves the release EMPTY), then force-push with a pinned
   lease. Then point the LOCAL branch at it too (`git branch -f testing-stack <tmp>`): `ship-build.sh` refuses to start
@@ -243,8 +187,8 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 - **The fork holds exactly:** `main` (mirror of `upstream/main`), one branch per open PR, `testing-stack`,
   `testing-build`, `handbook`; tags `fork/ships-template` and `testing-latest` (plus upstream's version tags); one
   release, `testing-latest`. Nothing else. A merged PR's branch is deleted once the squash is proven equal (§5).
-- **Each open PR has its own worktree** beside the app repo (`~/Developer/noop-<name>`); `~/Developer/noop` stays on
-  `main`; `~/Developer/noop/dist` is this handbook. Run `bash ~/Developer/noop/dist/tools/codex-setup.sh` after adding
+- **Each open PR has its own worktree**, either a sibling checkout or a Codex-managed worktree (see State);
+  `~/Developer/noop` stays on `main`; `~/Developer/noop/dist` is this handbook. Run `bash ~/Developer/noop/dist/tools/codex-setup.sh` after adding
   code worktrees; their local instruction entries stay ignored through the shared Git exclude file.
 - **Force-push only with a pinned lease** read by `git rev-parse origin/<branch>` — never a typed SHA.
 - **Never start a branch by copying files from another branch** (it once silently reverted two upstream commits): take
@@ -258,10 +202,9 @@ git push origin upstream/main:refs/heads/main         # keep the fork's main a m
 
 ## 9. Conventions and traps
 
-- **Never keep tool output in `$TMPDIR/noop-*`.** The macOS app (unsandboxed in tests and in the ad-hoc build) runs
-  `AppModel.purgeImportTemp()` at every launch, which deletes every `noop-*` item older than 60 s in the shared temp
-  folder: on 24 Sep a macOS test run deleted a running verify's logs and derived data, and a measurement build.
-  `verify.sh` works in `~/Library/Caches/noop-handbook/`; do the same for builds and logs.
+- **Builds, logs and measurements belong in `~/Library/Caches/noop-handbook/`.** Retain evidence; completed
+  DerivedData can be deleted and regenerated. The old shared-temp deletion bug was fixed upstream in #2453, but a
+  stable project cache keeps active jobs and recovery evidence together.
 
 - **Design tokens only** (`StrandPalette`, `StrandFont`, `NoopMetrics`; Android `Palette`/`Metrics`); warnings use
   `statusWarning`. A disabled `.noopPrimary` button does not dim itself: add `.opacity(… disabledOpacity)`.

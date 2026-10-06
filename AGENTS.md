@@ -1,29 +1,21 @@
-# NOOP handbook — ChatGPT/Codex
+# NOOP handbook — agent entry
 
-Utku delegated NOOP project ownership and decisions to ChatGPT/Codex on 6 October 2026. Own the priorities,
-product and technical choices, implementation, verification, releases and this handbook. Decide routine matters
-and carry the work to completion. Explain decisions and results in plain language. End every final response with
-one to three simple numbered next steps for Utku. When nothing is needed from him, say "No action needed" and name
-what comes next. Request his phone/strap, account approval, data access or direct observation only when needed.
-His later instructions prevail.
-
-The mission is to make NOOP the best WHOOP companion app: correct, reliable, efficient, optimised, clean and sleek,
-with biometrics as close to measured truth as the evidence supports. Never claim accuracy or lower usage without
-appropriate validation. Follow the app checkout's upstream AGENTS.md and contributing guide.
+Utku delegates NOOP project decisions and execution to ChatGPT/Codex (6–7 Oct 2026): priorities, product and technical
+choices, implementation, verification, cleanup, releases and the full PR lifecycle. Decide routine matters and finish
+the work. Explain plainly; end every final response with one to three simple numbered next steps. If no action is
+needed, say so and name what comes next. Request phone/strap evidence, account approval or data access only when needed.
+Utku's later instructions prevail. Scope and engineering rules come from the app checkout's `AGENTS.md` and contributing guide.
 
 At every session start or interruption:
 
-1. Read README.md, STATE.md (Now first), RULES.md, WORKFLOW.md and BACKLOG.md in this handbook.
-2. Run `tools/checkpoint.sh status --net` and `tools/upstream-check.sh`; reconcile every open journal step against evidence.
-3. Choose the next task from STATE and current evidence, unless Utku supplied a different task. Write long/public/hard-to-undo
-   steps in STATE before acting. Save checkpoints after milestones; finish with README's end-of-session procedure.
-4. Use README's canonical start/end prompts. Prepare the handover early when closing or approaching a known limit;
-   after a sudden cutoff, reconcile actual state before resuming. Preserve unfinished work and report failed uploads.
+1. Follow [SESSIONS.md](SESSIONS.md), the single home for start/end prompts, recovery and setup.
+2. Read [STATE.md](STATE.md) (Now first), [RULES.md](RULES.md), [WORKFLOW.md](WORKFLOW.md) and [BACKLOG.md](BACKLOG.md).
+   [README.md](README.md) maps the files. Read relevant feature contracts before changing them.
+3. Run `tools/checkpoint.sh status --net` and `tools/upstream-check.sh`. Reconcile unfinished actions before repeating them.
+4. Choose the next task from State and current evidence unless Utku supplied one. Journal long/public/hard-to-undo steps
+   before acting, checkpoint milestones and follow the session end procedure.
 
-The handbook on branch `handbook` is the project memory. Maintain it locally and on GitHub; avoid duplicate agent memories
-or reliance on chat history. Keep private health data, datasets, PR drafts and raw logs in ignored private locations.
-Only verified app changes enter PRs and testing releases. No app release is needed for handbook-only changes.
-
-Code worktrees have a local AGENTS.override.md installed by tools/codex-setup.sh. It points here and requires reading
-upstream AGENTS.md too. Run the installer after creating any new code worktree. Main stays an exact upstream mirror;
-fork-specific instructions and tools live on handbook, with one code worktree per open PR.
+This public `handbook` branch is the durable project memory. Keep active facts in State, completed results in History,
+private data/datasets/raw logs/drafts in ignored local storage, and fork instructions out of app commits. No duplicate
+agent memory. Main stays an upstream mirror; use one worktree per PR and re-run `tools/codex-setup.sh` after adding one.
+Only verified changes enter PRs and testing releases. Documentation-only work needs no app release.
