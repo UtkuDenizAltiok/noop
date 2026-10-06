@@ -59,7 +59,7 @@ final class BehaviorStore: ObservableObject {
 
     // MARK: Sync reminder (iOS)
     /// A silent notification when NOOP has not synced the strap for three hours (`SyncReminderPolicy`). Default
-    /// ON: it never shows while NOOP syncs, and without notification permission it never shows at all.
+    /// OFF: permission granted for another alert does not opt the user into this new automation.
     @Published var syncReminder: Bool { didSet { d.set(syncReminder, forKey: K.syncReminder) } }
 
     private let d = UserDefaults.standard
@@ -108,7 +108,7 @@ final class BehaviorStore: ObservableObject {
         batteryAlerts = d.object(forKey: K.batteryAlerts) as? Bool ?? true
         batteryPredictiveAlerts = d.object(forKey: K.batteryPredictiveAlerts) as? Bool ?? true
         strainTargetNudge = d.object(forKey: K.strainTargetNudge) as? Bool ?? false
-        syncReminder = d.object(forKey: K.syncReminder) as? Bool ?? true
+        syncReminder = d.object(forKey: K.syncReminder) as? Bool ?? false
     }
 
     // MARK: Charge baseline recalibration

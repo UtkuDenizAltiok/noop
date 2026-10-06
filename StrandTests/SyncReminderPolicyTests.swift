@@ -26,4 +26,24 @@ final class SyncReminderPolicyTests: XCTestCase {
         XCTAssertNil(SyncReminderPolicy.fireDate(enabled: false, lastSyncedAt: synced, now: now))
         XCTAssertNil(SyncReminderPolicy.fireDate(enabled: true, lastSyncedAt: nil, now: now))
     }
+
+    /// Existing notification permission is not consent to a new automation; only a saved ON opts in.
+    @MainActor
+    func testReminderIsOptInAndPreservesSavedChoices() {
+        let defaults = UserDefaults.standard
+        let key = "behavior.syncReminder"
+        let saved = defaults.object(forKey: key)
+        defer {
+            if let saved { defaults.set(saved, forKey: key) }
+            else { defaults.removeObject(forKey: key) }
+        }
+        defaults.removeObject(forKey: key)
+        let fresh = BehaviorStore()
+        XCTAssertFalse(fresh.syncReminder)
+        XCTAssertNil(defaults.object(forKey: key), "Reading the default must not save a user choice")
+        fresh.syncReminder = true
+        XCTAssertTrue(BehaviorStore().syncReminder, "A user's saved ON survives relaunch/update")
+        fresh.syncReminder = false
+        XCTAssertFalse(BehaviorStore().syncReminder, "A user's saved OFF survives relaunch/update")
+    }
 }
