@@ -13,7 +13,7 @@ echo "upstream/main $(git rev-parse --short upstream/main)"
   || echo "fork main $(git rev-parse --short origin/main) is not a mirror: git push origin upstream/main:refs/heads/main (WORKFLOW.md §7)"
 
 check_branch() {  # check_branch <branch>: upstream commits touching the files it changes; clean merge or not
-  local b=$1 base files
+  local b=$1 base files merge_output merge_rc=0
   base=$(git merge-base "origin/$b" upstream/main)
   echo "== $b sits on $(git rev-parse --short "$base"), $(git rev-list --count "$base"..upstream/main) commit(s) behind"
   files=$(git diff --name-only "$base" "origin/$b")
@@ -21,11 +21,15 @@ check_branch() {  # check_branch <branch>: upstream commits touching the files i
     # shellcheck disable=SC2086
     git log --format='  %h %ad %an: %s' --date=short "$base"..upstream/main -- $files
   fi
-  if git merge-tree --write-tree "origin/$b" upstream/main >/dev/null 2>&1; then
+  merge_output=$(git merge-tree --write-tree --name-only "origin/$b" upstream/main 2>&1) || merge_rc=$?
+  if [ "$merge_rc" = 0 ]; then
     echo "  merges cleanly into upstream/main"
-  else
+  elif [ "$merge_rc" = 1 ]; then
     echo "  CONFLICTS with upstream/main in:"
-    git merge-tree --write-tree --name-only "origin/$b" upstream/main | sed -n '2,/^$/p' | sed 's/^/    /'
+    printf '%s\n' "$merge_output" | sed -n '2,/^$/p' | sed 's/^/    /'
+  else
+    printf '%s\n' "$merge_output" >&2
+    return "$merge_rc"
   fi
 }
 
@@ -33,7 +37,7 @@ if [ -n "${1:-}" ]; then
   check_branch "$1"
 else
   echo "== upstream commits the fork's main does not have yet:"
-  git log --format='  %h %ad %an: %s' --date=short origin/main..upstream/main | head -30
+  git log -n 30 --format='  %h %ad %an: %s' --date=short origin/main..upstream/main
   # Every branch of ours that is an open upstream PR.
   for b in $(gh pr list --repo ryanbr/noop --author UtkuDenizAltiok --state open --json headRefName --jq '.[].headRefName'); do
     git rev-parse -q --verify "origin/$b" >/dev/null && check_branch "$b"

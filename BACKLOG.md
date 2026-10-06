@@ -8,7 +8,7 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 ## Top of the list (checked 6 Oct 2026)
 
 **Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
-(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **First next, after Mac setup verification:**
+(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **Mac setup is verified. First next:**
 address the 4 Oct review on #2660 and its catalogue conflict; then settle the default-OFF request on #2661 against
 Utku's existing default-ON choice. #2613 is still open with no comments. Then rebuild the stale testing stack, ship,
 and collect the phone checks named in `STATE.md` "Next" before A–D below. No app improvement was made during restoration.

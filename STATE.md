@@ -1,6 +1,6 @@
 # State
 
-**Updated 6 Oct 2026 — Mac environment restoration with Codex in progress.** The 3 Oct handover and its rules still
+**Updated 6 Oct 2026 — Mac environment restored and verified with Codex.** The 3 Oct handover and its rules still
 apply (README "Handover"). Journey 2: NOOP, perfected (`RULES.md` mandate). **24 PRs merged; open: #2613, #2660, #2661.**
 #2659 merged on 4 Oct. The fork's releases page still holds `3772b93` (all four original changes; assets checked 6 Oct).
 Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
@@ -13,35 +13,18 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-- **Environment restoration in progress, 6 Oct 2026 (Codex).** Scope: restore and verify this Mac before app changes.
-- [x] Read the handbook and app `AGENTS.md`; cloned the fork at `~/Developer/noop` and checked out `handbook` at `dist/`.
-- [x] Restore developer tools: Command Line Tools 27.0, Xcode 27.0 (`27A266a`, license accepted by the user),
-  Homebrew 7.0.8, XcodeGen 2.46.0, GitHub CLI 2.102.0 and Python 3.12.15. Xcode's first-launch check passed.
-- [ ] Download/install the iOS Simulator runtime: `xcodebuild -downloadPlatform iOS -architectureVariant arm64`.
-  Check `xcrun simctl list runtimes`, create an iPhone simulator if needed, and confirm it boots. Log: `private/restoration-ios-runtime.log`.
-- [x] GitHub CLI 2.102.0 authenticated as `UtkuDenizAltiok` in the macOS keychain. Repository-local Git author restored
-  from existing handbook commits: `Utku Deniz Altiok`, GitHub noreply email.
-- [x] REST/Git evidence: #2659 merged at `a6f1fe08`; both squash-parent merge-tree and current-main merge-tree match
-  the destination trees exactly. Three PRs remain open (#2613, #2660, #2661); their worktrees are restored.
-  #2660 conflicts only in `Localizable.xcstrings`; #2613 and #2661 merge cleanly. #2646 also merged; backlog A can be rechecked later.
-- [ ] After baseline/access checks, fast-forward the fork's `main` to `upstream/main` `9f98f811`; verify the remote SHA.
-  Archive the merged #2659 branch in a private Git bundle before retiring its fork branch; no app improvement or ship in this task.
-- [ ] Run `checkpoint.sh status --net`, `upstream-check.sh`, write-access dry run, and `verify.sh --quick` on clean current `main`.
-  Initial quick verification ended: three Swift suites could not find `XCTest` under the Command Line Tools; during the
-  Xcode installation Git-based ratchet/governance stopped at the license gate. Doc lint, i18n and ledger passed.
-  Initial logs are preserved in `~/Library/Caches/noop-handbook/baseline-clt-9f98f811/`.
-  Re-run quick verification on full Xcode now (one run at a time), then confirm generated-project/app-target readiness.
-  New run log: `~/Library/Caches/noop-handbook/baseline-xcode-9f98f811.out`.
-  Initial status lacked GitHub auth; branch-specific upstream-check subsequently passed and recorded the current reviews.
-- [ ] After quick verification ends, generate the Xcode project and compile `Strand` (macOS) and `NOOPiOS`
-  (generic iOS Simulator) with signing disabled. Logs/derived data: `~/Library/Caches/noop-handbook/restoration-app-builds/`.
-  Preserve any generated-plist difference for evidence, then restore tracked files and confirm clean code worktrees.
-- [ ] Settle this journal, save and upload the handbook when access is confirmed, and report readiness and the next task.
+**No engineering work is in flight.** Mac restoration, repository reconciliation, quick baseline verification,
+app builds and fork CI are complete. All four code worktrees are clean and match the fork. No local build/test job
+is running; the simulator is shut down. No app improvement, PR reply or new staging release was made.
 
 - **Last ship (historical):** `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
   `6ce65730` + #2613 + #2659 + #2660 + #2661 (`testing-stack` `b6202262`).
 
-Waits on Utku (ask him for the strap log after each, More → Test Centre → Strap log → Save…):
+## Phone — pending checks from the 3 Oct handover
+
+These are historical waits, not unfinished Mac setup. The current phone install and these results remain unconfirmed.
+Ask Utku for the strap log after each (More → Test Centre → Strap log → Save…):
+
 - [ ] **Just update to `3772b93`** (told 3 Oct ~19:45). No wipe: nothing stored changes shape.
 - [ ] **Silent sync reminder** (#2661): More → Automations → "Sync reminder" is on. Swipe NOOP away; about 3 hours
   later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
@@ -55,15 +38,16 @@ Waits on Utku (ask him for the strap log after each, More → Test Centre → St
   (WRIST_OFF, app runs), never ask him to log them. Judge a staging change by re-staging the SAME night with old and
   new code (`tools/his-nights/`), never night against night; recovery/HRV dips these days are real.
 
-**Next safe action, in order:**
-1. Complete the environment-restoration checklist above. This task authorizes setup and verification only; no PR reply,
-   app improvement, testing-stack rewrite or ship is in progress.
-2. Next app task: address the 4 Oct review on #2660 (fresh deletion must unhide its row, and recompute copy must not promise
-   an old night was reprocessed), then resolve its catalogue conflict with current upstream. Verify before any push or reply.
-3. #2661 has a 4 Oct review asking for default OFF; the fork's settled choice is default ON. Explain that product decision
-   to Utku before changing it. #2613 has no review/comment. Reviews have been read, not answered in this setup task.
-4. Once the PR work is verified, rebuild the stale testing stack on current upstream and ship. The current release stays usable;
-   no new build was made during restoration. Then collect the pending phone checks/logs and continue `BACKLOG.md` A–D.
+## Next safe action, in order
+
+1. Next app task: address the 4 Oct review on #2660 (fresh deletion must unhide its row, and recompute copy must not promise
+   an old night was reprocessed), explain the two success messages, then resolve its catalogue conflict with current upstream.
+   Work in `~/Developer/noop-deleted-sleep`; verify before any push or reply. Restoration itself is complete.
+2. #2661 has a 4 Oct review asking for default OFF; the fork's settled choice is default ON. Explain that product decision
+   to Utku before changing it. #2613 has no review/comment. Reviews have been read, not answered in the setup task.
+3. Once the PR work is verified, rebuild the stale testing stack on current upstream and ship. The existing release remains
+   on GitHub; no new staging release was published during restoration. Then collect the pending phone checks/logs and
+   continue `BACKLOG.md` A–D.
 
 Not done in session 4 (from the Saturday plan): `tools/his-nights/run.sh` on the 3 Oct backup (his nights at RSA 0.3).
 The backup copy was deleted; ask Utku for a fresh `.noopbak` when that is needed.
@@ -89,9 +73,9 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 
 ## The fork, exactly
 
-- **Branches:** local `main` is current `upstream/main` `9f98f811`; fork `main` is still `6ce65730` until the journaled
-  fast-forward. `handbook` (this), `dreamt-psg`, `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR).
-  Fork `live-hr-ended` is proven merged and queued for retirement; private archive bundle already verified.
+- **Branches:** local/fork `main` are exact mirrors of current `upstream/main` `9f98f811` (6 Oct).
+  `handbook` (this), `dreamt-psg`, `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR).
+  Fork `live-hr-ended` is proven merged and retired; private archive bundle verified (no banner worktree was recreated).
   `testing-stack` `b6202262` and `testing-build` `3772b938` were restored unchanged. They are the 3 Oct stack/build
   on `6ce65730`, including the now-merged #2659, and need rebuilding after the next verified PR work.
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
@@ -105,9 +89,32 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   Personal logs/backups and datasets were not recovered from Git. Before personal-data analysis, obtain a fresh `.noopbak`
   and the needed logs; never commit or upload them. The previous Mac had sleep-accel (2.2 GB) and DREAMT v2.2.0
   (14 GB, restricted); neither dataset is installed on this Mac and no restricted dataset was downloaded.
-  The previous simulator `281E44EC` and its seeded app state are not restored here. Create fresh demo state before measuring.
+  The previous simulator `281E44EC` and its seeded app state were not recovered. A fresh `NOOP iPhone 17 Pro`
+  (`DCAA8034-6801-4D1F-8FD9-B42B2F424B6F`, iOS 27.0) booted successfully and is parked shut down.
+  Create fresh demo state before measuring; this simulator has not been seeded or paired with a strap.
 
 ## Verified — the latest numbers
+
+- **Mac setup baseline, 6 Oct, clean `main` `9f98f811`:** `verify.sh --quick` passed every step on full Xcode:
+  WhoopStore 632, StrandAnalytics 2135, StrandImport 327 (one existing skip), zero failures; doc lint, i18n, parity ledger,
+  ratchet and 127 governance tests passed. Logs: `~/Library/Caches/noop-handbook/verify/9f98f811/` and
+  `baseline-xcode-9f98f811.out`. Initial Command Line Tools/Xcode-license failures are archived in
+  `baseline-clt-9f98f811/`; they were resolved before the successful rerun.
+- **App readiness, 6 Oct:** XcodeGen generated the project; `Strand` macOS and `NOOPiOS` generic iOS Simulator builds
+  both passed with signing disabled. Logs: `~/Library/Caches/noop-handbook/restoration-app-builds/{mac,ios}.log`.
+  The generated Info.plist difference was saved there and the tracked file restored. Hosted macOS `StrandTests`,
+  phone/strap behaviour and a signed device build were not run in this setup task.
+- **Tools and access, 6 Oct:** Xcode 27.0 (`27A266a`, first-launch check passed), Command Line Tools 27.0, Homebrew 7.0.8,
+  XcodeGen 2.46.0, GitHub CLI 2.102.0, Python 3.12.15. iOS 27.0 runtime `24A434` installed and a simulator boot/display
+  check passed. `gh auth status` confirmed `UtkuDenizAltiok` using the macOS keychain; fork ADMIN, upstream READ;
+  fork push dry run succeeded. Repository-local author matches the existing handbook author. Claude-only steps skipped.
+- **Fork CI, 6 Oct, mirror `9f98f811`:** all six workflows completed successfully: Android 37453629687,
+  Swift Packages 37453629659 (all 12 jobs), Source Hygiene 37453629646, Parity Governance 37453629632,
+  Tools Python 37453629593 and i18n 37453629544. Android validation remains in CI; no local Android SDK is needed.
+- **Session checks, 6 Oct:** `checkpoint.sh status --net` confirmed clean, pushed code worktrees and no stray job.
+  `upstream-check.sh` completed across all three PRs and current reviews after a small handbook-tool repair: handle
+  merge-tree's expected conflict exit status, and use `git log -n 30` to avoid a `pipefail` exit through `head`.
+  Bash syntax and the live run passed. The #2660 translation catalogue conflict is outstanding app work, not a setup failure.
 
 - **Background re-scoring on his phone** (strap logs 29–30 Sep, build `769113c0`): 41 passes / 243 CPU-s in 16.5 h and
   54 / 308 in 17.5 h (27–28 Sep before the spacing: 113 / 900 in 16.6 h). A backgrounded pass ~8 s CPU (median), a
