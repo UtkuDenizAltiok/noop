@@ -7,9 +7,11 @@ Updated **7 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 No agent work in flight. Documentation cleanup is complete; #2717 is published and all three expected upstream
 checks passed. All four PRs are clean, pushed, mergeable and green; existing owner concerns are answered once.
 Handbook consolidation, link/render/recovery checks and generated-cache cleanup are complete (History). No running
-build/watch remains. Phone checks are pending, not failed; current app release stays `6de9d6d`.
+NOOP build/watch remains. Phone checks are pending, not failed; current app release stays `6de9d6d`.
 Handover prepared 7 Oct after fresh Git/GitHub reconciliation: no new concerns or blockers. All PR worktrees and
 ignored private files retained; closure snapshots: `private/session-close-2026-10-07/`.
+Final status sees an unrelated `gh run watch 37535033948` in `~/Developer/jobcu` (PID 16348 at closure);
+leave it alone. It is not unfinished NOOP work. Check ownership with `lsof -a -p <pid> -d cwd` if it appears again.
 
 ## Phone
 
