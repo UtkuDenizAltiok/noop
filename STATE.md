@@ -3,7 +3,7 @@
 **Updated 6 Oct 2026 — ChatGPT/Codex owns project direction and execution.** Mac setup is restored and verified.
 The working agreement is in README and RULES; Journey 2 continues with its measured evidence and feature contracts.
 **24 PRs merged; open: #2613, #2660, #2661.**
-#2659 merged on 4 Oct. The fork's releases page still holds `3772b93` (all four original changes; assets checked 6 Oct).
+#2659 merged on 4 Oct. Testing pipeline `37471192603` is replacing the old `3772b93` release with `6de9d6d` (base 12.0.0); assets are not yet verified. Do not call the new release ready until the recorded ship succeeds.
 Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
 Keep the current state concise; completed milestones belong in `HISTORY.md`.
 
@@ -13,28 +13,15 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**Active task: finish #2660's review fixes and ship a current testing build.** Startup reconciled clean code
-worktrees, open PRs and the unchanged release `3772b93`; no interrupted engineering step needs repeating.
-The short `xcodebuild -sdk` process seen by status was a tool probe, not a retained build.
+**Active task: ship the verified review fixes on current upstream.** #2660 `e9ee598e` and #2661 `7f9fc7aa` are fully verified, published and replied to once. Their completed work is in History and the PR/verification records below. No interrupted action needs repeating.
 
-- [x] Rebase `ios-deleted-sleep` (`3869d0b2`) onto current `upstream/main` `9f98f811`, using a local safety tag and
-  `xcmerge.py` for the catalogue; completed as `6f8d4c22`, net diff remains the original five files/ten keys.
-- [x] Fix fresh-delete unhide and replace recompute's unconditional claim with wording that states the marker was
-  cleared and explains the 21-day/raw-data limits. The actual Repository test reproduced both standing and cap-evicted hidden entries: 5 tests, 4 expected assertions failed on the old code; log `deleted-sleep-review/regression-before.log`. Copy updated in all ten locales.
-- [x] Committed fix `e9ee598e`; run full `verify.sh` alone with `NOOP_REPO=~/Developer/noop-deleted-sleep`; restore generated plist.
-  Mac suite green: 2,272 tests, two existing skips, zero failures (the old locale exceptions did not fail on this Mac). Package tests 632/2,135/327, import skip 1, all lint/i18n/parity gates and 127 governance tests green. iOS build passed; full run completed, all steps passed at `e9ee598e`. Compiler extraction and all ten built macOS/iOS locales contain both new keys. Simulator: old 50-day marker clears with truthful note; real fresh delete over an orphan hidden token is visible after undo expires, hidden token gone; Hide retains the marker. Evidence screenshot `deleted-sleep-review/fresh-delete.png`.
-- [x] Publish verified #2660 head `e9ee598e` with pinned lease, edit its description from `private/pr-deleted-sleep-body.md`, and reply once to the 4 Oct review. Remote head/body/reply verified; reply `issuecomment-6016821944`. PR is mergeable; all six upstream checks succeeded on the new head. Safety tag deleted after the push was verified.
-- [x] Address #2661 default: choose OFF for an unset preference, preserve explicit ON/OFF, pin with a test seen
-  to fail: 4 tests, the unset-default assertion fails on the original ON fallback (`sync-reminder-review/regression-before.log`). Fix committed as `7f9fc7aa`; full verification completed: packages 632/2135/327 (import skip 1), all gates and governance 127, macOS 2,271 (two skips, zero failures), iOS build passed. App launched in the seeded simulator with its reminder preference unset; Mac unlocked and native UI confirmed the unset reminder OFF with the three-hour/no-sound copy. Screenshot `sync-reminder-review/default-off.png`. Published with pinned lease; description and exactly one reply verified (`issuecomment-6017174678`); safety tag removed.
-- [ ] Prepare the local stack in cache `builds/review-stack`, temporary branch `codex/testing-stack-review`,
-  from current upstream plus `dreamt-psg`, verified #2660 and the committed #2661 fix. Prepared as `a5168502` on `9f98f811`; all six PR commits cherry-picked cleanly and net diff is exactly 23 PR files. Combined local iOS build passed (exec 52669, `builds/review-stack-ios.log`); generated plist will be restored. After #2661 publication and a fresh upstream/PR reconciliation, pinned-lease push the stack, point local `testing-stack` at it and dispatch Android and Swift Packages CI once for this exact head. Record run IDs, require all expected jobs green, then use `ship-build.sh` and verify assets. Record branch/commit/run IDs as they exist. Save/upload handbook and confirm final status.
+- [x] Prepare stack `a5168502` on `9f98f811`: all six commits from the three open PRs, exactly 23 changed files; local combined iOS build passed (`builds/review-stack-ios.log`), generated plist restored. Pinned-lease pushed; local and remote `testing-stack` match. Old stack safety tag removed after remote verification.
+- [x] Require exact-head CI success at `a5168502`: Android `37470127956` (one job) and Swift Packages `37470132381` (11 jobs: eight packages, three tools). Both completed successfully; expected job names/counts and zero non-success verified against saved JSON. Do not dispatch duplicates. Current workflow/source and the earlier baseline run both confirm 11 jobs; the old 12-job note was a count error, now corrected.
+- [ ] Run `bash dist/tools/ship-build.sh testing-stack` started once: local exec `35316`, workflow `37471192603`, build `6de9d6dcea57ff2d7ea656279583255378452834` on stack `a5168502`. Pinned-lease push verified; local/remote build match, safety tag removed. Event log records this run; reconcile run, event log and release assets after any interruption instead of repeating the ship. Verify exact release target, all five uploaded assets and IPA HTTP 200. Temporary stack worktree/branch already removed cleanly after its head was retained by local/remote `testing-stack`; logs remain in cache. Upload handbook and run final status.
 
-**Decision:** address both review findings; keep the normal 21-day analysis window, since extending a single
-recompute to scan years of history is disproportionate. Describe what actually succeeded instead.
-**Reminder decision (6 Oct):** unset defaults OFF. Existing battery-alert permission is not consent to a new
-recurring sync reminder. Preserve every explicitly saved preference; Utku can enable it in Automations. This
-supersedes the earlier default-ON choice and meets upstream's opt-in automation contract.
-**Next safe action:** push and test the current combined stack `a5168502`. #2661 `7f9fc7aa` is published/replied; its fresh simulator screen is confirmed OFF. Combined iOS build passed at `a5168502`. #2660 is complete with all six upstream checks green; do not repeat its reply. Fresh upstream/PR check still shows base `9f98f811` and all three PRs open. Use local safety tags before the two testing branch rewrites; dispatch each CI workflow once, record exact-head run IDs, then ship after green. The premature #2660 run at `eebb4550` was stopped before app tests after a copy-script formatting assertion; only the successful `e9ee598e` run is verification.
+**Decisions:** keep recompute's normal 21-day analysis window and report marker clearing accurately. Reminder unset default is OFF; prior battery-alert permission does not opt users into a new recurring reminder, and explicit ON/OFF choices survive. No new physiological tuning: personal datasets are absent; only the already-verified #2613 change is carried forward.
+
+**Next safe action:** wait for existing ship exec `35316` / workflow `37471192603` at `6de9d6dc`; do not dispatch another build. Both exact-head stack CI rosters succeeded. Fresh upstream remains `9f98f811`, both reviewed PR heads remain open/unchanged. Temporary integration worktree/branch removed; `testing-stack` retains `a5168502` and its build logs remain in cache. #2660 has six green upstream checks; #2661 has six registered checks, with both Apple builds still running at last check. Base still `9f98f811`; all three PRs open. The premature #2660 verification at `eebb4550` was stopped before app tests after a copy-script assertion; only successful `e9ee598e` counts.
 
 ## Phone — pending checks from the 3 Oct handover
 
@@ -56,12 +43,8 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
 
 ## Next safe action, in order
 
-1. Finish #2661's default-OFF revision at `7f9fc7aa`: full verification, simulator check, pinned-lease push and one
-   review reply. #2660 is now verified, pushed, replied to and mergeable; upstream CI is running.
-2. Rebuild the testing stack from current upstream and the remaining PRs, check its iOS build locally and its
-   Android/Swift package tests in fork CI, then ship and verify release assets.
-3. Collect the pending phone checks/logs and choose the next investigation by correctness risk, user impact and
-   evidence. Backup deletion markers (item 9) remain a data-integrity candidate; personal datasets are absent.
+1. Finish the recorded integration CI and ship/verify the current stack. Both review revisions are already published; do not repeat comments or rebases.
+2. Collect the pending phone checks/logs, then choose by correctness risk, user impact and evidence. Backup deletion markers (backlog item 9) remain a data-integrity candidate; personal datasets are absent.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -87,11 +70,10 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 - **Branches:** local/fork `main` are exact mirrors of current `upstream/main` `9f98f811` (6 Oct).
   `handbook` (this), `dreamt-psg`, `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR).
   Fork `live-hr-ended` is proven merged and retired; private archive bundle verified (no banner worktree was recreated).
-  `testing-stack` `b6202262` and `testing-build` `3772b938` were restored unchanged. They are the 3 Oct stack/build
-  on `6ce65730`, including the now-merged #2659, and need rebuilding after the next verified PR work.
+  `testing-stack` is now `a5168502`, current upstream `9f98f811` plus the three open PRs. `testing-build` is now `6de9d6dc` (stack plus template); local and remote verified equal, rewrite safety tag removed.
 - **Last staging release:** `3772b93`, run 37136378349 (3 Oct), based on upstream `6ce65730` plus the four original
   changes (#2613, #2659, #2660, #2661) via `testing-stack` `b6202262`. IPA/template verified on the release page on 3 Oct;
-  original assets checked again on 6 Oct. No new staging release was published by the setup or handbook work.
+  original assets checked again on 6 Oct. Active run `37471192603` is now replacing it with base 12.0.0 / `6de9d6d`; the new assets are unverified until the recorded ship finishes.
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
   only on the previous Mac: `backup/handbook-pre-scrub` (not present here; never push it).
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per PR branch:
@@ -105,10 +87,12 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   and the needed logs; never commit or upload them. The previous Mac had sleep-accel (2.2 GB) and DREAMT v2.2.0
   (14 GB, restricted); neither dataset is installed on this Mac and no restricted dataset was downloaded.
   The previous simulator `281E44EC` and its seeded app state were not recovered. A fresh `NOOP iPhone 17 Pro`
-  (`DCAA8034-6801-4D1F-8FD9-B42B2F424B6F`, iOS 27.0) booted successfully and is parked shut down.
-  Create fresh demo state before measuring; this simulator has not been seeded or paired with a strap.
+  (`DCAA8034-6801-4D1F-8FD9-B42B2F424B6F`, iOS 27.0) now has 120 days of synthetic demo data. Fresh delete/recompute/hide and default-OFF reminder walkthroughs passed; no real strap paired. Simulator is parked shut down after the walkthroughs.
 
 ## Verified — the latest numbers
+
+- **Review fixes, 6 Oct, based on `9f98f811`:** full `verify.sh` passed at #2660 `e9ee598e` and #2661 `7f9fc7aa`: packages 632/2,135/327 (one import skip), all lint/i18n/parity gates and 127 governance tests, Mac 2,272/2,271 respectively (two existing skips, zero failures), both iOS builds. Generated plists restored; logs in cache `verify/<head>/` and `<feature>-review/verify.out`.
+  #2660 actual Repository regression: five targeted tests, four expected assertions failed on old code, then passed. Both revised strings extracted by compiler and present in all ten built locales. Fresh simulator proved old marker clearing, a real fresh delete visible over an orphan hidden token, and Hide persistence after relaunch; synthetic data has no raw stream, so regeneration is not claimed. #2661 four targeted tests: old fallback fails the unset-default assertion, fix passes and saved ON/OFF persist. Native fresh screen shows OFF with the existing three-hour/no-sound copy. Notification delivery remains a phone check.
 
 - **Session continuity, 6 Oct:** two canonical start/end prompts saved in README; every final response ends with
   one to three simple numbered next steps, or "No action needed" plus what comes next. Recovery uses saved state and
@@ -137,12 +121,12 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   check passed. `gh auth status` confirmed `UtkuDenizAltiok` using the macOS keychain; fork ADMIN, upstream READ;
   fork push dry run succeeded. Repository-local author matches the existing handbook author. Claude-only steps skipped.
 - **Fork CI, 6 Oct, mirror `9f98f811`:** all six workflows completed successfully: Android 37453629687,
-  Swift Packages 37453629659 (all 12 jobs), Source Hygiene 37453629646, Parity Governance 37453629632,
+  Swift Packages 37453629659 (all 11 jobs), Source Hygiene 37453629646, Parity Governance 37453629632,
   Tools Python 37453629593 and i18n 37453629544. Android validation remains in CI; no local Android SDK is needed.
 - **Session checks, 6 Oct:** `checkpoint.sh status --net` confirmed clean, pushed code worktrees and no stray job.
   `upstream-check.sh` completed across all three PRs and current reviews after a small handbook-tool repair: handle
   merge-tree's expected conflict exit status, and use `git log -n 30` to avoid a `pipefail` exit through `head`.
-  Bash syntax and the live run passed. The #2660 translation catalogue conflict is outstanding app work, not a setup failure.
+  Bash syntax and the live run passed. The #2660 translation catalogue conflict was app work and is now resolved in its verified rebase.
 
 - **Background re-scoring on his phone** (strap logs 29–30 Sep, build `769113c0`): 41 passes / 243 CPU-s in 16.5 h and
   54 / 308 in 17.5 h (27–28 Sep before the spacing: 113 / 900 in 16.6 h). A backgrounded pass ~8 s CPU (median), a
@@ -179,3 +163,4 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
    duplicate re-scores after #2646), B (cold passes), D (night start moved by later data), C (wake/REM).
 3. Every app change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
 4. At the end of every session: README "End a session".
+
