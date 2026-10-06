@@ -10,8 +10,9 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 **Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
 (item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **6 Oct:** #2660 review and catalogue
 conflict addressed, fully verified, pushed and replied to. #2661 now defaults OFF for unset preferences (explicit
-choices survive); full verification, simulator check and publication are complete. Next: verify the current integration
-stack in fork CI, ship, and collect the phone checks named in State.
+choices survive); full verification, simulator check and publication are complete. The current integration stack
+passed local iOS and fork Android/Swift CI; **`6de9d6d`**, base 12.0.0, shipped and its assets were verified. Next:
+collect the phone checks named in State and investigate deletion-marker backup/restore (item 9).
 
 **Direction delegated to ChatGPT/Codex, 6 Oct:** choose the next investigation by correctness risk, user impact and
 available evidence. Fix silent wrong data and restore/data-loss hazards first (including item 9); make performance
@@ -31,9 +32,11 @@ A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a
    when that pass ends, re-runs as a full `trigger=forced` pass with neither `skipIfUnchanged` nor the 30-min spacing
    (`IntelligenceEngine.analyzeRecent`'s `defer` re-arm; `RescoreBackgroundPolicy.decide` exempts `passInProgress`
    from spacing, #1681). Five such pairs on 2–3 Oct, ~40 CPU-s. Upstream PR #2646 (kavemang, merged 4 Oct at `f46671f6`) rewrites
-   that very block: recheck the finding on current upstream before considering routing the re-arm through `RescoreBackgroundScheduler.run` when
+   that very block: recheck the finding on current upstream before considering routing the re-arm through
+   `RescoreBackgroundScheduler.run` when
    backgrounded (debt recorded, settled by the next offload past the spacing). Live HR flushes move the
-   fingerprint every minute, so `newData=yes` nearly always and `skipIfUnchanged` alone would not help. Disk writes 193–201 MB a day (MetricKit 26 and 29
+   fingerprint every minute, so `newData=yes` nearly always and `skipIfUnchanged` alone would not help. Disk writes
+   193–201 MB a day (MetricKit 26 and 29
    Sep) for a few MB of new rows: find what writes (strap log rewrites? WAL checkpoints?) before guessing.
 B. **Cold passes: midnight and relaunches** (29–30 Sep logs; 3 Oct: the 23:25 background relaunch cost 58.5 s, its
    queued twin another 34.4 s cold again — `configDropped(sleepConsistency)` after the first pass changed it — and
@@ -41,7 +44,8 @@ B. **Cold passes: midnight and relaunches** (29–30 Sep logs; 3 Oct: the 23:25 
    53 s elapsed, backgrounded): the day rollover seems to invalidate every cached night; find which key moves (the
    window, a baseline, the day index) — the same scores, cheaper, is the aim. iOS's relaunch at 03:01 cost a cold
    pass of 20 s CPU with the background assertion EXPIRED mid-pass (iOS was about to suspend it). Two foreground
-   relaunches cost ~5 s each. **A relaunch costs a cold pass.** iOS relaunches NOOP in the background after it ends (his swipes, mostly: asked
+   relaunches cost ~5 s each. **A relaunch costs a cold pass.** iOS relaunches NOOP in the background after it ends
+   (his swipes, mostly: asked
    28 Sep); the per-day reuse cache is in memory (`IntelligenceEngine.dayScanCache`), so the first pass re-scores every
    night (sim, his data: 4.4 vs 1.2 s CPU warm). Persisting that cache with its config signature would make a relaunch
    warm with the same scores (upstream named it the remaining lever in #1538). Worth it only if his logs show many
@@ -75,7 +79,8 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    (a) **Silent swiped-away reminder (iOS only).** After every completed sync (and on each app-state change) replace one
    pending local notification (fixed identifier) due 3 h later, `interruptionLevel = .passive`, no sound: "NOOP hasn't
    synced your strap for 3 hours. Open NOOP to resume." Only if notifications are authorised; a Settings switch, **off by
-   default since 6 Oct** (a prior battery-alert permission grant is not consent to this new reminder). A pure policy (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
+   default since 6 Oct** (a prior battery-alert permission grant is not consent to this new reminder). A pure policy
+   (fire time from the last sync; skipped while the switch is off) with a test seen to fail;
    simulator proof that the request is pending and replaced (log one line when it is first armed, Test Centre for the
    rest); on the phone, swipe NOOP away and see it ~3 h later. Android needs none (foreground service) — say so.
    (b) **iOS deleted-sleep list (#65/#515 parity).** `Repository.dismissedSleepManagementWindows()` +
@@ -123,8 +128,12 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 9. **iOS deletion markers are not in the `.noopbak` backup** (found 3 Oct): Android's `dismissedSleep` rows travel in
    its database; iOS keeps `sleep.dismissedSessions` (and now `…hiddenFromList`) in the defaults, outside
-   `BackupSettings`. A restore on iOS brings deleted nights back. Fix needs the byte-identical whitelist contract
-   (`AGENTS.md`): ask the maintainers how they want it first.
+   `BackupSettings`. A restore onto fresh iOS defaults can therefore let those nights be detected again;
+   existing-device restores may retain their local markers. **Rechecked on `9f98f811`, 6 Oct:** `Repository` still
+   writes the spans to defaults, `BackupSettings.whitelist` omits them, and `DataBackup.currentSettingsJSON` only
+   bridges custom journal names beyond that snapshot. First reproduce export/restore with synthetic markers and fresh
+   defaults; choose a portable representation against Android's database and the byte-identical backup contract
+   (`AGENTS.md`), then discuss the storage approach with maintainers before implementation.
 10. **Android's Polish and Portuguese deleted-sleep strings** use the computer sense of "sleep" ("uśpienie",
     "suspensão"; one pt line keeps "sleep" in English); iOS has the corrected ones since `ios-deleted-sleep`. A small
     Android strings PR.

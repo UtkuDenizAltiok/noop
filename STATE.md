@@ -3,7 +3,7 @@
 **Updated 6 Oct 2026 — ChatGPT/Codex owns project direction and execution.** Mac setup is restored and verified.
 The working agreement is in README and RULES; Journey 2 continues with its measured evidence and feature contracts.
 **24 PRs merged; open: #2613, #2660, #2661.**
-#2659 merged on 4 Oct. Testing pipeline `37471192603` is replacing the old `3772b93` release with `6de9d6d` (base 12.0.0); assets are not yet verified. Do not call the new release ready until the recorded ship succeeds.
+#2659 merged on 4 Oct. Latest testing release **`6de9d6d`**, base **12.0.0**, run **37471192603** (6 Oct): exact release/tag target, all five uploaded assets and IPA HTTP 200 verified. Release notes describe the current changes and opt-in reminder.
 Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
 Keep the current state concise; completed milestones belong in `HISTORY.md`.
 
@@ -13,27 +13,29 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**Active task: ship the verified review fixes on current upstream.** #2660 `e9ee598e` and #2661 `7f9fc7aa` are fully verified, published and replied to once. Their completed work is in History and the PR/verification records below. No interrupted action needs repeating.
+No work in flight. Both review revisions, their single replies, the integration tests and ship are reconciled
+complete. `6de9d6d` is verified; ship exec `35316` exited successfully. All code worktrees are clean and pushed;
+temporary integration worktree/branch and rewrite safety tags are removed. The synthetic simulator is shut down.
+Completed details are in History and the records below.
 
-- [x] Prepare stack `a5168502` on `9f98f811`: all six commits from the three open PRs, exactly 23 changed files; local combined iOS build passed (`builds/review-stack-ios.log`), generated plist restored. Pinned-lease pushed; local and remote `testing-stack` match. Old stack safety tag removed after remote verification.
-- [x] Require exact-head CI success at `a5168502`: Android `37470127956` (one job) and Swift Packages `37470132381` (11 jobs: eight packages, three tools). Both completed successfully; expected job names/counts and zero non-success verified against saved JSON. Do not dispatch duplicates. Current workflow/source and the earlier baseline run both confirm 11 jobs; the old 12-job note was a count error, now corrected.
-- [ ] Run `bash dist/tools/ship-build.sh testing-stack` started once: local exec `35316`, workflow `37471192603`, build `6de9d6dcea57ff2d7ea656279583255378452834` on stack `a5168502`. Pinned-lease push verified; local/remote build match, safety tag removed. Event log records this run; reconcile run, event log and release assets after any interruption instead of repeating the ship. Verify exact release target, all five uploaded assets and IPA HTTP 200. Temporary stack worktree/branch already removed cleanly after its head was retained by local/remote `testing-stack`; logs remain in cache. Upload handbook and run final status.
+**Settled decisions:** recompute keeps the normal 21-day analysis window and reports marker clearing accurately. The
+reminder's unset default is OFF; earlier battery-alert permission does not opt users into a new recurring reminder,
+and saved ON/OFF choices survive. No new physiological tuning: only the already-verified #2613 change is carried
+forward.
 
-**Decisions:** keep recompute's normal 21-day analysis window and report marker clearing accurately. Reminder unset default is OFF; prior battery-alert permission does not opt users into a new recurring reminder, and explicit ON/OFF choices survive. No new physiological tuning: personal datasets are absent; only the already-verified #2613 change is carried forward.
+## Phone — pending checks for the current testing release
 
-**Next safe action:** wait for existing ship exec `35316` / workflow `37471192603` at `6de9d6dc`; do not dispatch another build. Both exact-head stack CI rosters succeeded. Fresh upstream remains `9f98f811`, both reviewed PR heads remain open/unchanged. Temporary integration worktree/branch removed; `testing-stack` retains `a5168502` and its build logs remain in cache. #2660 has six green upstream checks; #2661 has six registered checks, with both Apple builds still running at last check. Base still `9f98f811`; all three PRs open. The premature #2660 verification at `eebb4550` was stopped before app tests after a copy-script assertion; only successful `e9ee598e` counts.
+Mac verification and shipping are complete. The current phone install and these real-device results remain unconfirmed.
+Ask Utku for the strap log after each (More → App → Test Centre → Strap log → Save…):
 
-## Phone — pending checks from the 3 Oct handover
-
-These are historical waits, not unfinished Mac setup. The current phone install and these results remain unconfirmed.
-Ask Utku for the strap log after each (More → Test Centre → Strap log → Save…):
-
-- [ ] **Just update to `3772b93`** (told 3 Oct ~19:45). No wipe: nothing stored changes shape.
-- [ ] **Silent sync reminder** (#2661): More → Automations → turn "Sync reminder" on (unset default is now OFF). Swipe NOOP away; about 3 hours
+- [ ] **Just update to `6de9d6d`** through AltStore over the existing NOOP Staging app. Keep the app and its data; no wipe is needed.
+- [ ] **Silent sync reminder** (#2661): More → App → Automations → turn "Remind me when syncing stops" on (unset
+  default is now OFF). Swipe NOOP away; about 3 hours
   later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
   shows, check Settings → Notifications → NOOP Staging is allowed. The log line: "Sync reminder: armed for …".
 - [ ] **Deleted-sleep list** (#2660): Sleep → edit a night → Delete; after the undo strip goes, a "Deleted sleep
-  windows" card lists it; "Recompute this night" clears its marker (recent nights return only if raw data supports them), "Hide" removes the row only.
+  windows" card lists it; "Recompute this night" clears its marker (recent nights return only if raw data supports
+  them), "Hide" removes the row only.
 - [ ] **Banner** (#2659): when NOOP has not been opened for 8 hours (overnight), after opening it only ONE banner
   should be on the Lock Screen; the log then shows "Live HR banner: ended by iOS" and "removed one iOS had ended".
 - **Context (Utku, 30 Sep–1 Oct):** his nights are atypical for a while, no training; he sometimes takes the band off
@@ -43,21 +45,33 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
 
 ## Next safe action, in order
 
-1. Finish the recorded integration CI and ship/verify the current stack. Both review revisions are already published; do not repeat comments or rebases.
-2. Collect the pending phone checks/logs, then choose by correctness risk, user impact and evidence. Backup deletion markers (backlog item 9) remain a data-integrity candidate; personal datasets are absent.
+1. Collect the pending phone checks/logs when available; update the verified install and observations from evidence.
+  No Mac/CI/ship action needs repeating.
+2. Investigate backup deletion markers (backlog item 9): omission rechecked on `9f98f811` in
+  Repository/BackupSettings/DataBackup. Reproduce export/restore with synthetic markers and fresh defaults, inspect
+  Android's representation and current PRs, then choose a portable storage approach and discuss it with maintainers
+  before implementation. This is a correctness priority and needs no personal dataset.
+3. Resume performance or biometric investigations only when the needed phone logs/backup or ground-truth datasets are
+  available; do not tune from remembered aggregates.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open (checked 6 Oct on `upstream/main` `9f98f811`; fork-PR CI approval is separate from mergeability):
+Open (final check 6 Oct on `upstream/main` `9f98f811`; both reviewed heads have all six upstream checks green):
 - **#2613** `dreamt-psg` `7b638413` + `ca008aba` — `Tools/SleepPSG` reads DREAMT (section 8), then `respWeight`
-  0.6 → 0.3 (61/28 subjects). Android CI 36712653602 green. Body `private/pr-rsa-weight-body.md`.
+  0.6 → 0.3 (61/28 subjects). Android CI 36712653602 green. Its base is 85 commits behind but it merges cleanly; the
+  current stack compiled/tested its code and tool. Body `private/pr-rsa-weight-body.md`.
 - **#2660** `ios-deleted-sleep` `e9ee598e` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
-  Body restored from GitHub in `private/pr-deleted-sleep-body.md`. Rebased onto `9f98f811`; catalogue conflict resolved by key, all upstream entries preserved.
+  Current body saved in `private/pr-deleted-sleep-body.md`. Rebased onto `9f98f811`; catalogue conflict resolved by
+  key, all upstream entries preserved.
   Review addressed 6 Oct: fresh delete unhides its row; recompute reports marker cleared and names the 21-day scan;
-  two success notes explained. Full local verification + simulator passed; pushed/replied once. All six upstream checks passed.
+  two success notes explained. Full local verification + simulator passed; pushed/replied once
+  ([reply](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944)). All six upstream checks passed.
 - **#2661** `ios-sync-reminder` `7f9fc7aa` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
-  Body restored from GitHub in `private/pr-sync-reminder-body.md`. Merges cleanly. Review 4 Oct asks for default OFF;
-  unset default changed to OFF after assessing existing battery-alert permission; explicit saved choices remain. Full local verification and fresh simulator OFF check passed; pushed and replied once. Upstream checks are starting. #2613 also merges cleanly and has no review/comment.
+  Current body saved in `private/pr-sync-reminder-body.md`. Merges cleanly. Review 4 Oct asks for default OFF;
+  unset default changed to OFF after assessing existing battery-alert permission; explicit saved choices remain. Full
+  local verification and fresh simulator OFF check passed; pushed and replied once
+  ([reply](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678)). All six upstream checks passed on the
+  published head. #2613 also merges cleanly and has no review/comment.
 Merged (24): #2659 (4 Oct, `a6f1fe08`; squash and current-main merge-tree proofs are exact),
 #2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
 #2480), #2420, #2422, #2437 (via #2481), #2444, #2612, #2617, #2618, #2619. Issue #2446 fixed upstream in #2453. The
@@ -70,14 +84,22 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 - **Branches:** local/fork `main` are exact mirrors of current `upstream/main` `9f98f811` (6 Oct).
   `handbook` (this), `dreamt-psg`, `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR).
   Fork `live-hr-ended` is proven merged and retired; private archive bundle verified (no banner worktree was recreated).
-  `testing-stack` is now `a5168502`, current upstream `9f98f811` plus the three open PRs. `testing-build` is now `6de9d6dc` (stack plus template); local and remote verified equal, rewrite safety tag removed.
-- **Last staging release:** `3772b93`, run 37136378349 (3 Oct), based on upstream `6ce65730` plus the four original
-  changes (#2613, #2659, #2660, #2661) via `testing-stack` `b6202262`. IPA/template verified on the release page on 3 Oct;
-  original assets checked again on 6 Oct. Active run `37471192603` is now replacing it with base 12.0.0 / `6de9d6d`; the new assets are unverified until the recorded ship finishes.
+  `testing-stack` is now `a5168502`, current upstream `9f98f811` plus the three open PRs. `testing-build` is
+  `6de9d6dc` (stack plus template); local, remote and the rolling `testing-latest` tag match; rewrite safety tags
+  removed.
+- **Last staging release:** **`6de9d6d`**, base **12.0.0**, run **37471192603**, release **404744559** (6 Oct), built
+  from stack `a5168502` on upstream `9f98f811` plus #2613/#2660/#2661 and the template commit. Four required jobs
+  passed; cleanup was correctly skipped because it only applies to `noop-staging`. Exact release target and
+  remote/local tag equal `6de9d6dcea57ff2d7ea656279583255378452834`; all five nonempty uploaded assets present (two
+  APKs, Mac ZIP, iOS IPA and Lift Log XLSX); IPA HTTP 200 verified by ship tool. Current release notes edited and
+  verified. **Just update**, never delete the existing app first. Prior `3772b93` is historical in History. Evidence:
+  ignored `private/release-{run,assets,tag}-6de9d6d.json`, release metadata/notes and event log.
+
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
   only on the previous Mac: `backup/handbook-pre-scrub` (not present here; never push it).
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per PR branch:
-  `~/Developer/noop-dreamt`, `-deleted-sleep`, `-sync-reminder` (restored 6 Oct; no banner worktree needed). Build folders, logs and reports:
+  `~/Developer/noop-dreamt`, `-deleted-sleep`, `-sync-reminder` (restored 6 Oct; no banner worktree needed). Build
+  folders, logs and reports:
   `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`): `verify/`, `builds/`, `his-nights/`, `dreamt/`
   (aggregates only), `*.out` run logs. All safe to delete. xcodegen rewrites `StrandiOS/Resources/Info.plist` (a
   `stalebattery` entry upstream's plist lacks): discard it, never commit it.
@@ -87,12 +109,28 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   and the needed logs; never commit or upload them. The previous Mac had sleep-accel (2.2 GB) and DREAMT v2.2.0
   (14 GB, restricted); neither dataset is installed on this Mac and no restricted dataset was downloaded.
   The previous simulator `281E44EC` and its seeded app state were not recovered. A fresh `NOOP iPhone 17 Pro`
-  (`DCAA8034-6801-4D1F-8FD9-B42B2F424B6F`, iOS 27.0) now has 120 days of synthetic demo data. Fresh delete/recompute/hide and default-OFF reminder walkthroughs passed; no real strap paired. Simulator is parked shut down after the walkthroughs.
+  (`DCAA8034-6801-4D1F-8FD9-B42B2F424B6F`, iOS 27.0) now has 120 days of synthetic demo data. Fresh
+  delete/recompute/hide and default-OFF reminder walkthroughs passed; no real strap paired. Simulator is parked shut
+  down after the walkthroughs.
 
 ## Verified — the latest numbers
 
-- **Review fixes, 6 Oct, based on `9f98f811`:** full `verify.sh` passed at #2660 `e9ee598e` and #2661 `7f9fc7aa`: packages 632/2,135/327 (one import skip), all lint/i18n/parity gates and 127 governance tests, Mac 2,272/2,271 respectively (two existing skips, zero failures), both iOS builds. Generated plists restored; logs in cache `verify/<head>/` and `<feature>-review/verify.out`.
-  #2660 actual Repository regression: five targeted tests, four expected assertions failed on old code, then passed. Both revised strings extracted by compiler and present in all ten built locales. Fresh simulator proved old marker clearing, a real fresh delete visible over an orphan hidden token, and Hide persistence after relaunch; synthetic data has no raw stream, so regeneration is not claimed. #2661 four targeted tests: old fallback fails the unset-default assertion, fix passes and saved ON/OFF persist. Native fresh screen shows OFF with the existing three-hour/no-sound copy. Notification delivery remains a phone check.
+- **Integration and ship, 6 Oct:** local combined iOS build passed at `a5168502`; fork Android `37470127956` passed
+  its one job and Swift Packages `37470132381` passed all 11 expected package/tool jobs at that exact head. Expected
+  names/counts and every conclusion checked, evidence in ignored `private/stack-{android,swift}-ci.json`. Both
+  reviewed PR heads have six green upstream checks. Ship `6de9d6d` / run `37471192603` completed and
+  assets/tag/download verified as above. No running build remains.
+
+- **Review fixes, 6 Oct, based on `9f98f811`:** full `verify.sh` passed at #2660 `e9ee598e` and #2661 `7f9fc7aa`:
+  packages 632/2,135/327 (one import skip), all lint/i18n/parity gates and 127 governance tests, Mac 2,272/2,271
+  respectively (two existing skips, zero failures), both iOS builds. Generated plists restored; logs in cache
+  `verify/<head>/` and `<feature>-review/verify.out`.
+  #2660 actual Repository regression: five targeted tests, four expected assertions failed on old code, then passed.
+  Both revised strings extracted by compiler and present in all ten built locales. Fresh simulator proved old marker
+  clearing, a real fresh delete visible over an orphan hidden token, and Hide persistence after relaunch; synthetic
+  data has no raw stream, so regeneration is not claimed. #2661 four targeted tests: old fallback fails the
+  unset-default assertion, fix passes and saved ON/OFF persist. Native fresh screen shows OFF with the existing
+  three-hour/no-sound copy. Notification delivery remains a phone check.
 
 - **Session continuity, 6 Oct:** two canonical start/end prompts saved in README; every final response ends with
   one to three simple numbered next steps, or "No action needed" plus what comes next. Recovery uses saved state and
@@ -150,7 +188,8 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   / 49.5 at 0.3; REM stays ~27 % even with the term off (`BACKLOG.md` C).
 - **Last full `verify.sh` runs, all steps passed (3 Oct, on `6ce65730`):** #2659 `a64d8474` (macOS 2,271), #2660
   `3869d0b2` (2,273), #2661 `60793987` (2,272) — WhoopStore 632 · StrandAnalytics 2114 · StrandImport 327 · doc lint · i18n ·
-  ledger · ratchet · governance 127 · macOS with only the two `TodayCarryOverTests` · iOS build. Earlier: #2617 `4d3e6c89` (run alone), #2618 `194b0687`, #2619 `7e7cf01f`
+  ledger · ratchet · governance 127 · macOS with only the two `TodayCarryOverTests` · iOS build. Earlier: #2617
+  `4d3e6c89` (run alone), #2618 `194b0687`, #2619 `7e7cf01f`
   (1 Oct); #2612 `47254b18`, #2613 `29f43bb2` (then `ca008aba`, test comments only: its tests + doc lint re-run) —
   WhoopStore 631 · StrandAnalytics 2102–2103 · StrandImport 327 · doc lint · i18n · ledger · ratchet · governance 127 ·
   macOS 2,254–2,260 with only the two `TodayCarryOverTests` · iOS build. Never run two verifies at once (shared build
