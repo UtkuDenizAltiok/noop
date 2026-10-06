@@ -1619,6 +1619,9 @@ final class Repository: ObservableObject {
         if DismissedSleepSpans.writesTombstoneOnDelete(userEdited: snapshot?.session.userEdited ?? false) {
             dismissedSleepSpans = DismissedSleepSpans.adding(startTs: detectedStartTs, endTs: endTs,
                                                              to: dismissedSleepSpans)
+            // A fresh delete must offer its row again, even if a hidden token outlived a cap-evicted marker.
+            hiddenDismissedSleepSpans = DeletedSleepList.unhiding(startTs: detectedStartTs, endTs: endTs,
+                                                                  hidden: hiddenDismissedSleepSpans)
         }
         // Delete from the same union of possible owners the Sleep tab reads from, first match wins —
         // so a night under the canonical source (post strap re-add) is actually removed, not no-op'd.

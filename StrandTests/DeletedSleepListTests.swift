@@ -45,4 +45,52 @@ final class DeletedSleepListTests: XCTestCase {
         XCTAssertEqual(hidden, [night2])
         XCTAssertEqual(starts(DeletedSleepList.visible(tokens: [night1, night2], hidden: hidden)), [1_000])
     }
+
+    /// A hidden token can outlive its marker when the 500-marker cap evicts the oldest night.
+    /// Both a re-delete of that window and a repeated delete of a standing marker must list it again.
+    @MainActor
+    func testFreshDeleteUnhidesStandingAndCapEvictedMarkers() async throws {
+        let defaults = UserDefaults.standard
+        let keys = [Repository.dismissedSleepDefaultsKey, Repository.hiddenDismissedSleepDefaultsKey]
+        let saved = keys.map { ($0, defaults.object(forKey: $0)) }
+        defer {
+            for (key, value) in saved {
+                if let value { defaults.set(value, forKey: key) }
+                else { defaults.removeObject(forKey: key) }
+            }
+        }
+        let start = 1_000, end = 1_050
+        let token = DismissedSleepSpans.token(startTs: start, endTs: end)
+        var markers = (1...DismissedSleepSpans.hardCap).map {
+            DismissedSleepSpans.token(startTs: $0 * 1_000, endTs: $0 * 1_000 + 50)
+        }
+        let hidden = DeletedSleepList.hiding(startTs: start, endTs: end, hidden: [], tokens: markers)
+        markers = DismissedSleepSpans.adding(startTs: 999_000, endTs: 999_050, to: markers)
+        XCTAssertFalse(markers.contains(token), "The cap must actually evict the hidden night's marker")
+        XCTAssertEqual(hidden, [token], "The hidden entry survives that eviction")
+        // Make room so the old window's next marker sticks, rather than being immediately evicted again.
+        markers = DismissedSleepSpans.removing(startTs: 999_000, endTs: 999_050, from: markers)
+        defaults.set(markers, forKey: Repository.dismissedSleepDefaultsKey)
+        defaults.set(hidden, forKey: Repository.hiddenDismissedSleepDefaultsKey)
+
+        let store = try await WhoopStore.inMemory()
+        let source = "test-deleted-sleep"
+        let repo = Repository(deviceId: source)
+        repo.setStoreForTesting(store)
+        let session = CachedSleepSession(startTs: start, endTs: end, efficiency: 0.9,
+                                         restingHr: 52, avgHrv: 70, stagesJSON: nil, stagingSparse: true)
+        for attempt in 0..<2 {
+            _ = try await store.upsertSleepSessions([session], deviceId: source + "-noop")
+            let snapshot = await repo.deleteSleepSession(detectedStartTs: start, endTs: end)
+            XCTAssertNotNil(snapshot, "The delete must find the stored night")
+            XCTAssertTrue(repo.dismissedSleepWindows().contains { $0.start == start && $0.end == end },
+                          "Fresh deletion must still suppress re-detection")
+            XCTAssertTrue(repo.dismissedSleepManagementWindows().contains { $0.start == start && $0.end == end },
+                          "Fresh deletion must show a row to reopen the night (attempt \(attempt))")
+            XCTAssertFalse((defaults.stringArray(forKey: Repository.hiddenDismissedSleepDefaultsKey) ?? []).contains(token))
+            repo.hideDeletedSleepWindow(startTs: start, endTs: end)
+            XCTAssertFalse(repo.dismissedSleepManagementWindows().contains { $0.start == start && $0.end == end })
+        }
+    }
+
 }
