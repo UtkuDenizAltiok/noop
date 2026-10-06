@@ -164,6 +164,12 @@ value that looks right on screen while being wrong underneath. A real session ca
 
 - **7 Oct — documentation and file organisation:** start/end prompts and continuity/setup consolidated in Sessions; README reduced to a file map, State to current facts, dated verification moved here, duplicated session instructions and completed backlog specs removed. Numbered engineering rules, A–D science evidence and both feature contracts preserved exactly. All handbook links/changed app anchors and GitHub rendering checked; recovery-tool sandbox passed 28 checks. Completed generated caches removed (10,804,318,208 allocated bytes); all logs retained. Existing PR descriptions cleaned with code/evidence unchanged; owner concerns remain answered. App guide navigation/current-history cleanup submitted as #2717 (`3ecf43c5`), with 439 Python tests locally (one skip) plus source/i18n gates. All three expected upstream checks passed; all four PRs are mergeable/green and await the owner.
 
+- **7 Oct — session handover:** Git/upstream/PR/CI/release state rechecked; all five code worktrees clean and pushed,
+  no running build/watch or pending local verification. Four PR heads unchanged, all 32 expected checks passed, no new
+  owner concerns; staging remains `6de9d6d`. PR worktrees and ignored evidence preserved; snapshots in
+  `private/session-close-2026-10-07/`. Next: recheck reviews, then synthetic deletion-marker backup/restore reproduction;
+  phone checks remain pending. No technical blocker or repeat install needed.
+
 ## Verification archive — through 6 Oct 2026
 
 Moved from State on 7 Oct so the active handover stays short. These are dated results, not new runs.
