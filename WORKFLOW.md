@@ -61,6 +61,18 @@ store.
   and backup explicitly; do not depend on hooks or copy notes from another agent's memory folder.
 - **Failed saves are failures.** `checkpoint.sh save` returns an error while Git is busy, on the wrong branch, or
   when the commit fails. Resolve that cause before treating a milestone as saved.
+- **Unattended Mac work (Utku, 6 Oct):** recommend power connected and lid open. Codex Settings (`Cmd+,`) → General
+  → **Prevent sleep while running** keeps local tasks awake. For native UI checks, macOS Lock Screen → **Turn display
+  off on power adapter when inactive** → Never, with automatic screen saver disabled, avoids idle locking without
+  removing the password policy. Closed-lid work requires Apple's supported external-display setup. Do not claim
+  settings were applied merely because advice was given; our UI tool blocks controlling Codex itself.
+  Sources: [Codex settings](https://learn.chatgpt.com/docs/reference/settings),
+  [Mac sleep settings](https://support.apple.com/en-euro/guide/mac-help/mchle41a6ccd/mac),
+  [closed-lid accessories](https://support.apple.com/en-us/102282).
+- **Context visible in every session:** Codex Settings → General → **Show context window usage** is an app preference
+  confirmed in the installed app. `/status` reports chat context usage and rate limits separately
+  ([official commands](https://learn.chatgpt.com/docs/reference/slash-commands)). This does not replace milestone
+  checkpoints or handover; never invent remaining context numbers.
 
 ## 3. Verification
 
@@ -200,11 +212,15 @@ The fork's testing pipeline has three layers:
 - **`testing-latest`** — the one release (Pre-release) Utku installs from:
   `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest` (bundle `com.noopapp.noop`, "NOOP Staging").
 
-**Just update or wipe:** "just update" means install over the existing app (AltStore), never delete it first —
+**Just update or wipe and reinstall from zero:** state the installation choice explicitly in future sessions and
+release instructions. "Just update" means install over the existing app (AltStore), never delete it first —
 deleting NOOP erases everything it stored on the phone, history and strap log included. Just update for UI, logic,
 analytics or a new optional stored field; wipe only for an edited
 shipped migration or a stored value changing shape or meaning. Schema changes are new migrations, so wipes should not
-recur. When in doubt, say wipe.
+recur. Resolve compatibility uncertainty against code and migration evidence before recommending deletion.
+An explicit fresh-start request also permits a wipe: Utku chose this once for `6de9d6d` on 6 Oct. Delete App first,
+then use AltStore to install the unsigned IPA; Offload App retains data. Keep an optional backup aside before deleting
+and do not restore it into a deliberately fresh baseline. This choice does not make future updates require a wipe.
 
 ## 7. Syncing with upstream
 

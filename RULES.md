@@ -30,8 +30,11 @@ The durable record is the handbook, not a model's memory or a chat. README descr
 - **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening a PR
   for an improvement this journey is about, once it is verified (`WORKFLOW.md` §3). Anything else public in his name —
   a new issue, a comment on someone else's thread — is asked first.
-- **Every app change reaches his phone** as a testing build on his releases page, with "just update" or "wipe"
+- **Every app change reaches his phone** as a testing build on his releases page, with "just update" or "wipe and reinstall from zero"
   (`WORKFLOW.md` §6). A change nobody has run on a real strap is not finished; BLE behaviour is only proven there.
+- **Fresh start, this installation only (Utku, 6 Oct):** delete NOOP Staging first, then install `6de9d6d`'s unsigned
+  IPA with AltStore. This overrides the prior update instruction by choice, not a migration requirement. Future
+  sessions must state whether the current build needs just update or wipe/reinstall; do not make deletion routine.
 - **Upstream moves fast and is good.** The maintainers merge within hours and often fix the same thing: check
   `upstream-check.sh` and the open issues and PRs before starting, and never duplicate or undo their work. Work they
   already did (#2293 re-scoring, widget/Watch/notification dedup, Today's leaf isolation, the Liquid motion gate) is

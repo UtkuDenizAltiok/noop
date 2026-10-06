@@ -13,10 +13,12 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-No work in flight. Both review revisions, their single replies, the integration tests and ship are reconciled
-complete. `6de9d6d` is verified; ship exec `35316` exited successfully. All code worktrees are clean and pushed;
-temporary integration worktree/branch and rewrite safety tags are removed. The synthetic simulator is shut down.
-Completed details are in History and the records below.
+No agent work in flight. Utku's one-time fresh-install preference and unattended/context setup advice are saved;
+phone deletion/install and settings changes remain user actions and unconfirmed. No app rebuild is needed.
+
+Both review revisions, their single replies, the integration tests and ship are reconciled complete. `6de9d6d` is
+verified; ship exec `35316` exited successfully. All code worktrees are clean and pushed; temporary integration
+worktree/branch and rewrite safety tags are removed. The synthetic simulator is shut down.
 
 **Settled decisions:** recompute keeps the normal 21-day analysis window and reports marker clearing accurately. The
 reminder's unset default is OFF; earlier battery-alert permission does not opt users into a new recurring reminder,
@@ -28,7 +30,10 @@ forward.
 Mac verification and shipping are complete. The current phone install and these real-device results remain unconfirmed.
 Ask Utku for the strap log after each (More → App → Test Centre → Strap log → Save…):
 
-- [ ] **Just update to `6de9d6d`** through AltStore over the existing NOOP Staging app. Keep the app and its data; no wipe is needed.
+- [ ] **Wipe and reinstall from zero — this time only, Utku's choice on 6 Oct:** delete NOOP Staging from the iPhone
+  first (Delete App, not Offload App), then install the unsigned `6de9d6d` IPA from `testing-latest` through AltStore.
+  Deletion clears local history, settings and strap log. An optional `.noopbak` can be kept aside before deleting;
+  do not restore it into the intended fresh baseline. Actual deletion/install remains unconfirmed.
 - [ ] **Silent sync reminder** (#2661): More → App → Automations → turn "Remind me when syncing stops" on (unset
   default is now OFF). Swipe NOOP away; about 3 hours
   later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
@@ -53,6 +58,19 @@ Ask Utku for the strap log after each (More → App → Test Centre → Strap lo
   before implementation. This is a correctness priority and needs no personal dataset.
 3. Resume performance or biometric investigations only when the needed phone logs/backup or ground-truth datasets are
   available; do not tune from remembered aggregates.
+
+## Unattended sessions and context display — 6 Oct
+
+Utku wants the Mac awake and unlocked during work and context usage visible in every chat. Settings advice is
+verified, but no setting was changed. Installed Codex has General → **Prevent sleep while running** and **Show
+context window usage**. The computer-use tool blocks control of Codex itself, so Utku must enable these once.
+`/status` also reports chat context usage. The context meter is separate from account usage limits.
+
+Mac inspection: AC system sleep is already disabled (`sleep 0`); both display timers are 30 minutes. Lock Screen
+requires a password one hour after display-off/screen saver. Recommend plugged-in, lid-open sessions; set the AC
+display-off timer to Never and disable an automatic screen saver for unattended UI checks. Keep the normal password
+policy. A closed lid needs Apple's supported external-display setup. These changes remain unconfirmed; do not claim
+the Mac can now run unattended until Utku enables them or actual settings are checked.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -92,7 +110,8 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   passed; cleanup was correctly skipped because it only applies to `noop-staging`. Exact release target and
   remote/local tag equal `6de9d6dcea57ff2d7ea656279583255378452834`; all five nonempty uploaded assets present (two
   APKs, Mac ZIP, iOS IPA and Lift Log XLSX); IPA HTTP 200 verified by ship tool. Current release notes edited and
-  verified. **Just update**, never delete the existing app first. Prior `3772b93` is historical in History. Evidence:
+  verified. The build itself needs **just update**; Utku subsequently chose a **one-time wipe and reinstall from
+  zero** for his fresh start (6 Oct), pending above. Prior `3772b93` is historical in History. Evidence:
   ignored `private/release-{run,assets,tag}-6de9d6d.json`, release metadata/notes and event log.
 
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
@@ -200,6 +219,6 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 1. "Next safe action" above.
 2. Choose from `BACKLOG.md` by correctness risk, user impact and evidence: item 9 (backup deletion markers), A (queued
    duplicate re-scores after #2646), B (cold passes), D (night start moved by later data), C (wake/REM).
-3. Every app change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku "just update".
+3. Every app change: measure before/after, `verify.sh` (alone), PR, rebuild `testing-stack`, ship, tell Utku explicitly
+   "just update" or "wipe and reinstall from zero" based on verified compatibility and his current instruction.
 4. At the end of every session: README "End a session".
-
