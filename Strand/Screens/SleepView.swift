@@ -473,7 +473,7 @@ struct SleepView: View {
                     Text("Deleted sleep windows")
                         .font(StrandFont.headline)
                         .foregroundStyle(StrandPalette.textPrimary)
-                    Text("Recompute a night to clear its deletion marker and scan the available raw data again.")
+                    Text("Recompute clears the deletion marker and scans the most recent 21 days.")
                         .font(StrandFont.footnote)
                         .foregroundStyle(StrandPalette.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -530,8 +530,8 @@ struct SleepView: View {
         repo.dismissedSleepManagementWindows().map { DeletedSleepWindow(start: $0.start, end: $0.end) }
     }
 
-    /// Lift the night's marker, then score again so the detector finds it in the raw data, exactly as an edit
-    /// re-scores. The night returns only if raw data covers it (the card's last line says so).
+    /// Lift the night's marker, then run the normal recent scan. An older night is outside that 21-day window;
+    /// the success note reports only the marker change, not whether detection processed or restored this night.
     private func recomputeDeletedSleep(_ window: DeletedSleepWindow) async {
         recomputingDeletedSleep = window
         await repo.allowSleepReDetection(startTs: window.start, endTs: window.end)
@@ -2934,13 +2934,13 @@ private struct DeletedSleepWindow: Identifiable, Equatable {
     var id: String { DismissedSleepSpans.token(startTs: start, endTs: end) }
 }
 
-/// What the last action on the deleted list did, in the words Android's card uses (#515).
+/// What the last action on the deleted list changed (#515). Recompute reports only that its marker was lifted.
 private enum DeletedSleepNote {
     case recomputed, hidden
 
     var message: LocalizedStringKey {
         switch self {
-        case .recomputed: return "Sleep detection reran using the data available for this night."
+        case .recomputed: return "Deletion marker cleared."
         case .hidden: return "Deleted sleep window hidden. It will stay deleted."
         }
     }
