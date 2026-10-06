@@ -13,10 +13,28 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-**No engineering work is in flight.** The standard start/end prompts are in README, and the simple next-steps rule
-is consistent across AGENTS, README, RULES and WORKFLOW. Ownership and local Codex instruction entries are ready.
-Prompt requirements, links and the public diff were checked; all four code worktrees are clean and match the fork.
-No local job is running. The simulator is shut down. No app code, PR reply or staging release changed in this work.
+**Active task: finish #2660's review fixes and ship a current testing build.** Startup reconciled clean code
+worktrees, open PRs and the unchanged release `3772b93`; no interrupted engineering step needs repeating.
+The short `xcodebuild -sdk` process seen by status was a tool probe, not a retained build.
+
+- [x] Rebase `ios-deleted-sleep` (`3869d0b2`) onto current `upstream/main` `9f98f811`, using a local safety tag and
+  `xcmerge.py` for the catalogue; completed as `6f8d4c22`, net diff remains the original five files/ten keys.
+- [x] Fix fresh-delete unhide and replace recompute's unconditional claim with wording that states the marker was
+  cleared and explains the 21-day/raw-data limits. The actual Repository test reproduced both standing and cap-evicted hidden entries: 5 tests, 4 expected assertions failed on the old code; log `deleted-sleep-review/regression-before.log`. Copy updated in all ten locales.
+- [x] Committed fix `e9ee598e`; run full `verify.sh` alone with `NOOP_REPO=~/Developer/noop-deleted-sleep`; restore generated plist.
+  Mac suite green: 2,272 tests, two existing skips, zero failures (the old locale exceptions did not fail on this Mac). Package tests 632/2,135/327, import skip 1, all lint/i18n/parity gates and 127 governance tests green. iOS build passed; full run completed, all steps passed at `e9ee598e`. Compiler extraction and all ten built macOS/iOS locales contain both new keys. Simulator: old 50-day marker clears with truthful note; real fresh delete over an orphan hidden token is visible after undo expires, hidden token gone; Hide retains the marker. Evidence screenshot `deleted-sleep-review/fresh-delete.png`.
+- [x] Publish verified #2660 head `e9ee598e` with pinned lease, edit its description from `private/pr-deleted-sleep-body.md`, and reply once to the 4 Oct review. Remote head/body/reply verified; reply `issuecomment-6016821944`. PR is mergeable and all six upstream checks are running on the new head; not green yet. Safety tag deleted after the push was verified.
+- [ ] Address #2661 default: choose OFF for an unset preference, preserve explicit ON/OFF, pin with a test seen
+  to fail: 4 tests, the unset-default assertion fails on the original ON fallback (`sync-reminder-review/regression-before.log`). Fix committed as `7f9fc7aa`; full verification is next. Push/edit/reply once after verification.
+- [ ] Rebuild testing-stack from current upstream and open PRs, build iOS locally, then use `ship-build.sh` and verify
+  release assets. Record branch/commit/run IDs as they exist. Save/upload handbook and confirm final status.
+
+**Decision:** address both review findings; keep the normal 21-day analysis window, since extending a single
+recompute to scan years of history is disproportionate. Describe what actually succeeded instead.
+**Reminder decision (6 Oct):** unset defaults OFF. Existing battery-alert permission is not consent to a new
+recurring sync reminder. Preserve every explicitly saved preference; Utku can enable it in Automations. This
+supersedes the earlier default-ON choice and meets upstream's opt-in automation contract.
+**Next safe action:** full #2661 verification, finish #2660 simulator checks, then verified pushes/replies. No public action yet. A premature run at `eebb4550` was stopped before app tests after the copy script failed its formatting assertion; copy was fixed and the commit amended. Do not treat that stopped run as verification. Safety tag `backup/deleted-sleep-review` retained until verified push.
 
 ## Phone — pending checks from the 3 Oct handover
 
@@ -53,10 +71,10 @@ Ask Utku for the strap log after each (More → Test Centre → Strap log → Sa
 Open (checked 6 Oct on `upstream/main` `9f98f811`; fork-PR CI approval is separate from mergeability):
 - **#2613** `dreamt-psg` `7b638413` + `ca008aba` — `Tools/SleepPSG` reads DREAMT (section 8), then `respWeight`
   0.6 → 0.3 (61/28 subjects). Android CI 36712653602 green. Body `private/pr-rsa-weight-body.md`.
-- **#2660** `ios-deleted-sleep` `3869d0b2` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
-  Body restored from GitHub in `private/pr-deleted-sleep-body.md`. The catalogue conflicts with current upstream.
-  Review 4 Oct: clear a hidden entry on a fresh delete (the 500-marker cap can otherwise orphan it); qualify the recompute
-  note for nights outside `analyzeRecent`'s 21-day window; explain the two success messages as a deliberate platform choice.
+- **#2660** `ios-deleted-sleep` `e9ee598e` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
+  Body restored from GitHub in `private/pr-deleted-sleep-body.md`. Rebased onto `9f98f811`; catalogue conflict resolved by key, all upstream entries preserved.
+  Review addressed 6 Oct: fresh delete unhides its row; recompute reports marker cleared and names the 21-day scan;
+  two success notes explained. Full local verification + simulator passed; pushed/replied once. Upstream checks running.
 - **#2661** `ios-sync-reminder` `60793987` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
   Body restored from GitHub in `private/pr-sync-reminder-body.md`. Merges cleanly. Review 4 Oct asks for default OFF;
   the existing settled default ON has not been changed. #2613 also merges cleanly and has no review/comment.
