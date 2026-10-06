@@ -5,11 +5,13 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Top of the list (3 Oct 2026)
+## Top of the list (checked 6 Oct 2026)
 
-**Done this session:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
-(item 0; their PRs and the ship are in `STATE.md`). **First next:** whatever the maintainers say on #2613, #2659 and
-the two new PRs; then the phone checks named in `STATE.md` "Next"; then A–D below.
+**Built 3 Oct:** the frozen Live HR banner (#2659), the iOS deleted-sleep list and the silent sync reminder
+(item 0; their PRs and the ship are in `STATE.md`). #2659 merged on 4 Oct. **First next, after Mac setup verification:**
+address the 4 Oct review on #2660 and its catalogue conflict; then settle the default-OFF request on #2661 against
+Utku's existing default-ON choice. #2613 is still open with no comments. Then rebuild the stale testing stack, ship,
+and collect the phone checks named in `STATE.md` "Next" before A–D below. No app improvement was made during restoration.
 
 A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a day; 27–28 Sep log 113 passes / 900
    CPU-s in 16.6 h. After the 30-min spacing (#2612, opened 30 Sep) + #2574/#2575 (merged): 29–30 Sep logs 2.5–3.1
@@ -22,8 +24,8 @@ A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a
    hour. **New finding — queued duplicates:** an offload that completes while a pass runs is queued (#899-A) and,
    when that pass ends, re-runs as a full `trigger=forced` pass with neither `skipIfUnchanged` nor the 30-min spacing
    (`IntelligenceEngine.analyzeRecent`'s `defer` re-arm; `RescoreBackgroundPolicy.decide` exempts `passInProgress`
-   from spacing, #1681). Five such pairs on 2–3 Oct, ~40 CPU-s. Upstream PR #2646 (kavemang, open 3 Oct) rewrites
-   that very block: wait for it, then consider routing the re-arm through `RescoreBackgroundScheduler.run` when
+   from spacing, #1681). Five such pairs on 2–3 Oct, ~40 CPU-s. Upstream PR #2646 (kavemang, merged 4 Oct at `f46671f6`) rewrites
+   that very block: recheck the finding on current upstream before considering routing the re-arm through `RescoreBackgroundScheduler.run` when
    backgrounded (debt recorded, settled by the next offload past the spacing). Live HR flushes move the
    fingerprint every minute, so `newData=yes` nearly always and `skipIfUnchanged` alone would not help. Disk writes 193–201 MB a day (MetricKit 26 and 29
    Sep) for a few MB of new rows: find what writes (strap log rewrites? WAL checkpoints?) before guessing.

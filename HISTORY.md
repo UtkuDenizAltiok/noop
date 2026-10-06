@@ -139,3 +139,5 @@ value that looks right on screen while being wrong underneath. A real session ca
   status --net` and the event log showed exactly what had completed (PR #2659 opened; ship `3772b93` verified at
   19:38), so nothing was repeated or lost. A waiting loop left behind by the second (it watched for a word the ship
   tool never prints) was stopped; `WORKFLOW.md` §2 now names each tool's last words. Handbook uploaded for the handover.
+
+- **6 Oct — Mac restoration (Codex).** Cloned the fork and handbook; restored the three open-PR worktrees, Git author and GitHub access. #2659 is proven merged; #2660/#2661 reviews and #2646 merge recorded. Installed Command Line Tools, Xcode, Homebrew and the handbook tools; setup verification and iOS runtime installation continue in STATE.md "Now". No app change or ship.

@@ -1,9 +1,10 @@
 # State
 
-**Updated 3 Oct 2026, ~19:45, end of session 4 — HANDOVER.** Utku handed the engineering to a friend who works with
-ChatGPT 6.1 (README "Handover"); this page is where the next session starts. Journey 2: NOOP, perfected (`RULES.md`
-mandate). **23 PRs merged; open: #2613, #2659, #2660, #2661.** On the releases page: `3772b93` (all four); Utku's
-phone: build 429 (`a8d25c1` or `d6b998c`, both 429) until he updates. The only file that changes every session.
+**Updated 6 Oct 2026 — Mac environment restoration with Codex in progress.** The 3 Oct handover and its rules still
+apply (README "Handover"). Journey 2: NOOP, perfected (`RULES.md` mandate). **24 PRs merged; open: #2613, #2660, #2661.**
+#2659 merged on 4 Oct. The fork's releases page still holds `3772b93` (all four original changes; assets checked 6 Oct).
+Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
+The only file that changes every session.
 Replace, don't append — history goes in `HISTORY.md`.
 
 ## Now — work in flight
@@ -12,7 +13,32 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-- **Nothing is running.** Last ship: `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
+- **Environment restoration in progress, 6 Oct 2026 (Codex).** Scope: restore and verify this Mac before app changes.
+- [x] Read the handbook and app `AGENTS.md`; cloned the fork at `~/Developer/noop` and checked out `handbook` at `dist/`.
+- [x] Restore developer tools: Command Line Tools 27.0, Xcode 27.0 (`27A266a`, license accepted by the user),
+  Homebrew 7.0.8, XcodeGen 2.46.0, GitHub CLI 2.102.0 and Python 3.12.15. Xcode's first-launch check passed.
+- [ ] Download/install the iOS Simulator runtime: `xcodebuild -downloadPlatform iOS -architectureVariant arm64`.
+  Check `xcrun simctl list runtimes`, create an iPhone simulator if needed, and confirm it boots. Log: `private/restoration-ios-runtime.log`.
+- [x] GitHub CLI 2.102.0 authenticated as `UtkuDenizAltiok` in the macOS keychain. Repository-local Git author restored
+  from existing handbook commits: `Utku Deniz Altiok`, GitHub noreply email.
+- [x] REST/Git evidence: #2659 merged at `a6f1fe08`; both squash-parent merge-tree and current-main merge-tree match
+  the destination trees exactly. Three PRs remain open (#2613, #2660, #2661); their worktrees are restored.
+  #2660 conflicts only in `Localizable.xcstrings`; #2613 and #2661 merge cleanly. #2646 also merged; backlog A can be rechecked later.
+- [ ] After baseline/access checks, fast-forward the fork's `main` to `upstream/main` `9f98f811`; verify the remote SHA.
+  Archive the merged #2659 branch in a private Git bundle before retiring its fork branch; no app improvement or ship in this task.
+- [ ] Run `checkpoint.sh status --net`, `upstream-check.sh`, write-access dry run, and `verify.sh --quick` on clean current `main`.
+  Initial quick verification ended: three Swift suites could not find `XCTest` under the Command Line Tools; during the
+  Xcode installation Git-based ratchet/governance stopped at the license gate. Doc lint, i18n and ledger passed.
+  Initial logs are preserved in `~/Library/Caches/noop-handbook/baseline-clt-9f98f811/`.
+  Re-run quick verification on full Xcode now (one run at a time), then confirm generated-project/app-target readiness.
+  New run log: `~/Library/Caches/noop-handbook/baseline-xcode-9f98f811.out`.
+  Initial status lacked GitHub auth; branch-specific upstream-check subsequently passed and recorded the current reviews.
+- [ ] After quick verification ends, generate the Xcode project and compile `Strand` (macOS) and `NOOPiOS`
+  (generic iOS Simulator) with signing disabled. Logs/derived data: `~/Library/Caches/noop-handbook/restoration-app-builds/`.
+  Preserve any generated-plist difference for evidence, then restore tracked files and confirm clean code worktrees.
+- [ ] Settle this journal, save and upload the handbook when access is confirmed, and report readiness and the next task.
+
+- **Last ship (historical):** `3772b93` (run 37136378349, verified on the releases page 3 Oct 19:38: `.ipa` + template) = `upstream/main`
   `6ce65730` + #2613 + #2659 + #2660 + #2661 (`testing-stack` `b6202262`).
 
 Waits on Utku (ask him for the strap log after each, More → Test Centre → Strap log → Save…):
@@ -30,29 +56,32 @@ Waits on Utku (ask him for the strap log after each, More → Test Centre → St
   new code (`tools/his-nights/`), never night against night; recovery/HRV dips these days are real.
 
 **Next safe action, in order:**
-1. Session start (README; for the new engineer, README "Handover" first): `checkpoint.sh status --net`,
-   `upstream-check.sh`. Answer any review on our four open PRs ONCE (`WORKFLOW.md` §5; they are in Utku's GitHub
-   name: ask him how replies are to be made); after a merge prove it in (`merge-tree`), retire the branch + worktree,
-   rebuild the stack, ship.
-2. Utku's results from the three checks above, from his strap log.
-3. `BACKLOG.md` "Top of the list", then A–D and the numbered candidates (9–11 are new, 3 Oct).
+1. Complete the environment-restoration checklist above. This task authorizes setup and verification only; no PR reply,
+   app improvement, testing-stack rewrite or ship is in progress.
+2. Next app task: address the 4 Oct review on #2660 (fresh deletion must unhide its row, and recompute copy must not promise
+   an old night was reprocessed), then resolve its catalogue conflict with current upstream. Verify before any push or reply.
+3. #2661 has a 4 Oct review asking for default OFF; the fork's settled choice is default ON. Explain that product decision
+   to Utku before changing it. #2613 has no review/comment. Reviews have been read, not answered in this setup task.
+4. Once the PR work is verified, rebuild the stale testing stack on current upstream and ship. The current release stays usable;
+   no new build was made during restoration. Then collect the pending phone checks/logs and continue `BACKLOG.md` A–D.
 
 Not done in session 4 (from the Saturday plan): `tools/his-nights/run.sh` on the 3 Oct backup (his nights at RSA 0.3).
 The backup copy was deleted; ask Utku for a fresh `.noopbak` when that is needed.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
-Open (fork-PR checks wait for the maintainers' approval; no comments at 19:45 3 Oct; each merges cleanly on
-`6ce65730`, and all four together):
+Open (checked 6 Oct on `upstream/main` `9f98f811`; fork-PR CI approval is separate from mergeability):
 - **#2613** `dreamt-psg` `7b638413` + `ca008aba` — `Tools/SleepPSG` reads DREAMT (section 8), then `respWeight`
   0.6 → 0.3 (61/28 subjects). Android CI 36712653602 green. Body `private/pr-rsa-weight-body.md`.
-- **#2659** `live-hr-ended` `a64d8474` — remove a Live HR banner iOS has ended (it stays frozen on its last number).
-  iOS only. Body `private/pr-live-hr-ended-body.md`.
 - **#2660** `ios-deleted-sleep` `3869d0b2` — the "Deleted sleep windows" card on iOS and macOS (Android parity, #515).
-  Body `private/pr-deleted-sleep-body.md`.
+  Body restored from GitHub in `private/pr-deleted-sleep-body.md`. The catalogue conflicts with current upstream.
+  Review 4 Oct: clear a hidden entry on a fresh delete (the 500-marker cap can otherwise orphan it); qualify the recompute
+  note for nights outside `analyzeRecent`'s 21-day window; explain the two success messages as a deliberate platform choice.
 - **#2661** `ios-sync-reminder` `60793987` — the silent "Strap not synced" reminder after 3 h without a sync. iOS only.
-  Body `private/pr-sync-reminder-body.md`.
-Merged (23): #2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
+  Body restored from GitHub in `private/pr-sync-reminder-body.md`. Merges cleanly. Review 4 Oct asks for default OFF;
+  the existing settled default ON has not been changed. #2613 also merges cleanly and has no review/comment.
+Merged (24): #2659 (4 Oct, `a6f1fe08`; squash and current-main merge-tree proofs are exact),
+#2574, #2575, #2576, #2569 (#2371), #2029, #2098, #2099, #2386, #2402, #2403, #2415–#2418, #2419 (via
 #2480), #2420, #2422, #2437 (via #2481), #2444, #2612, #2617, #2618, #2619. Issue #2446 fixed upstream in #2453. The
 parity gate on `main` drifts after busy merge days and the maintainers re-derive it: compare with a clean `main`
 checkout before blaming a branch. A PR that removes or adds a twin may need
@@ -60,21 +89,23 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
 
 ## The fork, exactly
 
-- **Branches:** `main` (mirror of `upstream/main` `6ce65730`), `handbook` (this), `dreamt-psg`, `live-hr-ended`,
-  `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR), `testing-stack` `b6202262` (`main` + those four),
-  `testing-build` `3772b938` (the stack + `fork/ships-template`).
+- **Branches:** local `main` is current `upstream/main` `9f98f811`; fork `main` is still `6ce65730` until the journaled
+  fast-forward. `handbook` (this), `dreamt-psg`, `ios-deleted-sleep`, `ios-sync-reminder` (one per open PR).
+  Fork `live-hr-ended` is proven merged and queued for retirement; private archive bundle already verified.
+  `testing-stack` `b6202262` and `testing-build` `3772b938` were restored unchanged. They are the 3 Oct stack/build
+  on `6ce65730`, including the now-merged #2659, and need rebuilding after the next verified PR work.
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
-  only: `backup/handbook-pre-scrub` (the handbook before the 1 Oct history scrub; never push it).
+  only on the previous Mac: `backup/handbook-pre-scrub` (not present here; never push it).
 - **Worktrees (local):** `~/Developer/noop` (`main`), `~/Developer/noop/dist` (`handbook`), and one per PR branch:
-  `~/Developer/noop-dreamt`, `-banner`, `-deleted-sleep`, `-sync-reminder`. Build folders, logs and reports:
+  `~/Developer/noop-dreamt`, `-deleted-sleep`, `-sync-reminder` (restored 6 Oct; no banner worktree needed). Build folders, logs and reports:
   `~/Library/Caches/noop-handbook/` (never `$TMPDIR/noop-*`): `verify/`, `builds/`, `his-nights/`, `dreamt/`
   (aggregates only), `*.out` run logs. All safe to delete. xcodegen rewrites `StrandiOS/Resources/Info.plist` (a
   `stalebattery` entry upstream's plist lacks): discard it, never commit it.
-- **Local only:** `dist/private/` (event log, `usage.log`, PR drafts). Utku's logs and backup in `~/Downloads`
-  (personal: never commit, never upload); copies go in the session scratchpad and are deleted after use (none exist
-  now). Datasets in `~/datasets`: sleep-accel (2.2 GB) and DREAMT v2.2.0 (14 GB; restricted, aggregates only).
-  Simulator `281E44EC` (iPhone 17 Pro): a Debug build of `ios-sync-reminder` over NOOP's demo data, with a seeded
-  `lastSyncedAt` and one deletion marker (30 Sep, hidden); re-seed or reinstall Release `main` before measuring.
+- **Local only:** `dist/private/` restored for event logs, PR drafts, setup evidence and a temporary toolchain.
+  Personal logs/backups and datasets were not recovered from Git. Before personal-data analysis, obtain a fresh `.noopbak`
+  and the needed logs; never commit or upload them. The previous Mac had sleep-accel (2.2 GB) and DREAMT v2.2.0
+  (14 GB, restricted); neither dataset is installed on this Mac and no restricted dataset was downloaded.
+  The previous simulator `281E44EC` and its seeded app state are not restored here. Create fresh demo state before measuring.
 
 ## Verified — the latest numbers
 
