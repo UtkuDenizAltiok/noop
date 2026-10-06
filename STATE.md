@@ -4,7 +4,8 @@
 The working agreement is in README and RULES; Journey 2 continues with its measured evidence and feature contracts.
 **24 PRs merged; open: #2613, #2660, #2661.**
 #2659 merged on 4 Oct. Latest testing release **`6de9d6d`**, base **12.0.0**, run **37471192603** (6 Oct): exact release/tag target, all five uploaded assets and IPA HTTP 200 verified. Release notes describe the current changes and opt-in reminder.
-Utku's phone: last confirmed build 429 (`a8d25c1` or `d6b998c`, both 429), on 3 Oct; current install is unconfirmed.
+Utku's phone: fresh AltStore installation following the `6de9d6d` instructions reported complete on 6 Oct. Exact
+on-device build header, first pairing/sync and real-device feature checks are still awaiting a new strap log.
 Keep the current state concise; completed milestones belong in `HISTORY.md`.
 
 ## Now — work in flight
@@ -13,8 +14,9 @@ The write-ahead journal (`WORKFLOW.md` §2): each step that is long, public or h
 it starts and ticked when it ends. After any interruption, check every unticked line against
 `bash dist/tools/checkpoint.sh status --net` before redoing it. Empty when nothing is in flight.
 
-No agent work in flight. Utku's one-time fresh-install preference and unattended/context setup advice are saved;
-phone deletion/install and settings changes remain user actions and unconfirmed. No app rebuild is needed.
+No agent work in flight. Fresh install and Mac/Codex setup are complete by user report. The initial phone-check
+sequence is saved below; no app change or repeat release is needed. The next engineering investigation remains
+backup deletion markers.
 
 Both review revisions, their single replies, the integration tests and ship are reconciled complete. `6de9d6d` is
 verified; ship exec `35316` exited successfully. All code worktrees are clean and pushed; temporary integration
@@ -27,13 +29,15 @@ forward.
 
 ## Phone — pending checks for the current testing release
 
-Mac verification and shipping are complete. The current phone install and these real-device results remain unconfirmed.
+Mac verification and shipping are complete. Fresh installation is reported complete; these real-device results remain unconfirmed.
 Ask Utku for the strap log after each (More → App → Test Centre → Strap log → Save…):
 
-- [ ] **Wipe and reinstall from zero — this time only, Utku's choice on 6 Oct:** delete NOOP Staging from the iPhone
-  first (Delete App, not Offload App), then install the unsigned `6de9d6d` IPA from `testing-latest` through AltStore.
-  Deletion clears local history, settings and strap log. An optional `.noopbak` can be kept aside before deleting;
-  do not restore it into the intended fresh baseline. Actual deletion/install remains unconfirmed.
+- [x] **One-time wipe and fresh AltStore installation:** Utku reports completion on 6 Oct after the `6de9d6d` IPA
+  instructions. Do not ask him to repeat deletion/install. Current build needs no further update.
+- [ ] **Fresh baseline:** finish onboarding/profile, allow Bluetooth, pair the WHOOP 5.0 and let the first sync finish
+  with NOOP on screen. Check live HR/history. After the reminder test, use normally overnight with NOOP backgrounded
+  and send a new strap log; avoid interpreting an empty fresh install as a sleep/score regression. Old deleted-sleep
+  and banner checks remain pending and can be phased after the first sync/baseline rather than one long checklist.
 - [ ] **Silent sync reminder** (#2661): More → App → Automations → turn "Remind me when syncing stops" on (unset
   default is now OFF). Swipe NOOP away; about 3 hours
   later a silent "Strap not synced" line should be on the Lock Screen (no sound). Opening NOOP clears it. If nothing
@@ -61,16 +65,16 @@ Ask Utku for the strap log after each (More → App → Test Centre → Strap lo
 
 ## Unattended sessions and context display — 6 Oct
 
-Utku wants the Mac awake and unlocked during work and context usage visible in every chat. Settings advice is
-verified, but no setting was changed. Installed Codex has General → **Prevent sleep while running** and **Show
-context window usage**. The computer-use tool blocks control of Codex itself, so Utku must enable these once.
+Utku wants the Mac awake and unlocked during work and context usage visible in every chat. On 6 Oct he said he did
+everything in the prior setup instructions; treat Mac/Codex setup as completed by user report, not independently
+re-inspected. Do not ask him to repeat it unless evidence shows a problem. Installed Codex has General → **Prevent
+sleep while running** and **Show context window usage**. The computer-use tool blocks control of Codex itself.
 `/status` also reports chat context usage. The context meter is separate from account usage limits.
 
-Mac inspection: AC system sleep is already disabled (`sleep 0`); both display timers are 30 minutes. Lock Screen
-requires a password one hour after display-off/screen saver. Recommend plugged-in, lid-open sessions; set the AC
-display-off timer to Never and disable an automatic screen saver for unattended UI checks. Keep the normal password
-policy. A closed lid needs Apple's supported external-display setup. These changes remain unconfirmed; do not claim
-the Mac can now run unattended until Utku enables them or actual settings are checked.
+Before the reported changes, Mac inspection showed AC sleep disabled (`sleep 0`), display timers 30 minutes and a
+password one hour after display-off/screen saver. Recommended setup was plugged in with the lid open, AC display-off
+timer Never and automatic screen saver disabled for unattended UI checks, retaining the normal password policy.
+A closed lid needs Apple's supported external-display setup. Actual unattended operation has not yet been observed.
 
 ## Our PRs upstream (`ryanbr/noop`)
 
@@ -111,7 +115,7 @@ checkout before blaming a branch. A PR that removes or adds a twin may need
   remote/local tag equal `6de9d6dcea57ff2d7ea656279583255378452834`; all five nonempty uploaded assets present (two
   APKs, Mac ZIP, iOS IPA and Lift Log XLSX); IPA HTTP 200 verified by ship tool. Current release notes edited and
   verified. The build itself needs **just update**; Utku subsequently chose a **one-time wipe and reinstall from
-  zero** for his fresh start (6 Oct), pending above. Prior `3772b93` is historical in History. Evidence:
+  zero** for his fresh start (6 Oct), now reported complete above. Prior `3772b93` is historical in History. Evidence:
   ignored `private/release-{run,assets,tag}-6de9d6d.json`, release metadata/notes and event log.
 
 - **Tags:** `fork/ships-template`, `testing-latest`, plus upstream's own. **Release:** one, `testing-latest`. Local
