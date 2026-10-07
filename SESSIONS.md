@@ -1,6 +1,8 @@
 # NOOP sessions
 
 Use these prompts in a Codex chat for `~/Developer/noop`. Add a specific task after the start prompt when needed.
+Ending a session means preparing a handover for a new chat with a fresh context window. That new chat must recover
+from the handbook and current evidence. Use the canonical prompts below exactly when giving start/resume or end instructions.
 
 ## Start or resume — copy this
 
