@@ -16,8 +16,34 @@ class HrvAnalyzerSdnnQualityTest {
 
     @Test
     fun duplicateDeliveriesCannotSupplyDailySdnn() {
-        val duplicated = sdnnQualityFixtureRows().flatMap { listOf(it, it) }
+        val clean = sdnnQualityFixtureRows()
+        val duplicated = clean.flatMap { listOf(it, it) }
         assertNull(HrvAnalyzer.sdnnIndex(duplicated))
+        val banked = clean.mapIndexed { index, beat ->
+            RrInterval("synthetic", (index / 6 * 6).toLong(), beat.rrMs)
+        }
+        val badLater = sdnnQualityFixtureRows(300L).flatMap { listOf(it, it) }
+        val cases = listOf(
+            "clean" to clean, "duplicate" to duplicated, "banked" to banked,
+            "mixed" to (clean + badLater), "offset" to sdnnQualityFixtureRows(1_700_000_000L),
+            "reversed" to clean.reversed(), "tooFew" to clean.take(19), "empty" to emptyList()
+        )
+        val actual = cases.joinToString("\n") { (name, rows) ->
+            val bits = HrvAnalyzer.sdnnIndex(rows)?.let { java.lang.Long.toHexString(it.toRawBits()) } ?: "nil"
+            "$name=$bits"
+        }
+        // Copied verbatim from the real Swift HRVAnalyzer's stdout, 7 Oct 2026, over these eight cases.
+        // Raw Double bits pin stored-value parity rather than accepting an approximately equal number.
+        assertEquals("""
+            clean=402665e603e54959
+            duplicate=nil
+            banked=nil
+            mixed=402665e603e54959
+            offset=402665e603e54959
+            reversed=402665e603e54959
+            tooFew=nil
+            empty=nil
+        """.trimIndent(), actual)
     }
 
     @Test
