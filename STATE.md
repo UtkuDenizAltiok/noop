@@ -4,6 +4,48 @@ Updated **7 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
+**Active, 7 Oct evening:** Utku deferred the phone update/export and asked for continued optimisation, especially
+usage. No repeat phone request. Startup network reconciliation found unchanged upstream `8e94d559`, all five PRs
+still open/cleanly mergeable and no new review. First measure the repeated five-minute resting-HR scans (including
+their diagnostic twin) on identical synthetic dense/sparse recordings. Only proceed with a one-pass replacement if
+outputs stay exact and CPU cost falls. Preserve quality gates, final endpoint, freshness and background spacing.
+
+- [x] Measure unchanged and candidate code: seven alternating Swift `-O` trials, 420 repeats per fixture.
+  CPU reduction: dense 97.3%, 54-hour read 93.9%, sparse 88.4%, reverse 97.3%; median process footprint
+  6.95 → 5.73 MB. All outputs exact. Evidence/cache `rhr-one-pass/`, public reproducible audit below.
+- [ ] Active worktree `/Users/utk/.codex/worktrees/rhr-one-pass/noop`, branch `codex/rhr-one-pass`, based on
+  `8e94d559`. Shared occupied-bin integer sum/count accumulator on Swift/Kotlin; no score/gate/spacing change.
+  Compiled unchanged Swift oracle: 12 exact outputs + 768-case digest `a9770363`, copied verbatim into both
+  tests; candidate standalone stdout exact. All three new tests failed on a local endpoint mutation (five
+  assertions, no crash), source restored byte-identical; 101 targeted tests now pass. Guarded parity refresh
+  passed (290 known findings, function pairs 224 → 225); the new paired accumulator legitimately changes derived function authority. Kotlin diagnostic
+  consumer now spells out its unchanged defaults: its generic signature's lexical required-arity estimate
+  otherwise mislabels the new full-argument oracle calls as test-only. No threshold change.
+  Committed `035b6ab1` (six app files). Journal before acting: push only this feature branch, dispatch
+  fork Android CI, and run ONE full `verify.sh` against that exact worktree/head. Capture real completion
+  and actual job roster before opening a verified PR. Full verify session `57127` (`write_stdin`), cache `verify/035b6ab1/`; Android CI
+  [37681597809](https://github.com/UtkuDenizAltiok/noop/actions/runs/37681597809) **passed** (build-and-test and actual unit-test step success), exact head
+  `035b6ab18b32d59d11581d3f00077af5729f847e`. Local package steps passed: WhoopStore 632, StrandAnalytics 2138, StrandImport 327 (one skip).
+  Doc/i18n, parity ledger and ratchet passed (`errors=0`). All 127 governance tests and XcodeGen passed; Complete `verify.sh` finished **all steps passed** at `035b6ab1`: 2267 Mac tests/two skips,
+  iOS build success, no failed step. Restored generated Info.plist. Android warnings review found four
+  unnecessary non-null assertions in the modified RHR comparisons (two pre-existing, two introduced).
+  Removed them in Kotlin-only `14783994`, already pushed; `git diff 035b6ab1..14783994 -- Packages Strand
+  StrandTests StrandiOS Tools` is empty, so the full Swift/app verification still covers identical source.
+  Active final Android run **37683254213** at `14783994`; source/parity/governance gates session **14524**,
+  cache `rhr-one-pass/final-gates/`. Swift/store/tool/app source is byte-identical to the full verified
+  `035b6ab1`; only final Android/source checks need repeating. Final source gates finished **passed** at `14783994`: doc/i18n, ledger (290 known findings),
+  ratchet `errors=0`, all 127 governance tests from a clean HEAD checkout. Final Android **37683254213 passed** at exact `14783994` (one expected job, actual unit step successful),
+  changed SleepStager has no compiler warnings. All required feature validations complete. Next public
+  action: upload reproducible audit, create upstream PR from `codex/rhr-one-pass` / `14783994`, attach it,
+  then push locally compiled stack `979a2baf` with pinned lease and local safety tags/bundle before checks/ship. No running local verification/build remains.
+- [ ] Prepare local stack scratch `codex/testing-stack-rhr-20261007`, cache `rhr-one-pass/stack`, from
+  previously verified `0768710f` (upstream and all five PR heads unchanged), then cherry-pick `035b6ab1`.
+  Prepared cleanly as `587601a5`, plus warning cleanup gives **`979a2baf`**. Remote upstream tip
+  rechecked unchanged. Diff adds exactly six RHR PR files. Combined iOS build session **32855**, cache
+  `rhr-one-pass/stack-ios.log` / `stack-derived/`, finished **BUILD SUCCEEDED**; generated plist restored, clean. If both final validations pass, publish PR,
+  push stack with pinned lease/safety bundle, run combined fork checks and verify testing-release assets.
+  The phone installation remains deferred by Utku; a build is not evidence of battery savings on his phone.
+
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md), first quality repair and testing release
 are complete. [PR #2722](https://github.com/ryanbr/noop/pull/2722) is open/mergeable at `b6e53f38`, with all 17
 upstream checks green; no review/comment. The new verified release is `01b55ac2`, described below. Do not repeat
@@ -11,7 +53,7 @@ its verification, publication or shipping. Completed evidence is in History and 
 
 - [ ] Phone: Utku installs **JUST UPDATE** through AltStore over the existing app and confirms `01b55ac2` installed.
   No wipe. A fresh `.noopbak` enables source/coverage and exact metric replay; keep it private.
-- [ ] Next engineering task: reproduce/refuse unusable optional baselines consistently in Charge, explanations and
+- [ ] Later correctness task: reproduce/refuse unusable optional baselines consistently in Charge, explanations and
   trace. This is independently reproducible without personal data; use the audit's test plan and one new PR worktree.
   Then jointly repair spectral units/resolution/timing. Other candidates/evidence gaps live in Backlog and the audit.
 - [ ] Continue the five PR review/merge lifecycles after checking current heads. Backup issue #2720 remains parked

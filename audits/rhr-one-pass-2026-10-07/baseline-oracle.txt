@@ -1,0 +1,13 @@
+empty|nil|nil
+reversed-span|nil|nil
+zero-span|58|nil
+aligned-end|60|nil
+next-aligned-end|40|nil
+negative-times|40|nil
+implausible|60|rhr bins day=synthetic bins=2 thin=0 implausible=1 winnerN=300 ungated=20 gated=60 shipped=60 gateMoved=true
+unsorted-duplicates|60|rhr bins day=synthetic bins=2 thin=0 implausible=1 winnerN=301 ungated=20 gated=60 shipped=60 gateMoved=true
+thin|60|rhr bins day=synthetic bins=2 thin=1 implausible=0 winnerN=1 ungated=30 gated=60 shipped=60 gateMoved=true
+custom-gate|30|nil
+round-half|60|nil
+tie-count|60|rhr bins day=synthetic bins=3 thin=2 implausible=0 winnerN=1 ungated=30 gated=60 shipped=60 gateMoved=true
+sweep768|a9770363
