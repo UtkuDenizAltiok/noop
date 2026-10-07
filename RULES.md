@@ -16,6 +16,8 @@ and clear design. The handbook is the durable memory; Utku's later instructions 
 Explain plainly and end every final response with one to three simple numbered next steps. If no action is needed,
 say so and name the next work. Request phone/strap evidence, account approval or data access only when needed.
 Record the reason when a settled decision changes. Upstream maintainers decide what they merge.
+Utku clarified on 7 Oct: give concrete, simple actions and the exact answer needed when asking him to decide;
+keep technical investigation and storage choices with the agent unless his input is actually required.
 
 ## Settled decisions
 
@@ -24,6 +26,8 @@ Record the reason when a settled decision changes. Upstream maintainers decide w
 - **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening relevant verified PRs
   and their complete review/fix cycle (explicitly renewed 7 Oct) (`WORKFLOW.md` §3). Anything else public in his name —
   a new issue, a comment on someone else's thread — is asked first.
+  **7 Oct specific approval:** publish the verified deleted-sleep backup report and decide/handle its follow-up.
+  Do not repeat approval requests for that report or its agreed repair.
 - **Every app change reaches his phone** as a testing build on his releases page, with "just update" or "wipe and reinstall from zero"
   (`WORKFLOW.md` §6). A change nobody has run on a real strap is not finished; BLE behaviour is only proven there.
 - **Fresh start, this installation only (Utku, 6 Oct):** delete NOOP Staging first, then install `6de9d6d`'s unsigned

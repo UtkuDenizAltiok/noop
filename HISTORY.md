@@ -173,6 +173,8 @@ value that looks right on screen while being wrong underneath. A real session ca
 
 - **7 Oct — phone evidence and backup investigation:** build 435’s log confirms WHOOP 5/MG live/history collection; Utku confirmed the three-hour reminder at about 00:32. Main mirrored to `8e94d559`; all four PRs remain green/mergeable with no new concern. Production Apple export/restore reproduced lost deletion suppression on fresh defaults (28 synthetic assertions), while same-device defaults retain markers; Android stores them in its database. Runnable private evidence and a storage-discussion issue draft retained; no production fix/release, publication awaiting approval.
 
+- **7 Oct — backup report published:** Utku approved reporting and delegated the decisions/follow-up; #2720 posted with the synthetic reproduction and storage alternatives, then read back to verify author and exact body. No response yet, no app change/release needed; the same approval must not be requested again.
+
 ## Verification archive — through 6 Oct 2026
 
 Moved from State on 7 Oct so the active handover stays short. These are dated results, not new runs.

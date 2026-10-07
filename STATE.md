@@ -4,16 +4,15 @@ Updated **7 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — work in flight
 
-No NOOP job running. The 7 Oct reconciliation and deleted-sleep backup investigation are complete. All four
-PRs remain open, mergeable and green; no new review concern. Local/fork main now mirrors `8e94d559`.
-The verified phone release stays `6de9d6d`; no update or wipe is needed for this investigation.
+No NOOP job running. The 7 Oct reconciliation and backup reproduction are complete. Utku approved the public
+report and delegated its decisions/follow-up: [issue #2720](https://github.com/ryanbr/noop/issues/2720) is posted,
+read back and verified. Do not repeat publication or ask for the same approval.
 
-**Awaiting Utku's approval to publish a new upstream issue**, as required by Rules. Concrete draft:
-`private/session-2026-10-07-backup/upstream-issue.md`. The proposal is a versioned deletion-state archive entry,
-with explicit Apple-global versus Android-device scope, before any implementation. Reproduction passed 28
-assertions through production Apple export/restore: fresh defaults lose suppression, same-device defaults retain
-it. Raw data/profile/journal restore; Android's DB holds its markers. No production fix is claimed.
-Evidence, unchanged-source hashes, the runnable harness and synthetic artifacts are retained privately/in the cache.
+**Pending external step:** maintainer storage direction on #2720 before implementation (Backlog 9). The issue
+proposes a separate archive entry that preserves current deletion scope; a database migration is the alternative.
+No response at the publication readback. No production fix or app release is claimed. Current phone build stays
+`6de9d6d`; no update, wipe or personal export is needed. All four PRs remain open, mergeable and green.
+Private evidence, exact posted body and issue snapshot: `private/session-2026-10-07-backup/`.
 
 ## Phone
 
@@ -80,7 +79,8 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-Publish the prepared deleted-sleep backup issue only after Utku approves; otherwise retain the draft. Recheck
-upstream for duplicates immediately before posting. After the storage discussion, implement the agreed repair as
-one verified app PR and ship a testing update. Until then, recheck existing PR reviews/merges at session start.
-No completed build, release, install, review reply or three-hour reminder test needs repeating.
+Read #2720 for the maintainer's storage direction and answer/follow it under Utku's existing approval. Then
+implement the agreed repair as one verified app PR and ship a testing update. If no response, keep the investigation
+parked and select an independent, evidence-backed task from Backlog; do not repeatedly poll or post nudges.
+Recheck the existing PR reviews/merges at session start. No completed build, release, install, report, review reply
+or three-hour reminder test needs repeating. No action needed from Utku now.

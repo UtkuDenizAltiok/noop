@@ -9,8 +9,8 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 Documentation/file organisation is complete; upstream #2717 is green and awaits merge. Phone checks live in
 [State](STATE.md). **Item 9 is now reproduced** through production export/restore with synthetic data (28 assertions, 7 Oct).
-Next is the storage discussion, with a prepared issue awaiting Utku’s permission to publish; then implement the agreed
-repair. No personal export is needed for it. Then choose from A/B/D/C using new logs or ground truth, not remembered results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
+The storage discussion is [issue #2720](https://github.com/ryanbr/noop/issues/2720), published with Utku’s approval;
+implement after that choice is settled. No personal export is needed for it. Then choose from A/B/D/C using new logs or ground truth, not remembered results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
 
 ## Performance and science evidence
 
@@ -116,8 +116,8 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
    deletion-state archive entry, preserving Apple global versus Android device scope, atomically restoring both
    suppression and visibility, and keeping the profile whitelist unchanged. A database migration is the alternative
    and must explicitly address old id-free Apple spans. **No implementation before the storage discussion.**
-   Concrete issue draft and runnable evidence: ignored `private/session-2026-10-07-backup/`; new-issue publication
-   awaiting Utku's approval under Rules. No personal export needed.
+   [Issue #2720](https://github.com/ryanbr/noop/issues/2720) is published with Utku's approval; storage direction is
+   pending. Exact posted body and runnable evidence: ignored `private/session-2026-10-07-backup/`. No personal export needed.
 
 10. **Android's Polish and Portuguese deleted-sleep strings** use the computer sense of "sleep" ("uśpienie",
     "suspensão"; one pt line keeps "sleep" in English); iOS has the corrected ones since `ios-deleted-sleep`. A small
