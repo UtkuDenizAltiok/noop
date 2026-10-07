@@ -39,6 +39,11 @@ A. **Background re-scoring (battery).** Before: MetricKit 26 Sep, CPU 1 h 36 m a
    fingerprint every minute, so `newData=yes` nearly always and `skipIfUnchanged` alone would not help. Disk writes
    193–201 MB a day (MetricKit 26 and 29
    Sep) for a few MB of new rows: find what writes (strap log rewrites? WAL checkpoints?) before guessing.
+   **7 Oct verified small optimisation:** [PR #2724](https://github.com/ryanbr/noop/pull/2724) computes resting-HR
+   bins/diagnostic in one row walk, preserving the same results and gates. Seven alternating Swift `-O` trials:
+   93.9–97.3% less CPU for dense eight-hour nights; 88.4% for sparse cadence. About **2.6 ms per night pair** saved,
+   not a full-pass/phone-energy result. [Reproducible audit](audits/rhr-one-pass-2026-10-07/README.md).
+   This does not resolve the larger fingerprint, relaunch/config-invalidation or disk-write costs above/below.
 B. **Cold passes: midnight and relaunches** (29–30 Sep logs; 3 Oct: the 23:25 background relaunch cost 58.5 s, its
    queued twin another 34.4 s cold again — `configDropped(sleepConsistency)` after the first pass changed it — and
    midnight 34.1 s: 127 of the night's 415 CPU-s). The first pass after midnight reused 0 of 7 days (33 s CPU,
