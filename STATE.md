@@ -5,7 +5,7 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 ## Now — next work
 
 **Session closed at Utku's request, 8 Oct 2026:** no new work. Phone installation/export is deferred.
-The running release is preserved; finish verification before starting the next code task.
+The release build has finished; independent download verification remains for the next chat before a new code task.
 The one-pass resting-HR repair is fully verified and [PR #2724](https://github.com/ryanbr/noop/pull/2724) is
 open/mergeable at `14783994`, all 18 upstream checks green, no review/comment. Audit and exact original-output
 oracle: [RHR measurement](audits/rhr-one-pass-2026-10-07/README.md). No phone processing/battery claim.
@@ -13,15 +13,15 @@ oracle: [RHR measurement](audits/rhr-one-pass-2026-10-07/README.md). No phone pr
 - [x] Completed implementation, measured before/after, three local mutation tests, full local verification,
   final-head Android and source gates, PR publication/readback/attachment, combined iOS and fork checks.
   App worktree `/Users/utk/.codex/worktrees/rhr-one-pass/noop`, branch `codex/rhr-one-pass`, clean/pushed.
-- [ ] **Do not repeat shipping.** Active ship session **71648**, run
+- [ ] **Do not repeat shipping.** Completed ship session **71648**, run
   [37685742398](https://github.com/UtkuDenizAltiok/noop/actions/runs/37685742398), target **`f60718a9`**,
-  from stack **`979a2baf`**. Local/remote build refs exact. At close, **meta/android/ios succeeded;
-  macOS build still in progress**, no failure. Snapshot `private/rhr-release-close-37685742398.json`.
-  Local monitor remains running intentionally: bash PID **54605**, `gh run watch` PID **54736**; session
-  **71648** can be polled in this chat. In a new chat check
-  `gh run view 37685742398 --repo UtkuDenizAltiok/noop` and `private/events.log` first; the monitor can finish
-  after this handover. Do not dispatch/rebuild just because this chat ends. Wait for actual `shipped` event/output, then verify
-  four expected successful jobs, five nonempty uploaded assets, target/tag and downloaded IPA ZIP/plist/digest.
+  from stack **`979a2baf`**. Local/remote build refs exact. At the handover follow-up, **meta/android/ios/macOS
+  all completed successfully** at the exact build head; cleanup intentionally skipped. All five expected asset names
+  appear on the release. The local monitor exited successfully with **`shipped f60718a9`** at 00:17 on 8 Oct;
+  `private/events.log` records completion. The earlier pending snapshot is `private/rhr-release-close-37685742398.json`.
+  In a new chat check `gh run view 37685742398 --repo UtkuDenizAltiok/noop` and `private/events.log` first.
+  Do not dispatch/rebuild just because this chat ends. Still verify five nonempty uploaded assets, target/local+remote
+  tag and downloaded IPA ZIP/plist/digest before recommending the update.
   The `testing-latest` release is replaced during the pipeline; a title/target alone does not prove delivery.
 - [ ] After verified ship, retire local safety tags `backup/pre-rhr-testing-{stack,build}-20261007` and scratch
   checkout/branch `codex/testing-stack-rhr-20261007` at cache `rhr-one-pass/stack`; installer then checkpoint/upload.
@@ -46,7 +46,7 @@ whole-pass or phone-energy result. Cache `rhr-one-pass/`; full logs `verify/035b
 Combined stack `979a2baf` on unchanged upstream `8e94d559` + #2613/#2660/#2661/#2722/#2724:
 local iOS **BUILD SUCCEEDED**, Android **37684687935** (one job/actual unit step) and Swift **37684692663**
 (all 11 package/tool jobs) completed-success at exact stack. Remote upstream tip rechecked unchanged before ship.
-No local build/test remains; only the active release watch. Prior [biometric audit](audits/biometric-pipeline-2026-10-07/README.md)
+No NOOP build/test/release watch remains. Prior [biometric audit](audits/biometric-pipeline-2026-10-07/README.md)
 and release `01b55ac2` are complete; keep their evidence in History. No personal backup/PSG dataset is available.
 
 ## Phone
@@ -54,7 +54,7 @@ and release `01b55ac2` are complete; keep their evidence in History. No personal
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
 background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
-The earlier verified update **`01b55ac2`** was not confirmed installed. New update **`f60718a9`** is building;
+The earlier verified update **`01b55ac2`** was not confirmed installed. New update **`f60718a9`** has shipped;
 installation/export are deferred by Utku. After its verified release, recommend **JUST UPDATE** through AltStore
 over the existing app, preserving history. No migration change/fresh start is required. The prior IPA's identity
 was `com.noopapp.noop`, display name NOOP, version 12.0.0 (435); check the new IPA independently. A version
@@ -79,7 +79,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` still building. Await maintainer. |
+| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` shipped, independent download verification pending. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
 | [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
@@ -97,7 +97,8 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   upstream tip rechecked during shipping.
 - `testing-stack`: **`979a2baff70f96baa9fbfa43fb4847276312cd94`**, base `8e94d559` plus #2613/#2660/#2661/#2722/#2724.
   Local combined iOS build passed. Fork Android **37684687935** and all 11 Swift jobs **37684692663** passed.
-- `testing-build`: **`f60718a9d3daf51aadbec1505174a25d6cd37ed8`** (local and remote), active run **37685742398**.
+- `testing-build`: **`f60718a9d3daf51aadbec1505174a25d6cd37ed8`** (local and remote), successful run **37685742398**;
+  ship tool completed `shipped f60718a9`. Asset size/tag/download verification remains in Now.
 - Prior verified release (being replaced): **`01b55ac2`**, base
   **12.0.0**, run **37597587148**, release **405571964**. Ship tool finished `shipped 01b55ac2`; four required jobs
   passed (cleanup intentionally skipped). All five nonempty assets uploaded; release target and local/remote tag
@@ -108,7 +109,7 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   `/Users/utk/.codex/worktrees/docs-navigation/noop` and `/Users/utk/.codex/worktrees/hrv-spectral-power/noop`
   (`codex/hrv-sdnn-quality` / `b6e53f38`). All code is clean/pushed; handbook is this `dist` worktree.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
-  versions. No throwaway remote regression branch/stash. Local stack scratch/safety refs and active ship are listed in Now.
+  versions. No throwaway remote regression branch/stash. Local stack scratch/safety refs are listed in Now.
 
 ## Local evidence and resources
 
@@ -132,8 +133,8 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-At resume follow Sessions and reconcile the saved release run **37685742398 / f60718a9**. If still running, wait;
-if complete, inspect the four expected successful jobs and all five nonempty uploaded assets, target/local+remote
+At resume follow Sessions and reconcile the completed release run **37685742398 / f60718a9** and its ship event.
+Verify all five nonempty uploaded assets, target/local+remote
 `testing-latest` tag and IPA download/ZIP/plist/digest. Use the existing run, never repeat shipping. Then retire
 only the recorded local safety tags and scratch checkout after confirming the retained bundle; re-run the Codex
 installer. Phone update/export stays deferred; no wipe/reminder retest. After delivery verification, the next
