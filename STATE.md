@@ -135,7 +135,9 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 At resume follow Sessions and reconcile the completed release run **37685742398 / f60718a9** and its ship event.
 Verify all five nonempty uploaded assets, target/local+remote
-`testing-latest` tag and IPA download/ZIP/plist/digest. Use the existing run, never repeat shipping. Then retire
+`testing-latest` tag and IPA download/ZIP/plist/digest. Use the existing run, never repeat shipping merely because
+context is missing. If an asset, tag or download check fails, preserve the safety refs/scratch, inspect the existing
+run and release evidence, and record the actual repair needed before recommending installation. If all checks pass, retire
 only the recorded local safety tags and scratch checkout after confirming the retained bundle; re-run the Codex
 installer. Phone update/export stays deferred; no wipe/reminder retest. After delivery verification, the next
 independent code task is the unusable optional-baseline contract in Charge. No user decision is needed for routine
