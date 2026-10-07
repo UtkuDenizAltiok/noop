@@ -7,6 +7,13 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 ## Priority — 7 Oct 2026
 
+The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and
+runnable synthetic evidence. Daily SDNN's missing quality gates are repaired in green [PR #2722](https://github.com/ryanbr/noop/pull/2722) and shipped in `01b55ac2`. Next correctness
+task: unusable respiratory/optional Effort baseline consumption in Charge, with score/driver/trace alignment and
+usable-state preservation. Then repair spectral power units, grid resolution and discarded time together; no
+physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
+are separate candidates. Source coverage and physiological tuning need a private raw backup/independent references.
+
 Documentation/file organisation is complete; upstream #2717 is green and awaits merge. Phone checks live in
 [State](STATE.md). **Item 9 is now reproduced** through production export/restore with synthetic data (28 assertions, 7 Oct).
 The storage discussion is [issue #2720](https://github.com/ryanbr/noop/issues/2720), published with Utku’s approval;

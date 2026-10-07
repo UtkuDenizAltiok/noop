@@ -1,0 +1,35 @@
+source=8e94d559be273ec8d74832fe5db78898be83cc11
+spectral fixed dt=0.5 frequency=0.10 amplitude20=1.000000000 amplitude40=1.000000000 ratio=1.000000000 expectedRatio=4
+spectral fixed dt=0.5 frequency=0.25 amplitude20=1.000000000 amplitude40=1.000000000 ratio=1.000000000 expectedRatio=4
+spectral fixed dt=1.0 frequency=0.10 amplitude20=1.000000000 amplitude40=1.000000000 ratio=1.000000000 expectedRatio=4
+spectral fixed dt=1.0 frequency=0.25 amplitude20=1.000000000 amplitude40=1.000000000 ratio=1.000000000 expectedRatio=4
+spectral public base=600 amplitude=10 HF=0.829395682 expectedApproxPower=50.0
+spectral public base=600 amplitude=20 HF=0.829388581 expectedApproxPower=200.0
+spectral public base=600 amplitude=40 HF=0.829305726 expectedApproxPower=800.0
+spectral public base=800 amplitude=10 HF=0.622532563 expectedApproxPower=50.0
+spectral public base=800 amplitude=20 HF=0.622531943 expectedApproxPower=200.0
+spectral public base=800 amplitude=40 HF=0.622529510 expectedApproxPower=800.0
+spectral public base=1200 amplitude=10 HF=0.416585029 expectedApproxPower=50.0
+spectral public base=1200 amplitude=20 HF=0.416701236 expectedApproxPower=200.0
+spectral public base=1200 amplitude=40 HF=0.417293541 expectedApproxPower=800.0
+SDNN clean index=11.199020501841618 coverage=1.0183946488294315 verdict=plausible spreadTrusted=true accuracy=1.0 valuesTrusted=true
+SDNN duplicated index=11.189668499791464 coverage=2.036789297658863 verdict=sameSecondOverCount spreadTrusted=false accuracy=0.4991652754590985 valuesTrusted=false
+SDNN banked index=11.199020501841618 coverage=1.0357142857142858 verdict=plausible spreadTrusted=true accuracy=0.0 valuesTrusted=false
+standard packet=[0, 60] accepted=true rr=[]
+standard packet=[8, 60] accepted=true rr=[]
+standard packet=[8, 60, 1] accepted=true rr=[]
+standard packet=[8, 60, 1, 0] accepted=true rr=[]
+standard packet=[16, 60] accepted=true rr=[]
+standard packet=[16, 60, 232] accepted=true rr=[]
+standard packet=[16, 60, 232, 3] accepted=true rr=[1000]
+standard packet=[16, 60, 232, 3, 1] accepted=true rr=[1000]
+spectral grid seconds=200 frequency=0.250 normalizedIntegral=0.500000000
+spectral grid seconds=200 frequency=0.253 normalizedIntegral=0.496698853
+spectral grid seconds=400 frequency=0.250 normalizedIntegral=1.000000000
+spectral grid seconds=400 frequency=0.253 normalizedIntegral=0.095506759
+spectral grid seconds=800 frequency=0.250 normalizedIntegral=2.000000000
+spectral grid seconds=800 frequency=0.253 normalizedIntegral=0.124618042
+empty resp baseline n=0 usable=false rate=10 absentScore=72.103474 emptyScore=92.617968 driverCount=4
+empty resp baseline n=0 usable=false rate=14 absentScore=72.103474 emptyScore=87.993103 driverCount=4
+empty resp baseline n=0 usable=false rate=18 absentScore=72.103474 emptyScore=81.063173 driverCount=4
+empty resp baseline n=0 usable=false rate=22 absentScore=72.103474 emptyScore=71.432092 driverCount=4
