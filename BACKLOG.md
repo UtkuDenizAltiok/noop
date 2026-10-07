@@ -8,9 +8,9 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 ## Priority — 7 Oct 2026
 
 Documentation/file organisation is complete; upstream #2717 is green and awaits merge. Phone checks live in
-[State](STATE.md). Next, investigate **item 9: deleted-sleep markers missing from fresh backup restores**. It risks silently
-wrong data and needs no personal dataset. Then choose from A/B/D/C using new logs or ground truth, not remembered
-results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
+[State](STATE.md). **Item 9 is now reproduced** through production export/restore with synthetic data (28 assertions, 7 Oct).
+Next is the storage discussion, with a prepared issue awaiting Utku’s permission to publish; then implement the agreed
+repair. No personal export is needed for it. Then choose from A/B/D/C using new logs or ground truth, not remembered results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
 
 ## Performance and science evidence
 
@@ -105,14 +105,20 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 8. **The largest files** (`BLEManager.swift` 7.4k lines, `TodayView.swift` 6.0k, `IntelligenceEngine.swift` 3.5k,
    `Repository.swift` 3.5k, `WhoopBleClient.kt` 8.7k): split only where it removes real duplication or bug risk.
 
-9. **iOS deletion markers are not in the `.noopbak` backup** (found 3 Oct): Android's `dismissedSleep` rows travel in
-   its database; iOS keeps `sleep.dismissedSessions` (and now `…hiddenFromList`) in the defaults, outside
-   `BackupSettings`. A restore onto fresh iOS defaults can therefore let those nights be detected again;
-   existing-device restores may retain their local markers. **Rechecked on `9f98f811`, 6 Oct:** `Repository` still
-   writes the spans to defaults, `BackupSettings.whitelist` omits them, and `DataBackup.currentSettingsJSON` only
-   bridges custom journal names beyond that snapshot. First reproduce export/restore with synthetic markers and fresh
-   defaults; choose a portable representation against Android's database and the byte-identical backup contract
-   (`AGENTS.md`), then discuss the storage approach with maintainers before implementation.
+9. **Apple deletion markers are missing from `.noopbak` (confirmed 7 Oct).** Production export/restore on
+   `8e94d559` with a real migrated synthetic store: fresh defaults restore raw/profile/journal data but lose the
+   suppression markers; same-device restores retain local markers, and unrelated destination markers also survive.
+   Marker-only backups omit settings entirely. #2660's hidden-list choices are absent too; its backup code is identical.
+   28 assertions passed; the exact finding is loss of the detector guard, which can permit a deleted night to return.
+   Android keeps `dismissedSleep`/`managementVisible` in its database; source audit and a synthetic DB/container
+   fixture confirm those travel together (Android runtime restore not run). Both platforms reject the other's full
+   database, despite their common ZIP/settings contract. Preferred discussion direction: an optional versioned
+   deletion-state archive entry, preserving Apple global versus Android device scope, atomically restoring both
+   suppression and visibility, and keeping the profile whitelist unchanged. A database migration is the alternative
+   and must explicitly address old id-free Apple spans. **No implementation before the storage discussion.**
+   Concrete issue draft and runnable evidence: ignored `private/session-2026-10-07-backup/`; new-issue publication
+   awaiting Utku's approval under Rules. No personal export needed.
+
 10. **Android's Polish and Portuguese deleted-sleep strings** use the computer sense of "sleep" ("uśpienie",
     "suspensão"; one pt line keeps "sleep" in English); iOS has the corrected ones since `ios-deleted-sleep`. A small
     Android strings PR.
