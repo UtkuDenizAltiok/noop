@@ -5,6 +5,9 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 ## Now — next work
 
 **Session closed at Utku's request, 8 Oct 2026:** no new work. Phone installation/export is deferred.
+Final handover checked on 8 Oct: session-prompt refinement complete; all PR worktrees clean/pushed, no running
+build/test/release jobs. The clean local scratch checkout and two safety tags remain intentionally as recorded below.
+Named source/audit/log/bundle locations exist; private files and cached evidence remain on this Mac. No handover blocker.
 The release build has finished; independent download verification remains for the next chat before a new code task.
 The one-pass resting-HR repair is fully verified and [PR #2724](https://github.com/ryanbr/noop/pull/2724) is
 open/mergeable at `14783994`, all 18 upstream checks green, no review/comment. Audit and exact original-output
@@ -107,7 +110,8 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 - Earlier installed release: **`6de9d6d`**, 6 Oct; its prior metadata remains in `private/release-*-6de9d6d.*`.
 - Code worktrees: root `main`; siblings `noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
   `/Users/utk/.codex/worktrees/docs-navigation/noop` and `/Users/utk/.codex/worktrees/hrv-spectral-power/noop`
-  (`codex/hrv-sdnn-quality` / `b6e53f38`). All code is clean/pushed; handbook is this `dist` worktree.
+  (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
+  (`codex/rhr-one-pass` / `14783994`). All PR code is clean/pushed; handbook is this `dist` worktree.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
   versions. No throwaway remote regression branch/stash. Local stack scratch/safety refs are listed in Now.
 
