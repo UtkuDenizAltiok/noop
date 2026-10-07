@@ -150,7 +150,7 @@ object HrvAnalyzer {
             val verdict = classifyCoverage(coverage, coverage)
             val accurate = beatAccurateFraction(times, intervals)
             if (beatSpreadIsTrustworthy(verdict) && beatValuesAreTrustworthy(accurate)) {
-                analyzeRaw(intervals).sdnn
+                analyze(segment).sdnn
             } else null
         }
         return if (values.isEmpty()) null else values.sum() / values.size.toDouble()
