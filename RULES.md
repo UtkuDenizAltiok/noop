@@ -18,6 +18,11 @@ say so and name the next work. Request phone/strap evidence, account approval or
 Record the reason when a settled decision changes. Upstream maintainers decide what they merge.
 Utku clarified on 7 Oct: give concrete, simple actions and the exact answer needed when asking him to decide;
 keep technical investigation and storage choices with the agent unless his input is actually required.
+Utku clarified on 8 Oct after the Stress update: explain what changed, why it matters and what he should actually
+notice. A preventive repair may look the same; say so and give a concrete example of the avoided failure. Phone
+instructions must name the exact navigation/actions, expected result and evidence needed. Avoid shorthand such as
+"leave and return"; distinguish navigating away from closing the app. Do not repeat a completed observation or
+request an export without a defined need. Give enough explanation to understand the change, not just a short result.
 
 ## Settled decisions
 

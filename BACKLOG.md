@@ -16,8 +16,8 @@ adds a timing prerequisite: history emits several R-R rows at one record timesta
 beat times cannot mean blindly using row `ts`. Validate original/rejected interval time, record continuity,
 clock splices, missing blocks and coarse timestamps against known varying signals before choosing the estimator.
 No physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
-are separate candidates. The newly discovered Stress cancellation race is the active bounded improvement in
-State; retain successful results and two-phase loading. Other screens' broad cancellation catches are candidates
+are separate candidates. The Stress cancellation repair is verified and delivered; current status is in
+State. Retain successful results and two-phase loading. Other screens' broad cancellation catches are candidates
 only after caller/publication evidence; no global refactor is included. External
 [#2725](https://github.com/ryanbr/noop/pull/2725) already covers Android Stress core failure retry/cancellation;
 our #2738 deliberately leaves that call unchanged. Recheck its merge/status before any further core work. Source coverage and physiological tuning need a private raw backup/independent references.

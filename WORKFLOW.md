@@ -7,8 +7,10 @@ and each explains itself in its first lines.
 ## 1. Working with Utku
 
 Authority and standing permissions live in [Rules](RULES.md). Utku uses a WHOOP 5.0 and iPhone, installs via AltStore
-and does not need code or terminal chores. Give one to three direct steps for needed observations; state the expected
-result and end phone tests with a strap log: More → App → Test Centre → Strap log → Save….
+and does not need code or terminal chores. Follow Rules' communication requirements: explain the change and any
+unchanged appearance, then give one to three exact steps for needed observations and their expected result.
+When a strap log is useful, its path is More → App → Test Centre → Strap log → Save…; specify what it can establish
+and whether any other evidence is needed. An already supplied observation/log does not require a repeat test.
 
 Use UI paths proven in code or the simulator. A log proves app activity, not what iOS drew; ask what he actually saw.
 Do not request a day-by-day wear/activity record. Preserve his comments and personal files during cleanup.
