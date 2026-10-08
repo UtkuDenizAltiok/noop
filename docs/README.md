@@ -43,10 +43,14 @@ command and device-family references. Protocol observations are not proof that a
 
 These explain past work or proposed directions; they are not installation instructions or evidence that a feature ships.
 
-- [Design specifications](superpowers/specs/) and [implementation plans](superpowers/plans/).
+- [Design specifications](superpowers/specs/) and the [Oura BLE architecture record](superpowers/plans/2026-06-29-oura-local-ble-architecture.md).
 - [Device-support roadmap](DEVICE_SUPPORT_ROADMAP.md) and [R-R optimisation plan](RR-OPTIMIZATION.md).
 - [Original iOS porting notes](IOS.md#historical-porting-notes).
 - [Release notes](releases/) and [changelog](../CHANGELOG.md), also shown in the app under **What's new**.
+
+Completed execution recipes for [Oura API import](superpowers/specs/2026-06-27-oura-live-api-import-design.md)
+and [Android sleep timeline rows](superpowers/specs/2026-07-10-android-sleep-stage-timeline-design.md) are retained
+in Git history, linked from those design records. Their implementations and tests are maintained in the source tree.
 
 ## Project notices
 
