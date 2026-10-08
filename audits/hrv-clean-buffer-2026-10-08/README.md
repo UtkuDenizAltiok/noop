@@ -106,8 +106,8 @@ completed all four required jobs (conditional cleanup skipped). All five nonempt
 IPA HTTP200, 21,955,171-byte size, ZIP CRC, app/widget identities and background capabilities passed independent
 verification. IPA SHA256 `af24f640c967f542c19ac2c0477577e7b0491dafd9aa11b82f9e442fc487f091` equals GitHub's digest.
 Old refs were independently recovered/fsck-verified before only this task's temporary checkout/tags were retired.
-Installation is just update; user confirmation is pending. No special real-device test is required for this
-allocation-only change; no BLE or measured phone-energy/accuracy claim is made.
+Installation was just update; Utku explicitly confirmed updating at session close. No special real-device test
+is required for this allocation-only change; no BLE or measured phone-energy/accuracy claim is made.
 
 The existing DEBUG `--demo-screen stress` entry rendered Stress's missing-data state in the iPhone 17 Pro /
 iOS 27 simulator. No raw rows or consent preference were injected; this is launch/render smoke only, not
