@@ -28,16 +28,41 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   attempt exited before creating a verify log; checked inactive before replacement, so no overlap occurred.
   Negative Android run **37826824779**, head **`d27bfb0c01e978347f47dc5d7578733d78dbad1c`**, branch
   `codex/hrv-clean-buffer-regression`, cache worktree `hrv-clean-buffer-2026-10-08/android-regression`.
-  Only the two new unit tests are selected there; its actual build step and exactly two assertion failures
-  are required. Readback command: `gh run view 37826824779 --repo UtkuDenizAltiok/noop --json headSha,status,conclusion,jobs`.
-  Run the final full Android suite on the feature head after the negative result. No PR until required local/fork
-  evidence passes; no testing refs moved. Initial harness compile
+  Completed with the expected failure: APK build success, exactly two selected tests/two
+  `ComparisonFailure` assertions, zero extra tests. Patch/log/job metadata retained; source/workflow restored
+  byte-identical to feature files. Retiring the temporary remote/local branch and cache checkout next. Readback command: `gh run view 37826824779 --repo UtkuDenizAltiok/noop --json headSha,status,conclusion,jobs`.
+  Final full Android run
+  **37828040856** completed successfully on feature **`c71b48af`** after that verified negative result; exact head and actual APK+full-unit steps passed. Logs retained. Combined candidate is clean/detached **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**
+  at `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/staging-noop`, old stack parent `6c815151` plus
+  the new change. Its changed-path set exactly equals the old stack union four new source/test paths; no
+  parked wording included. Prior stack/build/tag bundle has been independently imported, exact tips matched
+  and full fsck passed. Full local verify exited **0 / all steps passed**: 632 store, 2137 analytics,
+  327 import (one existing skip), all source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing
+  skips) and iOS build. Generated Info.plist restored; feature clean/pushed. Stronger final benchmark completed
+  with full output consumption and exact 137,267-case preservation; final results retained in the audit.
+  Launch combined iOS build only now that verify and benchmark have exited; script/log/exit files in task cache. Combined build PID **9340**, command
+  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-staging-ios.sh`; independent session, log
+  `staging-ios.log`, completion `staging-ios.exit` and `BUILD SUCCEEDED`. Verify PID command before acting.
+  Simulator walkthrough will use the existing DEBUG `--demo-screen stress` entry, never a consent change or
+  source injection. Preserve installed app/data/preferences before install; restore them and shutdown afterward.
+  Simulator UI app/CUA is unavailable here; use the handbook's simctl screenshot workflow, report that boundary. Before any future testing-ref rewrite, preserve old stack/build/tag tips in
+  `hrv-clean-buffer-2026-10-08/pre-testing.bundle` and independently import/fsck them. Journaled preparation may
+  create a detached combined candidate from the unchanged current stack plus `c71b48af`; it must exclude the
+  parked wording work and pass its local iOS build, combined Android and eleven Swift jobs before shipping.
+  The full verify currently owns shared Xcode caches; no combined build will overlap it.
+  PR publication is now journaled: local/fork verification passed on `c71b48af`,
+  description in `private/hrv-clean-buffer-2026-10-08/pr-body.md`, title
+  `perf(hrv): reuse neighbour buffers without changing cleaned intervals`, one concern/four files. Create once,
+  record URL/number and attach it, read back exact head/body, then require stable expected upstream roster
+  (17 jobs for Packages+Android) and actual build/test steps. No testing refs moved. Initial harness compile
   failed on fixture type inference, corrected before measurement; retained `pilot-compile-error.log` is harness
-  evidence, not a product test failure. No PR or release/public action yet.
+  evidence, not a product test failure. Measurement follow-up preregistered before execution: consume every returned value/adjacency flag through
+  a non-inlined digest to prevent unused-field elimination; same workloads/trials, retain count-only pilot.
+  Run it only after local verify exits, before the combined build. No PR or release/public action yet.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
-his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). Stop language work and
-new tasks during closure. The saved Stress wording work is parked, not delivered or discarded.
+his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
+work stays parked, not delivered or discarded. This resumed session owns only the bounded HRV buffer improvement.
 
 - [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
   `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
@@ -69,7 +94,7 @@ new tasks during closure. The saved Stress wording work is parked, not delivered
   including packed/coarse record timestamps. This remains a higher-value candidate than wording; reassess current
   upstream and retained varying-signal evidence before choosing a bounded repair. Other priorities remain in Backlog.
 
-**Recovery snapshot:** twelve code worktrees are clean: root plus ten named source branches are pushed; the
+**Prior closure snapshot (21:08 TRT):** twelve code worktrees are clean: root plus ten named source branches are pushed; the
 one detached combined candidate above is local-only. Main/origin/upstream remain `8e94d559`. No running local
 build/watch/release, queued/running task CI, unfinished Git operation or stash. No new PR, release dispatch,
 testing ref movement or safety tag. The source commit and current handbook are on the fork; private fixtures,

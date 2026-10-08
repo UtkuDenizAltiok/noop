@@ -1,0 +1,44 @@
+[
+  {
+    "count": 300,
+    "mixed": false,
+    "originalPairMs": 0.06262916666666667,
+    "reusePairMs": 0.04340083333333333,
+    "cpuReductionPercent": 30.701882775597092
+  },
+  {
+    "count": 300,
+    "mixed": true,
+    "originalPairMs": 0.060659444444444446,
+    "reusePairMs": 0.042228611111111106,
+    "cpuReductionPercent": 30.38411166164471
+  },
+  {
+    "count": 36000,
+    "mixed": false,
+    "originalPairMs": 7.356066666666666,
+    "reusePairMs": 5.150933333333333,
+    "cpuReductionPercent": 29.977071079653072
+  },
+  {
+    "count": 36000,
+    "mixed": true,
+    "originalPairMs": 7.082733333333333,
+    "reusePairMs": 4.9161,
+    "cpuReductionPercent": 30.59035588896941
+  },
+  {
+    "count": 108000,
+    "mixed": false,
+    "originalPairMs": 22.289,
+    "reusePairMs": 15.485199999999999,
+    "cpuReductionPercent": 30.52537125936561
+  },
+  {
+    "count": 108000,
+    "mixed": true,
+    "originalPairMs": 21.1748,
+    "reusePairMs": 14.680599999999998,
+    "cpuReductionPercent": 30.669475036363988
+  }
+]

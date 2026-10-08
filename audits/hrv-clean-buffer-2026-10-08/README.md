@@ -52,7 +52,10 @@ The pilot candidate changed only the buffer lifetime/reset; its full production 
 app file: `4d98e0a72f9436a08350df42068a4e78b3a8712a3c97c17eae9cb5897d227b36`.
 The initial harness compile failed on a fixture type-inference ambiguity; it was corrected before any results.
 No excluded cases or changed prediction. Darwin CPU time includes user+system; inputs are generated before
-measurement, the original/reuse order alternates across seven trials and counts feed a retained checksum.
+measurement, the original/reuse order alternates across seven trials and the pilot counts feed a retained checksum. Before final trials, consumption was strengthened to read all
+returned Double words and adjacency flags through a non-inlined digest, with no local build running. Inputs,
+iterations and ordering were unchanged. Retain the pilot separately; the table below reports this stronger
+workload, including the identical output-consumer cost.
 
 Direct original/candidate comparisons passed **137,267 cases**, including all 137,257 length-0...6 sequences
 from the seven-value boundary alphabet, nonfinite/range/threshold/end-window fixtures and long inputs.
@@ -63,14 +66,15 @@ the direct exhaustive comparison and catch future drift on either platform.
 
 | Intervals / input | Original CPU, both cleaning calls | Reuse CPU | Reduction |
 |---|---:|---:|---:|
-| 300, clean | 0.05984 ms | 0.04089 ms | 31.7% |
-| 300, mixed artefacts | 0.05837 ms | 0.04024 ms | 31.1% |
-| 36,000, clean | 7.04093 ms | 4.82830 ms | 31.4% |
-| 36,000, mixed artefacts | 6.83543 ms | 4.70147 ms | 31.2% |
-| 108,000, clean | 21.45360 ms | 14.64480 ms | 31.7% |
-| 108,000, mixed artefacts | 21.15790 ms | 14.66820 ms | 30.7% |
+| 300, clean | 0.06263 ms | 0.04340 ms | 30.7% |
+| 300, mixed artefacts | 0.06066 ms | 0.04223 ms | 30.4% |
+| 36,000, clean | 7.35607 ms | 5.15093 ms | 30.0% |
+| 36,000, mixed artefacts | 7.08273 ms | 4.91610 ms | 30.6% |
+| 108,000, clean | 22.28900 ms | 15.48520 ms | 30.5% |
+| 108,000, mixed artefacts | 21.17480 ms | 14.68060 ms | 30.7% |
 
-All trial data: [pilot-results.txt](pilot-results.txt); medians: [pilot-summary.json](pilot-summary.json).
+Final trial data: [final-results.txt](final-results.txt); medians: [final-summary.json](final-summary.json).
+The initial count-only [pilot](pilot-results.txt) and [summary](pilot-summary.json) are retained separately.
 This is a compiled-Mac helper benchmark, not a phone/Android benchmark, simulator result, whole-pass saving,
 peak-memory measurement or battery result. The eight-hour-sized pair saves about 2.1–2.2 ms on this Mac.
 No work is skipped or delayed; sampling, storage, metric math, quality thresholds and UI are preserved.
@@ -88,4 +92,9 @@ python3 /absolute/path/to/handbook/audits/hrv-clean-buffer-2026-10-08/measure.py
 Two new Swift preservation tests passed initially. Omitting each loop's reset separately made its corresponding
 test fail assertions at case 10, then the complete source digest was restored each time. Large fixtures are not
 run after the first mismatch, so deliberate faults do not turn into runaway neighbour growth or app-host crashes.
-Negative Android CI and full local/fork verification are in progress; they are not yet passed evidence.
+Negative [Android run 37826824779](https://github.com/UtkuDenizAltiok/noop/actions/runs/37826824779)
+built the APK successfully and failed exactly both new tests with `ComparisonFailure` (two selected/two failed).
+The source/workflow were restored byte-identical and the temporary remote/local branch/worktree retired.
+Full local verify at `c71b48af` passed: 632 store, 2137 analytics, 327 import (one existing skip), all
+source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing skips) and iOS build. Final feature
+Android and combined verification/delivery remain pending in State.

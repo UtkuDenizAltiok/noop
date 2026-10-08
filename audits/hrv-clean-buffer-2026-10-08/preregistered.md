@@ -24,3 +24,9 @@ roster, combined iOS/Swift/Android and testing IPA identity/download checks are 
 
 No exclusions, no personal data, subjects or reference recordings. Existing spectral defects remain queued;
 no improved physiological accuracy, BLE reliability or clinical interpretation is claimed.
+
+Before the final measurement, strengthen the benchmark consumer to read every returned Double word and
+adjacency flag through a non-inlined digest. The pilot consumed counts; unused result fields could be optimised
+away. Keep all inputs, iteration counts, trial ordering and success conditions unchanged, retain the pilot,
+and run the final measurement with no local build competing for CPU. Report that final workload (cleaning plus
+identical digest consumption), rather than treating count-only timing as whole-result cost.

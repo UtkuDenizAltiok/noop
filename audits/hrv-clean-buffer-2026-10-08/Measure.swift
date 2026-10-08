@@ -22,6 +22,14 @@ func cpuSeconds() -> Double {
         + Double(usage.ru_utime.tv_usec + usage.ru_stime.tv_usec) / 1e6
 }
 
+@inline(never)
+func consumeCleaned(_ nn: [Double], _ contiguous: [Bool]) -> UInt64 {
+    var digest: UInt64 = 14695981039346656037
+    for value in nn { digest = (digest ^ value.bitPattern) &* 1099511628211 }
+    for flag in contiguous { digest = (digest ^ (flag ? 1 : 0)) &* 1099511628211 }
+    return digest
+}
+
 let alphabet: [Double] = [299, 300, 800, 960, 1200, 2000, 2001]
 var checked = 0
 for length in 0...6 {
@@ -49,6 +57,7 @@ for values in additional {
 print("exact cleaning/adjacency comparison: \(checked) cases passed")
 
 var checksum = 0
+var outputDigest: UInt64 = 0
 for count in [300, 36000, 108000] {
     for mixed in [false, true] {
         let values = cleaningInput(count, mixed)
@@ -60,11 +69,17 @@ for count in [300, 36000, 108000] {
                 let wall = DispatchTime.now().uptimeNanoseconds
                 for _ in 0..<iterations {
                     if variant == "original" {
-                        checksum += OriginalCleaner.cleanRR(values).count
-                        checksum += OriginalCleaner.cleanRRGapAware(values).nn.count
+                        let clean = OriginalCleaner.cleanRR(values)
+                        let gap = OriginalCleaner.cleanRRGapAware(values)
+                        checksum += clean.count + gap.nn.count
+                        outputDigest ^= consumeCleaned(clean, [])
+                        outputDigest ^= consumeCleaned(gap.nn, gap.contiguous)
                     } else {
-                        checksum += CandidateCleaner.cleanRR(values).count
-                        checksum += CandidateCleaner.cleanRRGapAware(values).nn.count
+                        let clean = CandidateCleaner.cleanRR(values)
+                        let gap = CandidateCleaner.cleanRRGapAware(values)
+                        checksum += clean.count + gap.nn.count
+                        outputDigest ^= consumeCleaned(clean, [])
+                        outputDigest ^= consumeCleaned(gap.nn, gap.contiguous)
                     }
                 }
                 let elapsed = Double(DispatchTime.now().uptimeNanoseconds - wall) / 1e9
@@ -74,4 +89,4 @@ for count in [300, 36000, 108000] {
         }
     }
 }
-print("checksum=\(checksum)")
+print("checksum=\(checksum) outputDigest=\(outputDigest)")
