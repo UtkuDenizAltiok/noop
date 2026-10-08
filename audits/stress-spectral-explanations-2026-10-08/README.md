@@ -1,5 +1,10 @@
 # Stress spectral explanations — 8 Oct 2026
 
+**Closure status: parked, incomplete, unpublished.** Utku's latest instruction makes language/copy improvements
+the lowest priority; no more locale work is authorized as the next improvement. The assessment and acceptance
+below record the original plan, not a direction to resume it. [State](../../STATE.md) owns recovery and the next
+safe action; [Rules](../../RULES.md#settled-decisions) owns the latest priority.
+
 ## Extended assessment and bounded choice
 
 This extends the [pipeline audit](../biometric-pipeline-2026-10-07/README.md) and
@@ -56,3 +61,47 @@ nervous-system balance claims. These sources do not validate NOOP's spectral est
 No new literal-matching unit tests for this reversible copy change. Existing tests, compiled localization,
 unchanged-source comparison and rendered UI provide the meaningful checks. Runtime results belong in State
 until verification is finished.
+
+## Preserved results at session close
+
+Source **`0285a675cd89cec8e5e1557ae14d35d352d4f7df`** is committed, clean and pushed on
+`codex/stress-spectral-explanations`, worktree `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`.
+Five labels/descriptions and resource wiring changed in twelve files. Complete Swift/Kotlin Stress files reverse
+exactly to the originals after the declared copy/resource/comment changes; calculation, loading, gates, analytics,
+storage, transport, tests and build inputs are unchanged. The compiled Apple production calls and localized output
+were checked. Existing localization results are retained; do not repeat or expand that work under the latest priority.
+
+- Full local verification at this exact head ended **all steps passed**: WhoopStore 632, StrandAnalytics 2135,
+  StrandImport 327 (one existing skip), documentation/i18n/parity gates, governance 127, macOS 2267 (two existing
+  skips) and iOS build. Logs: `~/Library/Caches/noop-handbook/verify/0285a675/`; durable driver log in the task cache.
+- [Fork Android run 37816053441](https://github.com/UtkuDenizAltiok/noop/actions/runs/37816053441) completed
+  successfully at `0285a675`, with actual debug APK build and full unit-test steps inspected. That workflow uploads
+  no APK artifact; a packaged Android string-pool check was not performed. No local Android SDK was installed.
+- Original/fixed synthetic spectral readouts were ratio **2.3** and HF-only **0**, with the existing stress index
+  **288**. Raw input digests were preserved. English labels and the full explanatory footer were visible without
+  clipping; screenshots for both branches are retained. A German accessibility-size footer screenshot also exists.
+  Original/fixed headline values varied **1.1/1.2**; not every original snapshot restored preferences identically.
+  The effective-input/cache/startup cause was not established. Complete headline equivalence remains unverified;
+  unchanged executable source and matching spectral values do not resolve that runtime comparison.
+- Detached combined candidate **`ec329949618bcd43975100dc310306f146e4b4a0`** is clean and retained locally at
+  task-cache `staging-noop`. It is old stack `6c815151` plus this one copy commit, with only the intended twelve
+  paths changed. Its local iOS build ended **BUILD SUCCEEDED**. Relevant package/tool/test/workflow/build trees
+  match the old stack; combined Android/Swift CI was not dispatched. No claim of new combined CI success is made.
+  `pre-testing.bundle` was independently imported, both old tips read back and full fsck passed. No testing ref
+  changed: stack **`6c815151`**, build/tag **`c8eb1cd0`** remain the delivered state.
+- No PR was created for this source; upstream verification, combined delivery and any phone observation are
+  unfinished. Zero upstream check-runs is an unpublished head, not a green roster. Work is paused by the user's
+  priority/closure instruction, not an unavailable external approval. No physiological-accuracy or energy claim.
+
+The nearest safe boundary is complete: simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` has its previous
+Stress-cancellation app reinstalled, original database/preferences restored, normal `large` content size and is
+shut down. Database logical-dump equality and preferences equality were verified after shutdown; SQLite file/WAL
+bytes are not claimed identical. Original snapshots remain retained. No physical phone was touched or terms
+acceptance recorded. Both local verification/build PIDs exited; Android is complete; no job needs restarting.
+
+Recovery scripts, source/resource/compiled-value proofs, CI metadata, unpublished PR draft, original-file copies,
+simulator restoration and final worktree/ref/job manifest live in ignored
+`dist/private/stress-spectral-explanations-2026-10-08/`. Large logs, original/fixed PNGs, immutable synthetic inputs,
+saved simulator data/preferences, app products, staging preparation and old-tip bundle/recovery repository live in
+`~/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/`.
+These private/cached files and the detached candidate depend on this Mac; handbook backup does not upload them.

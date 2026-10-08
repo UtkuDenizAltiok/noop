@@ -26,6 +26,12 @@ request an export without a defined need. Give enough explanation to understand 
 
 ## Settled decisions
 
+- **English only; language improvements are lowest priority (Utku, 8 Oct 2026, session close).** He does not
+  care about other languages and does not want tokens spent fixing languages. Do not select wording, translation
+  or locale cleanup as the bounded improvement, or expand/repeat locale QA. Prioritize correctness, biometrics,
+  strap reliability and measured efficiency under the mandate above. Handle mandatory upstream resource/parity
+  requirements only as necessary for a prioritized functional change. Preserve the already-saved Stress wording
+  branch at lowest priority; its pending state lives in State, not an implied instruction to finish it next.
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove

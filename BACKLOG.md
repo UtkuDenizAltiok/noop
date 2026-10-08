@@ -7,6 +7,9 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 ## Priority — 8 Oct 2026
 
+Language/copy/translation work is lowest priority under [Utku's latest instruction](RULES.md#settled-decisions).
+The saved, unfinished spectral wording change is parked in State; do not use it to restart language work.
+
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and
 runnable synthetic evidence; [whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md)
 extend it. Active PRs, delivery and phone observations live in [State](STATE.md), completed repairs in
@@ -147,7 +150,7 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 10. **Android's Polish and Portuguese deleted-sleep strings** use the computer sense of "sleep" ("uśpienie",
     "suspensão"; one pt line keeps "sleep" in English); iOS has the corrected ones since `ios-deleted-sleep`. A small
-    Android strings PR.
+    Android strings PR. **Deferred at lowest priority by Utku, 8 Oct; do not spend tokens on it.**
 11. **MetricKit payloads came empty on 2–3 Oct** (begin = end, "exits: none"), after full ones on 26 and 29 Sep.
     Check whether a reinstall/update resets MetricKit's window before relying on it for a before/after.
 

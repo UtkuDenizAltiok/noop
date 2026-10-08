@@ -2,54 +2,58 @@
 
 Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — next work
+## Now — session closed, 8 Oct 2026, 21:08 TRT
 
-- [ ] **Bounded deep improvement — honest Stress spectral explanations.** Review/source/primary research
-  confirm LF/HF is presented as autonomic balance and higher stress, although the 2024 HRV committee report
-  rejects that interpretation. Apple StatTile clips the long caption to one line. Correct LF/HF/HF labels and
-  descriptions on both platforms, with all existing locales and a fully wrapping explanation. Preserve every
-  number, data gate, load phase, score, sensor/storage path and design component. New Android explanatory
-  strings must be localized, not hardcoded. Proof before edits: exact calculation/loading-source comparison,
-  all-locale catalog/resource and compiled-string checks, original/fixed same-input simulator ratio and HF-only
-  branches, no clipped caveat, full local verification, exact-head Android/expected upstream checks, PR and
-  independently verified testing release. No physiological calibration, battery claim or personal export needed.
-  Owner review requests are complete; all nine note URLs/readbacks in `private/review-requests-2026-10-08/`.
-- [x] **Latest update installed and normal Stress appearance reported.** Utku explicitly confirmed installing
-  today's latest update through AltStore before the Stress check. Verified build
-  `c8eb1cd028701123517e8bb56fad5c093d99ba03` is delivered; he saw nothing apparently wrong. The 19:30 strap log
-  review is complete and privately retained in `private/session-2026-10-08-phone-stress/` with hash, run report,
-  HR timeline and analysis. Latest collection, completed history sync and scoring are present. The log does not
-  record Stress screen publication, so it cannot prove a real-phone cancellation interleaving was triggered.
-  No repeat Stress check, wipe, reminder test, diary or personal export needed. Older updates `e722e0c4`,
-  `f60718a9` and `01b55ac2` were not separately confirmed installed; do not ask to install those.
-- [ ] Continue nine own PR lifecycles after checking actual heads/reviews. #2738 is open/mergeable, six exact-head
-  checks/actual steps passed, title/body/eight blobs match, no review/comment. Existing eight remain open/green
-  with no unanswered review. External #2725 separately handles Android Stress core retry/cancellation; our
-  repair deliberately leaves that call unchanged. Backup issue #2720 stays parked for maintainer storage direction.
-- [ ] **Next independent priority — spectral units/grid/time together.** The deeper assessment adds packed/coarse
-  timestamp provenance as a prerequisite; no estimator implementation started. Preregister varying-signal and
-  missing-time domains, independent energy/timing checks and coverage/runtime constraints before a change.
-  Phone/data deferrals persist; incoming evidence takes precedence. Other candidates live in Backlog.
+**Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
+his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). Stop language work and
+new tasks during closure. The saved Stress wording work is parked, not delivered or discarded.
 
-**Completed bounded improvement, 8 Oct:** cancelled Apple Stress loads preserve fresh results at all seven
-suspension boundaries; three Android reads now respect cancellation. Valid data, math, coverage, priorities,
-two-phase rendering and layout retained. [Assessment and reproducible evidence](audits/stress-load-cancellation-2026-10-08/README.md).
-Source worktree `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, branch `codex/stress-load-cancellation`,
-pushed `63e19100ced90540f1246806c33cb3312f9c808c`, PR [#2738](https://github.com/ryanbr/noop/pull/2738).
-Full Apple inputs at final head exactly match successful `49777b94`; final quick gates and Android passed;
-all six upstream checks passed. Seven old/fixed source-path replays, fourteen seen-to-fail tests and synthetic
-simulator comparison passed; original simulator database restored and device shut down.
-Stack `6c815151` and build/tag `c8eb1cd0` are local/remote matches. Combined iOS, Android and eleven Swift jobs
-passed; release run `37793338186`, release `406928323` fully verified with all four required jobs, conditional
-cleanup skipped, all five assets and downloadable/CRC/digest/identity-checked IPA. Normal phone appearance is
-reported and latest installation explicitly confirmed by Utku; real-phone cancellation interleavings remain unobserved.
+- [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
+  `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
+  clean and pushed at **`0285a675cd89cec8e5e1557ae14d35d352d4f7df`**. This changes five labels/explanations and
+  their resources across twelve files; it makes no numeric/algorithm/transport/storage change. Research,
+  preregistration, exact source proof, results and limitations are in the
+  [saved audit](audits/stress-spectral-explanations-2026-10-08/README.md).
+  Full local verification ended **all steps passed** at this head; fork Android **37816053441** completed
+  successfully with actual debug-build and unit-test steps checked. Both local job PIDs (5148 verify, 11107
+  combined iOS build) exited. No PR exists for this change; zero upstream check-runs means unpublished, not green.
+  Both changed spectral branches retained observed numbers (ratio 2.3, HF-only 0); the English footer was fully
+  visible. Original/fixed headline snapshots varied (1.1/1.2), with preferences not restored identically for every
+  original run. The exact cause and complete same-effective-input headline comparison are unresolved. Do not
+  claim complete runtime equivalence or spend more on locale QA. No new verification/publication/release was
+  started after Utku requested closure.
+  A clean, **local-only detached** combined candidate remains at **`ec329949618bcd43975100dc310306f146e4b4a0`**,
+  `~/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/staging-noop`. Its local iOS build passed;
+  it has not had combined Android/Swift CI or testing delivery. Relevant unchanged package/tool/test/build input
+  trees are recorded for possible future evidence reuse, not a claim that candidate CI ran. Keep this checkout.
+  Old testing refs remain `6c815151` / `c8eb1cd0`; neither was moved. The independently imported/fsck-verified
+  `pre-testing.bundle` and recovery repository are retained in the same cache.
+- [ ] **Pending external review:** all nine existing own PRs remain open/mergeable at their recorded heads, with
+  their expected green rosters and no unanswered maintainer review, rechecked at 21:08 TRT. One friendly,
+  distinct benefit/review request tagging `@ryanbr` on each is complete and read back; #2738/#2661 bodies also
+  reflect confirmed phone observations. Do not post again. URLs/text/readbacks are retained in
+  `private/review-requests-2026-10-08/`; closure metadata in
+  `private/stress-spectral-explanations-2026-10-08/session-close-pr-state.json`.
+- [ ] **Queued, not started — spectral numeric correctness:** units/grid/missing-time reconstruction together,
+  including packed/coarse record timestamps. This remains a higher-value candidate than wording; reassess current
+  upstream and retained varying-signal evidence before choosing a bounded repair. Other priorities remain in Backlog.
 
-**Recovery snapshot, 8 Oct:** ten code worktrees clean/pushed; main/upstream/origin `8e94d559`. No running local
-build/watch/release job, queued/running task CI, unfinished Git operation, stash, scratch branch or safety ref.
-Old source/testing tips independently recovered from verified bundles and full fsck before retirement. Evidence
-cache `~/Library/Caches/noop-handbook/stress-load-cancellation-2026-10-08/`; private scripts/drafts/metadata/input
-manifests `private/stress-load-cancellation-2026-10-08/`. Large/private evidence and original IPA/bundles depend
-on this Mac. No personal raw backup or independent PSG/ECG data available; no physiology/battery claim.
+**Recovery snapshot:** twelve code worktrees are clean: root plus ten named source branches are pushed; the
+one detached combined candidate above is local-only. Main/origin/upstream remain `8e94d559`. No running local
+build/watch/release, queued/running task CI, unfinished Git operation or stash. No new PR, release dispatch,
+testing ref movement or safety tag. The source commit and current handbook are on the fork; private fixtures,
+logs, screenshots, drafts, bundles and the combined candidate depend on this Mac. Public backup does not upload them.
+
+**Temporary simulator state restored:** device `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` has the previous cached
+Stress-cancellation app reinstalled; original database matches its saved logical dump, original app preferences
+match, content size is back to `large`, device shut down. This is logical SQLite equality, not byte-identical WAL
+layout. Restoration was verified again after shutdown. Report:
+`private/stress-spectral-explanations-2026-10-08/simulator-restoration.json`. Original snapshots remain in cache;
+no physical-phone changes or legal-consent changes were made.
+
+Completed cancellation delivery, installed-build confirmation and owner invitations are in [History](HISTORY.md).
+There is no external blocker to preserving this handover. The unfinished wording work is paused by Utku's
+closure/priority instruction; pending scientific reference/data needs remain separate. No phone test/export needed.
 
 ## Phone
 
@@ -105,11 +109,11 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
 | [#2738](https://github.com/ryanbr/noop/pull/2738) | `codex/stress-load-cancellation` / `63e19100` | Seven Apple cancellation boundaries plus three Android reads; all six exact-head checks/actual steps passed, full/quick local and both Android stages passed, original/fixed production-path replay and simulator controls. No new review; verified testing release `c8eb1cd0` delivered; latest installation confirmed by Utku and normal Stress appearance reported. Android core remains #2725's separate work. |
-| [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no review/comment. Documentation only; no app release. Await maintainer. |
-| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Independently verified update `e722e0c4` delivered. Await maintainer. |
+| [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no unanswered maintainer review. Documentation only; no app release. Await maintainer. |
+| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no unanswered maintainer review. Independently verified update `e722e0c4` delivered. Await maintainer. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
-| [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
-| [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
+| [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no unanswered maintainer review. Included in verified `01b55ac2`. Await maintainer. |
+| [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no unanswered maintainer review. Await maintainer. |
 | [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
@@ -163,9 +167,11 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   (`codex/charge-baseline-usability` / `3e59a667`). All PR code is clean/pushed; handbook is this `dist` worktree.
   New documentation worktree `/Users/utk/.codex/worktrees/network-privacy/noop` is
   `codex/network-privacy-docs` / `a4f14442`; plus `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, `codex/stress-load-cancellation` /
-  `63e19100`; entries reinstalled for all ten code worktrees.
+  `63e19100`. New saved wording worktree `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop` is
+  `codex/stress-spectral-explanations` / `0285a675`; the detached local-only staging candidate is documented in Now.
+  Entries reinstalled for all twelve code worktrees.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
-  versions. No throwaway regression branch/stash, safety ref or scratch checkout remains. Old stack `858d8c99` and
+  versions. No throwaway regression branch/stash or safety tag; the local-only scratch candidate in Now is retained. Old stack `858d8c99` and
   build `e722e0c4` independently recovered from task-cache `pre-testing.bundle` into `pre-testing-recovered.git`,
   both tips matched and full fsck passed before retirement.
   The old stack `979a2baf` / build `f60718a9` are recoverable from cache
@@ -186,7 +192,7 @@ seven new fragment links resolve, three legacy anchors retained and all six chan
 and PR title/body matched the verified local files. Exact-head check-runs roster: all three complete/success;
 Source `37777649489`, i18n `37777649539`, Tools Python `37777649601` actual job/steps passed. Tools ran
 234 capture (one existing skip), 50 repository acceptance, two legacy R-R and 153 core tests. Open/mergeable,
-no review/comment. No app build, release or phone action required. Private recovery/source hashes/inventories/
+no unanswered maintainer review. No app build, release or phone action required. Private recovery/source hashes/inventories/
 validator/readbacks: `private/network-privacy-2026-10-08/`; HTML and CI logs: cache `network-privacy-2026-10-08/`.
 No packet-capture, third-party retention, hardware, energy or physiological-accuracy claim.
 
@@ -215,7 +221,7 @@ simulator walkthroughs passed; reminder delivery is now confirmed on the phone, 
 folders. Older setup/test/measurement details: [verification archive](HISTORY.md#verification-archive--through-6-oct-2026).
 
 Simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` (iPhone 17 Pro, iOS 27.0), no strap, shut down.
-Previously seeded 120 synthetic days; current availability was not established by the 8 Oct disclaimer-only launch.
+The temporary spectral fixtures were removed by verified restoration of the original database/preferences; previous app reinstalled and content size restored. Synthetic UI evidence is described in the saved spectral audit.
 Xcode 27.0, XcodeGen, gh, Python 3.12 available; Android tests run in fork CI. The new phone log is retained privately;
 personal backups and sleep-accel / restricted DREAMT datasets remain absent on this Mac. Obtain raw data when an analysis needs it; never tune from old aggregates.
 Docs #2717: exact head `34c9eeac7649136ff79b1bd2e209abc90e2a85b3`, three required upstream checks passed
@@ -223,7 +229,7 @@ Docs #2717: exact head `34c9eeac7649136ff79b1bd2e209abc90e2a85b3`, three require
 50 repository acceptance, two legacy R-R, 153 core Tools. Local source hygiene/protocol arithmetic/163 source
 references/i18n passed. 123 remaining Markdown pages checked with no new broken local targets; GitHub rendering
 and four exact history blobs verified. Both original design bodies and 120 other pages retained; app source/tests/
-tools/workflows/config unchanged. Final PR title/body read back exactly; open/mergeable, no review/comment.
+tools/workflows/config unchanged. Final PR title/body read back exactly; open/mergeable, no unanswered maintainer review.
 Private evidence: `private/organisation-audit/doc-simplification-2026-10-08.json`; HTML/CI log in cache
 `doc-simplification-2026-10-08/`. Earlier navigation verification remains in History and the same private audit.
 Handbook entry points to canonical procedures; start/end prompts and complete setup section preserved; handbook
@@ -231,10 +237,9 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-Latest installation and normal Stress appearance are now confirmed by Utku; do not repeat the install/check/export.
-The follow-up explanation and supplied-log review are complete. After Sessions recovery, recheck PR #2738 at
-exact `63e19100` for review/merge. If reviewed, finish that response
-and verification cycle; if merged, prove inclusion before branch/worktree cleanup under Workflow. If unchanged,
-keep its verified delivery and deferred phone tasks intact, then preregister the queued spectral investigation
-using the timing prerequisites in the fresh audit. No repeat PR, CI, release or body upload is needed for this
-completed software repair. New phone evidence takes precedence when Utku provides it.
+After the standard Sessions recovery, **recheck current upstream spectral calculations against the retained
+7 Oct units/grid/missing-time evidence and packed/coarse-timestamp prerequisite**, before preregistering one
+bounded numeric-correctness repair. This is the next read-only assessment, not permission to start several tasks.
+Keep `0285a675` and its detached candidate parked at lowest priority; do not publish them, repeat locale QA,
+restart completed jobs, repost owner invitations or repeat the delivered cancellation release. Current phone
+installation and normal Stress appearance are confirmed; diary, normal-night tests and personal export remain deferred.
