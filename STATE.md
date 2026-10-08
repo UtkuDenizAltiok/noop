@@ -54,7 +54,36 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   description in `private/hrv-clean-buffer-2026-10-08/pr-body.md`, title
   `perf(hrv): reuse neighbour buffers without changing cleaned intervals`, one concern/four files. Create once,
   record URL/number and attach it, read back exact head/body, then require stable expected upstream roster
-  (17 jobs for Packages+Android) and actual build/test steps. No testing refs moved. Initial harness compile
+  (17 jobs for Packages+Android) and actual build/test steps. Published and attached [PR #2742](https://github.com/ryanbr/noop/pull/2742), exact `c71b48af`/body
+  read back; expected 17 upstream checks registered/pending.
+  Combined iOS build **c13e8873** exited 0 / BUILD SUCCEEDED; generated Info.plist restored. Old stack/build/tag
+  independently bundled/recovered/fsck verified. Current remote testing refs/upstream tip rechecked unchanged.
+  Next public actions journaled: local safety tags for both old testing refs, pinned-lease push of tested `c13e8873`
+  to testing-stack, synchronize local branch, dispatch exactly one combined Android and one 11-job Swift run.
+  Record IDs/head and actual job/step results before any ship action; last verified release at dispatch was c8eb1cd0; the workflow moves the testing tag before assets are built. Testing-stack local/remote now **c13e8873**;
+  combined Android run **37829415471**, combined Swift run **37829420443** (eleven jobs), both **completed successfully** at that head; Android APK/unit steps and every
+  one of the eleven Swift build/test jobs read back and passed (Backfill remains build-only). Upstream PR roster
+  has 16 successes/one in progress at exact feature head; keep checking through delivery.
+  Next public action journaled: run handbook `ship-build.sh testing-stack` once, producing testing-build as
+  c13e8873 plus the unchanged template-upload commit, using pinned lease. Preserve run/build/release IDs as they
+  appear. Require four actual release jobs, five nonempty assets, matching target/ref/tag, HTTP200 and downloaded
+  IPA SHA256/ZIP/plist/widget/background-capability verification before claiming delivery. Launch independently
+  with cache `run-ship.sh`, logs `ship.log`, final `ship.exit`; no duplicate dispatch if interrupted.
+  Ship monitor PID **13389**, exact command `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-ship.sh`;
+  independently detached, survives chat closure. Testing-build local/remote **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**,
+  testing-stack c13e8873 plus unchanged template workflow; release run **37830619829**. Run readback:
+  `gh run view 37830619829 --repo UtkuDenizAltiok/noop --json status,conclusion,headSha,jobs`.
+  Monitor log `ship.log`, terminal marker `ship.exit` and `shipped ef6216f8`; independent downloadable asset
+  verification script `private/hrv-clean-buffer-2026-10-08/verify-release.py ef6216f8bc8076bb62277b700666ffb8c9c99531 37830619829`.
+  Completion needs that script's stored release/IPA reports as well as the successful monitor. New testing
+  ref publication is complete; built/downloadable/installed remain separate pending states. The final upstream
+  check still running is universal macOS build/test; all other sixteen checks passed.
+  Local safety tags `backup/pre-hrv-clean-stack` (6c815151) / `backup/pre-hrv-clean-build` (c8eb1cd0) retained
+  until final shipping/readback; independent bundle/recovery proves retiring them later is safe.
+  Simulator smoke rendered Stress's existing missing-data state. It is no numeric or hardware evidence.
+  Original app reinstalled; after an unavailable simctl `kill` binary, exact host cfprefsd PID/command was
+  verified/signalled and original snapshot recopied. After shutdown, database logical dump and preference
+  bytes match. Report `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`; original snapshots retained. Initial harness compile
   failed on fixture type inference, corrected before measurement; retained `pilot-compile-error.log` is harness
   evidence, not a product test failure. Measurement follow-up preregistered before execution: consume every returned value/adjacency flag through
   a non-inlined digest to prevent unused-field elimination; same workloads/trials, retain count-only pilot.

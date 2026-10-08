@@ -96,5 +96,15 @@ Negative [Android run 37826824779](https://github.com/UtkuDenizAltiok/noop/actio
 built the APK successfully and failed exactly both new tests with `ComparisonFailure` (two selected/two failed).
 The source/workflow were restored byte-identical and the temporary remote/local branch/worktree retired.
 Full local verify at `c71b48af` passed: 632 store, 2137 analytics, 327 import (one existing skip), all
-source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing skips) and iOS build. Final feature
-Android and combined verification/delivery remain pending in State.
+source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing skips) and iOS build. [Final feature Android](https://github.com/UtkuDenizAltiok/noop/actions/runs/37828040856) passed its
+APK and full unit-test steps at exact `c71b48af`. [PR #2742](https://github.com/ryanbr/noop/pull/2742) was
+published and its head/description read back exactly. Its 17 upstream checks are pending. Combined candidate
+`c13e8873` passed the local iOS build; Android/eleven-job Swift CI and testing delivery remain pending in State.
+
+The existing DEBUG `--demo-screen stress` entry rendered Stress's missing-data state in the iPhone 17 Pro /
+iOS 27 simulator. No raw rows or consent preference were injected; this is launch/render smoke only, not
+numeric, hardware or accuracy validation. Original app/data/preferences were restored and the simulator
+shut down, with database logical-dump equality and preference-byte equality verified. The first screenshot
+was captured before launch completed and showed SpringBoard; only the later settled screenshot is render
+proof. A missing simulator `kill` executable interrupted cache invalidation; the exact host simulator
+cfprefsd PID/command was checked, signalled and the snapshot recopied before the verified shutdown.
