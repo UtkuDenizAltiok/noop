@@ -110,9 +110,14 @@ tests. Both negative runs exited 65, restored run exited 0; they failed assertio
 Android negative run [37783143070](https://github.com/UtkuDenizAltiok/noop/actions/runs/37783143070) built the app
 successfully, then ran 6,645 tests with six skips and six failures: five intended cancellation failures and one
 existing wiring assertion that depended on the exact unwrapped Swift assignment text. The latter is adjusted
-to check the actual preference and selected-mode scoring instead. A separate control-only mutation verifies
-the normal cases and that the adjusted wiring test still catches a disconnected preference. Final verification
-and delivery remain pending in State until actual results are captured.
+to check the actual preference and selected-mode scoring instead. The separate [control mutation](https://github.com/UtkuDenizAltiok/noop/actions/runs/37784315713) also built successfully,
+then ran six selected tests with exactly four expected failures: the three valid-work controls and disconnected
+personal preference. The remaining two wiring controls passed; no new-test crash occurred. Thus every new
+Android test was observed failing in the appropriate mutation. The first full local run at `82d8d0ae` passed packages, parity/governance and the iOS build; its Mac suite
+(2,273 tests, two existing skips) had exactly the equivalent Apple source-text assertion failure. The matched
+Apple guard was corrected and deliberately disconnected: two selected tests, one expected assertion failure,
+then the exact production source digest restored. These were test compatibility defects, not extra failed race
+cases. Final verification and delivery remain pending in State until actual results are captured.
 
 Large logs and compiled replays: `~/Library/Caches/noop-handbook/stress-load-cancellation-2026-10-08/`.
 Private scripts/action drafts: handbook `private/stress-load-cancellation-2026-10-08/`. Public output contains no

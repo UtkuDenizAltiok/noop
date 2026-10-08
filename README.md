@@ -14,6 +14,7 @@ for a thorough improvement session, and the end prompt to hand over.
 | Next investigations and their evidence | [Backlog](BACKLOG.md) |
 | Sensor pipeline, biometric defects and runnable evidence | [7 Oct audit](audits/biometric-pipeline-2026-10-07/README.md) |
 | Whole-app priorities and optional Charge baseline repair | [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) |
+| Deeper assessment and cancelled Stress load regression | [Freshness audit](audits/stress-load-cancellation-2026-10-08/README.md) |
 | Source-backed network/privacy guide reconciliation | [Network audit](audits/network-privacy-2026-10-08/README.md) |
 | Completed work and dated test results | [History](HISTORY.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md) |

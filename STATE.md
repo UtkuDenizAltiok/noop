@@ -6,7 +6,7 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 - [ ] **Active deep-research improvement — cancelled Stress loads:** investigate and repair stale publication
   after a newer refresh or lifecycle/device cancellation, on Apple and Android. Source `8e94d559` shows Apple
-  `StressView` publishing results from `runUnescalated` without checking cancellation; Android's three
+  `StressView` publishing results from `runUnescalated` without checking cancellation; Android's four
   `runCatching` boundaries can swallow cancellation before state writes. Controlled Apple replay now confirms
   all seven late-load boundaries overwrite fresh state on original source; repaired source preserves all seven.
   Preserve all successful readouts, priority, two-phase rendering, timestamps, score math and data coverage.
@@ -14,7 +14,7 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   unchanged normal-result/parity controls, full local/Android verification, own PR and testing-build delivery.
   Latest request (8 Oct): apply the deep procedure more fully beyond the completed documentation task.
   Worktree `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, branch `codex/stress-load-cancellation`,
-  local commit `82d8d0ae72fb83ed8c2b8d01f791617029684a6a` (not yet pushed; full verification running).
+  local commit `49777b94` (not yet pushed; final verification pending).
   Six Swift/eight Kotlin tests added. Apple seen-to-fail completed: removing cancellation checks failed four
   regression cases (six assertions); suppressing valid results failed both normal controls. Restored source
   digest matched exactly and all ten focused Stress/Unescalated tests passed; original warnings remain.
@@ -27,18 +27,30 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   Local source mutation job has finished, no live build remains; `{swift-no-cancellation,swift-no-valid-results,
   swift-restored}.{log,exit}`, matching `swift-source-{before,after}.sha256` and completion marker retained.
   Parity preflight: no new ledger finding; authoritative full verification still pending.
-  Local one-concern consolidation completed with byte-identical tree; prior tip in local safety tag and verified
-  `pre-squash.bundle`. Full verify active at `82d8d0ae`; recover from cache `full-verify.pid`, check its command,
-  `full-verify-driver.log` and `full-verify.exit` before retrying. Foreground survival is uncertain.
-  Next public action: second temporary Android mutation, suppress valid work and disconnect personal-baseline
-  preference; run only three normal controls plus the existing three source-wiring tests. Expected four failures,
-  never the suspended race cases. Dispatched once: `37784315713`, head `35acdba7`; check this run before
-  any repeat. This also proves the adjusted wiring guard detects its original defect.
-  Do not edit active feature source while local verification is running. No release started.
+  Local one-concern consolidation completed with byte-identical production tree; prior tips in local safety
+  tags `backup/pre-stress-{squash,wiring}` and verified `pre-{squash,wiring}.bundle` files. First full verify
+  at `82d8d0ae`: packages 632/2135/327 (one import skip), source/i18n/ledger/ratchet, 127 governance and iOS
+  build passed. Mac: 2273/two existing skips, sole failure in the Apple text-dependent wiring guard; six new
+  cancellation tests passed. Corrected matched Apple/Android guards and needless Kotlin cast in `49777b94`.
+  Production sources are identical to `82d8d0ae`; test corrections alone require final verification.
+  Feature branch pushed once; normal Android CI `37786421064` at exact `49777b94`, now running.
+  Apple wiring mutation completed: two tests, one expected assertion failure, source SHA restored exactly.
+  Full final verification now active on clean `49777b94`; no repeated mutation required. Driver `private/stress-load-cancellation-2026-10-08/final-verify.sh`;
+  task cache `final-verify.pid`, `final-verify-driver.log`, `final-verify.exit`, `swift-wiring-{negative,restore}`
+  evidence. Foreground survival uncertain; inspect PID command/log before restarting. No shared builds overlap.
+  Second Android negative run `37784315713` at `35acdba7`: APK built, six selected tests/four expected failures
+  (three valid-work controls and disconnected preference), two other wiring controls passed. No crash. Both
+  negative jobs are finished; no duplicate dispatch. Branch/worktree cleanup follows final positive evidence.
+  Old/fixed simulator comparison planned on the same synthetic database: 7200 1-Hz HR rows, 7200 synthetic
+  varying R-R rows, seven imported Stress points; no raw sensor rows existed beforehand. Back up the existing
+  simulator DB before fixture insertion, retain both copies. Private `simulator-fixture.py` and cache input hashes;
+  this tests rendering/normal-result preservation, not physiological truth or a phone race prevalence estimate.
+  Old source checkout at cache
+  `stress-load-cancellation-2026-10-08/old-ui`, base `8e94d559`. No release started.
   Spectral normalization/grid/time remains coupled and queued: stored historical R-R rows share record timestamps,
   so a replacement must validate timing provenance rather than treating those stamps as precise beat times.
 - [ ] **Next bounded priority — spectral biometric correctness:** power units, grid resolution and discarded
-  time together, following 7 Oct audit findings 2/3 and the timing row. No work started. Use a preregistered finite
+  time together, following 7 Oct audit findings 2/3 and the timing row. No estimator implementation started. Use a preregistered finite
   domain with varying signals and independent power/timing references; preserve score paths outside the optional
   readout. Raw backup can support processing replay; human accuracy claims require independent references.
 - [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** installation/normal-night observation for
