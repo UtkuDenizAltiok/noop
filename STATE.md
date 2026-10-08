@@ -4,6 +4,16 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
+- [ ] **Bounded deep improvement — honest Stress spectral explanations.** Review/source/primary research
+  confirm LF/HF is presented as autonomic balance and higher stress, although the 2024 HRV committee report
+  rejects that interpretation. Apple StatTile clips the long caption to one line. Correct LF/HF/HF labels and
+  descriptions on both platforms, with all existing locales and a fully wrapping explanation. Preserve every
+  number, data gate, load phase, score, sensor/storage path and design component. New Android explanatory
+  strings must be localized, not hardcoded. Proof before edits: exact calculation/loading-source comparison,
+  all-locale catalog/resource and compiled-string checks, original/fixed same-input simulator ratio and HF-only
+  branches, no clipped caveat, full local verification, exact-head Android/expected upstream checks, PR and
+  independently verified testing release. No physiological calibration, battery claim or personal export needed.
+  Owner review requests are complete; all nine note URLs/readbacks in `private/review-requests-2026-10-08/`.
 - [x] **Latest update installed and normal Stress appearance reported.** Utku explicitly confirmed installing
   today's latest update through AltStore before the Stress check. Verified build
   `c8eb1cd028701123517e8bb56fad5c093d99ba03` is delivered; he saw nothing apparently wrong. The 19:30 strap log
