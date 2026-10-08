@@ -4,63 +4,36 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-**Session closed at Utku's request, 8 Oct 2026:** no new work. Phone installation/export is deferred.
-Final handover checked on 8 Oct: session-prompt refinement complete; all PR worktrees clean/pushed, no running
-build/test/release jobs. The clean local scratch checkout and two safety tags remain intentionally as recorded below.
-Named source/audit/log/bundle locations exist; private files and cached evidence remain on this Mac. No handover blocker.
-The release build has finished; independent download verification remains for the next chat before a new code task.
-The one-pass resting-HR repair is fully verified and [PR #2724](https://github.com/ryanbr/noop/pull/2724) is
-open/mergeable at `14783994`, all 18 upstream checks green, no review/comment. Audit and exact original-output
-oracle: [RHR measurement](audits/rhr-one-pass-2026-10-07/README.md). No phone processing/battery claim.
+**Bounded task complete, 8 Oct 2026:** existing RHR testing release `f60718a9` independently verified and its
+recorded temporary checkout/branch/safety tags retired. No app source changes, new workflow dispatch or duplicate
+shipping. All seven code worktrees are clean/pushed, no stash or unfinished Git operation, and no running
+build/test/release jobs. Upstream remains `8e94d559`. Delivery details and retained evidence are below; the dated
+completion is in [History](HISTORY.md).
 
-- [x] Completed implementation, measured before/after, three local mutation tests, full local verification,
-  final-head Android and source gates, PR publication/readback/attachment, combined iOS and fork checks.
-  App worktree `/Users/utk/.codex/worktrees/rhr-one-pass/noop`, branch `codex/rhr-one-pass`, clean/pushed.
-- [ ] **Do not repeat shipping.** Completed ship session **71648**, run
-  [37685742398](https://github.com/UtkuDenizAltiok/noop/actions/runs/37685742398), target **`f60718a9`**,
-  from stack **`979a2baf`**. Local/remote build refs exact. At the handover follow-up, **meta/android/ios/macOS
-  all completed successfully** at the exact build head; cleanup intentionally skipped. All five expected asset names
-  appear on the release. The local monitor exited successfully with **`shipped f60718a9`** at 00:17 on 8 Oct;
-  `private/events.log` records completion. The earlier pending snapshot is `private/rhr-release-close-37685742398.json`.
-  In a new chat check `gh run view 37685742398 --repo UtkuDenizAltiok/noop` and `private/events.log` first.
-  Do not dispatch/rebuild just because this chat ends. Still verify five nonempty uploaded assets, target/local+remote
-  tag and downloaded IPA ZIP/plist/digest before recommending the update.
-  The `testing-latest` release is replaced during the pipeline; a title/target alone does not prove delivery.
-- [ ] After verified ship, retire local safety tags `backup/pre-rhr-testing-{stack,build}-20261007` and scratch
-  checkout/branch `codex/testing-stack-rhr-20261007` at cache `rhr-one-pass/stack`; installer then checkpoint/upload.
-  Verified full-history bundle `rhr-one-pass/pre-rhr-staging.bundle` preserves old stack `0768710f` / build `01b55ac2`.
-- [ ] Phone installation/export remains **deferred by Utku**. Latest verified update will be JUST UPDATE through
-  AltStore over the existing app, preserving history. No repeat three-hour reminder test or wipe.
-- [ ] Next independent correctness task: refuse unusable optional baselines consistently in Charge, explanations
-  and trace, using the biometric audit's preregistered test plan. Then jointly repair spectral units/resolution/timing.
-  A private `.noopbak` helps actual-data replay; independent reference recordings are required for accuracy claims.
-- [ ] Continue six PR review/merge lifecycles after checking current heads. Backup issue #2720 stays parked awaiting
-  maintainer storage direction under existing approval; no duplicate report or approval request.
+- [ ] **Next independent correctness task:** refuse unusable optional baselines consistently in Charge,
+  explanations and trace, following [audit finding 4](audits/biometric-pipeline-2026-10-07/README.md#4-an-empty-respiratory-baseline-can-influence-charge).
+  No source work has started. Trace all consumers and test calibrating/provisional/trusted/stale states, missing
+  values, cold-start omission and usable-state preservation on both platforms. Optional Effort impact still needs
+  reproduction. Then jointly repair spectral units/resolution/timing as a separate concern. Actual-data replay
+  benefits from a private `.noopbak`; physiological accuracy claims require independent references.
+- [ ] Phone installation/export remains **deferred by Utku**. When resumed, **JUST UPDATE** the verified
+  `f60718a9` IPA through AltStore over the existing app, preserving history. No wipe or repeat reminder test.
+- [ ] Continue six PR review/merge lifecycles after checking current heads. All six are open/mergeable with the
+  expected green check rosters and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
+  parked awaiting maintainer storage direction under existing approval; no duplicate report or approval request.
 
-Full local verify at `035b6ab1`: 632/2138/327 package tests, all source/parity gates, 127 governance,
-2267 Mac app tests and iOS build, final **all steps passed** (one import/two Mac skips). Final `14783994` only
-removes four redundant Kotlin assertions; Swift/store/app/tool source is byte-identical (empty cached diff).
-Final-head source/parity gates + 127 clean-checkout governance tests and Android **37683254213** passed, no warnings
-in the changed SleepStager file. Original Android **37681597809** also passed. Exact compiled original Swift output:
-12 fixtures and 768-case digest `a9770363`, copied verbatim/read back on both platforms. Seven alternating `-O`
-trials: dense CPU 93.9–97.3% lower, sparse 88.4%; absolute saving ≈2.6 ms per dense floor/diagnostic pair, not a
-whole-pass or phone-energy result. Cache `rhr-one-pass/`; full logs `verify/035b6ab1/`.
-
-Combined stack `979a2baf` on unchanged upstream `8e94d559` + #2613/#2660/#2661/#2722/#2724:
-local iOS **BUILD SUCCEEDED**, Android **37684687935** (one job/actual unit step) and Swift **37684692663**
-(all 11 package/tool jobs) completed-success at exact stack. Remote upstream tip rechecked unchanged before ship.
-No NOOP build/test/release watch remains. Prior [biometric audit](audits/biometric-pipeline-2026-10-07/README.md)
-and release `01b55ac2` are complete; keep their evidence in History. No personal backup/PSG dataset is available.
+No completion blocker. Retained local dependencies: ignored private reports/raw logs and cached verification logs,
+IPA and recovery bundle on this Mac. No personal backup/PSG dataset is available.
 
 ## Phone
 
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
 background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
-The earlier verified update **`01b55ac2`** was not confirmed installed. New update **`f60718a9`** has shipped;
-installation/export are deferred by Utku. After its verified release, recommend **JUST UPDATE** through AltStore
-over the existing app, preserving history. No migration change/fresh start is required. The prior IPA's identity
-was `com.noopapp.noop`, display name NOOP, version 12.0.0 (435); check the new IPA independently. A version
+The earlier verified update **`01b55ac2`** was not confirmed installed. New update **`f60718a9`** is fully delivered
+and independently verified; installation/export are deferred by Utku. When phone work resumes, **JUST UPDATE** through AltStore over the
+existing app, preserving history. No migration change/fresh start is required. Downloaded IPA identity is
+`com.noopapp.noop`, display name NOOP, version 12.0.0 (435), with widget extension retained. A version
 header alone cannot prove installation because that number does not change between these testing builds.
 
 **Sync-stopped reminder confirmed on the phone:** the log scheduled it for about 00:31; Utku reported seeing
@@ -78,11 +51,11 @@ ended-banner check (after roughly 8 h, open NOOP and check one banner). Do these
 Utku's recent nights were atypical, sometimes strap-off/swiped away: infer gaps from logs rather than asking him to
 keep a diary. Compare staging changes on the same nights, never one night against another.
 
-## PRs — checked 7 Oct
+## PRs — checked 8 Oct
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` shipped, independent download verification pending. Await maintainer. |
+| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
 | [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
@@ -101,8 +74,14 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 - `testing-stack`: **`979a2baff70f96baa9fbfa43fb4847276312cd94`**, base `8e94d559` plus #2613/#2660/#2661/#2722/#2724.
   Local combined iOS build passed. Fork Android **37684687935** and all 11 Swift jobs **37684692663** passed.
 - `testing-build`: **`f60718a9d3daf51aadbec1505174a25d6cd37ed8`** (local and remote), successful run **37685742398**;
-  ship tool completed `shipped f60718a9`. Asset size/tag/download verification remains in Now.
-- Prior verified release (being replaced): **`01b55ac2`**, base
+  release **406156870**. Exact `meta`/`android`/`ios`/`macos` jobs passed; conditional cleanup skipped as expected.
+  All five uploaded assets are nonempty; release target, local/remote `testing-latest` tag and build refs agree.
+  IPA HTTP 200, 21,953,254 bytes, all ZIP CRCs passed; SHA-256
+  `41872d7c558ad1ebcdb31a6339ec78ea3795b1706b19f22063b8359f9ed18b1a` matches GitHub's digest.
+  App `com.noopapp.noop`, NOOP 12.0.0 (435); widget `com.noopapp.noop.widgets` retained, watch removed.
+  Evidence: ignored `private/release-{run,metadata,assets,tag,ipa,bundle-recovery,cleanup}-f60718a9.json`;
+  downloaded IPA: cache `rhr-one-pass/release-f60718a9/NOOP-ios-unsigned-v12.0.0.ipa`.
+- Prior verified release (superseded): **`01b55ac2`**, base
   **12.0.0**, run **37597587148**, release **405571964**. Ship tool finished `shipped 01b55ac2`; four required jobs
   passed (cleanup intentionally skipped). All five nonempty assets uploaded; release target and local/remote tag
   exactly equal testing-build; IPA HTTP 200, downloaded ZIP/plist identity/size/SHA-256 verified against GitHub’s
@@ -113,9 +92,17 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
   (`codex/rhr-one-pass` / `14783994`). All PR code is clean/pushed; handbook is this `dist` worktree.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
-  versions. No throwaway remote regression branch/stash. Local stack scratch/safety refs are listed in Now.
+  versions. No throwaway remote regression branch/stash or local safety refs/scratch checkout.
+  The old stack `0768710f` / build `01b55ac2` remain recoverable from cache
+  `rhr-one-pass/pre-rhr-staging.bundle`: both tips imported into an empty Git repository and full `git fsck` passed
+  before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
 
 ## Local evidence and resources
+
+RHR #2724 `14783994` is fully verified; full local run at `035b6ab1` and final-head source/parity/governance +
+Android `37683254213` results are in [History](HISTORY.md) and the [RHR audit](audits/rhr-one-pass-2026-10-07/README.md).
+Final Swift/app/tool inputs are byte-identical to the local full run. Logs: cache `verify/035b6ab1/` and
+`rhr-one-pass/`. No phone CPU/battery or physiological accuracy claim.
 
 Full SDNN verification on 7 Oct at `b6e53f38`: 632/2139/327 package tests, all lint/i18n/parity gates,
 127 governance, 2267 Mac tests and iOS build passed (one import/two Mac skips). Fork Android full suite passed;
@@ -137,12 +124,10 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-At resume follow Sessions and reconcile the completed release run **37685742398 / f60718a9** and its ship event.
-Verify all five nonempty uploaded assets, target/local+remote
-`testing-latest` tag and IPA download/ZIP/plist/digest. Use the existing run, never repeat shipping merely because
-context is missing. If an asset, tag or download check fails, preserve the safety refs/scratch, inspect the existing
-run and release evidence, and record the actual repair needed before recommending installation. If all checks pass, retire
-only the recorded local safety tags and scratch checkout after confirming the retained bundle; re-run the Codex
-installer. Phone update/export stays deferred; no wipe/reminder retest. After delivery verification, the next
-independent code task is the unusable optional-baseline contract in Charge. No user decision is needed for routine
-implementation/verification/PR/release work; physiological accuracy requires independent reference recordings.
+After Sessions recovery, read biometric audit finding 4 and recheck current upstream/issue/PR evidence for an
+optional-baseline repair. Inspect the current Swift/Kotlin `RecoveryScorer`, `ChargeDrivers` and trace consumers
+against that preregistered omission/preservation contract. If upstream already fixed it, reconcile the saved
+finding instead of duplicating it. Otherwise record one bounded correctness objective, reproduce the Effort
+case and implement both-platform regression/oracle tests before the fix, then finish verification/PR/testing
+release under Workflow. The existing RHR delivery is complete: no repeat shipping or cleanup. Phone update/export
+stays deferred; no user decision is needed for routine implementation/verification/delivery.
