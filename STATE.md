@@ -4,6 +4,39 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
+- [ ] **Active deep-research improvement — cancelled Stress loads:** investigate and repair stale publication
+  after a newer refresh or lifecycle/device cancellation, on Apple and Android. Source `8e94d559` shows Apple
+  `StressView` publishing results from `runUnescalated` without checking cancellation; Android's three
+  `runCatching` boundaries can swallow cancellation before state writes. Controlled Apple replay now confirms
+  all seven late-load boundaries overwrite fresh state on original source; repaired source preserves all seven.
+  Preserve all successful readouts, priority, two-phase rendering, timestamps, score math and data coverage.
+  Completion: preregistered controlled races through production load paths, seen-to-fail matched tests,
+  unchanged normal-result/parity controls, full local/Android verification, own PR and testing-build delivery.
+  Latest request (8 Oct): apply the deep procedure more fully beyond the completed documentation task.
+  Worktree `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, branch `codex/stress-load-cancellation`,
+  local commit `82d8d0ae72fb83ed8c2b8d01f791617029684a6a` (not yet pushed; full verification running).
+  Six Swift/eight Kotlin tests added. Apple seen-to-fail completed: removing cancellation checks failed four
+  regression cases (six assertions); suppressing valid results failed both normal controls. Restored source
+  digest matched exactly and all ten focused Stress/Unescalated tests passed; original warnings remain.
+  Android negative regression run `37783143070`, head `905badc3566e2b971e83cf48812ee40b5588b1fe`, completed with successful build and 6645 tests/six skips, five expected new failures plus one existing
+  source-text tripwire invalidated by the wrapped mode call. Update that guard to assert preference forwarding
+  and selected-mode scoring, retaining its purpose; remove one new needless-cast warning. Check with `gh run view 37783143070 --repo UtkuDenizAltiok/noop`.
+  Checkout: cache `stress-load-cancellation-2026-10-08/android-regression`, branch
+  `codex/stress-load-cancellation-regression`. Utku warned before deliberate failures; next control-only
+  mutant follows after this run completes. Do not duplicate either dispatch.
+  Local source mutation job has finished, no live build remains; `{swift-no-cancellation,swift-no-valid-results,
+  swift-restored}.{log,exit}`, matching `swift-source-{before,after}.sha256` and completion marker retained.
+  Parity preflight: no new ledger finding; authoritative full verification still pending.
+  Local one-concern consolidation completed with byte-identical tree; prior tip in local safety tag and verified
+  `pre-squash.bundle`. Full verify active at `82d8d0ae`; recover from cache `full-verify.pid`, check its command,
+  `full-verify-driver.log` and `full-verify.exit` before retrying. Foreground survival is uncertain.
+  Next public action: second temporary Android mutation, suppress valid work and disconnect personal-baseline
+  preference; run only three normal controls plus the existing three source-wiring tests. Expected four failures,
+  never the suspended race cases. Dispatched once: `37784315713`, head `35acdba7`; check this run before
+  any repeat. This also proves the adjusted wiring guard detects its original defect.
+  Do not edit active feature source while local verification is running. No release started.
+  Spectral normalization/grid/time remains coupled and queued: stored historical R-R rows share record timestamps,
+  so a replacement must validate timing provenance rather than treating those stamps as precise beat times.
 - [ ] **Next bounded priority — spectral biometric correctness:** power units, grid resolution and discarded
   time together, following 7 Oct audit findings 2/3 and the timing row. No work started. Use a preregistered finite
   domain with varying signals and independent power/timing references; preserve score paths outside the optional
@@ -173,10 +206,7 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-After Sessions recovery, recheck PR #2737 at `a4f14442` for review or merge. If merged, prove inclusion and
-reconcile its branch/worktree under Workflow; documentation-only work needs no app rebuild. If reviewed, finish
-that response/fix cycle first. Otherwise begin the queued spectral investigation: inspect current Swift/Kotlin
-`HRVFreqDomain` and the existing independent fixtures, then preregister the varying-signal energy/timing domain
-before changing production code. Extend the 7 Oct findings 2/3 and timing row together. Both documentation PRs
-are verified and delivered; do not repeat their pushes, checks or description edits. App testing release `e722e0c4`
-is verified; phone observation/export deferrals remain, and incoming real data takes precedence when it arrives.
+Inspect Android regression run `37783143070` and task-cache local verification PID/log before acting. If still
+running, recover it; if complete, capture actual build/test results and continue the recorded normal-control
+mutation followed by restored verification. Active source is `codex/stress-load-cancellation`; do not repeat
+existing PR/release actions. Phone and personal-data tasks remain deferred.

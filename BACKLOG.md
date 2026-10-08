@@ -11,9 +11,14 @@ The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) rec
 runnable synthetic evidence; [whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md)
 extend it. Active PRs, delivery and phone observations live in [State](STATE.md), completed repairs in
 [History](HISTORY.md). The next independent biometric candidate is spectral power units, grid resolution and
-discarded time together; no
-physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
-are separate candidates. Source coverage and physiological tuning need a private raw backup/independent references.
+discarded time together; the [deeper 8 Oct assessment](audits/stress-load-cancellation-2026-10-08/README.md)
+adds a timing prerequisite: history emits several R-R rows at one record timestamp, so reconstructing precise
+beat times cannot mean blindly using row `ts`. Validate original/rejected interval time, record continuity,
+clock splices, missing blocks and coarse timestamps against known varying signals before choosing the estimator.
+No physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
+are separate candidates. The newly discovered Stress cancellation race is the active bounded improvement in
+State; retain successful results and two-phase loading. Other screens' broad cancellation catches are candidates
+only after caller/publication evidence; no global refactor is included. Source coverage and physiological tuning need a private raw backup/independent references.
 
 [Upstream cleanup tracker #2708](https://github.com/ryanbr/noop/issues/2708) already lists candidates;
 recheck each against current source, preserve useful rationale and avoid another tracker. Guide navigation and
