@@ -8,19 +8,19 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 ## Priority — 8 Oct 2026
 
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and
-runnable synthetic evidence. Daily SDNN's missing quality gates are repaired in green [PR #2722](https://github.com/ryanbr/noop/pull/2722) and shipped in `01b55ac2`. Optional respiratory/Effort
-baseline eligibility is repaired in verified [PR #2729](https://github.com/ryanbr/noop/pull/2729), with score/driver/trace
-alignment, a 625-case state/value matrix and an exact original-math oracle; shipped/independently verified as
-`e722e0c4`. Current phone observation lives in State.
-[Whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md). Next repair spectral power
-units, grid resolution and discarded time together; no
+runnable synthetic evidence; [whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md)
+extend it. Active PRs, delivery and phone observations live in [State](STATE.md), completed repairs in
+[History](HISTORY.md). The next independent biometric candidate is spectral power units, grid resolution and
+discarded time together; no
 physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
 are separate candidates. Source coverage and physiological tuning need a private raw backup/independent references.
 
-Documentation/file organisation is complete; upstream #2717 is green and awaits merge. Phone checks live in
-[State](STATE.md). **Item 9 is now reproduced** through production export/restore with synthetic data (28 assertions, 7 Oct).
-The storage discussion is [issue #2720](https://github.com/ryanbr/noop/issues/2720), published with Utku’s approval;
-implement after that choice is settled. No personal export is needed for it. Then choose from A/B/D/C using new logs or ground truth, not remembered results. Priorities are delegated to ChatGPT/Codex; correctness comes first, performance needs measurement.
+[Upstream cleanup tracker #2708](https://github.com/ryanbr/noop/issues/2708) already lists candidates;
+recheck each against current source, preserve useful rationale and avoid another tracker. Guide navigation and
+retirement of completed execution recipes are handled in existing PR #2717; status lives in State.
+Next documentation candidate: reconcile reported conflicting network/privacy claims with one canonical current
+reference, preserving setup and contribution instructions. Item 9's storage discussion remains parked under
+[issue #2720](https://github.com/ryanbr/noop/issues/2720); its evidence and condition for implementation are below.
 
 ## Performance and science evidence
 

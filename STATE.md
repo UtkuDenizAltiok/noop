@@ -4,31 +4,24 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-**Bounded improvement complete, 8 Oct 2026:** optional Charge baseline eligibility repaired on Swift/Kotlin,
-fully verified, published as [PR #2729](https://github.com/ryanbr/noop/pull/2729) at `3e59a667`, all 17 upstream
-checks green and no review/comment. Combined testing update **`e722e0c4`** independently delivered and verified.
-[Whole-app priorities, research and replay](audits/charge-baseline-usability-2026-10-08/README.md) retain the wider
-map and this repair's evidence. Scores/explanations/trace agree; no new weights, sensor/BLE/schema change or
-phone-energy/physiological accuracy claim. Temporary regression branch, integration scratch and safety tags
-retired only after old tips were independently recovered. Source, logs, IPA and bundle are retained; all eight
-code worktrees clean/pushed, no stash/Git operation or running build/test/release job.
-
-- [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** verified `e722e0c4` is ready for **JUST UPDATE**
-  through AltStore over the existing app. Installation is unconfirmed; perform the short normal-night/log check
-  when he chooses. Earlier installation/export deferral was respected during builds; do not demand a wipe, repeat
-  the reminder test or ask for a diary. Personal backup export stays deferred until actual-data replay needs it.
-- [ ] **Next independent correctness task:** repair spectral power units, grid resolution and discarded time
-  together, following 7 Oct audit findings 2/3 and the timing row. No work started. Use known varying signals,
-  independent power/timing references and a preregistered finite domain; preserve score paths outside the optional
-  spectral readout. A private raw backup helps source/coverage/processing replay; human accuracy claims require
-  independent references.
-- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven are open/mergeable with
-  the expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 remains parked awaiting
+- [ ] **Next documentation priority:** reconcile the reported conflicting network/privacy guidance in
+  [cleanup tracker #2708](https://github.com/ryanbr/noop/issues/2708) §0 against current source, with one canonical
+  reference. Preserve practical setup, usage and contribution guidance. No implementation started; the completed
+  recipe cleanup is in PR #2717 below and History.
+- [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** installation/normal-night observation for
+  `e722e0c4` remain unconfirmed; do the simple update/log check in Phone when he chooses. Personal backup export
+  stays deferred until actual-data replay needs it; no wipe, repeated reminder test or diary.
+- [ ] **Queued biometric correctness task:** spectral power units, grid resolution and discarded time together,
+  following 7 Oct audit findings 2/3 and the timing row. No work started. Use a preregistered finite domain with
+  varying signals and independent power/timing references; preserve score paths outside the optional readout.
+  Raw backup can support processing replay; human accuracy claims require independent references.
+- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven were open/mergeable with
+  their expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 stays parked awaiting
   maintainer storage direction under existing approval; no duplicate report or approval request.
 
-No software/delivery completion blocker. Real phone observation and independent physiological validation remain
-unproven. Retained local dependencies: private reports/logs and cached verification logs, IPA and recovery bundle
-on this Mac. No personal backup/PSG dataset is available.
+No running jobs or software/delivery blocker. Phone observation and independent physiological validation remain
+unproven. Private evidence, cached logs, IPA and recovery bundles depend on this Mac; no personal backup/PSG
+dataset is available.
 
 ## Phone
 
@@ -72,9 +65,9 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
 | [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
-| [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `3ecf43c5` | Documentation index/current-history separation; 3 checks green. Await maintainer. |
+| [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
 
-All seven PRs are open and mergeable. #2613 is 86 commits behind but merges cleanly;
+All seven PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
 it needs no speculative rebase.
 24 PRs merged, including #2659 on 4 Oct; the dated list and validation are in [History](HISTORY.md).
 Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
@@ -152,17 +145,23 @@ Simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` (iPhone 17 Pro, iOS 27.0), no s
 Previously seeded 120 synthetic days; current availability was not established by the 8 Oct disclaimer-only launch.
 Xcode 27.0, XcodeGen, gh, Python 3.12 available; Android tests run in fork CI. The new phone log is retained privately;
 personal backups and sleep-accel / restricted DREAMT datasets remain absent on this Mac. Obtain raw data when an analysis needs it; never tune from old aggregates.
-Docs #2717: head `3ecf43c56e9f2a67f263b4ea1b18c256f5aaa823`; runs source `37532167137`, i18n `37532167155`,
-Tools Python `37532167146` passed. Local 439 Python tests (one skip), link/anchor/render/source/i18n checks passed.
-Recovery-tool sandbox: 28 checks passed. Private audit: `private/organisation-audit/` (original pages, inventories,
-rendered HTML, PR/check snapshots and cache removal evidence). Completed DerivedData removed; logs retained.
+Docs #2717: exact head `34c9eeac7649136ff79b1bd2e209abc90e2a85b3`, three required upstream checks passed
+(source `37750786309`, i18n `37750786251`, Tools Python `37750786331`). Actual CI test totals: 234 capture,
+50 repository acceptance, two legacy R-R, 153 core Tools. Local source hygiene/protocol arithmetic/163 source
+references/i18n passed. 123 remaining Markdown pages checked with no new broken local targets; GitHub rendering
+and four exact history blobs verified. Both original design bodies and 120 other pages retained; app source/tests/
+tools/workflows/config unchanged. Final PR title/body read back exactly; open/mergeable, no review/comment.
+Private evidence: `private/organisation-audit/doc-simplification-2026-10-08.json`; HTML/CI log in cache
+`doc-simplification-2026-10-08/`. Earlier navigation verification remains in History and the same private audit.
+Handbook entry points to canonical procedures; start/end prompts and complete setup section preserved; handbook
+local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-After Sessions recovery, read 7 Oct biometric audit findings 2/3 and the spectral timing row, then recheck current
-upstream issues/PRs for a matching repair. If already fixed, reconcile the finding instead of duplicating it.
-Otherwise record one bounded spectral units/resolution/timing objective and preregister known-energy,
-varying-frequency/amplitude/gap fixtures against an independent reference before changing production code.
-Use held-out recordings for any human accuracy claim. The Charge repair and testing update `e722e0c4` are complete;
-do not repeat feature/combined CI, shipping or retired-ref cleanup. Phone update/normal-night log awaits Utku's
-choice; incoming real data takes precedence when it arrives. No routine implementation/delivery decision needed.
+After Sessions recovery, recheck PR #2717 at `34c9eeac` for review or merge. If merged, prove inclusion and
+reconcile its branch/worktree under Workflow; documentation-only work needs no app rebuild. If reviewed, finish
+that response/fix cycle first. Otherwise choose the bounded network/privacy-document reconciliation from #2708
+§0: inspect the actual network paths and canonical Privacy/security §1.1 before editing any claim, preserve the
+human guides, and recheck upstream for a matching repair. The four-recipe cleanup and PR update are complete;
+do not repeat their push, checks or description edit. Spectral work remains queued. App testing release `e722e0c4`
+is verified; phone observation/export deferrals remain, and incoming real data takes precedence when it arrives.

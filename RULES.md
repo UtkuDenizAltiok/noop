@@ -21,6 +21,11 @@ keep technical investigation and storage choices with the agent unless his input
 
 ## Settled decisions
 
+- **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
+  documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
+  to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove
+  proven obsolete or unrelated material after checking references, current implementation and retained rationale;
+  file count or age alone is not evidence that a document is unnecessary.
 - **One concern per PR, behaviour kept** — unless the PR fixes a proven bug, or improves a result with evidence
   (rules 2, 3). Both platforms wherever both have the code (`AGENTS.md` parity contract), or the PR says why not.
 - **Standing permission (Utku, 23–24 Sep 2026):** replies on our own PRs, pushes to our own branches, and opening relevant verified PRs
