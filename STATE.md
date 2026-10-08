@@ -4,90 +4,36 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — session resumed, 8 Oct 2026
 
-- [ ] **Active — HRV cleaning neighbour-buffer reuse.** Selected after the preregistered pilot:
-  **137,267 exact original/candidate cases passed** (cleaned Double bits and every gap flag); seven alternating
-  Swift `-O` trials show **30.7–31.7% lower cleaning CPU**, including 300/36,000/108,000 intervals with and without
-  artefacts. [Plan](audits/hrv-clean-buffer-2026-10-08/preregistered.md), [pilot summary](audits/hrv-clean-buffer-2026-10-08/pilot-summary.json).
-  Implement only per-call neighbour-array reuse in `rejectEctopic` / `cleanRRGapAware`, on both platforms.
-  Preserve sorting/math/thresholds, all inputs/results/adjacency, visual quality and freshness. No phone-energy,
-  physiological-accuracy or spectral-repair claim. Source worktree `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, branch `codex/hrv-clean-buffer`,
-  base `8e94d559`. Swift production hash exactly equals the measured pilot candidate. Two new matched
-  original-output tests added on each platform; initial Swift run passed both. Local plain/gap buffer-reset
-  mutations are running sequentially with automatic byte-identical restoration. Expected-failing Android
-  mutation CI has been announced to Utku before any dispatch; temporary ref/job not created yet.
-  Cache: `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/`; private reports: `private/hrv-clean-buffer-2026-10-08/`.
-  Recovery complete: nine existing PR heads unchanged, expected 3/6/17/18-check rosters green; no unanswered
-  maintainer reviews. No running build, dirty source, stash/safety ref or Git operation. Committed source **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`** (four intended files).
-  Both local reset mutations failed their test assertions without crashes, each restored to the exact production
-  hash. Next actions journaled before execution: launch one full local verify at this committed head; push
-  the feature branch; create/push one temporary Android reset-mutation branch with only the two new tests selected,
-  dispatch Android CI there, record its ID/head/build+test result, then retire it after exact restoration.
-  Full local verify actually started under **PID 4426**, command
-  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-verify.sh`, independently detached;
-  completion is `full-verify.exit` plus `all steps passed` in `full-verify.log`. PID 4298's shell-background
-  attempt exited before creating a verify log; checked inactive before replacement, so no overlap occurred.
-  Negative Android run **37826824779**, head **`d27bfb0c01e978347f47dc5d7578733d78dbad1c`**, branch
-  `codex/hrv-clean-buffer-regression`, cache worktree `hrv-clean-buffer-2026-10-08/android-regression`.
-  Completed with the expected failure: APK build success, exactly two selected tests/two
-  `ComparisonFailure` assertions, zero extra tests. Patch/log/job metadata retained; source/workflow restored
-  byte-identical to feature files. Retiring the temporary remote/local branch and cache checkout next. Readback command: `gh run view 37826824779 --repo UtkuDenizAltiok/noop --json headSha,status,conclusion,jobs`.
-  Final full Android run
-  **37828040856** completed successfully on feature **`c71b48af`** after that verified negative result; exact head and actual APK+full-unit steps passed. Logs retained. Combined candidate is clean/detached **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**
-  at `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/staging-noop`, old stack parent `6c815151` plus
-  the new change. Its changed-path set exactly equals the old stack union four new source/test paths; no
-  parked wording included. Prior stack/build/tag bundle has been independently imported, exact tips matched
-  and full fsck passed. Full local verify exited **0 / all steps passed**: 632 store, 2137 analytics,
-  327 import (one existing skip), all source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing
-  skips) and iOS build. Generated Info.plist restored; feature clean/pushed. Stronger final benchmark completed
-  with full output consumption and exact 137,267-case preservation; final results retained in the audit.
-  Launch combined iOS build only now that verify and benchmark have exited; script/log/exit files in task cache. Combined build PID **9340**, command
-  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-staging-ios.sh`; independent session, log
-  `staging-ios.log`, completion `staging-ios.exit` and `BUILD SUCCEEDED`. Verify PID command before acting.
-  Simulator walkthrough will use the existing DEBUG `--demo-screen stress` entry, never a consent change or
-  source injection. Preserve installed app/data/preferences before install; restore them and shutdown afterward.
-  Simulator UI app/CUA is unavailable here; use the handbook's simctl screenshot workflow, report that boundary. Before any future testing-ref rewrite, preserve old stack/build/tag tips in
-  `hrv-clean-buffer-2026-10-08/pre-testing.bundle` and independently import/fsck them. Journaled preparation may
-  create a detached combined candidate from the unchanged current stack plus `c71b48af`; it must exclude the
-  parked wording work and pass its local iOS build, combined Android and eleven Swift jobs before shipping.
-  The full verify currently owns shared Xcode caches; no combined build will overlap it.
-  PR publication is now journaled: local/fork verification passed on `c71b48af`,
-  description in `private/hrv-clean-buffer-2026-10-08/pr-body.md`, title
-  `perf(hrv): reuse neighbour buffers without changing cleaned intervals`, one concern/four files. Create once,
-  record URL/number and attach it, read back exact head/body, then require stable expected upstream roster
-  (17 jobs for Packages+Android) and actual build/test steps. Published and attached [PR #2742](https://github.com/ryanbr/noop/pull/2742), exact `c71b48af`/body
-  read back; expected 17 upstream checks registered/pending.
-  Combined iOS build **c13e8873** exited 0 / BUILD SUCCEEDED; generated Info.plist restored. Old stack/build/tag
-  independently bundled/recovered/fsck verified. Current remote testing refs/upstream tip rechecked unchanged.
-  Next public actions journaled: local safety tags for both old testing refs, pinned-lease push of tested `c13e8873`
-  to testing-stack, synchronize local branch, dispatch exactly one combined Android and one 11-job Swift run.
-  Record IDs/head and actual job/step results before any ship action; last verified release at dispatch was c8eb1cd0; the workflow moves the testing tag before assets are built. Testing-stack local/remote now **c13e8873**;
-  combined Android run **37829415471**, combined Swift run **37829420443** (eleven jobs), both **completed successfully** at that head; Android APK/unit steps and every
-  one of the eleven Swift build/test jobs read back and passed (Backfill remains build-only). Upstream PR roster
-  has 16 successes/one in progress at exact feature head; keep checking through delivery.
-  Next public action journaled: run handbook `ship-build.sh testing-stack` once, producing testing-build as
-  c13e8873 plus the unchanged template-upload commit, using pinned lease. Preserve run/build/release IDs as they
-  appear. Require four actual release jobs, five nonempty assets, matching target/ref/tag, HTTP200 and downloaded
-  IPA SHA256/ZIP/plist/widget/background-capability verification before claiming delivery. Launch independently
-  with cache `run-ship.sh`, logs `ship.log`, final `ship.exit`; no duplicate dispatch if interrupted.
-  Ship monitor PID **13389**, exact command `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-ship.sh`;
-  independently detached, survives chat closure. Testing-build local/remote **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**,
-  testing-stack c13e8873 plus unchanged template workflow; release run **37830619829**. Run readback:
+- [ ] **Remaining delivery — HRV cleaning buffer reuse, PR #2742.** Source and feature verification complete:
+  `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, `codex/hrv-clean-buffer`, clean/pushed at
+  **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`**. [Audit and reproducible results](audits/hrv-clean-buffer-2026-10-08/README.md).
+  Per-call buffers preserve all metric math/thresholds/data/freshness/UI. Direct **137,267-case** bit/adjacency
+  comparison and matched original-Swift oracles passed; both platforms' mutations were seen to fail and restored.
+  Final full-output-consumer benchmark: **30.0–30.7% lower helper CPU**, about 2.2 ms per overnight-sized pair
+  on this Mac, not a phone-battery or physiological-accuracy result. Full Apple verification and final Android
+  **37828040856** passed; PR head/body read back and attached. Expected upstream roster is seventeen checks;
+  all seventeen completed/success on c71b48af, with each workflow job/actual steps read back; no review/comment yet.
+- [ ] **Running release — do not dispatch again.** Testing-stack **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**
+  is old stack plus this change, excluding parked wording. Its local iOS build, Android **37829415471** and all
+  eleven Swift jobs **37829420443** passed, actual build/test steps checked. Testing-build local/remote is
+  **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**, stack plus the unchanged template workflow only.
+  Ship run **37830619829**, monitor **PID 13389**, command
+  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-ship.sh`, independently detached and
+  expected to survive chat closure. Verify PID command before acting. Cache `hrv-clean-buffer-2026-10-08/`:
+  `ship.log` / `ship.exit`; success marker `shipped ef6216f8`. External check:
   `gh run view 37830619829 --repo UtkuDenizAltiok/noop --json status,conclusion,headSha,jobs`.
-  Monitor log `ship.log`, terminal marker `ship.exit` and `shipped ef6216f8`; independent downloadable asset
-  verification script `private/hrv-clean-buffer-2026-10-08/verify-release.py ef6216f8bc8076bb62277b700666ffb8c9c99531 37830619829`.
-  Completion needs that script's stored release/IPA reports as well as the successful monitor. New testing
-  ref publication is complete; built/downloadable/installed remain separate pending states. The final upstream
-  check still running is universal macOS build/test; all other sixteen checks passed.
-  Local safety tags `backup/pre-hrv-clean-stack` (6c815151) / `backup/pre-hrv-clean-build` (c8eb1cd0) retained
-  until final shipping/readback; independent bundle/recovery proves retiring them later is safe.
-  Simulator smoke rendered Stress's existing missing-data state. It is no numeric or hardware evidence.
-  Original app reinstalled; after an unavailable simctl `kill` binary, exact host cfprefsd PID/command was
-  verified/signalled and original snapshot recopied. After shutdown, database logical dump and preference
-  bytes match. Report `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`; original snapshots retained. Initial harness compile
-  failed on fixture type inference, corrected before measurement; retained `pilot-compile-error.log` is harness
-  evidence, not a product test failure. Measurement follow-up preregistered before execution: consume every returned value/adjacency flag through
-  a non-inlined digest to prevent unused-field elimination; same workloads/trials, retain count-only pilot.
-  Run it only after local verify exits, before the combined build. No PR or release/public action yet.
+  Publication of refs is complete; built/downloadable/installed are still distinct pending states.
+  After run/monitor success, run the retained private verifier with the exact head/run arguments shown below.
+- [ ] **Retained until delivery proof:** local safety tags `backup/pre-hrv-clean-stack` (6c815151) and
+  `backup/pre-hrv-clean-build` (c8eb1cd0); independently imported exact-tip/fsck-verified
+  `hrv-clean-buffer-2026-10-08/pre-testing.bundle` and `pre-testing-recovered.git`. Combined source checkout
+  `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/staging-noop`, clean/detached at c13e8873
+  (also on fork), can be retired after shipping proof. The existing parked wording candidate must be retained.
+  Negative Android temporary branch/worktree retired; no stash or unfinished Git operation. Full verify and
+  combined local build exited 0; only the ship monitor/external release jobs remain active.
+  Simulator's original app/data/preferences restored, logical DB and preference bytes match after shutdown;
+  Stress missing-data render is smoke evidence only. Report `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
+  No phone changes, special hardware test, export or diary requested. Installation will be **just update**.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
@@ -111,7 +57,7 @@ work stays parked, not delivered or discarded. This resumed session owns only th
   `~/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/staging-noop`. Its local iOS build passed;
   it has not had combined Android/Swift CI or testing delivery. Relevant unchanged package/tool/test/build input
   trees are recorded for possible future evidence reuse, not a claim that candidate CI ran. Keep this checkout.
-  Old testing refs remain `6c815151` / `c8eb1cd0`; neither was moved. The independently imported/fsck-verified
+  At wording-session closure the testing refs remained `6c815151` / `c8eb1cd0`; later HRV delivery is recorded above and in Git below. The independently imported/fsck-verified
   `pre-testing.bundle` and recovery repository are retained in the same cache.
 - [ ] **Pending external review:** all nine existing own PRs remain open/mergeable at their recorded heads, with
   their expected green rosters and no unanswered maintainer review, rechecked at 21:08 TRT. One friendly,
@@ -210,12 +156,16 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 
 ## Git and latest release
 
+- Current testing-stack **c13e8873**, local/remote; local iOS and combined Android/Swift passed.
+- Current testing-build **ef6216f8**, local/remote; release **37830619829** running. The workflow moves the
+  testing-latest tag before it finishes; no new downloadable/installed claim until independent assets prove it.
+
 - `main`, `origin/main`, `upstream/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; exact mirror, remote
   upstream tip rechecked during shipping.
-- `testing-stack`: **`6c81515138d5c3b573e2029609fcf6ff919ddfc4`** (local/remote), base `8e94d559` plus
+- Previous `testing-stack` before this delivery: **`6c81515138d5c3b573e2029609fcf6ff919ddfc4`** (local/remote), base `8e94d559` plus
   #2613/#2660/#2661/#2722/#2724/#2729/#2738. Combined local iOS build passed, Android **37791822785** actual
   build/unit steps passed and Swift **37791827346** all eleven jobs passed at that exact head.
-- Current `testing-build` and local/remote `testing-latest`: **`c8eb1cd028701123517e8bb56fad5c093d99ba03`**,
+- Prior verified `testing-build` and then-local/remote `testing-latest`: **`c8eb1cd028701123517e8bb56fad5c093d99ba03`**,
   stack plus template-upload workflow only. Successful run **37793338186**, release **406928323**. Meta,
   Android, iOS and macOS actual build/package jobs passed; conditional cleanup skipped. Monitor exited 0 with
   `shipped c8eb1cd0`. All five uploaded assets nonempty; target/tag/build refs agree. IPA HTTP200, **21,955,109
@@ -322,6 +272,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-Create/recover the HRV buffer worktree from current upstream, apply the measured reuse only, and finish matched
-original-output oracle tests, mutation checks and the full verification/delivery procedure. Existing parked
-wording work, phone deferrals and completed owner invitations remain unchanged.
+Read existing release run **37830619829** and `hrv-clean-buffer-2026-10-08/ship.log` / `ship.exit`, verifying
+PID 13389's command before acting. If still running, retain/wait; if failed, inspect its actual failure before
+any rerun. On success, run `python3 dist/private/hrv-clean-buffer-2026-10-08/verify-release.py
+ef6216f8bc8076bb62277b700666ffb8c9c99531 37830619829` and require its saved run/assets/tag/IPA proof plus
+all seventeen exact-head upstream PR checks. Then retire only this task's protected old refs/scratch checkout,
+update History/State and upload the handbook. Do not restart completed tests, publish parked wording, or repeat
+phone exports/tests/owner invitations.
