@@ -4,16 +4,14 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-- [ ] **Phone observation received; exact update installation remains unconfirmed.** On 8 Oct Utku reported
-  nothing apparently wrong in Stress and supplied the 19:30 strap log. Review complete; retained privately in
-  `private/session-2026-10-08-phone-stress/` with hash, run report, HR timeline and analysis. Latest collection,
-  completed history sync and scoring are present; the log does not record Stress publication or distinguish
-  same-version builds. An optional installation clarification was asked; no answer is yet recorded.
-  Verified testing update `c8eb1cd028701123517e8bb56fad5c093d99ba03` is delivered; **just update over the existing
-  app** with AltStore if still needed. No repeat Stress check, wipe, reminder test, diary or personal export needed.
-  Software race proof and normal simulator rendering are complete; the user's normal-use observation does not
-  prove that the cancellation race was triggered on this phone.
-  Older updates `e722e0c4`, `f60718a9` and `01b55ac2` were not confirmed installed; do not ask to install those.
+- [x] **Latest update installed and normal Stress appearance reported.** Utku explicitly confirmed installing
+  today's latest update through AltStore before the Stress check. Verified build
+  `c8eb1cd028701123517e8bb56fad5c093d99ba03` is delivered; he saw nothing apparently wrong. The 19:30 strap log
+  review is complete and privately retained in `private/session-2026-10-08-phone-stress/` with hash, run report,
+  HR timeline and analysis. Latest collection, completed history sync and scoring are present. The log does not
+  record Stress screen publication, so it cannot prove a real-phone cancellation interleaving was triggered.
+  No repeat Stress check, wipe, reminder test, diary or personal export needed. Older updates `e722e0c4`,
+  `f60718a9` and `01b55ac2` were not separately confirmed installed; do not ask to install those.
 - [ ] Continue nine own PR lifecycles after checking actual heads/reviews. #2738 is open/mergeable, six exact-head
   checks/actual steps passed, title/body/eight blobs match, no review/comment. Existing eight remain open/green
   with no unanswered review. External #2725 separately handles Android Stress core retry/cancellation; our
@@ -34,7 +32,7 @@ simulator comparison passed; original simulator database restored and device shu
 Stack `6c815151` and build/tag `c8eb1cd0` are local/remote matches. Combined iOS, Android and eleven Swift jobs
 passed; release run `37793338186`, release `406928323` fully verified with all four required jobs, conditional
 cleanup skipped, all five assets and downloadable/CRC/digest/identity-checked IPA. Normal phone appearance is
-reported; exact installed release and real-phone race prevention remain unproven.
+reported and latest installation explicitly confirmed by Utku; real-phone cancellation interleavings remain unobserved.
 
 **Recovery snapshot, 8 Oct:** ten code worktrees clean/pushed; main/upstream/origin `8e94d559`. No running local
 build/watch/release job, queued/running task CI, unfinished Git operation, stash, scratch branch or safety ref.
@@ -46,14 +44,14 @@ on this Mac. No personal raw backup or independent PSG/ECG data available; no ph
 ## Phone
 
 **Hardware confirmed by Utku, 8 Oct:** WHOOP 5.0 and iPhone 16. He offers useful real-life tests with simple
-steps. Verified newest update **`c8eb1cd0`** is ready: install the newly downloaded IPA over the existing app
-with AltStore if still needed. On 8 Oct he reported seeing nothing wrong in Stress; no repeat check is requested.
+steps. On 8 Oct he explicitly confirmed installing today's latest update **`c8eb1cd0`** through AltStore
+before checking Stress, and reported seeing nothing wrong. No repeat installation or check is requested.
 This repair preserves the layout and calculation formulas; it prevents a cancelled older load from replacing
 newer results. "Leave and return" meant using the back arrow to return to the More list, then tapping Stress
 again, within NOOP. It did not mean force-closing the app, reinstalling or removing the strap. Advanced readouts
-can legitimately be absent when their data gates are unmet. Exact installation remains unconfirmed; the version
-header alone cannot identify `c8eb1cd0`. A clarification was asked, without blocking the log review. If a readout
-later unexpectedly clears or returns to older data, report what was seen and save a contemporaneous strap log
+can legitimately be absent when their data gates are unmet. Installation is established by his explicit answer;
+the version header alone cannot identify `c8eb1cd0`. If a readout later unexpectedly clears or returns to older
+data, report what was seen and save a contemporaneous strap log
 (More → App → Test Centre → Strap log → Save…). No repeat wipe/reminder/diary.
 Normal-night observation and personal export stay deferred until useful; no new request for either.
 
@@ -70,10 +68,11 @@ fix or this log review. No new code/CI/release action was started. Clearer chang
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
 background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
-Newest verified update **`c8eb1cd0`** is fully delivered. Its IPA is `com.noopapp.noop`, display name NOOP,
-12.0.0 (435), widget retained; install over the existing app through AltStore to preserve history. No migration
-change/fresh start is required. Neither previous `e722e0c4`, `01b55ac2` nor `f60718a9` was confirmed installed. The same
-version header cannot prove this update was installed; use the newly downloaded release IPA and AltStore completion.
+Newest verified update **`c8eb1cd0`** is delivered and installation is confirmed by Utku. Its IPA is
+`com.noopapp.noop`, display name NOOP, 12.0.0 (435), widget retained; its delivery instruction was just update
+over the existing app through AltStore. No migration change/fresh start was required. Neither previous
+`e722e0c4`, `01b55ac2` nor `f60718a9` was separately confirmed installed. Same-version headers cannot identify
+testing commits; the explicit user confirmation above establishes this latest installation.
 
 **Sync-stopped reminder confirmed on the phone:** the log scheduled it for about 00:31; Utku reported seeing
 it around **00:32 on 7 Oct**. The log then shows an app launch at 00:35. Do not repeat the three-hour test.
@@ -95,7 +94,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2738](https://github.com/ryanbr/noop/pull/2738) | `codex/stress-load-cancellation` / `63e19100` | Seven Apple cancellation boundaries plus three Android reads; all six exact-head checks/actual steps passed, full/quick local and both Android stages passed, original/fixed production-path replay and simulator controls. No new review; verified testing release `c8eb1cd0` delivered; normal Stress appearance reported, exact installation unconfirmed. Android core remains #2725's separate work. |
+| [#2738](https://github.com/ryanbr/noop/pull/2738) | `codex/stress-load-cancellation` / `63e19100` | Seven Apple cancellation boundaries plus three Android reads; all six exact-head checks/actual steps passed, full/quick local and both Android stages passed, original/fixed production-path replay and simulator controls. No new review; verified testing release `c8eb1cd0` delivered; latest installation confirmed by Utku and normal Stress appearance reported. Android core remains #2725's separate work. |
 | [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no review/comment. Documentation only; no app release. Await maintainer. |
 | [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Independently verified update `e722e0c4` delivered. Await maintainer. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
@@ -222,7 +221,7 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-Record Utku's installation answer if supplied; do not infer the build from the log or repeat his Stress check/export.
+Latest installation and normal Stress appearance are now confirmed by Utku; do not repeat the install/check/export.
 The follow-up explanation and supplied-log review are complete. After Sessions recovery, recheck PR #2738 at
 exact `63e19100` for review/merge. If reviewed, finish that response
 and verification cycle; if merged, prove inclusion before branch/worktree cleanup under Workflow. If unchanged,
