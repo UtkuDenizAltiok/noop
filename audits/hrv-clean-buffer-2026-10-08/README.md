@@ -3,7 +3,7 @@
 The two shared HRV cleaning paths now reuse a local neighbour buffer within a call, preserving the existing
 range filter, local median, 20% rejection threshold, ordering and removed-beat adjacency. Swift and Kotlin
 carry the same change. Source: `c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`, based on `8e94d559`.
-Verification and delivery are pending until the actual results are recorded in [State](../../STATE.md).
+Feature verification is complete. Current testing delivery and review status live in [State](../../STATE.md).
 
 ## Assessment and boundary
 
@@ -99,7 +99,15 @@ Full local verify at `c71b48af` passed: 632 store, 2137 analytics, 327 import (o
 source/i18n/parity gates, 127 governance, 2267 Mac tests (two existing skips) and iOS build. [Final feature Android](https://github.com/UtkuDenizAltiok/noop/actions/runs/37828040856) passed its
 APK and full unit-test steps at exact `c71b48af`. [PR #2742](https://github.com/ryanbr/noop/pull/2742) was
 published and its head/description read back exactly. All seventeen upstream checks at that head passed, with actual workflow job/steps verified. Combined candidate
-`c13e8873` passed the local iOS build; Android/eleven-job Swift CI and testing delivery remain pending in State.
+`c13e8873` passed the local iOS build, [Android](https://github.com/UtkuDenizAltiok/noop/actions/runs/37829415471)
+and [all eleven Swift jobs](https://github.com/UtkuDenizAltiok/noop/actions/runs/37829420443), with actual build/test
+steps read back. Testing release `ef6216f8` / [run 37830619829](https://github.com/UtkuDenizAltiok/noop/actions/runs/37830619829)
+completed all four required jobs (conditional cleanup skipped). All five nonempty assets, exact target/ref/tag,
+IPA HTTP200, 21,955,171-byte size, ZIP CRC, app/widget identities and background capabilities passed independent
+verification. IPA SHA256 `af24f640c967f542c19ac2c0477577e7b0491dafd9aa11b82f9e442fc487f091` equals GitHub's digest.
+Old refs were independently recovered/fsck-verified before only this task's temporary checkout/tags were retired.
+Installation is just update; user confirmation is pending. No special real-device test is required for this
+allocation-only change; no BLE or measured phone-energy/accuracy claim is made.
 
 The existing DEBUG `--demo-screen stress` entry rendered Stress's missing-data state in the iPhone 17 Pro /
 iOS 27 simulator. No raw rows or consent preference were injected; this is launch/render smoke only, not

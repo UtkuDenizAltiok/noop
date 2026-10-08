@@ -2,38 +2,32 @@
 
 Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session resumed, 8 Oct 2026
+## Now — bounded HRV improvement completed, 8 Oct 2026
 
-- [ ] **Remaining delivery — HRV cleaning buffer reuse, PR #2742.** Source and feature verification complete:
-  `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, `codex/hrv-clean-buffer`, clean/pushed at
-  **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`**. [Audit and reproducible results](audits/hrv-clean-buffer-2026-10-08/README.md).
-  Per-call buffers preserve all metric math/thresholds/data/freshness/UI. Direct **137,267-case** bit/adjacency
-  comparison and matched original-Swift oracles passed; both platforms' mutations were seen to fail and restored.
-  Final full-output-consumer benchmark: **30.0–30.7% lower helper CPU**, about 2.2 ms per overnight-sized pair
-  on this Mac, not a phone-battery or physiological-accuracy result. Full Apple verification and final Android
-  **37828040856** passed; PR head/body read back and attached. Expected upstream roster is seventeen checks;
-  all seventeen completed/success on c71b48af, with each workflow job/actual steps read back; no review/comment yet.
-- [ ] **Running release — do not dispatch again.** Testing-stack **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**
-  is old stack plus this change, excluding parked wording. Its local iOS build, Android **37829415471** and all
-  eleven Swift jobs **37829420443** passed, actual build/test steps checked. Testing-build local/remote is
-  **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**, stack plus the unchanged template workflow only.
-  Ship run **37830619829**, monitor **PID 13389**, command
-  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-ship.sh`, independently detached and
-  expected to survive chat closure. Verify PID command before acting. Cache `hrv-clean-buffer-2026-10-08/`:
-  `ship.log` / `ship.exit`; success marker `shipped ef6216f8`. External check:
-  `gh run view 37830619829 --repo UtkuDenizAltiok/noop --json status,conclusion,headSha,jobs`.
-  Publication of refs is complete; built/downloadable/installed are still distinct pending states.
-  After run/monitor success, run the retained private verifier with the exact head/run arguments shown below.
-- [ ] **Retained until delivery proof:** local safety tags `backup/pre-hrv-clean-stack` (6c815151) and
-  `backup/pre-hrv-clean-build` (c8eb1cd0); independently imported exact-tip/fsck-verified
-  `hrv-clean-buffer-2026-10-08/pre-testing.bundle` and `pre-testing-recovered.git`. Combined source checkout
-  `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/staging-noop`, clean/detached at c13e8873
-  (also on fork), can be retired after shipping proof. The existing parked wording candidate must be retained.
-  Negative Android temporary branch/worktree retired; no stash or unfinished Git operation. Full verify and
-  combined local build exited 0; only the ship monitor/external release jobs remain active.
-  Simulator's original app/data/preferences restored, logical DB and preference bytes match after shutdown;
-  Stress missing-data render is smoke evidence only. Report `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
-  No phone changes, special hardware test, export or diary requested. Installation will be **just update**.
+- [ ] **Pending external review — PR #2742 and the previous nine own PRs.** HRV buffer reuse is fully
+  verified and delivered; [audit](audits/hrv-clean-buffer-2026-10-08/README.md), source/evidence below and completed
+  milestones in History. No build, release or local verification remains running. Source worktree
+  `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, branch `codex/hrv-clean-buffer`, clean/pushed at
+  **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`**. [PR #2742](https://github.com/ryanbr/noop/pull/2742)
+  open/mergeable, seventeen exact-head checks and actual workflow steps passed; no maintainer review yet.
+  The prior nine owner invitations remain posted once and read back, with no new unanswered comments/reviews;
+  drafts/readbacks stay in `private/review-requests-2026-10-08/`. #2738/#2661 bodies retain confirmed phone observations.
+  Do not dispatch another build or send another owner invitation for the completed work.
+- [ ] **Phone installation unconfirmed — new verified update `ef6216f8`.** All four release jobs, five
+  assets and independent downloaded IPA/ref/tag/identity/integrity checks passed. Installation is **just update
+  over the existing app with AltStore**; no wipe, special strap test, export or diary is needed. Readings and
+  screens should remain the same. The measured saving is helper CPU on this Mac, not phone energy or new
+  physiological accuracy. Latest confirmed installed build remains c8eb1cd0 until Utku says he updated.
+
+**Current recovery:** thirteen code worktrees clean; root plus eleven source branches pushed, and the older
+parked wording candidate below remains local-only. Main/origin/upstream still 8e94d559. Testing-stack c13e8873,
+testing-build/local+remote testing-latest ef6216f8. No running local/external task job, stash, safety tag or
+unfinished Git operation. Only this task's temporary regression branch/worktree, combined source checkout and
+two protected old testing tags were retired after proof. The old stack/build/tag are independently recoverable
+from `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/pre-testing.bundle` and
+`pre-testing-recovered.git` (exact tips/full fsck verified). Keep these and the parked wording candidate.
+Private reports/logs/IPA/original simulator snapshots depend on this Mac; public backup does not upload them.
+Simulator's original app/data/preferences were restored and verified after shutdown; no physical-phone change.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
@@ -59,12 +53,6 @@ work stays parked, not delivered or discarded. This resumed session owns only th
   trees are recorded for possible future evidence reuse, not a claim that candidate CI ran. Keep this checkout.
   At wording-session closure the testing refs remained `6c815151` / `c8eb1cd0`; later HRV delivery is recorded above and in Git below. The independently imported/fsck-verified
   `pre-testing.bundle` and recovery repository are retained in the same cache.
-- [ ] **Pending external review:** all nine existing own PRs remain open/mergeable at their recorded heads, with
-  their expected green rosters and no unanswered maintainer review, rechecked at 21:08 TRT. One friendly,
-  distinct benefit/review request tagging `@ryanbr` on each is complete and read back; #2738/#2661 bodies also
-  reflect confirmed phone observations. Do not post again. URLs/text/readbacks are retained in
-  `private/review-requests-2026-10-08/`; closure metadata in
-  `private/stress-spectral-explanations-2026-10-08/session-close-pr-state.json`.
 - [ ] **Queued, not started — spectral numeric correctness:** units/grid/missing-time reconstruction together,
   including packed/coarse record timestamps. This remains a higher-value candidate than wording; reassess current
   upstream and retained varying-signal evidence before choosing a bounded repair. Other priorities remain in Backlog.
@@ -87,6 +75,12 @@ There is no external blocker to preserving this handover. The unfinished wording
 closure/priority instruction; pending scientific reference/data needs remain separate. No phone test/export needed.
 
 ## Phone
+
+**Newest delivered update, 8 Oct — `ef6216f8`:** HRV cleaner uses a per-call neighbour buffer; exact math,
+results, coverage, freshness and screens retained. Verified release/IPA details are in Git below. **Just update**
+through AltStore, keeping the existing app/data. Installation is unconfirmed; no repeat Stress cancellation test,
+log/export or special hardware observation is requested. This is a small helper-efficiency improvement; phone
+battery impact is not measured.
 
 **Hardware confirmed by Utku, 8 Oct:** WHOOP 5.0 and iPhone 16. He offers useful real-life tests with simple
 steps. On 8 Oct he explicitly confirmed installing today's latest update **`c8eb1cd0`** through AltStore
@@ -113,7 +107,7 @@ fix or this log review. No new code/CI/release action was started. Clearer chang
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
 background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
-Newest verified update **`c8eb1cd0`** is delivered and installation is confirmed by Utku. Its IPA is
+Newest confirmed installed update **`c8eb1cd0`** was delivered and installation is confirmed by Utku. Its IPA is
 `com.noopapp.noop`, display name NOOP, 12.0.0 (435), widget retained; its delivery instruction was just update
 over the existing app through AltStore. No migration change/fresh start was required. Neither previous
 `e722e0c4`, `01b55ac2` nor `f60718a9` was separately confirmed installed. Same-version headers cannot identify
@@ -139,6 +133,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
+| [#2742](https://github.com/ryanbr/noop/pull/2742) | `codex/hrv-clean-buffer` / `c71b48af` | Exact output/adjacency preserved on 137,267 cases; final helper CPU −30.0–30.7%. Full Apple + Android passed, all 17 upstream checks and actual steps green. Combined iOS/Android/eleven Swift jobs and verified release ef6216f8 delivered. No unanswered review. Await maintainer. |
 | [#2738](https://github.com/ryanbr/noop/pull/2738) | `codex/stress-load-cancellation` / `63e19100` | Seven Apple cancellation boundaries plus three Android reads; all six exact-head checks/actual steps passed, full/quick local and both Android stages passed, original/fixed production-path replay and simulator controls. No new review; verified testing release `c8eb1cd0` delivered; latest installation confirmed by Utku and normal Stress appearance reported. Android core remains #2725's separate work. |
 | [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no unanswered maintainer review. Documentation only; no app release. Await maintainer. |
 | [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no unanswered maintainer review. Independently verified update `e722e0c4` delivered. Await maintainer. |
@@ -149,16 +144,24 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
 
-All nine PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
+All ten PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
 it needs no speculative rebase.
 24 PRs merged, including #2659 on 4 Oct; the dated list and validation are in [History](HISTORY.md).
 Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
 
 ## Git and latest release
 
-- Current testing-stack **c13e8873**, local/remote; local iOS and combined Android/Swift passed.
-- Current testing-build **ef6216f8**, local/remote; release **37830619829** running. The workflow moves the
-  testing-latest tag before it finishes; no new downloadable/installed claim until independent assets prove it.
+- Current testing-stack **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**, local/remote, prior stack plus #2742.
+  Local iOS passed; Android **37829415471** and Swift **37829420443** (all eleven jobs/actual steps) passed.
+- Current testing-build/local+remote testing-latest **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**,
+  stack plus unchanged template-upload workflow only. Release **407179578**, run **37830619829**: actual
+  meta/Android/iOS/macOS build/package/upload jobs passed; conditional cleanup skipped. Monitor exited 0 with
+  `shipped ef6216f8`. All five nonempty assets, target/ref/tag agreement, IPA HTTP200/ZIP CRC/SHA256/identities
+  independently verified. IPA **21,955,171 bytes**, SHA256
+  `af24f640c967f542c19ac2c0477577e7b0491dafd9aa11b82f9e442fc487f091` matches GitHub.
+  NOOP `com.noopapp.noop`, 12.0.0 (435), widget retained/watch stripped; background modes/task identifiers retained.
+  Reports `private/hrv-clean-buffer-2026-10-08/release-*.json`; IPA cache `hrv-clean-buffer-2026-10-08/release-ef6216f8/`.
+  Installation is unconfirmed; just update.
 
 - `main`, `origin/main`, `upstream/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; exact mirror, remote
   upstream tip rechecked during shipping.
@@ -195,7 +198,8 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   exactly equal testing-build; IPA HTTP 200, downloaded ZIP/plist identity/size/SHA-256 verified against GitHub’s
   asset digest. Metadata: `private/release-{metadata,assets,run,ipa}-01b55ac2.json`.
 - Earlier installed release: **`6de9d6d`**, 6 Oct; its prior metadata remains in `private/release-*-6de9d6d.*`.
-- Code worktrees: root `main`; siblings `noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
+- Code worktrees: root `main`; new managed `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`
+  (`codex/hrv-clean-buffer` / `c71b48af`); siblings `noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
   `/Users/utk/.codex/worktrees/docs-navigation/noop` and `/Users/utk/.codex/worktrees/hrv-spectral-power/noop`
   (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
   (`codex/rhr-one-pass` / `14783994`) and `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`
@@ -204,7 +208,7 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   `codex/network-privacy-docs` / `a4f14442`; plus `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, `codex/stress-load-cancellation` /
   `63e19100`. New saved wording worktree `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop` is
   `codex/stress-spectral-explanations` / `0285a675`; the detached local-only staging candidate is documented in Now.
-  Entries reinstalled for all twelve code worktrees.
+  Entries reinstalled for all thirteen code worktrees after cleanup.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
   versions. No throwaway regression branch/stash or safety tag; the local-only scratch candidate in Now is retained. Old stack `858d8c99` and
   build `e722e0c4` independently recovered from task-cache `pre-testing.bundle` into `pre-testing-recovered.git`,
@@ -217,6 +221,18 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
 
 ## Local evidence and resources
+
+HRV buffer #2742 `c71b48af`: two matched original-Swift output tests per platform, 20 oracle rows,
+137,267 direct exact-bit/adjacency cases, both Swift reset mutations and the announced Android probe seen to
+fail assertions/restored exactly. Full local verify: 632/2137/327 packages, source/i18n/parity gates, 127
+governance, 2267 Mac tests and iOS build (one import/two Mac existing skips); final Android **37828040856**
+actual APK/unit steps passed. All seventeen upstream checks and six workflow run job/step readbacks passed.
+Seven alternating final `swiftc -O` trials consume full returned values/flags; −30.0–30.7% helper CPU, no
+phone/whole-pass/energy/accuracy claim. [Audit](audits/hrv-clean-buffer-2026-10-08/README.md); private
+`hrv-clean-buffer-2026-10-08/`, cache same name plus `verify/c71b48af/`. Simulator launch/render smoke showed
+existing missing-data state, not a new numeric fixture; restoration report confirms logical DB/preferences
+match after shutdown. No new warning in changed source/test files. Source changes exactly four intended files.
+
 
 Network/privacy #2737 `a4f144428e6b7f4c74344a39c0b9c9f8aa51f945`: one canonical direct-HTTP inventory;
 Android permission, update default/payload, Custom keyless AI, consent/brief/chart and sandbox claims corrected.
@@ -272,10 +288,8 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-Read existing release run **37830619829** and `hrv-clean-buffer-2026-10-08/ship.log` / `ship.exit`, verifying
-PID 13389's command before acting. If still running, retain/wait; if failed, inspect its actual failure before
-any rerun. On success, run `python3 dist/private/hrv-clean-buffer-2026-10-08/verify-release.py
-ef6216f8bc8076bb62277b700666ffb8c9c99531 37830619829` and require its saved run/assets/tag/IPA proof plus
-all seventeen exact-head upstream PR checks. Then retire only this task's protected old refs/scratch checkout,
-update History/State and upload the handbook. Do not restart completed tests, publish parked wording, or repeat
-phone exports/tests/owner invitations.
+After Sessions recovery and any genuinely new review, recheck current upstream spectral units/grid/time
+reconstruction against the retained varying-signal evidence and packed/coarse record-timestamp prerequisite.
+Preregister only one bounded numeric-correctness repair if that combined evidence supports it; otherwise choose
+one independently measurable priority. #2742 and ef6216f8 verification/delivery are complete: do not repeat them.
+Keep wording work parked, existing phone/data deferrals and posted owner invitations preserved.
