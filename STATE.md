@@ -42,12 +42,20 @@ cache `charge-baseline-usability/pre-charge-staging.bundle` (verified, independe
 Integration iOS at exact `858d8c99` passed: `stack-ios-result.json` exit 0 and `stack-ios.log` BUILD SUCCEEDED;
 independent runner PID 9970 is complete. Its tree exactly matches merge-tree of old testing-stack and the feature.
 Generated Info.plist restored; exact `858d8c99` is now local/remote testing-stack, advanced with pinned lease.
-Combined Android run **37742118268** and Swift run **37742121423** are active at that head; inspect these IDs,
-require one actual Android build/unit job and all 11 expected Swift package/tool jobs to finish successfully.
-Do not repeat dispatch. PR #2729 currently has 14/17 successes, three running jobs, no review/comment.
-No testing release has started; ship only after combined checks pass and upstream is rechecked unchanged.
-Simulator smoke check is starting from its confirmed shutdown state with existing synthetic data: install/launch
-the combined Debug app, inspect a screenshot, then terminate/shut down. No strap/physiology claim.
+Combined Android **37742118268** passed its actual build/unit steps and Swift **37742121423** passed all 11
+expected package/tool jobs at exact `858d8c99`. Saved run JSON and `pre-ship-acceptance.json` in the private folder.
+PR #2729 is stable **17/17 success** at exact `3e59a667`, no review/comment. Upstream tip rechecked unchanged
+at `8e94d559` immediately before shipping. **Shipping is active; do not repeat it.** Build target
+**`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`**, run
+[37743306160](https://github.com/UtkuDenizAltiok/noop/actions/runs/37743306160), from exact stack `858d8c99`.
+Independent monitor PID **13577**, Python cache `charge-baseline-usability/ship-runner.py`; retained
+`ship.log`, `ship-job.json`, expected `ship-result.json` exit 0 plus `shipped e722e0c4`.
+It can survive chat interruption; inspect the PID command, log and existing remote run before restarting anything.
+Old release `f60718a9` is being replaced; its safety tag/bundle remains until exact new jobs/assets/tag/IPA
+download/digest verification passes. Do not repeat completed CI. Phone installation has not been requested yet.
+Simulator launch smoke check completed: combined Debug app installed/launched and rendered its initial disclaimer
+screen (retained `simulator-launch.png`). No Today/score walkthrough or synthetic-history
+availability is claimed from this launch. App terminated and simulator restored to shutdown. No strap/physiology claim.
 The [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) records the wider system priorities,
 primary-source research, preregistered domain and runnable old/new replay. Public runner compiled and matched all
 25 expected rows. Four empty-respiration fixtures now all match absence exactly; 10 br/min original92.617968 versus
@@ -59,8 +67,7 @@ for a raw backup/normal-day log; no dataset download or new physiology tuning.
   Actual-data replay benefits from a private `.noopbak`; physiological accuracy claims require independent references.
 - [ ] Phone installation/export remains **deferred by Utku**. When resumed, **JUST UPDATE** the verified
   `f60718a9` IPA through AltStore over the existing app, preserving history. No wipe or repeat reminder test.
-- [ ] Continue seven PR review/merge lifecycles after checking current heads. The six previous PRs retain their
-  expected green check rosters; #2729 is still running upstream checks and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
+- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven have the expected green check rosters and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
   parked awaiting maintainer storage direction under existing approval; no duplicate report or approval request.
 
 No completion blocker. Retained local dependencies: ignored private reports/raw logs and cached verification logs,
@@ -100,7 +107,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. 17 upstream checks registered, 14 passed/3 running at last check. Integration delivery tracked in Now. |
+| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Integration release pending in Now. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
@@ -119,8 +126,10 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   upstream tip rechecked during shipping.
 - `testing-stack`: **`858d8c99b192888e4311c941fb4cc96bfe65f9bc`** (local/remote), base `8e94d559` plus
   #2613/#2660/#2661/#2722/#2724/#2729. Local combined iOS build passed; fork Android **37742118268** and Swift
-  **37742121423** are active. Prior stack `979a2baf` remains bundled/tagged until new delivery passes.
-- `testing-build`: **`f60718a9d3daf51aadbec1505174a25d6cd37ed8`** (local and remote), successful run **37685742398**;
+  **37742121423** passed all 11 jobs at the exact stack. Prior stack `979a2baf` remains bundled/tagged until new delivery passes.
+- Current `testing-build`: **`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`** (local/remote), active run **37743306160**;
+  completion and independent delivery checks pending in Now.
+- Prior verified `f60718a9` (being replaced), successful run **37685742398**;
   release **406156870**. Exact `meta`/`android`/`ios`/`macos` jobs passed; conditional cleanup skipped as expected.
   All five uploaded assets are nonempty; release target, local/remote `testing-latest` tag and build refs agree.
   IPA HTTP 200, 21,953,254 bytes, all ZIP CRCs passed; SHA-256
@@ -173,10 +182,10 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-Inspect existing combined Android **37742118268** and Swift **37742121423** at exact stack `858d8c99`, plus
-PR #2729 at `3e59a667` with its 17-check roster. Wait for running jobs; require actual build/unit steps and all
-11 Swift jobs to pass. If anything fails, inspect retained/external logs and preserve scratch/safety refs; do not
-repeat dispatch. After success recheck upstream unchanged at `8e94d559`, journal and ship this stack once, then
-verify assets/tag/IPA and retire only recorded temporary refs after independent bundle recovery. No ship run has
-started yet. Earlier RHR delivery and feature verification are complete. Phone tests will be simple and offered
-after the new release is verified; no wipe/reminder retest.
+Inspect the EXISTING release run **37743306160** at `e722e0c4` and cache `charge-baseline-usability/ship.log` /
+`ship-result.json` (PID 13577 only after command verification). Do not ship or dispatch again. After the exact four
+required jobs pass (conditional cleanup skipped), verify all five uploaded nonempty assets, target/local+remote tag,
+IPA download/ZIP/plist/digest. Then retire only recorded scratch/safety refs after independent bundle recovery;
+keep logs/IPA/bundle. If a check fails, preserve refs/scratch, inspect the existing run, and record the precise repair.
+Feature and combined verification and stable PR 17/17 roster are complete. Phone tests will be simple and offered
+after the new release is independently verified; no wipe or reminder retest.
