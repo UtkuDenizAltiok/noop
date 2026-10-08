@@ -5,12 +5,14 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Priority — 7 Oct 2026
+## Priority — 8 Oct 2026
 
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and
-runnable synthetic evidence. Daily SDNN's missing quality gates are repaired in green [PR #2722](https://github.com/ryanbr/noop/pull/2722) and shipped in `01b55ac2`. Next correctness
-task: unusable respiratory/optional Effort baseline consumption in Charge, with score/driver/trace alignment and
-usable-state preservation. Then repair spectral power units, grid resolution and discarded time together; no
+runnable synthetic evidence. Daily SDNN's missing quality gates are repaired in green [PR #2722](https://github.com/ryanbr/noop/pull/2722) and shipped in `01b55ac2`. Optional respiratory/Effort
+baseline eligibility is repaired in verified [PR #2729](https://github.com/ryanbr/noop/pull/2729), with score/driver/trace
+alignment, a 625-case state/value matrix and an exact original-math oracle; integration/delivery lives in State.
+[Whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md). Next repair spectral power
+units, grid resolution and discarded time together; no
 physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
 are separate candidates. Source coverage and physiological tuning need a private raw backup/independent references.
 

@@ -12,6 +12,7 @@ Project memory for [UtkuDenizAltiok/noop](https://github.com/UtkuDenizAltiok/noo
 | Verification, GitHub, shipping and measurement | [Workflow](WORKFLOW.md) |
 | Next investigations and their evidence | [Backlog](BACKLOG.md) |
 | Sensor pipeline, biometric defects and runnable evidence | [7 Oct audit](audits/biometric-pipeline-2026-10-07/README.md) |
+| Whole-app priorities and optional Charge baseline repair | [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) |
 | Completed work and dated test results | [History](HISTORY.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md) |
 | Agent entry | [AGENTS.md](AGENTS.md) |

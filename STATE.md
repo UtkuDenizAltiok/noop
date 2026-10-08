@@ -27,27 +27,40 @@ The 25-case compiled original Swift oracle (with only eligible inputs supplied) 
 also failed on original code. Six production files now gate optional states; 70 targeted Swift tests passed.
 All four local gate mutations failed their corresponding regression and restored exact SHA-256; all six new tests
 passed after restoration. Evidence `mutation-results.json` and `swift-{targeted,restored}-green.log`.
-Full local verification runs independently as PID **5456**, command Python cache `charge-baseline-usability/verify-runner.py`,
-exact head `3e59a667`; durable `verify.out`, `verify-job.json`, expected `verify-result.json` (exit 0 plus all steps
-passed), full step logs cache `verify/3e59a667/`. Process has its own session and can survive chat interruption;
-verify PID command and retained output before restarting. Final-head Android run **37740134786** is active;
-check `gh run view 37740134786 --repo UtkuDenizAltiok/noop`. No PR or testing release yet; full verification pending.
+Full local verification at exact `3e59a667` finished with **all steps passed** and `verify-result.json` exit 0:
+632/2141/327 package tests, all source/parity gates, 127 governance, 2267 Mac tests and iOS build (one import/two
+Mac skips). Durable `verify.out`/`verify-result.json`, full logs cache `verify/3e59a667/`; generated plist restored.
+Final-head Android **37740134786** passed debug build and actual full unit-test step including the raw-bit oracle;
+retained `android-final{,-run}.log/json`, no warnings in changed Swift/Kotlin files. No local verify remains running.
+[PR #2729](https://github.com/ryanbr/noop/pull/2729) is published, exact body/head read back and attached;
+open/mergeable at `3e59a667`. Expected upstream roster is **17** checks; initial readback has all 17 registered,
+still running. Private PR body `private/pr-charge-baseline-usability-body.md` and `pr-published.json` retained.
+Integration scratch `charge-baseline-usability/stack`, branch `codex/testing-stack-charge-20261008`, head
+**`858d8c99`** = previously verified `testing-stack` (`979a2baf`) + both new commits, only eight added/changed files.
+Old stack/build refs are preserved by local `backup/pre-charge-testing-{stack,build}-20261008` and complete-history
+cache `charge-baseline-usability/pre-charge-staging.bundle` (verified, independent recovery required before retirement).
+Integration iOS at exact `858d8c99` passed: `stack-ios-result.json` exit 0 and `stack-ios.log` BUILD SUCCEEDED;
+independent runner PID 9970 is complete. Its tree exactly matches merge-tree of old testing-stack and the feature.
+Generated Info.plist restored; exact `858d8c99` is now local/remote testing-stack, advanced with pinned lease.
+Combined Android run **37742118268** and Swift run **37742121423** are active at that head; inspect these IDs,
+require one actual Android build/unit job and all 11 expected Swift package/tool jobs to finish successfully.
+Do not repeat dispatch. PR #2729 currently has 14/17 successes, three running jobs, no review/comment.
+No testing release has started; ship only after combined checks pass and upstream is rechecked unchanged.
+Simulator smoke check is starting from its confirmed shutdown state with existing synthetic data: install/launch
+the combined Debug app, inspect a screenshot, then terminate/shut down. No strap/physiology claim.
 The [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) records the wider system priorities,
 primary-source research, preregistered domain and runnable old/new replay. Public runner compiled and matched all
 25 expected rows. Four empty-respiration fixtures now all match absence exactly; 10 br/min original92.617968 versus
 fixed72.103474 is a synthetic 0–100 algorithm result, not a wearer-accuracy claim. Actual-data/resource work remains
 for a raw backup/normal-day log; no dataset download or new physiology tuning.
 
-- [ ] **Next independent correctness task:** refuse unusable optional baselines consistently in Charge,
-  explanations and trace, following [audit finding 4](audits/biometric-pipeline-2026-10-07/README.md#4-an-empty-respiratory-baseline-can-influence-charge).
-  No source work has started. Trace all consumers and test calibrating/provisional/trusted/stale states, missing
-  values, cold-start omission and usable-state preservation on both platforms. Optional Effort impact still needs
-  reproduction. Then jointly repair spectral units/resolution/timing as a separate concern. Actual-data replay
-  benefits from a private `.noopbak`; physiological accuracy claims require independent references.
+- [ ] **Finish this repair's PR and integration/testing delivery.** Optional-baseline implementation and both-platform
+  verification are complete above. Then jointly repair spectral units/resolution/timing as a separate concern.
+  Actual-data replay benefits from a private `.noopbak`; physiological accuracy claims require independent references.
 - [ ] Phone installation/export remains **deferred by Utku**. When resumed, **JUST UPDATE** the verified
   `f60718a9` IPA through AltStore over the existing app, preserving history. No wipe or repeat reminder test.
-- [ ] Continue six PR review/merge lifecycles after checking current heads. All six are open/mergeable with the
-  expected green check rosters and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
+- [ ] Continue seven PR review/merge lifecycles after checking current heads. The six previous PRs retain their
+  expected green check rosters; #2729 is still running upstream checks and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
   parked awaiting maintainer storage direction under existing approval; no duplicate report or approval request.
 
 No completion blocker. Retained local dependencies: ignored private reports/raw logs and cached verification logs,
@@ -87,6 +100,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
+| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. 17 upstream checks registered, 14 passed/3 running at last check. Integration delivery tracked in Now. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
@@ -94,7 +108,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `3ecf43c5` | Documentation index/current-history separation; 3 checks green. Await maintainer. |
 
-All six PRs are open and mergeable. #2613 is 86 commits behind but merges cleanly;
+All seven PRs are open and mergeable. #2613 is 86 commits behind but merges cleanly;
 it needs no speculative rebase.
 24 PRs merged, including #2659 on 4 Oct; the dated list and validation are in [History](HISTORY.md).
 Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
@@ -103,8 +117,9 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 
 - `main`, `origin/main`, `upstream/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; exact mirror, remote
   upstream tip rechecked during shipping.
-- `testing-stack`: **`979a2baff70f96baa9fbfa43fb4847276312cd94`**, base `8e94d559` plus #2613/#2660/#2661/#2722/#2724.
-  Local combined iOS build passed. Fork Android **37684687935** and all 11 Swift jobs **37684692663** passed.
+- `testing-stack`: **`858d8c99b192888e4311c941fb4cc96bfe65f9bc`** (local/remote), base `8e94d559` plus
+  #2613/#2660/#2661/#2722/#2724/#2729. Local combined iOS build passed; fork Android **37742118268** and Swift
+  **37742121423** are active. Prior stack `979a2baf` remains bundled/tagged until new delivery passes.
 - `testing-build`: **`f60718a9d3daf51aadbec1505174a25d6cd37ed8`** (local and remote), successful run **37685742398**;
   release **406156870**. Exact `meta`/`android`/`ios`/`macos` jobs passed; conditional cleanup skipped as expected.
   All five uploaded assets are nonempty; release target, local/remote `testing-latest` tag and build refs agree.
@@ -122,9 +137,11 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 - Code worktrees: root `main`; siblings `noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
   `/Users/utk/.codex/worktrees/docs-navigation/noop` and `/Users/utk/.codex/worktrees/hrv-spectral-power/noop`
   (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
-  (`codex/rhr-one-pass` / `14783994`). All PR code is clean/pushed; handbook is this `dist` worktree.
+  (`codex/rhr-one-pass` / `14783994`) and `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`
+  (`codex/charge-baseline-usability` / `3e59a667`). All PR code is clean/pushed; handbook is this `dist` worktree.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
-  versions. No throwaway remote regression branch/stash or local safety refs/scratch checkout.
+  versions. No throwaway remote regression branch/stash. Only the active Charge scratch and local safety refs
+  recorded in Now remain; prior RHR scratch/refs are retired.
   The old stack `0768710f` / build `01b55ac2` remain recoverable from cache
   `rhr-one-pass/pre-rhr-staging.bundle`: both tips imported into an empty Git repository and full `git fsck` passed
   before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
@@ -156,10 +173,10 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-After Sessions recovery, read biometric audit finding 4 and recheck current upstream/issue/PR evidence for an
-optional-baseline repair. Inspect the current Swift/Kotlin `RecoveryScorer`, `ChargeDrivers` and trace consumers
-against that preregistered omission/preservation contract. If upstream already fixed it, reconcile the saved
-finding instead of duplicating it. Otherwise record one bounded correctness objective, reproduce the Effort
-case and implement both-platform regression/oracle tests before the fix, then finish verification/PR/testing
-release under Workflow. The existing RHR delivery is complete: no repeat shipping or cleanup. Phone update/export
-stays deferred; no user decision is needed for routine implementation/verification/delivery.
+Inspect existing combined Android **37742118268** and Swift **37742121423** at exact stack `858d8c99`, plus
+PR #2729 at `3e59a667` with its 17-check roster. Wait for running jobs; require actual build/unit steps and all
+11 Swift jobs to pass. If anything fails, inspect retained/external logs and preserve scratch/safety refs; do not
+repeat dispatch. After success recheck upstream unchanged at `8e94d559`, journal and ship this stack once, then
+verify assets/tag/IPA and retire only recorded temporary refs after independent bundle recovery. No ship run has
+started yet. Earlier RHR delivery and feature verification are complete. Phone tests will be simple and offered
+after the new release is verified; no wipe/reminder retest.

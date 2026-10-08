@@ -69,6 +69,11 @@ diff dist/audits/charge-baseline-usability-2026-10-08/expected-score-bits.txt /t
 swift test --package-path /path/to/fixed/app/Packages/StrandAnalytics --filter RecoveryOptionalBaselineUsableTests
 ```
 
-Full verification, final Android, PR and testing release are still pending; their current IDs/status live in
-[State](../../STATE.md). Retained private test/mutation/run logs: `private/session-2026-10-08-charge-baselines/`;
+Full feature verification at `3e59a667` passed: 632/2141/327 package tests, all source/parity gates, 127 governance,
+2267 Mac tests and iOS build (one import/two Mac skips). Final Android
+[37740134786](https://github.com/UtkuDenizAltiok/noop/actions/runs/37740134786) passed its actual debug build and full
+unit step including the exact oracle. No warnings in changed Swift/Kotlin files.
+[PR #2729](https://github.com/ryanbr/noop/pull/2729) is published at that head with the verified description read back.
+Integration/testing delivery is still pending; its current IDs/status live in [State](../../STATE.md).
+Retained private test/mutation/run logs: `private/session-2026-10-08-charge-baselines/`;
 cache: `charge-baseline-usability/`. No personal health data is included in this audit.
