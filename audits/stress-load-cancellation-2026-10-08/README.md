@@ -153,3 +153,24 @@ SDK app updates moved the data-container UUID while preserving the data; the rea
 container rather than assuming the old path exists. The original demo database was restored afterwards, the app
 stopped, and the simulator shut down. This app walk verifies normal display preservation; the scheduler replay
 separately establishes the cancelled-load behavior. No real-phone observation is claimed.
+
+## Verified delivery
+
+[PR #2738](https://github.com/ryanbr/noop/pull/2738) at exact `63e19100` is open/mergeable with six completed
+successful checks. Mac CI ran 2,273 tests/two existing skips; iOS is compile-only. Tools ran 234 capture tests
+(one existing skip), 50 repository acceptance, two R-R preservation and 153 core tests. All eight published blobs
+and the title/body match verified local files. Final source/package/parity gates passed at `63e19100`; unchanged
+Apple inputs reuse the full successful run as described above.
+
+Combined testing stack `6c815151` retained all six prior app PRs and added only the fix's eight files. Its local
+iOS build, full Android and eleven Swift jobs passed. [Testing release](https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest)
+`c8eb1cd0` was delivered through run `37793338186`/release `406928323`: four required jobs successful, conditional
+cleanup skipped, five nonempty uploaded assets, exact target/tag/refs, IPA HTTP200/CRC/identity and GitHub digest
+agreement. App/widget IDs and background capabilities retained; watch stripped as the existing sideload pipeline
+requires. The IPA is 21,955,109 bytes, SHA256 `6b4595e0dc98226e30d17d8e27395580e676f80d4f92ce5a3f13602e11794e42`.
+Old source/testing refs were preserved in bundles, testing tips independently recovered/fsck checked, and all
+scratch branches/worktrees/safety refs retired. Ten code worktrees remain clean/pushed.
+
+**Just update** through AltStore; no wipe or storage incompatibility. Real-phone installation and normal-use
+freshness remain unconfirmed/deferred. This verified software behavior does not establish physiological accuracy
+or phone battery savings. Recovery and any later observations stay in State.
