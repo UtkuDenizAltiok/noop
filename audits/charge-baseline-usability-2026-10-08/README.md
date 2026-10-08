@@ -74,6 +74,10 @@ Full feature verification at `3e59a667` passed: 632/2141/327 package tests, all 
 [37740134786](https://github.com/UtkuDenizAltiok/noop/actions/runs/37740134786) passed its actual debug build and full
 unit step including the exact oracle. No warnings in changed Swift/Kotlin files.
 [PR #2729](https://github.com/ryanbr/noop/pull/2729) is published at that head with the verified description read back.
-Integration/testing delivery is still pending; its current IDs/status live in [State](../../STATE.md).
+Combined stack `858d8c99` passed local iOS, Android `37742118268` and all 11 Swift jobs `37742121423`.
+Testing update `e722e0c4` / [run 37743306160](https://github.com/UtkuDenizAltiok/noop/actions/runs/37743306160)
+passed all four required jobs, uploaded five nonempty assets and passed independent tag/IPA ZIP/plist/digest checks.
+Old tips were independently recovered before temporary refs/checkouts were retired. Installation is just update;
+phone observation is unconfirmed. Current facts live in [State](../../STATE.md).
 Retained private test/mutation/run logs: `private/session-2026-10-08-charge-baselines/`;
 cache: `charge-baseline-usability/`. No personal health data is included in this audit.

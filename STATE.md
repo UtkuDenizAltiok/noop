@@ -4,89 +4,48 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-**Active objective, 8 Oct 2026:** under Utku's renewed whole-app improvement mandate, repair optional Charge
-baseline eligibility on both platforms. Source confirms the scorer passes unusable respiration/Effort states;
-drivers/trace pass unusable respiration too, while the Apple UI already omits it. This can make readouts disagree.
-Existing whole-pipeline audit and measured resource priorities remain the wider map; this task changes no weights,
-sensor decoding, baseline learning, schema or BLE policy and makes no physiological accuracy/phone-energy claim.
-Start recovery: previous RHR delivery complete, all code clean/pushed, no running jobs/stash/Git operation,
-upstream `8e94d559`; current open PR/issue search finds no matching repair (#2583 is source-era baseline work).
-Before measuring, record a finite-state missing/value matrix and usable-state preservation oracle. Completion:
-regressions seen failing then passing, raw-bit Swift/Kotlin oracle, matching score/driver/trace, full local verify,
-Android CI, verified upstream PR and combined testing build delivery. Source will live in one new PR worktree;
-logs/audit in cache `charge-baseline-usability/` and ignored `private/session-2026-10-08-charge-baselines/`.
-Worktree `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`, branch `codex/charge-baseline-usability`,
-committed/pushed head **`3e59a667`**, based on test-only commit `f1426a86`. Six new Swift tests ran: five regressions failed
-(420 assertions) as predicted, HRV cold-start control passed; log `swift-original-red.log` in the private folder.
-Android original run **37739654819** completed with debug compile success and exactly five expected new unit tests
-failed among 6643 tests/six skips; `android-original-failures.log` and `android-original-run.json` retained privately.
-Temporary remote `codex/charge-baseline-usability-regression` retired with pinned lease. Utku was told before this
-intentional failure/email; no remaining regression branch or repeat dispatch needed.
-The 25-case compiled original Swift oracle (with only eligible inputs supplied) is retained as
-`eligible-original-score-bits.txt` and copied verbatim into both-platform matrix tests; the augmented Swift matrix
-also failed on original code. Six production files now gate optional states; 70 targeted Swift tests passed.
-All four local gate mutations failed their corresponding regression and restored exact SHA-256; all six new tests
-passed after restoration. Evidence `mutation-results.json` and `swift-{targeted,restored}-green.log`.
-Full local verification at exact `3e59a667` finished with **all steps passed** and `verify-result.json` exit 0:
-632/2141/327 package tests, all source/parity gates, 127 governance, 2267 Mac tests and iOS build (one import/two
-Mac skips). Durable `verify.out`/`verify-result.json`, full logs cache `verify/3e59a667/`; generated plist restored.
-Final-head Android **37740134786** passed debug build and actual full unit-test step including the raw-bit oracle;
-retained `android-final{,-run}.log/json`, no warnings in changed Swift/Kotlin files. No local verify remains running.
-[PR #2729](https://github.com/ryanbr/noop/pull/2729) is published, exact body/head read back and attached;
-open/mergeable at `3e59a667`. Expected upstream roster is **17** checks; initial readback has all 17 registered,
-still running. Private PR body `private/pr-charge-baseline-usability-body.md` and `pr-published.json` retained.
-Integration scratch `charge-baseline-usability/stack`, branch `codex/testing-stack-charge-20261008`, head
-**`858d8c99`** = previously verified `testing-stack` (`979a2baf`) + both new commits, only eight added/changed files.
-Old stack/build refs are preserved by local `backup/pre-charge-testing-{stack,build}-20261008` and complete-history
-cache `charge-baseline-usability/pre-charge-staging.bundle` (verified, independent recovery required before retirement).
-Integration iOS at exact `858d8c99` passed: `stack-ios-result.json` exit 0 and `stack-ios.log` BUILD SUCCEEDED;
-independent runner PID 9970 is complete. Its tree exactly matches merge-tree of old testing-stack and the feature.
-Generated Info.plist restored; exact `858d8c99` is now local/remote testing-stack, advanced with pinned lease.
-Combined Android **37742118268** passed its actual build/unit steps and Swift **37742121423** passed all 11
-expected package/tool jobs at exact `858d8c99`. Saved run JSON and `pre-ship-acceptance.json` in the private folder.
-PR #2729 is stable **17/17 success** at exact `3e59a667`, no review/comment. Upstream tip rechecked unchanged
-at `8e94d559` immediately before shipping. **Shipping is active; do not repeat it.** Build target
-**`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`**, run
-[37743306160](https://github.com/UtkuDenizAltiok/noop/actions/runs/37743306160), from exact stack `858d8c99`.
-Independent monitor PID **13577**, Python cache `charge-baseline-usability/ship-runner.py`; retained
-`ship.log`, `ship-job.json`, expected `ship-result.json` exit 0 plus `shipped e722e0c4`.
-It can survive chat interruption; inspect the PID command, log and existing remote run before restarting anything.
-Old release `f60718a9` is being replaced; its safety tag/bundle remains until exact new jobs/assets/tag/IPA
-download/digest verification passes. Do not repeat completed CI. Phone installation has not been requested yet.
-Simulator launch smoke check completed: combined Debug app installed/launched and rendered its initial disclaimer
-screen (retained `simulator-launch.png`). No Today/score walkthrough or synthetic-history
-availability is claimed from this launch. App terminated and simulator restored to shutdown. No strap/physiology claim.
-The [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) records the wider system priorities,
-primary-source research, preregistered domain and runnable old/new replay. Public runner compiled and matched all
-25 expected rows. Four empty-respiration fixtures now all match absence exactly; 10 br/min original92.617968 versus
-fixed72.103474 is a synthetic 0–100 algorithm result, not a wearer-accuracy claim. Actual-data/resource work remains
-for a raw backup/normal-day log; no dataset download or new physiology tuning.
+**Bounded improvement complete, 8 Oct 2026:** optional Charge baseline eligibility repaired on Swift/Kotlin,
+fully verified, published as [PR #2729](https://github.com/ryanbr/noop/pull/2729) at `3e59a667`, all 17 upstream
+checks green and no review/comment. Combined testing update **`e722e0c4`** independently delivered and verified.
+[Whole-app priorities, research and replay](audits/charge-baseline-usability-2026-10-08/README.md) retain the wider
+map and this repair's evidence. Scores/explanations/trace agree; no new weights, sensor/BLE/schema change or
+phone-energy/physiological accuracy claim. Temporary regression branch, integration scratch and safety tags
+retired only after old tips were independently recovered. Source, logs, IPA and bundle are retained; all eight
+code worktrees clean/pushed, no stash/Git operation or running build/test/release job.
 
-- [ ] **Finish this repair's PR and integration/testing delivery.** Optional-baseline implementation and both-platform
-  verification are complete above. Then jointly repair spectral units/resolution/timing as a separate concern.
-  Actual-data replay benefits from a private `.noopbak`; physiological accuracy claims require independent references.
-- [ ] Phone installation/export remains **deferred by Utku**. When resumed, **JUST UPDATE** the verified
-  `f60718a9` IPA through AltStore over the existing app, preserving history. No wipe or repeat reminder test.
-- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven have the expected green check rosters and no unanswered review on 8 Oct. Backup issue #2720 has no response and remains
-  parked awaiting maintainer storage direction under existing approval; no duplicate report or approval request.
+- [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** verified `e722e0c4` is ready for **JUST UPDATE**
+  through AltStore over the existing app. Installation is unconfirmed; perform the short normal-night/log check
+  when he chooses. Earlier installation/export deferral was respected during builds; do not demand a wipe, repeat
+  the reminder test or ask for a diary. Personal backup export stays deferred until actual-data replay needs it.
+- [ ] **Next independent correctness task:** repair spectral power units, grid resolution and discarded time
+  together, following 7 Oct audit findings 2/3 and the timing row. No work started. Use known varying signals,
+  independent power/timing references and a preregistered finite domain; preserve score paths outside the optional
+  spectral readout. A private raw backup helps source/coverage/processing replay; human accuracy claims require
+  independent references.
+- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven are open/mergeable with
+  the expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 remains parked awaiting
+  maintainer storage direction under existing approval; no duplicate report or approval request.
 
-No completion blocker. Retained local dependencies: ignored private reports/raw logs and cached verification logs,
-IPA and recovery bundle on this Mac. No personal backup/PSG dataset is available.
+No software/delivery completion blocker. Real phone observation and independent physiological validation remain
+unproven. Retained local dependencies: private reports/logs and cached verification logs, IPA and recovery bundle
+on this Mac. No personal backup/PSG dataset is available.
 
 ## Phone
 
 **Hardware confirmed by Utku, 8 Oct:** WHOOP 5.0 and iPhone 16. He offers real-life tests when useful and asks for
-simple step-by-step instructions. Give a short observation procedure after the new build is verified; no repeat
-reminder/wipe/setup test. No fresh phone log or personal export has been supplied yet.
+simple step-by-step instructions. Verified update `e722e0c4` is ready; installation/normal-night observation are
+unconfirmed. When ready: update over the existing app via AltStore, wear normally for one night with NOOP in the
+background, then open Today and save/send the strap log (More → App → Test Centre → Strap log → Save…). Report any
+unexpected screen/collection behaviour; a calibrating Charge can be correct before enough valid baseline nights.
+No repeat reminder/wipe/setup test. Personal backup export remains deferred until a replay needs it.
 
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
 background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
-The earlier verified update **`01b55ac2`** was not confirmed installed. New update **`f60718a9`** is fully delivered
-and independently verified; installation/export are deferred by Utku. When phone work resumes, **JUST UPDATE** through AltStore over the
-existing app, preserving history. No migration change/fresh start is required. Downloaded IPA identity is
-`com.noopapp.noop`, display name NOOP, version 12.0.0 (435), with widget extension retained. A version
-header alone cannot prove installation because that number does not change between these testing builds.
+Latest verified update **`e722e0c4`** is fully delivered. Its IPA is `com.noopapp.noop`, display name NOOP,
+12.0.0 (435), widget retained; install over the existing app through AltStore to preserve history. No migration
+change/fresh start is required. Neither previous `01b55ac2` nor `f60718a9` was confirmed installed. The same
+version header cannot prove this update was installed; use the newly downloaded release IPA and AltStore completion.
 
 **Sync-stopped reminder confirmed on the phone:** the log scheduled it for about 00:31; Utku reported seeing
 it around **00:32 on 7 Oct**. The log then shows an app launch at 00:35. Do not repeat the three-hour test.
@@ -107,7 +66,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Integration release pending in Now. |
+| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Independently verified update `e722e0c4` delivered. Await maintainer. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no review/comment. Await maintainer. |
@@ -125,11 +84,17 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 - `main`, `origin/main`, `upstream/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; exact mirror, remote
   upstream tip rechecked during shipping.
 - `testing-stack`: **`858d8c99b192888e4311c941fb4cc96bfe65f9bc`** (local/remote), base `8e94d559` plus
-  #2613/#2660/#2661/#2722/#2724/#2729. Local combined iOS build passed; fork Android **37742118268** and Swift
-  **37742121423** passed all 11 jobs at the exact stack. Prior stack `979a2baf` remains bundled/tagged until new delivery passes.
-- Current `testing-build`: **`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`** (local/remote), active run **37743306160**;
-  completion and independent delivery checks pending in Now.
-- Prior verified `f60718a9` (being replaced), successful run **37685742398**;
+  #2613/#2660/#2661/#2722/#2724/#2729. Local combined iOS build passed. Fork Android **37742118268** passed its
+  actual build/unit job; Swift **37742121423** passed all 11 expected package/tool jobs at that exact head.
+- Current `testing-build` and local/remote `testing-latest`: **`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`**,
+  successful run **37743306160**, release **406540342**. Exact meta/Android/iOS/macOS jobs passed; conditional
+  cleanup skipped. Ship monitor exited 0 with `shipped e722e0c4`. All five uploaded assets nonempty; release target,
+  local/remote tag and build refs agree. IPA HTTP 200, 21,953,533 bytes, all ZIP CRCs/plist identities passed;
+  SHA-256 `f1cb7aac015d5458b7f72ff9a148eb9b5a6712baa4a8bcded09e8f977685fa74` matches GitHub's digest.
+  `com.noopapp.noop`, NOOP 12.0.0 (435), widget `com.noopapp.noop.widgets` retained, watch stripped.
+  Reports: ignored `private/release-{run,metadata,assets,tag,ipa,ipa-prefetch,bundle-recovery,cleanup}-e722e0c4.json`;
+  IPA cache `charge-baseline-usability/release-e722e0c4/NOOP-ios-unsigned-v12.0.0.ipa`.
+- Prior verified `f60718a9` (superseded), successful run **37685742398**;
   release **406156870**. Exact `meta`/`android`/`ios`/`macos` jobs passed; conditional cleanup skipped as expected.
   All five uploaded assets are nonempty; release target, local/remote `testing-latest` tag and build refs agree.
   IPA HTTP 200, 21,953,254 bytes, all ZIP CRCs passed; SHA-256
@@ -149,13 +114,24 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   (`codex/rhr-one-pass` / `14783994`) and `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`
   (`codex/charge-baseline-usability` / `3e59a667`). All PR code is clean/pushed; handbook is this `dist` worktree.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
-  versions. No throwaway remote regression branch/stash. Only the active Charge scratch and local safety refs
-  recorded in Now remain; prior RHR scratch/refs are retired.
+  versions. No throwaway regression branch/stash, local safety refs or scratch checkout remain.
+  The old stack `979a2baf` / build `f60718a9` are recoverable from cache
+  `charge-baseline-usability/pre-charge-staging.bundle`: independently imported into an empty Git repository and
+  full fsck passed before cleanup. `codex-setup.sh` re-run for all eight code worktrees.
   The old stack `0768710f` / build `01b55ac2` remain recoverable from cache
   `rhr-one-pass/pre-rhr-staging.bundle`: both tips imported into an empty Git repository and full `git fsck` passed
   before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
 
 ## Local evidence and resources
+
+Charge #2729 `3e59a667`: six new tests, 625 score cases, 25 compiled original-math raw-bit oracle rows on both
+platforms, four seen-to-fail/restored mutations and 70 targeted tests. Full verify: 632/2141/327 packages,
+127 governance, 2267 Mac tests and iOS build (one import/two Mac skips), all steps passed. Final Android
+`37740134786` passed actual build/unit steps; original `37739654819` failed exactly five expected new tests
+among 6643/six skips after successful compile. No new warnings in changed files. Source and numeric replay:
+[8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md); private `session-2026-10-08-charge-baselines/`;
+cache `verify/3e59a667/` and `charge-baseline-usability/`. Simulator launch rendered initial disclaimer, not a Today
+score walkthrough; screenshot retained, app terminated/simulator shut down. No strap claim from simulator.
 
 RHR #2724 `14783994` is fully verified; full local run at `035b6ab1` and final-head source/parity/governance +
 Android `37683254213` results are in [History](HISTORY.md) and the [RHR audit](audits/rhr-one-pass-2026-10-07/README.md).
@@ -172,7 +148,8 @@ Full verification on 6 Oct: #2660 packages 632/2135/327, 127 governance tests, 2
 simulator walkthroughs passed; reminder delivery is now confirmed on the phone, deleted-list checks remain pending. Logs: cache `verify/<head>/` and feature review
 folders. Older setup/test/measurement details: [verification archive](HISTORY.md#verification-archive--through-6-oct-2026).
 
-Simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` (iPhone 17 Pro, iOS 27.0): 120 synthetic days, no strap, shut down.
+Simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` (iPhone 17 Pro, iOS 27.0), no strap, shut down.
+Previously seeded 120 synthetic days; current availability was not established by the 8 Oct disclaimer-only launch.
 Xcode 27.0, XcodeGen, gh, Python 3.12 available; Android tests run in fork CI. The new phone log is retained privately;
 personal backups and sleep-accel / restricted DREAMT datasets remain absent on this Mac. Obtain raw data when an analysis needs it; never tune from old aggregates.
 Docs #2717: head `3ecf43c56e9f2a67f263b4ea1b18c256f5aaa823`; runs source `37532167137`, i18n `37532167155`,
@@ -182,10 +159,10 @@ rendered HTML, PR/check snapshots and cache removal evidence). Completed Derived
 
 ## Next safe action
 
-Inspect the EXISTING release run **37743306160** at `e722e0c4` and cache `charge-baseline-usability/ship.log` /
-`ship-result.json` (PID 13577 only after command verification). Do not ship or dispatch again. After the exact four
-required jobs pass (conditional cleanup skipped), verify all five uploaded nonempty assets, target/local+remote tag,
-IPA download/ZIP/plist/digest. Then retire only recorded scratch/safety refs after independent bundle recovery;
-keep logs/IPA/bundle. If a check fails, preserve refs/scratch, inspect the existing run, and record the precise repair.
-Feature and combined verification and stable PR 17/17 roster are complete. Phone tests will be simple and offered
-after the new release is independently verified; no wipe or reminder retest.
+After Sessions recovery, read 7 Oct biometric audit findings 2/3 and the spectral timing row, then recheck current
+upstream issues/PRs for a matching repair. If already fixed, reconcile the finding instead of duplicating it.
+Otherwise record one bounded spectral units/resolution/timing objective and preregister known-energy,
+varying-frequency/amplitude/gap fixtures against an independent reference before changing production code.
+Use held-out recordings for any human accuracy claim. The Charge repair and testing update `e722e0c4` are complete;
+do not repeat feature/combined CI, shipping or retired-ref cleanup. Phone update/normal-night log awaits Utku's
+choice; incoming real data takes precedence when it arrives. No routine implementation/delivery decision needed.

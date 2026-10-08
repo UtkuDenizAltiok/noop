@@ -10,7 +10,8 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and
 runnable synthetic evidence. Daily SDNN's missing quality gates are repaired in green [PR #2722](https://github.com/ryanbr/noop/pull/2722) and shipped in `01b55ac2`. Optional respiratory/Effort
 baseline eligibility is repaired in verified [PR #2729](https://github.com/ryanbr/noop/pull/2729), with score/driver/trace
-alignment, a 625-case state/value matrix and an exact original-math oracle; integration/delivery lives in State.
+alignment, a 625-case state/value matrix and an exact original-math oracle; shipped/independently verified as
+`e722e0c4`. Current phone observation lives in State.
 [Whole-app priorities and replay](audits/charge-baseline-usability-2026-10-08/README.md). Next repair spectral power
 units, grid resolution and discarded time together; no
 physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
