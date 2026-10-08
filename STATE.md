@@ -19,9 +19,12 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   their expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 stays parked awaiting
   maintainer storage direction under existing approval; no duplicate report or approval request.
 
-No running jobs or software/delivery blocker. Phone observation and independent physiological validation remain
-unproven. Private evidence, cached logs, IPA and recovery bundles depend on this Mac; no personal backup/PSG
-dataset is available.
+**Session closed for a fresh chat, 8 Oct:** all eight code worktrees clean/pushed, seven PRs open/mergeable with
+their expected green checks and no unanswered review. No local build/test/release job, queued/running fork CI,
+unfinished Git operation, stash or temporary safety ref. Remote upstream remains `8e94d559`.
+No software/delivery blocker. Phone observation and independent physiological validation remain unproven.
+Private evidence, cached logs, IPA and recovery bundles were located and depend on this Mac; no personal
+backup/PSG dataset is available. Close readback: ignored `private/organisation-audit/session-close-2026-10-08.json`.
 
 ## Phone
 

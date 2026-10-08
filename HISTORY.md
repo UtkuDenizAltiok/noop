@@ -195,6 +195,8 @@ value that looks right on screen while being wrong underneath. A real session ca
 
 - **8 Oct — short research entry, one canonical procedure:** Utku delegates whether prompt indirection is useful. Sessions now has a 29-word research entry pointing directly to its start and research procedures in the same file. All five detailed research/quality/delivery paragraphs retained verbatim; shared recovery reused rather than copied. Start/end prompts and complete recovery/handover/setup sections unchanged; procedure target, local links/anchors, fences and whitespace checked. No expansion script, duplicate prompt file or app action. Existing documentation priority and phone/data deferrals remain.
 
+- **8 Oct — session closed for a fresh chat:** followed Sessions end procedure with scope frozen. Eight clean/pushed code checkouts, all seven exact PR heads and expected green check counts, no unanswered reviews, upstream `8e94d559`, no running/queued fork CI or local job, Git operation, stash or temporary safety ref. Located retained documentation/Charge evidence, logs, IPA and both old-tip recovery bundles without deleting or rerunning work. Prompt simplification and docs PR delivery complete; maintainer decisions and phone/data tasks remain pending/deferred. Current handbook read back; exact next safe action remains checking #2717 before bounded privacy/network-document reconciliation. Fresh chat on this Mac is safe; private evidence remains local. Readback in ignored `private/organisation-audit/session-close-2026-10-08.json`.
+
 ## Verification archive — through 6 Oct 2026
 
 Moved from State on 7 Oct so the active handover stays short. These are dated results, not new runs.
