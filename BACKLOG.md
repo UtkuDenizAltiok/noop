@@ -19,7 +19,12 @@ adds a timing prerequisite: history emits several R-R rows at one record timesta
 beat times cannot mean blindly using row `ts`. Validate original/rejected interval time, record continuity,
 clock splices, missing blocks and coarse timestamps against known varying signals before choosing the estimator.
 No physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
-are separate candidates. The Stress cancellation repair is verified and delivered; current status is in
+are separate candidates. The [buffer-reuse assessment](audits/hrv-clean-buffer-2026-10-08/README.md) confirms that
+Apple's pure parser, Android's pure parser and the WHOOP client's inline parser all skip declared energy bytes
+without checking completeness and accept a final half R-R word. The Bluetooth SIG HRS/Profile require preserving
+valid zero-interval notifications and ignoring RFU flags; retain those controls in any later repair and validate
+unchanged valid packets on hardware. The same assessment records the 2026 HRV rigor guideline's wearable-input/
+cleaning/usable-data requirements without claiming the existing filter is scientifically validated. The Stress cancellation repair is verified and delivered; current status is in
 State. Retain successful results and two-phase loading. Other screens' broad cancellation catches are candidates
 only after caller/publication evidence; no global refactor is included. External
 [#2725](https://github.com/ryanbr/noop/pull/2725) already covers Android Stress core failure retry/cancellation;

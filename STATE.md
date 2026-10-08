@@ -2,7 +2,38 @@
 
 Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session closed, 8 Oct 2026, 21:08 TRT
+## Now — session resumed, 8 Oct 2026
+
+- [ ] **Active — HRV cleaning neighbour-buffer reuse.** Selected after the preregistered pilot:
+  **137,267 exact original/candidate cases passed** (cleaned Double bits and every gap flag); seven alternating
+  Swift `-O` trials show **30.7–31.7% lower cleaning CPU**, including 300/36,000/108,000 intervals with and without
+  artefacts. [Plan](audits/hrv-clean-buffer-2026-10-08/preregistered.md), [pilot summary](audits/hrv-clean-buffer-2026-10-08/pilot-summary.json).
+  Implement only per-call neighbour-array reuse in `rejectEctopic` / `cleanRRGapAware`, on both platforms.
+  Preserve sorting/math/thresholds, all inputs/results/adjacency, visual quality and freshness. No phone-energy,
+  physiological-accuracy or spectral-repair claim. Source worktree `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, branch `codex/hrv-clean-buffer`,
+  base `8e94d559`. Swift production hash exactly equals the measured pilot candidate. Two new matched
+  original-output tests added on each platform; initial Swift run passed both. Local plain/gap buffer-reset
+  mutations are running sequentially with automatic byte-identical restoration. Expected-failing Android
+  mutation CI has been announced to Utku before any dispatch; temporary ref/job not created yet.
+  Cache: `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/`; private reports: `private/hrv-clean-buffer-2026-10-08/`.
+  Recovery complete: nine existing PR heads unchanged, expected 3/6/17/18-check rosters green; no unanswered
+  maintainer reviews. No running build, dirty source, stash/safety ref or Git operation. Committed source **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`** (four intended files).
+  Both local reset mutations failed their test assertions without crashes, each restored to the exact production
+  hash. Next actions journaled before execution: launch one full local verify at this committed head; push
+  the feature branch; create/push one temporary Android reset-mutation branch with only the two new tests selected,
+  dispatch Android CI there, record its ID/head/build+test result, then retire it after exact restoration.
+  Full local verify actually started under **PID 4426**, command
+  `bash ~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/run-verify.sh`, independently detached;
+  completion is `full-verify.exit` plus `all steps passed` in `full-verify.log`. PID 4298's shell-background
+  attempt exited before creating a verify log; checked inactive before replacement, so no overlap occurred.
+  Negative Android run **37826824779**, head **`d27bfb0c01e978347f47dc5d7578733d78dbad1c`**, branch
+  `codex/hrv-clean-buffer-regression`, cache worktree `hrv-clean-buffer-2026-10-08/android-regression`.
+  Only the two new unit tests are selected there; its actual build step and exactly two assertion failures
+  are required. Readback command: `gh run view 37826824779 --repo UtkuDenizAltiok/noop --json headSha,status,conclusion,jobs`.
+  Run the final full Android suite on the feature head after the negative result. No PR until required local/fork
+  evidence passes; no testing refs moved. Initial harness compile
+  failed on fixture type inference, corrected before measurement; retained `pilot-compile-error.log` is harness
+  evidence, not a product test failure. No PR or release/public action yet.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). Stop language work and
@@ -237,9 +268,6 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-After the standard Sessions recovery, **recheck current upstream spectral calculations against the retained
-7 Oct units/grid/missing-time evidence and packed/coarse-timestamp prerequisite**, before preregistering one
-bounded numeric-correctness repair. This is the next read-only assessment, not permission to start several tasks.
-Keep `0285a675` and its detached candidate parked at lowest priority; do not publish them, repeat locale QA,
-restart completed jobs, repost owner invitations or repeat the delivered cancellation release. Current phone
-installation and normal Stress appearance are confirmed; diary, normal-night tests and personal export remain deferred.
+Create/recover the HRV buffer worktree from current upstream, apply the measured reuse only, and finish matched
+original-output oracle tests, mutation checks and the full verification/delivery procedure. Existing parked
+wording work, phone deferrals and completed owner invitations remain unchanged.

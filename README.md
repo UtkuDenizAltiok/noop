@@ -17,6 +17,7 @@ for a thorough improvement session, and the end prompt to hand over.
 | Deeper assessment and cancelled Stress load regression | [Freshness audit](audits/stress-load-cancellation-2026-10-08/README.md) |
 | Parked Stress interpretation change and unfinished verification | [Saved spectral audit](audits/stress-spectral-explanations-2026-10-08/README.md) |
 | Source-backed network/privacy guide reconciliation | [Network audit](audits/network-privacy-2026-10-08/README.md) |
+| HRV cleaning allocation measurement and exact preservation | [Buffer audit](audits/hrv-clean-buffer-2026-10-08/README.md) |
 | Completed work and dated test results | [History](HISTORY.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md) |
 | Agent entry | [AGENTS.md](AGENTS.md) |
