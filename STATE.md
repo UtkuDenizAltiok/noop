@@ -14,7 +14,7 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   unchanged normal-result/parity controls, full local/Android verification, own PR and testing-build delivery.
   Latest request (8 Oct): apply the deep procedure more fully beyond the completed documentation task.
   Worktree `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, branch `codex/stress-load-cancellation`,
-  local commit `49777b94` (not yet pushed; final verification pending).
+  pushed commit `63e19100` (final narrowed Android CI/gates pending).
   Six Swift/eight Kotlin tests added. Apple seen-to-fail completed: removing cancellation checks failed four
   regression cases (six assertions); suppressing valid results failed both normal controls. Restored source
   digest matched exactly and all ten focused Stress/Unescalated tests passed; original warnings remain.
@@ -35,18 +35,53 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   Production sources are identical to `82d8d0ae`; test corrections alone require final verification.
   Feature branch pushed once; normal Android CI `37786421064` at exact `49777b94`, now running.
   Apple wiring mutation completed: two tests, one expected assertion failure, source SHA restored exactly.
-  Full final verification now active on clean `49777b94`; no repeated mutation required. Driver `private/stress-load-cancellation-2026-10-08/final-verify.sh`;
+  Full final verification completed on `49777b94`: all steps passed; packages 632/2135/327 (one import skip),
+  all source/parity gates, 127 governance, 2273 Mac tests/two existing skips, iOS build. Final Android run
+  `37786421064` passed actual APK/unit steps on that exact head; log and metadata retained. No new warnings
+  in changed source (four existing Stress Sendable warnings match old evidence). No repeated tests required. Driver `private/stress-load-cancellation-2026-10-08/final-verify.sh`;
   task cache `final-verify.pid`, `final-verify-driver.log`, `final-verify.exit`, `swift-wiring-{negative,restore}`
   evidence. Foreground survival uncertain; inspect PID command/log before restarting. No shared builds overlap.
   Second Android negative run `37784315713` at `35acdba7`: APK built, six selected tests/four expected failures
   (three valid-work controls and disconnected preference), two other wiring controls passed. No crash. Both
   negative jobs are finished; no duplicate dispatch. Branch/worktree cleanup follows final positive evidence.
+  Final upstream search found external #2725 (`kavemang`, head `89681dfd`) already propagates cancellation
+  from Android's core read while fixing retry memoization. Narrow our Android integration to stored series,
+  fingerprint and advanced lenses; leave the core read to that existing PR. The helper contract remains tested;
+  rename its generic cancelled-read/next-phase case to avoid implying core integration. Apple remains all seven
+  boundaries. This changes the initial Android scope transparently, not the measured Apple domain or fixture.
+  Scope correction committed/pushed with pinned lease at `63e19100`; exact prior `49777b94` preserved in
+  safety tag and verified `pre-scope.bundle`. Normal narrowed Android run `37788525727` passed both actual APK/unit steps, exact head confirmed. All Swift/app/tests/package/resource/workflow inputs match the full successful `49777b94` run.
+  Final `verify.sh --quick` at clean `63e19100` completed with all steps passed; cache `narrow-verify.pid`,
+  `narrow-verify-driver.log`, `narrow-verify.exit` and `verify/63e19100/`. No repeated Android dispatch needed;
+  unchanged full Apple build/test evidence is reused.
+  Do not duplicate #2725's retry work or post on someone else's PR. Current release remains unchanged.
   Old/fixed simulator comparison planned on the same synthetic database: 7200 1-Hz HR rows, 7200 synthetic
   varying R-R rows, seven imported Stress points; no raw sensor rows existed beforehand. Back up the existing
   simulator DB before fixture insertion, retain both copies. Private `simulator-fixture.py` and cache input hashes;
   this tests rendering/normal-result preservation, not physiological truth or a phone race prevalence estimate.
   Old source checkout at cache
-  `stress-load-cancellation-2026-10-08/old-ui`, base `8e94d559`. No release started.
+  `stress-load-cancellation-2026-10-08/old-ui`, base `8e94d559`. Next local build: exact baseline `8e94d559` for the simulator in old-ui with separate `old-ui-derived` cache,
+  `old-ui-build.pid`, `old-ui-build.log` and `.exit`; first confirm no prior build is running. Final app bundle
+  retained at task-cache `fixed-NOOP.app` and digest. Old UI build succeeded at exact `8e94d559`; retained top/history/timeline screenshots show headline 1.1,
+  index 288, ratio 2.3, intraday mean/peak 1.5 across 2h and history 29 points/mean1.4. Baseline input readback
+  confirms both7200 raw row counts and digests; SDK update changed the data-container UUID while retaining data.
+  Fixed UI comparison passed: same headline, advanced readouts, timeline/split and history chart values;
+  raw counts and ordered row digests identical. Six screenshots plus `simulator-comparison.json` retained.
+  Original simulator database restored after saving the complete QA fixture; app stopped and simulator shut
+  down. This is normal render preservation; controlled scheduler replay proves the cancellation race.
+  UI outcome is not phone/physiological/energy proof. No release started.
+  Delivery: scratch stack built from upstream `8e94d559` + thirteen prior commits + the fix, at `6c815151`.
+  Its parent tree is exactly old `858d8c99`, and net addition is only this PR's eight files. Old stack/build tips
+  protected in local `backup/pre-stress-testing-{stack,build}` and verified `pre-testing.bundle`.
+  Scratch branch/worktree: `codex/stress-testing-stack`, task-cache `testing-stack`. Next local action: combined
+  iOS build, separate `stack-derived`, `stack-build.{pid,log,exit}`; no shared build is active. Only after success,
+  pinned-lease push, align local testing-stack and dispatch combined Android/Swift Packages CI.
+  Own PR [#2738](https://github.com/ryanbr/noop/pull/2738) published and attached on `63e19100`; open/mergeable,
+  exact title/body/head read back, six expected checks registered (five in progress, Source passed).
+  Published body `private/stress-load-cancellation-2026-10-08/pr-body.md`; expected exact-head roster is
+  six checks (Mac, iOS, Android, Source Hygiene, i18n, Tools Python). Read back body/head and actual job results.
+  Phone testing release follows successful stack build under Workflow; do not repeat existing CI or release.
+  Old release remains `e722e0c4`. Software verified; phone observation remains unproven.
   Spectral normalization/grid/time remains coupled and queued: stored historical R-R rows share record timestamps,
   so a replacement must validate timing provenance rather than treating those stamps as precise beat times.
 - [ ] **Next bounded priority — spectral biometric correctness:** power units, grid resolution and discarded
@@ -56,7 +91,7 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 - [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** installation/normal-night observation for
   `e722e0c4` remain unconfirmed; do the simple update/log check in Phone when he chooses. Personal backup export
   stays deferred until actual-data replay needs it; no wipe, repeated reminder test or diary.
-- [ ] Continue eight PR review/merge lifecycles after checking current heads. All eight were open/mergeable with
+- [ ] Continue nine PR review/merge lifecycles after checking current heads. All eight were open/mergeable with
   their expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 stays parked awaiting
   maintainer storage direction under existing approval; no duplicate report or approval request.
 
@@ -218,7 +253,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-Inspect Android regression run `37783143070` and task-cache local verification PID/log before acting. If still
-running, recover it; if complete, capture actual build/test results and continue the recorded normal-control
-mutation followed by restored verification. Active source is `codex/stress-load-cancellation`; do not repeat
-existing PR/release actions. Phone and personal-data tasks remain deferred.
+Inspect task-cache `stress-load-cancellation-2026-10-08/stack-build.pid` and `stack-build.log`/`.exit` for the
+combined iOS build at scratch head `6c815151`. Verify the PID's command before acting. If running, recover it;
+if failed, inspect/fix the actual failure; if successful, restore generated Info.plist, confirm the eight-file
+net addition, then pinned-lease push/align testing-stack and dispatch the recorded combined CI and testing build.
+PR #2738 is already published: check its exact six-job roster; do not create another PR or repeat its body upload.
+All feature tests/gates and simulator comparison are complete. Final testing delivery is still pending; phone
+and personal-data tasks remain deferred.

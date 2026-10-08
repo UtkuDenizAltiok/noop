@@ -94,7 +94,7 @@ No fixture domain or prediction changed. The runner now retains hashes for all c
 ## Repair and verification
 
 Apple checks before and after each of seven reads/work phases; a cancelled result returns before publication
-or the next phase. Android checks its coroutine on both sides of four reads and rethrows cancellation while
+or the next phase. Android checks its coroutine on both sides of three reads and rethrows cancellation while
 keeping ordinary read failures as absent-value fallbacks. Existing work priorities, read limits, stored/raw
 data, selected lens, mathematics, two-phase rendering and layout are preserved. Already-running non-cooperative
 CPU work can still finish; cancellation is not advertised as immediate CPU interruption.
@@ -123,3 +123,33 @@ Large logs and compiled replays: `~/Library/Caches/noop-handbook/stress-load-can
 Private scripts/action drafts: handbook `private/stress-load-cancellation-2026-10-08/`. Public output contains no
 personal readings. Source-compiled scheduler results, unit tests, simulator appearance and real-phone observation
 are separate evidence; none is substituted for another.
+
+## Final scope and normal app comparison
+
+Before PR publication, the open external [#2725](https://github.com/ryanbr/noop/pull/2725) was inspected at
+`89681dfd`. It already propagates cancellation from Android's core read as part of fixing retry memoization.
+The initial four-boundary Android plan was therefore narrowed to stored series, fingerprint and advanced lenses,
+leaving the core call unchanged. No retry implementation or third-party patch is duplicated here. The Apple
+seven-boundary repair is unchanged. The generic Android cancelled-read/next-phase test was renamed to describe
+its helper contract; its exercised body is unchanged from the seen-to-fail case. Do not interpret these tests as
+proof that the unchanged Android core fallback is repaired; that remains #2725's separate pending work.
+
+Final source: `63e19100`, one concern/commit. Full local verification passed at `49777b94`: 632 store, 2,135 analytics,
+327 import (one existing skip), all source/i18n/parity gates, 127 governance tests, 2,273 Mac tests (two existing
+skips) and iOS build. All Swift/app/test/resource/workflow inputs are identical at the narrowed head. Final source
+checks are rerun there; [Android full build/test run](https://github.com/UtkuDenizAltiok/noop/actions/runs/37788525727)
+passed on exact `63e19100`. It prints successful actual build/unit steps, without a test-count summary; 6,645 was
+the discovered negative full-suite roster, not an invented positive count.
+
+The exact original app was separately built at `8e94d559` and compared with the verified fixed Apple app in the
+same iPhone 17 Pro/iOS 27 simulator. The isolated demo database received 7,200 synthetic 1-Hz HR rows, 7,200 varying
+R-R rows and seven imported Stress points. Readback after both apps confirmed identical ordered raw-row digests
+and counts. Normal observed values match: headline 1.1, optional index 288, spectral ratio 2.3, intraday mean/peak
+1.5 across 2h, and 29 history points/mean1.4. Both plots, splits, tokens and explanations rendered. These are
+constructed render fixtures, not reference measurements or validation of the existing spectral interpretation.
+
+Six settled screenshots, both database snapshots and `simulator-comparison.json` are retained in the task cache.
+SDK app updates moved the data-container UUID while preserving the data; the readback script resolves the current
+container rather than assuming the old path exists. The original demo database was restored afterwards, the app
+stopped, and the simulator shut down. This app walk verifies normal display preservation; the scheduler replay
+separately establishes the cancelled-load behavior. No real-phone observation is claimed.
