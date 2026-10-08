@@ -2,7 +2,7 @@
 
 Use these prompts in a Codex chat for `~/Developer/noop`. Add a specific task after the start prompt when needed.
 Use the deep research prompt when you have time and usage available for a thorough improvement session.
-Copy prompts from this file when needed; no separate saved copy is required.
+Copy the short entry prompt for the session you want; its detailed procedure is in this same file. No separate saved copy is required.
 Ending a session prepares a handover for a **new chat with a fresh context window**. That chat recovers from the
 handbook and current evidence, without depending on the old conversation. This file is the single home for session
 instructions; quote the canonical prompts below exactly when giving them to Utku.
@@ -25,7 +25,12 @@ Close this NOOP session for a new chat with a fresh context window. Follow dist/
 ## Deep research and improvement — copy this
 
 ```text
-Continue NOOP in ~/Developer/noop with a thorough research and improvement session. Read the app's AGENTS.md and dist/AGENTS.md, then follow dist/SESSIONS.md's start procedure. Recover from the handbook and current evidence without relying on previous chat context. Reconcile unfinished work, running jobs, PRs and releases first. Respect my latest instructions, standing decisions and deferred tasks; avoid duplicate actions.
+Continue NOOP in ~/Developer/noop. Read the app's AGENTS.md and dist/AGENTS.md, then follow dist/SESSIONS.md's start procedure and Deep research and improvement procedure. Preserve quality and finish one bounded, verified improvement.
+```
+
+## Deep research and improvement procedure
+
+Follow the [start procedure](#start-procedure) first, then apply the following requirements.
 
 Understand what NOOP actually does, how it works with the WHOOP strap, and how raw readings become stored data, biometrics, scores and user decisions. Use the available reasoning time, web search, network access, source inspection, logs, profiling and experiments for deep analysis. Read current primary research and official technical documentation, cite the sources supporting your conclusions, and distinguish established findings, hypotheses and untested ideas. Extend existing audits with new evidence rather than repeating completed investigations.
 
@@ -36,7 +41,6 @@ Efficiency must NEVER reduce quality. Preserve accuracy, data coverage, freshnes
 After assessing the whole system, choose one bounded priority with the strongest combination of user value, evidence and feasible verification. Explain why it matters and define what will prove improvement before changing it. Under our existing project authority, implement it, finish the required tests, builds, parity checks, PR and testing delivery where applicable, and verify the actual outcome. If completion needs unavailable evidence or input, preserve exactly what is finished, what prevents completion and the next safe action. Record other promising ideas in the backlog with their evidence and validation needs.
 
 I have a WHOOP 5.0 and iPhone 16 and can test in real life. When a useful test needs me, give simple steps, the expected result and what evidence to send, respecting deferred tasks. Keep progress checkpointed and the handbook current; prepare a recoverable handover before a context or usage limit. Finish by explaining what improved, what proves it, what remains uncertain, and one to three simple numbered next steps for me.
-```
 
 ## Start procedure
 
