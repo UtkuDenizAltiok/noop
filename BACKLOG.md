@@ -18,8 +18,12 @@ are separate candidates. Source coverage and physiological tuning need a private
 [Upstream cleanup tracker #2708](https://github.com/ryanbr/noop/issues/2708) already lists candidates;
 recheck each against current source, preserve useful rationale and avoid another tracker. Guide navigation and
 retirement of completed execution recipes are handled in existing PR #2717; status lives in State.
-Next documentation candidate: reconcile reported conflicting network/privacy claims with one canonical current
-reference, preserving setup and contribution instructions. Item 9's storage discussion remains parked under
+Network/privacy reconciliation is delivered through PR #2737; its source-backed inventory/audit and live CI status
+are in State. Later documentation candidates from #2708 include stale schema summaries and the unimplemented
+SQLCipher suggestion; verify them independently and keep one authoritative home. Network-related source comments
+also need a separate bounded review: the Android manifest comment omits the default-on update check, and AI headers
+still claim key/question-only and text-only traffic. No source-comment or runtime change is included in #2737.
+Item 9's storage discussion remains parked under
 [issue #2720](https://github.com/ryanbr/noop/issues/2720); its evidence and condition for implementation are below.
 
 ## Performance and science evidence

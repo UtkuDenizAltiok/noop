@@ -4,27 +4,23 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-- [ ] **Next documentation priority:** reconcile the reported conflicting network/privacy guidance in
-  [cleanup tracker #2708](https://github.com/ryanbr/noop/issues/2708) §0 against current source, with one canonical
-  reference. Preserve practical setup, usage and contribution guidance. No implementation started; the completed
-  recipe cleanup is in PR #2717 below and History.
+- [ ] **Next bounded priority — spectral biometric correctness:** power units, grid resolution and discarded
+  time together, following 7 Oct audit findings 2/3 and the timing row. No work started. Use a preregistered finite
+  domain with varying signals and independent power/timing references; preserve score paths outside the optional
+  readout. Raw backup can support processing replay; human accuracy claims require independent references.
 - [ ] **Phone observation offered by Utku (WHOOP 5.0 / iPhone 16):** installation/normal-night observation for
   `e722e0c4` remain unconfirmed; do the simple update/log check in Phone when he chooses. Personal backup export
   stays deferred until actual-data replay needs it; no wipe, repeated reminder test or diary.
-- [ ] **Queued biometric correctness task:** spectral power units, grid resolution and discarded time together,
-  following 7 Oct audit findings 2/3 and the timing row. No work started. Use a preregistered finite domain with
-  varying signals and independent power/timing references; preserve score paths outside the optional readout.
-  Raw backup can support processing replay; human accuracy claims require independent references.
-- [ ] Continue seven PR review/merge lifecycles after checking current heads. All seven were open/mergeable with
+- [ ] Continue eight PR review/merge lifecycles after checking current heads. All eight were open/mergeable with
   their expected green rosters and no unanswered review on 8 Oct. Backup issue #2720 stays parked awaiting
   maintainer storage direction under existing approval; no duplicate report or approval request.
 
-**Session closed for a fresh chat, 8 Oct:** all eight code worktrees clean/pushed, seven PRs open/mergeable with
+**Completion checkpoint, 8 Oct:** all nine code worktrees clean/pushed, eight PRs open/mergeable with
 their expected green checks and no unanswered review. No local build/test/release job, queued/running fork CI,
 unfinished Git operation, stash or temporary safety ref. Remote upstream remains `8e94d559`.
 No software/delivery blocker. Phone observation and independent physiological validation remain unproven.
 Private evidence, cached logs, IPA and recovery bundles were located and depend on this Mac; no personal
-backup/PSG dataset is available. Close readback: ignored `private/organisation-audit/session-close-2026-10-08.json`.
+backup/PSG dataset is available. Recovery/final privacy readbacks: ignored `private/network-privacy-2026-10-08/`.
 
 ## Phone
 
@@ -62,6 +58,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
+| [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no review/comment. Documentation only; no app release. Await maintainer. |
 | [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no review/comment. Independently verified update `e722e0c4` delivered. Await maintainer. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no review/comment. Included in verified `01b55ac2`. Await maintainer. |
@@ -70,7 +67,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
 
-All seven PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
+All eight PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
 it needs no speculative rebase.
 24 PRs merged, including #2659 on 4 Oct; the dated list and validation are in [History](HISTORY.md).
 Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
@@ -109,6 +106,8 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
   (`codex/rhr-one-pass` / `14783994`) and `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`
   (`codex/charge-baseline-usability` / `3e59a667`). All PR code is clean/pushed; handbook is this `dist` worktree.
+  New documentation worktree `/Users/utk/.codex/worktrees/network-privacy/noop` is
+  `codex/network-privacy-docs` / `a4f14442`; local entries reinstalled for all nine code worktrees.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
   versions. No throwaway regression branch/stash, local safety refs or scratch checkout remain.
   The old stack `979a2baf` / build `f60718a9` are recoverable from cache
@@ -119,6 +118,19 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
 
 ## Local evidence and resources
+
+Network/privacy #2737 `a4f144428e6b7f4c74344a39c0b9c9f8aa51f945`: one canonical direct-HTTP inventory;
+Android permission, update default/payload, Custom keyless AI, consent/brief/chart and sandbox claims corrected.
+Platform-service traffic is separate. [Source-backed audit](audits/network-privacy-2026-10-08/README.md).
+Local source hygiene/i18n passed with Python 3.12. 126 Markdown pages have no new missing local targets;
+seven new fragment links resolve, three legacy anchors retained and all six changed pages rendered by GitHub.
+120 other Markdown files and source/tests/tools/workflows/config trees unchanged. All six remote document blobs
+and PR title/body matched the verified local files. Exact-head check-runs roster: all three complete/success;
+Source `37777649489`, i18n `37777649539`, Tools Python `37777649601` actual job/steps passed. Tools ran
+234 capture (one existing skip), 50 repository acceptance, two legacy R-R and 153 core tests. Open/mergeable,
+no review/comment. No app build, release or phone action required. Private recovery/source hashes/inventories/
+validator/readbacks: `private/network-privacy-2026-10-08/`; HTML and CI logs: cache `network-privacy-2026-10-08/`.
+No packet-capture, third-party retention, hardware, energy or physiological-accuracy claim.
 
 Charge #2729 `3e59a667`: six new tests, 625 score cases, 25 compiled original-math raw-bit oracle rows on both
 platforms, four seen-to-fail/restored mutations and 70 targeted tests. Full verify: 632/2141/327 packages,
@@ -161,10 +173,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-After Sessions recovery, recheck PR #2717 at `34c9eeac` for review or merge. If merged, prove inclusion and
+After Sessions recovery, recheck PR #2737 at `a4f14442` for review or merge. If merged, prove inclusion and
 reconcile its branch/worktree under Workflow; documentation-only work needs no app rebuild. If reviewed, finish
-that response/fix cycle first. Otherwise choose the bounded network/privacy-document reconciliation from #2708
-§0: inspect the actual network paths and canonical Privacy/security §1.1 before editing any claim, preserve the
-human guides, and recheck upstream for a matching repair. The four-recipe cleanup and PR update are complete;
-do not repeat their push, checks or description edit. Spectral work remains queued. App testing release `e722e0c4`
+that response/fix cycle first. Otherwise begin the queued spectral investigation: inspect current Swift/Kotlin
+`HRVFreqDomain` and the existing independent fixtures, then preregister the varying-signal energy/timing domain
+before changing production code. Extend the 7 Oct findings 2/3 and timing row together. Both documentation PRs
+are verified and delivered; do not repeat their pushes, checks or description edits. App testing release `e722e0c4`
 is verified; phone observation/export deferrals remain, and incoming real data takes precedence when it arrives.
