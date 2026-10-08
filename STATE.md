@@ -4,11 +4,39 @@ Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — next work
 
-**Bounded task complete, 8 Oct 2026:** existing RHR testing release `f60718a9` independently verified and its
-recorded temporary checkout/branch/safety tags retired. No app source changes, new workflow dispatch or duplicate
-shipping. All seven code worktrees are clean/pushed, no stash or unfinished Git operation, and no running
-build/test/release jobs. Upstream remains `8e94d559`. Delivery details and retained evidence are below; the dated
-completion is in [History](HISTORY.md).
+**Active objective, 8 Oct 2026:** under Utku's renewed whole-app improvement mandate, repair optional Charge
+baseline eligibility on both platforms. Source confirms the scorer passes unusable respiration/Effort states;
+drivers/trace pass unusable respiration too, while the Apple UI already omits it. This can make readouts disagree.
+Existing whole-pipeline audit and measured resource priorities remain the wider map; this task changes no weights,
+sensor decoding, baseline learning, schema or BLE policy and makes no physiological accuracy/phone-energy claim.
+Start recovery: previous RHR delivery complete, all code clean/pushed, no running jobs/stash/Git operation,
+upstream `8e94d559`; current open PR/issue search finds no matching repair (#2583 is source-era baseline work).
+Before measuring, record a finite-state missing/value matrix and usable-state preservation oracle. Completion:
+regressions seen failing then passing, raw-bit Swift/Kotlin oracle, matching score/driver/trace, full local verify,
+Android CI, verified upstream PR and combined testing build delivery. Source will live in one new PR worktree;
+logs/audit in cache `charge-baseline-usability/` and ignored `private/session-2026-10-08-charge-baselines/`.
+Worktree `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`, branch `codex/charge-baseline-usability`,
+committed/pushed head **`3e59a667`**, based on test-only commit `f1426a86`. Six new Swift tests ran: five regressions failed
+(420 assertions) as predicted, HRV cold-start control passed; log `swift-original-red.log` in the private folder.
+Android original run **37739654819** completed with debug compile success and exactly five expected new unit tests
+failed among 6643 tests/six skips; `android-original-failures.log` and `android-original-run.json` retained privately.
+Temporary remote `codex/charge-baseline-usability-regression` retired with pinned lease. Utku was told before this
+intentional failure/email; no remaining regression branch or repeat dispatch needed.
+The 25-case compiled original Swift oracle (with only eligible inputs supplied) is retained as
+`eligible-original-score-bits.txt` and copied verbatim into both-platform matrix tests; the augmented Swift matrix
+also failed on original code. Six production files now gate optional states; 70 targeted Swift tests passed.
+All four local gate mutations failed their corresponding regression and restored exact SHA-256; all six new tests
+passed after restoration. Evidence `mutation-results.json` and `swift-{targeted,restored}-green.log`.
+Full local verification runs independently as PID **5456**, command Python cache `charge-baseline-usability/verify-runner.py`,
+exact head `3e59a667`; durable `verify.out`, `verify-job.json`, expected `verify-result.json` (exit 0 plus all steps
+passed), full step logs cache `verify/3e59a667/`. Process has its own session and can survive chat interruption;
+verify PID command and retained output before restarting. Final-head Android run **37740134786** is active;
+check `gh run view 37740134786 --repo UtkuDenizAltiok/noop`. No PR or testing release yet; full verification pending.
+The [8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md) records the wider system priorities,
+primary-source research, preregistered domain and runnable old/new replay. Public runner compiled and matched all
+25 expected rows. Four empty-respiration fixtures now all match absence exactly; 10 br/min original92.617968 versus
+fixed72.103474 is a synthetic 0–100 algorithm result, not a wearer-accuracy claim. Actual-data/resource work remains
+for a raw backup/normal-day log; no dataset download or new physiology tuning.
 
 - [ ] **Next independent correctness task:** refuse unusable optional baselines consistently in Charge,
   explanations and trace, following [audit finding 4](audits/biometric-pipeline-2026-10-07/README.md#4-an-empty-respiratory-baseline-can-influence-charge).
@@ -26,6 +54,10 @@ No completion blocker. Retained local dependencies: ignored private reports/raw 
 IPA and recovery bundle on this Mac. No personal backup/PSG dataset is available.
 
 ## Phone
+
+**Hardware confirmed by Utku, 8 Oct:** WHOOP 5.0 and iPhone 16. He offers real-life tests when useful and asks for
+simple step-by-step instructions. Give a short observation procedure after the new build is verified; no repeat
+reminder/wipe/setup test. No fresh phone log or personal export has been supplied yet.
 
 Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
 now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
