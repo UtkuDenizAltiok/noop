@@ -1697,17 +1697,14 @@
     <string name="l10n_sleep_screen_stage_breakdown_e9b714f9">Структура стадий</string>
     <string name="l10n_sleep_screen_this_moves_the_night_to_a_fac2fb46">Это перенесёт ночь на время, где нет записанных данных. Стадии там вывести нельзя, поэтому она может отображаться пустой, пока данные её не покроют.</string>
     <string name="l10n_sleep_screen_your_night_data_is_in_logging_ec461720">Данные за ночь получены. Отметка о самочувствии помогает NOOP понять, что даёт вам лучшее восстановление.</string>
-    <string name="l10n_stress_screen_autonomic_balance_lf_hf_776cb6f7">Баланс автономной нервной системы (LF/HF)</string>
     <string name="l10n_stress_screen_avg_a178769d">СРЕД</string>
     <string name="l10n_stress_screen_baevsky_stress_index_296cf7c0">Индекс напряжения Баевского</string>
     <string name="l10n_stress_screen_daily_0_3_proxy_63247929">Суточный показатель-заменитель 0–3</string>
-    <string name="l10n_stress_screen_hf_power_3a9fd8c9">Мощность HF</string>
     <string name="l10n_stress_screen_not_enough_recent_days_to_chart_c072bade">Пока недостаточно недавних дней, чтобы построить тренд. Продолжайте носить браслет, чтобы заполнить его.</string>
     <string name="l10n_stress_screen_of_3_46203495">из 3</string>
     <string name="l10n_stress_screen_on_demand_today_s_r_r_17d716e1">по запросу · сегодняшние R-R</string>
     <string name="l10n_stress_screen_on_the_0_3_autonomic_load_8a0d5107">по шкале вегетативной нагрузки 0–3</string>
     <string name="l10n_stress_screen_the_line_traces_your_autonomic_load_804f4028">Линия показывает вашу вегетативную нагрузку в течение дня бодрствования, оценённую against your own calm hours today (the same 0-3 proxy as the score above, read hour by hour). Hours without enough data are skipped.</string>
-    <string name="l10n_stress_screen_these_are_extra_on_demand_hrv_9303f1de">Это дополнительные измерения ВСР по запросу, вычисленные по сегодняшним интервалам R-R. Они информационные и не меняют оценку стресса выше.</string>
     <string name="l10n_stress_screen_we_compare_today_s_resting_heart_a9cd0955">Мы сравниваем сегодняшние пульс в покое и ВСР с вашей собственной 30-дневной baseline. A higher-than-usual resting HR and a lower-than-usual HRV both push the score up, classic signs the body is activated. The combined shift is mapped onto a 0-3 scale: 0 is calm, 1.5 sits at your baseline, 3 is highly activated.</string>
     <string name="l10n_test_centre_screen_bug_report_5a7ee5ac">Отчёт об ошибке</string>
     <string name="l10n_today_screen_arrange_cfdd099c">Расположение</string>
@@ -2754,4 +2751,9 @@
     <string name="raw_diag_ecg_probe_running">На этом ремешке запись может всё ещё идти. Результат попадёт в strap log.</string>
     <string name="today_customize_live_session_availability">Появляется сегодня, если сессии в реальном времени включены в Настройках или сеанс уже активен.</string>
     <string name="l10n_app_changelog_today_your_way_heart_rate_any_5e1308b3">«Сегодня» на ваш вкус, пульс для любого приложения и итальянский язык</string>
+    <string name="stress_spectral_ratio">Отношение LF/HF</string>
+    <string name="stress_spectral_hf_estimate">Оценка HF</string>
+    <string name="stress_spectral_ratio_caption">Низкая / высокая частота</string>
+    <string name="stress_spectral_hf_caption">Высокочастотная ВСР</string>
+    <string name="stress_advanced_hrv_note">LF/HF сравнивает медленные и быстрые изменения интервалов между ударами сердца. Дыхание и условия записи влияют на эти оценки. LF/HF не измеряет баланс нервной системы; LF/HF и HF не измеряют напрямую стресс, отдых или восстановление. Эти дополнительные показатели ВСР не меняют оценку стресса.</string>
 </resources>

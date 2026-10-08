@@ -521,16 +521,16 @@ private fun StressAdvancedCard(
                 }
             }
             // Frequency-domain HRV: prefer the LF/HF ratio; if the span was too short for LF
-            // (lfhf null) fall back to the HF (rest) band power so the lens still reads.
+            // (lfhf null) fall back to the HF estimate so the lens still reads.
             if (freqHrv != null) {
                 val ratio = freqHrv.lfhf
                 if (ratio != null) {
                     tiles.add { m ->
                         StatTile(
                             modifier = m,
-                            label = uiString(R.string.l10n_stress_screen_autonomic_balance_lf_hf_776cb6f7),
+                            label = uiString(R.string.stress_spectral_ratio),
                             value = StressTrace.formatRatio(ratio),
-                            caption = "Sympathetic vs parasympathetic tone from frequency-domain HRV. Higher leans sympathetic (stress-ward).",
+                            caption = uiString(R.string.stress_spectral_ratio_caption),
                             accent = StressRamp.STEADY,
                         )
                     }
@@ -538,9 +538,9 @@ private fun StressAdvancedCard(
                     tiles.add { m ->
                         StatTile(
                             modifier = m,
-                            label = uiString(R.string.l10n_stress_screen_hf_power_3a9fd8c9),
+                            label = uiString(R.string.stress_spectral_hf_estimate),
                             value = "${freqHrv.hf.roundToInt()}",
-                            caption = "Parasympathetic (rest) band of your HRV.",
+                            caption = uiString(R.string.stress_spectral_hf_caption),
                             accent = StressRamp.STEADY,
                         )
                     }
@@ -557,7 +557,7 @@ private fun StressAdvancedCard(
             }
 
             Text(
-                uiString(R.string.l10n_stress_screen_these_are_extra_on_demand_hrv_9303f1de),
+                uiString(R.string.stress_advanced_hrv_note),
                 style = NoopType.footnote,
                 color = Palette.textTertiary,
             )

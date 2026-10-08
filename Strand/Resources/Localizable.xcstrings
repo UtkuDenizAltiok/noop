@@ -35413,64 +35413,7 @@
         }
       }
     },
-    "Autonomic balance (LF/HF)": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Autonome Balance (LF/HF)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Balance autonómico (LF/HF)"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Équilibre autonome (LF/HF)"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Equilibrio autonomico (LF/HF)"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Equilíbrio autónomo (LF/HF)"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Баланс автономной нервной системы (LF/HF)"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "自主神经平衡（LF/HF）"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "自主神經平衡（LF/HF）"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Równowaga autonomiczna (LF/HF)"
-          }
-        }
-      }
-    },
+    "LF/HF ratio": {"localizations": {"en": {"stringUnit": {"state": "translated","value": "LF/HF ratio"}},"de": {"stringUnit": {"state": "translated","value": "LF/HF-Verhältnis"}},"es": {"stringUnit": {"state": "translated","value": "Relación LF/HF"}},"fr": {"stringUnit": {"state": "translated","value": "Rapport LF/HF"}},"it": {"stringUnit": {"state": "translated","value": "Rapporto LF/HF"}},"pl": {"stringUnit": {"state": "translated","value": "Stosunek LF/HF"}},"pt-PT": {"stringUnit": {"state": "translated","value": "Rácio LF/HF"}},"ru": {"stringUnit": {"state": "translated","value": "Отношение LF/HF"}},"zh-Hans": {"stringUnit": {"state": "translated","value": "LF/HF 比值"}},"zh-Hant": {"stringUnit": {"state": "translated","value": "LF/HF 比值"}}}},
     "Autonomic load": {
       "localizations": {
         "de": {
@@ -77992,64 +77935,7 @@
         }
       }
     },
-    "HF power": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HF-Leistung"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Potencia HF"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Puissance HF"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Potenza HF"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Potência de alta frequência"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Мощность HF"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HF 功率"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "HF 功率"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Moc wysokiej częstotliwości"
-          }
-        }
-      }
-    },
+    "HF estimate": {"localizations": {"en": {"stringUnit": {"state": "translated","value": "HF estimate"}},"de": {"stringUnit": {"state": "translated","value": "HF-Schätzung"}},"es": {"stringUnit": {"state": "translated","value": "Estimación HF"}},"fr": {"stringUnit": {"state": "translated","value": "Estimation HF"}},"it": {"stringUnit": {"state": "translated","value": "Stima HF"}},"pl": {"stringUnit": {"state": "translated","value": "Oszacowanie HF"}},"pt-PT": {"stringUnit": {"state": "translated","value": "Estimativa HF"}},"ru": {"stringUnit": {"state": "translated","value": "Оценка HF"}},"zh-Hans": {"stringUnit": {"state": "translated","value": "HF 估计值"}},"zh-Hant": {"stringUnit": {"state": "translated","value": "HF 估計值"}}}},
     "HIGH": {
       "localizations": {
         "de": {
@@ -123766,64 +123652,7 @@
         }
       }
     },
-    "Parasympathetic (rest) band of your HRV.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parasympathisches (Ruhe-)Band deiner HRV."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Banda parasimpática (de reposo) de tu VFC."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bande parasympathique (repos) de votre VFC."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Banda parasimpatica (riposo) della tua HRV."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Banda parassimpática (repouso) do teu HRV."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Парасимпатический (отдых) диапазон вашей ВСР."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "你 HRV 的副交感（休息）频段。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "你 HRV 的副交感（休息）頻段。"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pasmo przywspółczulne (spoczynkowe) Twojego HRV."
-          }
-        }
-      }
-    },
+    "High-frequency HRV": {"localizations": {"en": {"stringUnit": {"state": "translated","value": "High-frequency HRV"}},"de": {"stringUnit": {"state": "translated","value": "Hochfrequente HRV"}},"es": {"stringUnit": {"state": "translated","value": "VFC de alta frecuencia"}},"fr": {"stringUnit": {"state": "translated","value": "VFC à haute fréquence"}},"it": {"stringUnit": {"state": "translated","value": "HRV ad alta frequenza"}},"pl": {"stringUnit": {"state": "translated","value": "HRV wysokiej częstotliwości"}},"pt-PT": {"stringUnit": {"state": "translated","value": "VFC de alta frequência"}},"ru": {"stringUnit": {"state": "translated","value": "Высокочастотная ВСР"}},"zh-Hans": {"stringUnit": {"state": "translated","value": "高频心率变异性"}},"zh-Hant": {"stringUnit": {"state": "translated","value": "高頻心率變異性"}}}},
     "Partial": {
       "localizations": {
         "de": {
@@ -160221,64 +160050,7 @@
         }
       }
     },
-    "Sympathetic vs parasympathetic tone from frequency-domain HRV. Higher leans sympathetic (stress-ward).": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sympathischer vs. parasympathischer Tonus aus der Frequenzbereichs-HRV. Höher tendiert sympathisch (Richtung Stress)."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tono simpático frente a parasimpático a partir de la VFC en el dominio de la frecuencia. Un valor más alto tiende al simpático (hacia el estrés)."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tonus sympathique contre parasympathique d'après la VFC dans le domaine fréquentiel. Plus élevé penche vers le sympathique (côté stress)."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tono simpatico contro parasimpatico dall'HRV nel dominio delle frequenze. Valori più alti pendono verso il simpatico (lato stress)."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tônus simpático versus parassimpático da VFC no domínio da frequência. Superior inclina-se para a simpatia (proteção contra o stress)."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Симпатический и парасимпатический тонус по частотным показателям ВСР. Чем выше значение, тем сильнее склонность к симпатической активации (в сторону стресса)."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "基于频域 HRV 的交感与副交感神经张力。数值越高越偏向交感（压力方向）。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "由頻域 HRV 得出的交感與副交感神經張力。數值越高越偏向交感神經（壓力方向）。"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ton współczulny i przywspółczulny z domeny częstotliwości HRV. Wyższe skłania się do współczucia (oddziału stresu)."
-          }
-        }
-      }
-    },
+    "Low / high frequency": {"localizations": {"en": {"stringUnit": {"state": "translated","value": "Low / high frequency"}},"de": {"stringUnit": {"state": "translated","value": "Niedrige / hohe Frequenz"}},"es": {"stringUnit": {"state": "translated","value": "Frecuencia baja / alta"}},"fr": {"stringUnit": {"state": "translated","value": "Basse / haute fréquence"}},"it": {"stringUnit": {"state": "translated","value": "Bassa / alta frequenza"}},"pl": {"stringUnit": {"state": "translated","value": "Niska / wysoka częstotliwość"}},"pt-PT": {"stringUnit": {"state": "translated","value": "Baixa / alta frequência"}},"ru": {"stringUnit": {"state": "translated","value": "Низкая / высокая частота"}},"zh-Hans": {"stringUnit": {"state": "translated","value": "低频 / 高频"}},"zh-Hant": {"stringUnit": {"state": "translated","value": "低頻 / 高頻"}}}},
     "Sync": {
       "localizations": {
         "de": {
@@ -165848,64 +165620,7 @@
         }
       }
     },
-    "These are extra, on-demand HRV lenses computed from today's R-R intervals. They are informational and do not change the stress score above.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das sind zusätzliche HRV-Blickwinkel auf Abruf, berechnet aus den heutigen R-R-Intervallen. Sie sind informativ und ändern den Stresswert oben nicht."
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Son lentes de VFC adicionales, bajo demanda, calculadas a partir de los intervalos R-R de hoy. Son informativas y no cambian la puntuación de estrés de arriba."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ce sont des angles d'analyse VFC supplémentaires, à la demande, calculés à partir des intervalles R-R d'aujourd'hui. Ils sont informatifs et ne modifient pas le score de stress ci-dessus."
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Queste sono lenti HRV aggiuntive, su richiesta, calcolate dagli intervalli R-R di oggi. Sono informative e non modificano il punteggio dello stress qui sopra."
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Estas são lentes HRV extra a pedido, calculadas a partir dos intervalos RR atuais. São informativos e não alteram a pontuação de stress acima."
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Это дополнительные ракурсы ВСР по запросу, рассчитанные по сегодняшним R-R интервалам. Они носят информационный характер и не влияют на показатель стресса выше."
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "这些是根据今天的 R-R 间期计算的额外、按需的 HRV 视角。它们仅供参考，不会改变上方的压力评分。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "這些是根據今天的 R-R 間期計算的額外、按需的 HRV 視角。它們僅供參考，不會改變上方的壓力評分。"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Są to dodatkowe obiektywy HRV dostępne na żądanie, obliczane na podstawie dzisiejszych odstępów R-R. Mają one charakter informacyjny i nie zmieniają powyższego wyniku stresu."
-          }
-        }
-      }
-    },
+    "LF/HF compares slow and fast heartbeat variations. Breathing and recording conditions affect these estimates. LF/HF does not measure nervous system balance; LF/HF and HF do not directly measure stress, rest or recovery. These extra HRV readouts do not change the stress score.": {"localizations": {"en": {"stringUnit": {"state": "translated","value": "LF/HF compares slow and fast heartbeat variations. Breathing and recording conditions affect these estimates. LF/HF does not measure nervous system balance; LF/HF and HF do not directly measure stress, rest or recovery. These extra HRV readouts do not change the stress score."}},"de": {"stringUnit": {"state": "translated","value": "LF/HF vergleicht langsame und schnelle Schwankungen der Herzschlagintervalle. Atmung und Aufzeichnungsbedingungen beeinflussen diese Schätzungen. LF/HF misst nicht das Gleichgewicht des Nervensystems; LF/HF und HF messen Stress, Ruhe oder Erholung nicht direkt. Diese zusätzlichen HRV-Werte ändern den Stresswert nicht."}},"es": {"stringUnit": {"state": "translated","value": "LF/HF compara variaciones lentas y rápidas de los intervalos entre latidos. La respiración y las condiciones de registro afectan a estas estimaciones. LF/HF no mide el equilibrio del sistema nervioso; LF/HF y HF no miden directamente el estrés, el descanso ni la recuperación. Estas lecturas adicionales de VFC no cambian la puntuación de estrés."}},"fr": {"stringUnit": {"state": "translated","value": "LF/HF compare les variations lentes et rapides des intervalles entre les battements. La respiration et les conditions d’enregistrement influencent ces estimations. LF/HF ne mesure pas l’équilibre du système nerveux ; LF/HF et HF ne mesurent pas directement le stress, le repos ou la récupération. Ces valeurs de VFC supplémentaires ne modifient pas le score de stress."}},"it": {"stringUnit": {"state": "translated","value": "LF/HF confronta le variazioni lente e rapide degli intervalli tra i battiti. La respirazione e le condizioni di registrazione influenzano queste stime. LF/HF non misura l’equilibrio del sistema nervoso; LF/HF e HF non misurano direttamente stress, riposo o recupero. Questi valori HRV aggiuntivi non modificano il punteggio di stress."}},"pl": {"stringUnit": {"state": "translated","value": "LF/HF porównuje wolne i szybkie zmiany odstępów między uderzeniami serca. Oddychanie i warunki rejestracji wpływają na te oszacowania. LF/HF nie mierzy równowagi układu nerwowego; LF/HF i HF nie mierzą bezpośrednio stresu, odpoczynku ani regeneracji. Te dodatkowe wartości HRV nie zmieniają wyniku stresu."}},"pt-PT": {"stringUnit": {"state": "translated","value": "LF/HF compara variações lentas e rápidas dos intervalos entre batimentos. A respiração e as condições de registo afetam estas estimativas. LF/HF não mede o equilíbrio do sistema nervoso; LF/HF e HF não medem diretamente o stress, o repouso ou a recuperação. Estas leituras adicionais de VFC não alteram a pontuação de stress."}},"ru": {"stringUnit": {"state": "translated","value": "LF/HF сравнивает медленные и быстрые изменения интервалов между ударами сердца. Дыхание и условия записи влияют на эти оценки. LF/HF не измеряет баланс нервной системы; LF/HF и HF не измеряют напрямую стресс, отдых или восстановление. Эти дополнительные показатели ВСР не меняют оценку стресса."}},"zh-Hans": {"stringUnit": {"state": "translated","value": "LF/HF 比较心跳间隔的缓慢和快速变化。呼吸和记录条件会影响这些估计值。LF/HF 不衡量神经系统的平衡；LF/HF 和 HF 都不直接衡量压力、休息或恢复。这些额外的心率变异性读数不会改变压力评分。"}},"zh-Hant": {"stringUnit": {"state": "translated","value": "LF/HF 比較心跳間隔的緩慢和快速變化。呼吸和記錄條件會影響這些估計值。LF/HF 不衡量神經系統的平衡；LF/HF 和 HF 都不直接衡量壓力、休息或恢復。這些額外的心率變異性讀數不會改變壓力評分。"}}}},
     "These are independent approximations from a consumer strap, built on open science: not medical advice, and not WHOOP's official scores.": {
       "localizations": {
         "de": {

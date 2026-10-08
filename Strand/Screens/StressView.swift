@@ -480,27 +480,27 @@ struct StressView: View {
                     }
 
                     // Frequency-domain HRV: prefer the LF/HF ratio; if the span was too short for
-                    // LF (lfhf nil) fall back to the HF (rest) band power so the lens still reads.
+                    // LF (lfhf nil) fall back to the HF estimate so the lens still reads.
                     if let f = freqHRV {
                         if let ratio = f.lfhf {
                             StatTile(
-                                label: "Autonomic balance (LF/HF)",
+                                label: "LF/HF ratio",
                                 value: StressTrace.formatRatio(ratio),
-                                caption: String(localized: "Sympathetic vs parasympathetic tone from frequency-domain HRV. Higher leans sympathetic (stress-ward)."),
+                                caption: String(localized: "Low / high frequency"),
                                 accent: StressRamp.steady
                             )
                         } else if f.hf > 0 {
                             StatTile(
-                                label: "HF power",
+                                label: "HF estimate",
                                 value: "\(Int(f.hf.rounded()))",
-                                caption: String(localized: "Parasympathetic (rest) band of your HRV."),
+                                caption: String(localized: "High-frequency HRV"),
                                 accent: StressRamp.steady
                             )
                         }
                     }
                 }
 
-                Text("These are extra, on-demand HRV lenses computed from today's R-R intervals. They are informational and do not change the stress score above.")
+                Text("LF/HF compares slow and fast heartbeat variations. Breathing and recording conditions affect these estimates. LF/HF does not measure nervous system balance; LF/HF and HF do not directly measure stress, rest or recovery. These extra HRV readouts do not change the stress score.")
                     .font(StrandFont.footnote)
                     .foregroundStyle(StrandPalette.textTertiary)
                     .fixedSize(horizontal: false, vertical: true)

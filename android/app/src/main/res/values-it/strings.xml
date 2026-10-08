@@ -1753,17 +1753,14 @@
     <string name="l10n_sleep_screen_stage_breakdown_e9b714f9">Dettaglio fasi</string>
     <string name="l10n_sleep_screen_this_moves_the_night_to_a_fac2fb46">Questo sposta la notte in un orario senza dati registrati. Lì non è possibile ricavare le fasi, quindi potrebbe risultare vuota finché non ci saranno dati.</string>
     <string name="l10n_sleep_screen_your_night_data_is_in_logging_ec461720">I dati della tua notte sono arrivati. Registrare come ti sei sentito aiuta NOOP a capire cosa favorisce il tuo recupero migliore.</string>
-    <string name="l10n_stress_screen_autonomic_balance_lf_hf_776cb6f7">Equilibrio autonomico (LF/HF)</string>
     <string name="l10n_stress_screen_avg_a178769d">media</string>
     <string name="l10n_stress_screen_baevsky_stress_index_296cf7c0">Indice di stress di Baevsky</string>
     <string name="l10n_stress_screen_daily_0_3_proxy_63247929">Indicatore giornaliero 0-3</string>
-    <string name="l10n_stress_screen_hf_power_3a9fd8c9">Potenza HF</string>
     <string name="l10n_stress_screen_not_enough_recent_days_to_chart_c072bade">Non ci sono ancora abbastanza giorni recenti per tracciare un andamento. Continua a indossare la fascia per popolarlo.</string>
     <string name="l10n_stress_screen_of_3_46203495">di 3</string>
     <string name="l10n_stress_screen_on_demand_today_s_r_r_17d716e1">su richiesta · R-R di oggi</string>
     <string name="l10n_stress_screen_on_the_0_3_autonomic_load_8a0d5107">sulla scala di carico autonomico 0-3</string>
     <string name="l10n_stress_screen_the_line_traces_your_autonomic_load_804f4028">La linea traccia il tuo carico autonomico durante la giornata di veglia, valutato against your own calm hours today (the same 0-3 proxy as the score above, read hour by hour). Hours without enough data are skipped.</string>
-    <string name="l10n_stress_screen_these_are_extra_on_demand_hrv_9303f1de">Queste sono lenti HRV aggiuntive, su richiesta, calcolate dagli intervalli R-R di oggi. Sono informative e non modificano il punteggio dello stress qui sopra.</string>
     <string name="l10n_stress_screen_we_compare_today_s_resting_heart_a9cd0955">Confrontiamo la frequenza cardiaca a riposo e l\'HRV di oggi con i tuoi valori personali dei 30 giorni baseline. A higher-than-usual resting HR and a lower-than-usual HRV both push the score up, classic signs the body is activated. The combined shift is mapped onto a 0-3 scale: 0 is calm, 1.5 sits at your baseline, 3 is highly activated.</string>
     <string name="l10n_test_centre_screen_bug_report_5a7ee5ac">Segnalazione di bug</string>
     <string name="l10n_today_screen_arrange_cfdd099c">Disponi</string>
@@ -2827,4 +2824,9 @@
     <string name="raw_diag_ecg_probe_running">Una acquisizione potrebbe essere ancora attiva su questo strap. Il verdetto va nello strap log.</string>
     <string name="today_customize_live_session_availability">Compare oggi se le sessioni in diretta sono attivate nelle Impostazioni o una sessione è attiva.</string>
     <string name="l10n_app_changelog_today_your_way_heart_rate_any_5e1308b3">Oggi a modo tuo, frequenza cardiaca leggibile da ogni app e l\'italiano</string>
+    <string name="stress_spectral_ratio">Rapporto LF/HF</string>
+    <string name="stress_spectral_hf_estimate">Stima HF</string>
+    <string name="stress_spectral_ratio_caption">Bassa / alta frequenza</string>
+    <string name="stress_spectral_hf_caption">HRV ad alta frequenza</string>
+    <string name="stress_advanced_hrv_note">LF/HF confronta le variazioni lente e rapide degli intervalli tra i battiti. La respirazione e le condizioni di registrazione influenzano queste stime. LF/HF non misura l’equilibrio del sistema nervoso; LF/HF e HF non misurano direttamente stress, riposo o recupero. Questi valori HRV aggiuntivi non modificano il punteggio di stress.</string>
 </resources>

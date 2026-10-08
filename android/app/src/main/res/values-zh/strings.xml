@@ -1618,17 +1618,14 @@
     <string name="l10n_sleep_screen_stage_breakdown_e9b714f9">各睡眠阶段拆解</string>
     <string name="l10n_sleep_screen_this_moves_the_night_to_a_fac2fb46">这会将该晚睡眠强行移动到一个没有任何原始记录数据的时间段。由于缺失基础数据，NOOP 无法推导出睡眠分期，因此它会一直显示为空，直到您同步了补全该时段的手环数据。</string>
     <string name="l10n_sleep_screen_your_night_data_is_in_logging_ec461720">您的夜间数据已就绪。每天记录下您的主观感受，能帮助 NOOP 分析出什么样的习惯最能促进您的身体恢复。</string>
-    <string name="l10n_stress_screen_autonomic_balance_lf_hf_776cb6f7">自主神经平衡状态 (LF/HF)</string>
     <string name="l10n_stress_screen_avg_a178769d">平均值</string>
     <string name="l10n_stress_screen_baevsky_stress_index_296cf7c0">巴耶夫斯基压力指数 (Baevsky Stress Index)</string>
     <string name="l10n_stress_screen_daily_0_3_proxy_63247929">全天 0-3 估值</string>
-    <string name="l10n_stress_screen_hf_power_3a9fd8c9">高频功率 (HF)</string>
     <string name="l10n_stress_screen_not_enough_recent_days_to_chart_c072bade">最近积攒的有效天数还不够画出趋势图。请继续佩戴手环来填充数据。</string>
     <string name="l10n_stress_screen_of_3_46203495">/ 3</string>
     <string name="l10n_stress_screen_on_demand_today_s_r_r_17d716e1">按需测量 · 今日的 R-R 间期分析</string>
     <string name="l10n_stress_screen_on_the_0_3_autonomic_load_8a0d5107">在 0-3 自主神经负荷量表上</string>
     <string name="l10n_stress_screen_the_line_traces_your_autonomic_load_804f4028">折线追踪着您清醒状态下的自主神经负荷变化，按 against your own calm hours today (the same 0-3 proxy as the score above, read hour by hour). Hours without enough data are skipped.</string>
-    <string name="l10n_stress_screen_these_are_extra_on_demand_hrv_9303f1de">这些是根据今天的 R-R 间期计算的额外、按需的 HRV 视角。它们仅供参考，不会改变上方的压力评分。</string>
     <string name="l10n_stress_screen_we_compare_today_s_resting_heart_a9cd0955">我们会将今天的静息心率和 HRV 与您过去 30 天的 baseline. A higher-than-usual resting HR and a lower-than-usual HRV both push the score up, classic signs the body is activated. The combined shift is mapped onto a 0-3 scale: 0 is calm, 1.5 sits at your baseline, 3 is highly activated.</string>
     <string name="l10n_test_centre_screen_bug_report_5a7ee5ac">Bug 报告</string>
     <string name="l10n_today_screen_arrange_cfdd099c">整理</string>
@@ -2829,4 +2826,9 @@
     <string name="raw_diag_ecg_probe_running">此腕带上可能仍在采集。结论会写入 strap log。</string>
     <string name="today_customize_live_session_availability">在设置中启用Live Sessions 实时记录或有正在进行的训练时，今天会显示此部分。</string>
     <string name="l10n_app_changelog_today_your_way_heart_rate_any_5e1308b3">自定义「今天」页面、任何应用都能读取的心率，以及意大利语</string>
+    <string name="stress_spectral_ratio">LF/HF 比值</string>
+    <string name="stress_spectral_hf_estimate">HF 估计值</string>
+    <string name="stress_spectral_ratio_caption">低频 / 高频</string>
+    <string name="stress_spectral_hf_caption">高频心率变异性</string>
+    <string name="stress_advanced_hrv_note">LF/HF 比较心跳间隔的缓慢和快速变化。呼吸和记录条件会影响这些估计值。LF/HF 不衡量神经系统的平衡；LF/HF 和 HF 都不直接衡量压力、休息或恢复。这些额外的心率变异性读数不会改变压力评分。</string>
 </resources>
