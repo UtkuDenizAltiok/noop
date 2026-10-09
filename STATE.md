@@ -2,17 +2,25 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — REA assessed/GitHub posted; phone and external follow-up pending, 9 Oct 2026
+## Now — original WHOOP app study clarified; follow-up pending, 9 Oct 2026
 
-- [x] **REA assessment and GitHub outreach complete, 9 Oct.** [Audit](audits/rea-whoop-2026-10-09/README.md)
-  owns pinned source/version evidence, clean-room boundary and proposed readiness pilot. REA may help protocol-fact
-  investigation; no WHOOP adapter or demonstrated accuracy gain, and no REA execution/install or app change.
-  User explicitly authorized GitHub posting; [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343)
-  published once as UtkuDenizAltiok. Exact API/body/title/author/category and public visibility read back.
+- [x] **REA scope and GitHub question corrected, 9 Oct.** Utku means studying the original WHOOP app
+  across connection/sync, data/calculations, sleep/workouts, UI, performance and battery. The earlier packet-only
+  focus was too narrow. [Audit](audits/rea-whoop-2026-10-09/README.md) owns tool evidence and the wider plan.
+  Existing [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) edited once to
+  `Can REA help us study the original WHOOP app and improve NOOP?`; simpler body/title/author/category verified
+  by independent API readback. No duplicate topic; old and corrected readbacks retained privately.
+- [ ] **Original WHOOP app analysis — not started yet.** No WHOOP-named APK/IPA found in this checkout,
+  Downloads or handbook cache; REA not installed/executed. Target original Android package `com.whoop.android`,
+  verified against official Play listing. Public APKMirror listings are an acquisition lead only; no package
+  downloaded or signer/digest verified. Obtain a genuine copy for private static inspection, record source/version/
+  hash/signing identity/split coverage and use scoped REA/JDK/JADX tooling. Start with connection/sync and data
+  paths, then examine the wider areas above. No strap writes, sign-in or health export required for static work.
+  Preserve upstream's clean-room/scope rules; any NOOP improvement needs its own evidence/parity/testing.
 - [ ] **REA outreach follow-up — external input pending.** Zero GitHub comments at readback; Utku will name
   Reddit and Discord destinations. Neither posted. Exact drafts/status/readbacks/metadata/PR evidence in ignored
   `private/rea-2026-10-09/`; clean pinned source in cache `rea-2026-10-09/source`. No running task job.
-  Do not duplicate #1343 or claim tool/WHOOP trial complete. A pilot is a candidate awaiting a task, not Start work.
+  Do not duplicate #1343 or claim original-app analysis complete. The requested study targets WHOOP, not NOOP alone.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
   are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
   storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
@@ -331,11 +339,15 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Read [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) for replies before further outreach.**
-The requested assessment and GitHub publication are complete, with exact saved readback in
-`private/rea-2026-10-09/discussion-readback.json`. If Utku supplies Reddit/Discord destinations, inspect the
-current community rules and publish the relevant saved draft once within this request, then read back its URL/text
-and record the outcome. If destinations or useful replies are absent, retain this external pending step and wait;
-do not infer a recipient, duplicate the topic, install REA or begin the proposed pilot under Start. This is outreach
-carryover; a tool/WHOOP investigation needs a specific task/deep prompt. The new-build WHOOP acceptance remains
-separately pending above, with no presumed install, duplicate release or new export request. Preserve parked work.
+**Obtain and verify an original WHOOP Android app package for private static inspection.** Target
+`com.whoop.android`; record source/version/SHA-256/signing identity and split-file coverage before trusting
+findings. Official Play listing and public APKMirror listings are known, but no app file is present or verified.
+If the package can be verified, check scoped REA/JDK/JADX prerequisites and begin the requested original-app
+review with connection/sync and data-to-score paths. If acquisition or tooling cannot proceed, record the exact
+missing input instead of claiming analysis happened or substituting a NOOP-only fixture. This is research
+carryover under Utku's clarified request, not an instruction to ship speculative NOOP changes.
+
+Before further outreach, read existing REA Q&A #1343 and use the corrected saved text. Reddit/Discord stay
+unposted until Utku names destinations; check their rules, publish once and read back the result. The new-build
+WHOOP acceptance remains separately pending above; no presumed install, duplicate release or new export request.
+Parked work stays parked. No NOOP task job is running.

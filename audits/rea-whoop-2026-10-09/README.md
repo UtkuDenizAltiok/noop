@@ -1,9 +1,19 @@
 # REA for WHOOP / NOOP — 9 Oct 2026
 
-**Recommendation:** REA is worth a bounded tool evaluation for protocol research. It is not a
-WHOOP connector or a validated biometric model. The most useful eventual outcome is independently
-verified packet interpretation, not reproducing a proprietary recovery score. No NOOP source,
-formula, device command or build changed in this assessment; REA was not installed or executed.
+**Utku's actual request:** use REA to study the original WHOOP app and use what we learn to
+improve NOOP across the whole app. The initial assessment/post focused too narrowly on packet
+fields. He corrected that on 9 Oct and asked for normal, simple language. The original app is
+the target; inspecting NOOP alone would not answer his request.
+
+**Recommendation:** start with the original Android app because REA has an explicit APK/JADX
+workflow. Study connection/sync, data handling, sleep/workouts, local calculations, screens,
+background work and battery use. Find which work the app does itself and which it asks servers
+to do; app inspection cannot reveal code that exists only on those servers. Keep useful findings,
+then choose and verify NOOP changes rather than promise that every area will improve.
+
+No original WHOOP app has been inspected yet. REA was not installed or executed and no NOOP
+source, formula, device command or build changed. The technical evidence below establishes
+possible tool capabilities, not a completed reverse-engineering result.
 
 ## Evidence and confidence
 
@@ -23,13 +33,25 @@ select capabilities from the actual connected server before a pilot.
 | Retained network captures mean HAR or mitmproxy web captures. | [Network-capture guide](https://github.com/morluto/rea/blob/3edb2172def0e0bd9076f23148f0c41cd2f341a3/docs/web-network-captures.md). | Do not mistake this feature for a Bluetooth HCI/GATT capture reader. |
 | Analysis is local; an agent receives its results under the model provider's policy. Local provider execution is not a sandbox. | [REA README](https://github.com/morluto/rea/blob/3edb2172def0e0bd9076f23148f0c41cd2f341a3/README.md), [Security](https://github.com/morluto/rea/blob/3edb2172def0e0bd9076f23148f0c41cd2f341a3/SECURITY.md). | Keep initial artifacts synthetic/public and the tool outside NOOP's shipped dependencies. Local execution alone is not a privacy guarantee for model-visible evidence. |
 
-## The question worth investigating
+## What to look for in the original app
 
-NOOP's WHOOP 5 historical decoder already records `spo2_candidate_82`. Its source documents
-contradictory observations between devices, so it remains instrumentation and cannot write a
-shipped SpO₂ metric or feed recovery/illness gates. REA could help identify the candidate field's
-width, units, sentinels or firmware-dependent interpretation. This is an inferred opportunity,
-not a result obtained with REA. [Current reviewed NOOP decoder](https://github.com/ryanbr/noop/blob/eae23433c2948d1df6e39e7607ec94fcf34a28b7/Packages/WhoopProtocol/Sources/WhoopProtocol/Interpreter.swift#L624).
+| Area | Questions for the review | What a useful NOOP change must prove |
+|---|---|---|
+| Connection and sync | Pairing, reconnects, acknowledgements, missing/out-of-order readings, clocks and retry handling. | More reliable collection without lost/duplicated data or unsafe strap commands. |
+| Data and calculations | Field meaning, units, quality checks, local preprocessing and calls to server-provided results. | Independently verified facts and unchanged clean-input results, or stronger reference accuracy. |
+| Sleep and workouts | Detection, edits, late-arriving data, workout lifecycle and correction behaviour. | Reproducible user benefit, with independent sleep/cardiac references for physiological changes. |
+| Screens and explanations | Navigation, chart behaviour, controls, missing-data displays and helpful feedback. | Clearer behaviour in NOOP's own design; no copied assets or text. |
+| Background work and battery | Scheduling, caching, duplicate work and sensor/radio use. | Measured saving with the same data, results and freshness. |
+
+WHOOP's [official Android listing](https://play.google.com/store/apps/details?id=com.whoop.android)
+identifies the target as `com.whoop.android`; public product/help pages describe features but do
+not establish how they are implemented. Those descriptions help build the question list, not
+prove local algorithms or performance. [Features](https://www.whoop.com/us/en/product-feature/),
+[activity/sleep handling](https://support.whoop.com/s/article/Automatic-and-Manual-Activity-Detection).
+
+The earlier SpO₂ candidate remains one possible question inside this wider review, not its scope
+or priority. [NOOP's reviewed decoder](https://github.com/ryanbr/noop/blob/eae23433c2948d1df6e39e7607ec94fcf34a28b7/Packages/WhoopProtocol/Sources/WhoopProtocol/Interpreter.swift#L624)
+records conflicting observations across devices; it cannot back a shipped metric yet.
 
 NOOP's [facts-vs-code rule](https://github.com/ryanbr/noop/blob/eae23433c2948d1df6e39e7607ec94fcf34a28b7/docs/CONTRIBUTING.md#L684)
 allows attributed protocol facts as unvalidated candidates, independently reimplemented and
@@ -45,31 +67,41 @@ proof of improvement. Its [official API](https://developer.whoop.com/api/) offer
 account data including already-computed scores; REA cannot infer unavailable cloud-side code
 from a client binary. An API dependency would also change NOOP's offline strap-sync model.
 
-## Bounded validation before adopting the tool
+## First practical step and verification
 
-First evaluate one public, source-owned NOOP parser fixture using synthetic packets and a compiled
-artifact with known results. Record exact artifact hash, REA/package/provider versions, offsets,
-reported coverage/unknowns and elapsed investigation time. Compare recovered statements and
-outputs against source plus the existing parser oracle, including valid, truncated and sentinel
-cases. Success means correct, reproducible evidence with no invented semantics and useful effort
-saved over current tools; a convincing narrative is insufficient. No personal health data,
-official WHOOP code, firmware or strap writes are required for this readiness check.
+Obtain a genuine original WHOOP Android app package for private, static inspection. Record its
+source, package ID, version, SHA-256 and signing identity; a download-page claim alone is not
+verification. A package may include split APKs, so record which files are present and missing.
+The 9 Oct filename search found no WHOOP-named APK/IPA in this checkout, Downloads or the
+handbook cache. Public APKMirror listings are an acquisition lead, not a file already obtained
+or verified. No credentials or health export are needed for static inspection.
 
-Only if that works and answers a concrete missing question should an independently verified
-WHOOP protocol-fact investigation follow, with provenance, hardware/firmware identity and
-cross-device capture checks. Any shipped metric change is a separate implementation/validation
-task under the existing parity and science rules. This assessment does not start either pilot.
+Check scoped REA/JDK/JADX prerequisites and actual package/provider capabilities before running
+analysis. Keep app files and recovered material in ignored/private cache storage, outside NOOP
+source and public handbook commits. Read the app without launching it, touching a strap or
+signing in. Begin by mapping connection/sync and data-to-score paths, then examine the other
+areas above; report unknown or server-only parts plainly. A small known-source fixture is an
+optional tool check, not a replacement for studying the original app.
+
+Each finding must point to its app/version evidence and be checked independently where possible.
+Before a NOOP change, define the benefit and its test, preserve upstream's clean-room/scope rules,
+and keep Swift/Kotlin parity. UI observation can suggest behaviour; decompiled code is not a
+ready-made implementation to paste into NOOP. Better health estimates still need independent
+measurements. This is a research plan and corrected outreach, not completed original-app analysis.
 
 ## Outreach and recovery
 
 Utku explicitly chose **post to REA's GitHub; he will name Reddit/Discord destinations**. REA's
 issue-template configuration directs questions to Discussions; Q&A is the appropriate category.
-Publish one technical question, accurately describing a NOOP contributor and an untested REA
-use case. No duplicate tracker, promotion-only issue or claim of collaboration/accuracy achieved.
+The existing question was edited after Utku clarified the scope, with the title
+**Can REA help us study the original WHOOP app and improve NOOP?** and a simpler body covering
+the areas above. No second topic was created. It accurately describes a NOOP contributor and
+an untested REA use case; no claim of collaboration or accuracy achieved.
 **[Q&A #1343](https://github.com/morluto/rea/discussions/1343) published once**, 9 Oct 17:45:16 UTC,
 under `UtkuDenizAltiok`; independent API readback verified number/URL/author/category/title/full body,
-and public web readback confirmed visibility. Zero comments at readback; no REA response yet. Reddit
-and Discord remain unposted drafts until their destinations are supplied and current rules checked.
+and public web readback confirmed visibility. The corrected title/body/author/category were independently read back after the edit; correction
+is complete. Zero comments at that check. Reddit and Discord remain unposted drafts for this broader request until their
+destinations are supplied and current rules checked.
 
 Local source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
 Ignored `private/rea-2026-10-09/` retains metadata, npm version/digest, PR snapshots, exact outreach

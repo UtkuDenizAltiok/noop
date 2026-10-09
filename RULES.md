@@ -18,6 +18,7 @@ say so and name the next work. Request phone/strap evidence, account approval or
 Record the reason when a settled decision changes. Upstream maintainers decide what they merge.
 Utku clarified on 7 Oct: give concrete, simple actions and the exact answer needed when asking him to decide;
 keep technical investigation and storage choices with the agent unless his input is actually required.
+Utku reiterated on 9 Oct: use normal everyday language. Avoid polished AI phrasing and unexplained technical terms.
 Utku clarified on 8 Oct after the Stress update: explain what changed, why it matters and what he should actually
 notice. A preventive repair may look the same; say so and give a concrete example of the avoided failure. Phone
 instructions must name the exact navigation/actions, expected result and evidence needed. Avoid shorthand such as

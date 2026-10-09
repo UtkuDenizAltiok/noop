@@ -103,11 +103,12 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
-**REA protocol-research tool evaluation (9 Oct, candidate only).** [Assessment](audits/rea-whoop-2026-10-09/README.md)
-recommends one source-owned parser fixture with synthetic packets, exact artifact/provider/version evidence and
-source/oracle comparison before adoption. Potential later question: WHOOP 5 field widths/units/sentinels, including
-the contradictory SpO₂ candidate; independent captures and physiological references remain required. No adapter
-or accuracy improvement demonstrated; no install/trial/app change started. Requested outreach status lives in State.
+**Original WHOOP app research with REA (Utku's clarified request, 9 Oct).**
+[Assessment and plan](audits/rea-whoop-2026-10-09/README.md) cover connection/sync, data and calculations,
+sleep/workouts, screens, background work and battery. The original app is the target; the earlier packet-only
+and NOOP-fixture-first focus was too narrow. No original app inspected yet and no improvement demonstrated.
+Acquisition/setup/outreach status live in State. Choose individual NOOP changes only after evidence and tests;
+retain the app's clean-room, offline and parity requirements.
 
 1. **A score reviewed against the literature, one per session** — recovery, strain, HRV (RMSSD windowing, artefact
    rejection), resting HR, respiration, SpO2. Read `StrandAnalytics` for it, its tests and open issues, compare with
