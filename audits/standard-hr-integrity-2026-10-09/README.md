@@ -69,12 +69,37 @@ exactly one source-wiring assertion, then its whole file was restored byte-for-b
 runtime behavior; Android's existing JVM harness cannot construct the full client without Android services.
 
 The direct compiled comparison checked 1,771,584 inputs; all 1,478,185 complete-known-field outputs matched,
-293,399 incomplete inputs were refused. This initial run used WIP source digests, not an exact committed-head
-claim; final-head and newly-refused counts will be recorded before publication. Core masks cover all 256 flags
+293,399 incomplete inputs were refused. The final run at exact d84f5a14
+confirmed **254,325 newly refused malformed inputs**; the remaining refused short-HR layouts were already
+rejected. Source digests match the preliminary run. [Final result](result.json). Core masks cover all 256 flags
 at 65 lengths on both platforms. 27 preserved control rows come verbatim from original production Swift
 [stdout](expected-original.txt); the [header oracle](HeaderOracle.swift) has
 [eight patterns](expected-completeness.txt) independently checked against the SIG prefix table.
 
-Full native/Apple/Android/PR/combined verification and delivery remain pending. Current progress lives in
-[State](../../STATE.md). Reproduce source comparisons with `python3 run.py <code-worktree> <cache-directory>`.
+Native protocol suite at d84f5a14: 817 tests, one existing skip, zero failures. Full Apple verification ended
+`all steps passed`, exit 0: 632/2143/327 package tests, lint/i18n/parity gates, 127 governance tests,
+2282 macOS tests and iOS build; one import/two macOS existing skips. Generated Info.plist restored exactly;
+no new warning in changed files.
 
+Core Tools collected 156 tests including the three new caller contracts. Default macOS temporary-path
+aliases cause four unchanged source-reference assertions to fail identically on main and candidate;
+all 156 pass after canonicalizing the per-process temporary path, without source/assertion changes.
+Both logs retained. The verified iOS-simulator app launched and rendered its initial disclaimer on an
+isolated empty iPhone 17 Pro/iOS 27.0 device; installed executable matched. No agreement was accepted or
+numeric fixture injected. Disposable device retired; original simulator stays shut down and untouched.
+This is launch/render evidence only, not live HR or strap acceptance.
+
+Android verification is blocked: the announced selective regression dispatch was refused HTTP 422 before
+creating a run. Ordinary repository Actions permission is enabled and the workflow active, but the public
+Actions page says the fork is stopped because of its usage and a maintainer can re-enable it. Owner recovery
+requested; precise usage/account cause remains unknown. No Android assertion proof, PR, combined checks,
+new release or real-strap validation is claimed. Source is locally committed and independently bundled/
+imported/fsck-verified; source bundles, logs and private readbacks depend on this Mac. The public handbook
+backup uploads this audit, not local app source. Current recovery lives in [State](../../STATE.md).
+Reproduce source comparisons with `python3 run.py <code-worktree> <cache-directory>`.
+
+The unrun Android probe's two temporary mutations were restored to the entire feature tree and hashes
+checked before retiring its remote/local branch and clean worktree. Commit 25e558e5 and patch remain in the
+independently imported recovery bundle. All local drivers finished; no task CI job exists. After owner
+re-enable, check existing jobs/source first, recreate that isolated probe, establish the promised assertion
+proof, then verify the final source, PR, combined stack and testing release. Keep the task incomplete until then.

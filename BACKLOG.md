@@ -5,7 +5,7 @@ real days and strap logs found every bug that mattered, so each item is checked 
 work starts, and the measurement comes first. Each item becomes ONE small PR. Lower usage means the same work done
 cheaper, never less work (`RULES.md`, 28 Sep).
 
-## Priority — 8 Oct 2026
+## Priority — 9 Oct 2026
 
 Language/copy/translation work is lowest priority under [Utku's latest instruction](RULES.md#settled-decisions).
 The saved, unfinished spectral wording change is parked in State; do not use it to restart language work.
@@ -18,11 +18,13 @@ discarded time together; the [deeper 8 Oct assessment](audits/stress-load-cancel
 adds a timing prerequisite: history emits several R-R rows at one record timestamp, so reconstructing precise
 beat times cannot mean blindly using row `ts`. Validate original/rejected interval time, record continuity,
 clock splices, missing blocks and coarse timestamps against known varying signals before choosing the estimator.
-No physiological accuracy claim without independent truth. Standard-HR truncated fields and optical/ratio descriptions
-are separate candidates. The [buffer-reuse assessment](audits/hrv-clean-buffer-2026-10-08/README.md) confirms that
+No physiological accuracy claim without independent truth. Standard-HR truncated fields were selected for the
+[current bounded repair](audits/standard-hr-integrity-2026-10-09/README.md); implementation/local proof are saved,
+Android/delivery are blocked in State. Optical/ratio descriptions remain a separate low-priority candidate.
+The [buffer-reuse assessment](audits/hrv-clean-buffer-2026-10-08/README.md) confirms that the original
 Apple's pure parser, Android's pure parser and the WHOOP client's inline parser all skip declared energy bytes
 without checking completeness and accept a final half R-R word. The Bluetooth SIG HRS/Profile require preserving
-valid zero-interval notifications and ignoring RFU flags; retain those controls in any later repair and validate
+valid zero-interval notifications and ignoring RFU flags; those controls remain in the active repair; validate
 unchanged valid packets on hardware. The same assessment records the 2026 HRV rigor guideline's wearable-input/
 cleaning/usable-data requirements without claiming the existing filter is scientifically validated. The Stress cancellation repair is verified and delivered; current status is in
 State. Retain successful results and two-phase loading. Other screens' broad cancellation catches are candidates

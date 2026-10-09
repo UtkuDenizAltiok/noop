@@ -2,28 +2,39 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — deep improvement active; merge follow-up first, 9 Oct 2026
+## Now — standard-HR repair; Android CI recovery needed, 9 Oct 2026
 
-- [ ] **Active bounded repair — standard-HR field integrity.** Source worktree
-  `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch `codex/standard-hr-integrity`, clean local
-  commit **`d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4`**, not pushed/published yet. [Preregistered audit](audits/standard-hr-integrity-2026-10-09/README.md).
-  One pure protocol predicate gates all three production readers before effects; existing decoder bodies,
-  WHOOP raw-ms choice, compatibility, state/collection cadence, storage and physiological formulas retained.
-  The original parser fails exactly two new methods (80 assertions, zero unexpected) in an unhosted SwiftPM
-  probe built from actual production source/test files with module imports adapted; the fixed source passes
-  all six probe tests. A broken predicate fails 4,240 assertions, zero unexpected; all three real caller-gate
-  bypasses fail their wiring assertion. Original/restored source SHA256s verified. Logs/exit/PID markers in
-  cache `deep-2026-10-09/`; private mutation reports and PR readbacks in `private/deep-2026-10-09/`.
-  Direct old/new Swift comparison: 1,771,584 cases, 1,478,185 complete-field outputs identical, 293,399 incomplete
-  layouts refused (includes previously refused short HR). Final-head/newly-refused count recording pending.
-  27 original-Swift control rows and eight independently checked header masks pinned on both platforms;
-  256 flags × 65 lengths covered. Derived parity refresh passed with one new file/function pair and no new debt.
-  Remaining: full native protocol suite, full Apple verification, announced Android negative probe/restoration,
-  final Kotlin APK/full JVM tests, exact-head upstream roster/steps, combined stack checks and verified testing
-  delivery. Real strap acceptance/malformed frequency remain unproven; request only a necessary new-build
-  live-HR/log check after delivery. No old phone/export/diary request revived.
-  No local build is running at this checkpoint; all probe/mutation jobs exited. Next local command is the
-  protocol suite, followed sequentially by `NOOP_REPO=<feature> bash dist/tools/verify.sh`; retain durable logs.
+- [ ] **Blocked, partly verified — standard-HR field integrity.** Reject incomplete declared fields before
+  effects in all three readers, preserving every complete-field HR/R-R/contact output and existing WHOOP 5
+  raw-ms handling, cadence, radio behavior, storage and formulas. Source: `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`,
+  branch `codex/standard-hr-integrity`, clean local commit **`d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4`**,
+  eleven intended files; **not pushed, no PR, no testing delivery**. [Assessment/contract/results](audits/standard-hr-integrity-2026-10-09/README.md).
+  Direct proof: 1,771,584 inputs, all 1,478,185 complete-field outputs identical, 254,325 previously accepted
+  malformed inputs refused. Original/mutated tests seen to fail assertions and restored exactly; audit owns detail.
+  Native protocol 817 tests/one existing skip passed. Full Apple verification at this head: 632/2143/327 packages,
+  lint/i18n/parity gates, 127 governance, 2282 macOS and iOS build passed (one import/two macOS existing skips).
+  Exit 0, `all steps passed`; generated Info.plist restored. 156 core Tools pass with a canonical per-process
+  temporary path; default macOS `/var` versus `/private/var` causes four unchanged assertions to fail on main
+  and candidate, both logs retained. Empty-device iOS launch rendered the initial disclaimer, exact installed
+  executable matched; disposable simulator retired, original DCAA8034 remains shut down/untouched. No strap proof.
+  **Blocker:** announced Android regression dispatch refused HTTP 422, `Actions has been disabled for this repository`;
+  zero runs started. Ordinary permission enabled, Android workflow active. Public fork Actions page says stopped
+  because of Actions usage and a maintainer can re-enable it. Owner asked to use the signed-in option; precise cause
+  beyond that notice unknown. No settings changed or restriction workaround attempted. Required Android assertion
+  proof/APK/full JVM, exact-head upstream CI, combined checks and testing delivery remain pending. Hardware
+  acceptance/malformed frequency and physiological accuracy unproven; no phone/export/diary request now.
+  **Preservation/recovery:** cache root `/Users/utk/Library/Caches/noop-handbook/deep-2026-10-09/`; feature and original
+  negative **`25e558e5a6b9830ccf5801e8506ecf21f87a21f7`** independently imported from `standard-hr-recovery.bundle`
+  into `standard-hr-recovered.git`, full fsck passed. Negative source/workflow restored to the whole feature tree,
+  hashes verified; temporary remote/local regression branch and worktree retired after zero-run readback.
+  Recreate that isolated probe only after CI recovery; warn before dispatch, require successful APK and exactly
+  three new assertion failures, then restore/retire again. Source/patch/bundles/private logs depend on this Mac;
+  handbook backup does not upload app source. Private folder `private/deep-2026-10-09/` holds blocker/restoration,
+  eleven-file source proof, PR readbacks and simulator report; local draft `private/pr-standard-hr-integrity-body.md`.
+  **Jobs:** all local task drivers finished; no external task run exists. Former verify PID 6912 exited 0;
+  `verify.log`/`verify.exit`, `protocol.log`/`protocol.exit`, `core-tools*` and `verify/d84f5a14/` retain results.
+  Check actual command/log/head before restarting anything; no old tool-session dependency. Do not repeat passed
+  Apple/direct proofs unless source or validation inputs change. Next safe action below owns CI recovery.
 
 **Session prompt revision completed:** Utku's 9 Oct instruction is reflected in the four canonical prompts and
 procedures in [Sessions](SESSIONS.md), with linked Rules/README and reconciled State/History. Start finishes
@@ -39,7 +50,8 @@ Four prompts, 45 local links, fences, scope/PR/recovery requirements and unchang
   of this repair will also complete this refresh, avoiding a duplicate intermediate phone release.
 - [ ] **Pending external review — six own PRs:** #2724/#2722/#2717/#2661/#2660/#2613. All exact heads and
   expected green rosters remain unchanged. No new comments/reviews on any of the ten checked PRs, so no reply
-  is due. API mergeability was UNKNOWN at readback; the six branches merge cleanly in the local upstream check.
+  is due. Post-Apple readbacks still show unchanged heads/full green rosters and no new comments/reviews;
+  retained `pr-*-post-verify.json` and summary. The six branches merge cleanly in the local upstream check.
   Prior owner invitations remain posted once; do not repeat them. Readbacks are in the private folder above;
   original invitations are in `private/review-requests-2026-10-08/`.
 
@@ -83,7 +95,8 @@ The prior wording-session closure and simulator restoration remain in History an
 the latest HRV simulator restoration is `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
 This proves logical SQLite equality and preference-byte equality after shutdown, not byte-identical WAL layout.
 Completed cancellation delivery, installation confirmations and owner invitations are in [History](HISTORY.md).
-There is no external blocker to preserving this handover. The unfinished wording work is paused by Utku's
+Android verification/delivery is externally blocked by the fork Actions usage restriction recorded above;
+source and evidence can be preserved. The unfinished wording work is paused by Utku's
 closure/priority instruction; pending scientific reference/data needs remain separate. No phone test/export needed.
 
 ## Phone
@@ -300,10 +313,13 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Resume the active repair, not a new investigation.** Inspect `codex/standard-hr-integrity` and the durable
-logs/PID/exit markers under cache `deep-2026-10-09/` before restarting any job. If source matches the saved
-head/digests and no job remains running, finish the native protocol/full Apple checks, the announced Android
-negative probe with exact restoration, final Android tests and the same repair's PR/combined testing delivery.
-If a step fails, inspect its actual log/head and fix that relevant failure before claiming completion. Check
-existing PR feedback at useful boundaries and record each reply once. Preserve parked wording, private evidence
-and phone/data deferrals. Current statuses and job recovery belong in Now; do not redo completed merges or probes.
+**Recover fork Actions for this same repair.** Read the owner's signed-in Actions usage/re-enable notice and
+the saved blocker record; do not toggle an already-enabled ordinary permission or dispatch repeatedly.
+After confirmed re-enable, first check existing task runs and the saved source/head. If no run exists, recreate
+the isolated regression branch at saved 25e558e5 from the recovery bundle and resume the announced selective
+Android probe; require successful APK plus exactly three new assertion failures, restore exact feature
+source/workflow and retire the temporary branch/worktree. Then final Android,
+verified PR/combined-stack checks and testing delivery finish the same task and merge refresh.
+If the maintainer option is absent or refusal persists, save its exact notice and keep this task blocked;
+do not publish unverified source or substitute a new improvement. Native/full Apple checks already passed.
+Preserve parked wording, private evidence and phone/data deferrals; no duplicate merges/probes/releases.

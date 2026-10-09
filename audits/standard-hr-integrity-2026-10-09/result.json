@@ -1,0 +1,16 @@
+{
+  "checked": 1771584,
+  "compatible": 1478185,
+  "flags": 256,
+  "lengthRange": "0...64",
+  "newlyRefused": 254325,
+  "randomSeed": "6e6f6f70",
+  "refused": 293399,
+  "base": "eae23433c2948d1df6e39e7607ec94fcf34a28b7",
+  "head": "d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4",
+  "sourceDigests": {
+    "originalParser": "f697a8bf55dbc28281f8fade3b7879df53da9184b72bb21312a03f88efaf743c",
+    "candidateParser": "1419c84335dce545a8c5f4020f5991e8e02d0bd818ad601fcca7b3e0ee2e4c3e",
+    "predicate": "a2e748622aff61a63c65fdd7f718355df3dd0ee37bbd9f03fd4d9a683b62e633"
+  }
+}
