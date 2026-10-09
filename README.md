@@ -3,8 +3,8 @@
 Project memory for [UtkuDenizAltiok/noop](https://github.com/UtkuDenizAltiok/noop), forked from
 [ryanbr/noop](https://github.com/ryanbr/noop). Local path: `~/Developer/noop/dist`; Git branch: `handbook`.
 
-**Start here: [session prompts and procedure](SESSIONS.md).** Use the start prompt to continue, the deep research prompt
-for a thorough improvement session, and the end prompt to hand over.
+**Start here: [session prompts and procedure](SESSIONS.md).** Start prepares a new chat and resolves carryover;
+then use a task prompt, Deep improvement or Deep search. Finish completes active work and prepares the handover.
 
 | Need | Read |
 |---|---|

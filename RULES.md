@@ -26,6 +26,12 @@ request an export without a defined need. Give enough explanation to understand 
 
 ## Settled decisions
 
+- **Session roles (Utku, 9 Oct 2026).** Start prepares a new chat from saved evidence, finishes eligible carryover
+  and PR follow-up, then waits for his next prompt. It does not select new improvements. Deep improvement authorizes
+  independent research, prioritization and complete delivery of one bounded improvement in the prepared chat.
+  Deep search researches and saves a recommendation. Finish completes active work and essential existing obligations
+  before handover; it does not abandon a feasible task or clear the backlog. Genuine blockers/limits and explicit
+  deferrals stay honest. [Sessions](SESSIONS.md) owns the exact prompts and procedures; do not duplicate them elsewhere.
 - **English only; language improvements are lowest priority (Utku, 8 Oct 2026, session close).** He does not
   care about other languages and does not want tokens spent fixing languages. Do not select wording, translation
   or locale cleanup as the bounded improvement, or expand/repeat locale QA. Prioritize correctness, biometrics,

@@ -1,43 +1,50 @@
 # State
 
-Updated **8 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session closed; HRV improvement completed and installed, 8 Oct 2026
+## Now — session prompts revised; existing merge follow-up pending, 9 Oct 2026
 
-**Closed at the verified delivery boundary.** Utku explicitly confirmed updating to the latest delivered
-`ef6216f8` before requesting this fresh-chat handover. No strap log, export, diary or special phone test is
-needed for this allocation-only change. Installation confirmation does not establish phone battery savings
-or physiological accuracy. Completed implementation, verification, delivery and installation are in History.
-No source edit, build, rebase, release or new investigation was started during closure.
+**Session prompt revision completed:** Utku's 9 Oct instruction is reflected in the four canonical prompts and
+procedures in [Sessions](SESSIONS.md), with linked Rules/README and reconciled State/History. Start finishes
+eligible carryover then waits; deep modes use the prepared chat; Finish completes active work before handover.
+Four prompts, 45 local links, fences, scope/PR/recovery requirements and unchanged Mac setup checked; report
+`private/session-prompts-2026-10-09/document-verification.json`. No app implementation or release was started.
 
-- [ ] **Pending external review — PR #2742 and the previous nine own PRs.** HRV buffer reuse is fully
-  verified and delivered; [audit](audits/hrv-clean-buffer-2026-10-08/README.md), source/evidence below and completed
-  milestones in History. No build, release or local verification remains running. Source worktree
-  `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`, branch `codex/hrv-clean-buffer`, clean/pushed at
-  **`c71b48af5f07c94f92b8a7fb1af14506f2b0a10d`**. [PR #2742](https://github.com/ryanbr/noop/pull/2742)
-  open/mergeable, seventeen exact-head checks and actual workflow steps passed; no maintainer review yet.
-  The prior nine owner invitations remain posted once and read back, with no new unanswered comments/reviews;
-  drafts/readbacks stay in `private/review-requests-2026-10-08/`. #2738/#2661 bodies retain confirmed phone observations.
-  Do not dispatch another build or send another owner invitation for the completed work.
+- [ ] **Existing carryover — merge follow-up for #2742/#2738/#2737/#2729.** All four merged on 9 Oct;
+  source equivalence and inclusion in upstream `9229293b` are verified. Merge commits respectively
+  `54196f03`, `88654a00`, `86e880db`, `0b729405` (the Charge series also includes `bba256fa`).
+  Reports: `private/session-prompts-2026-10-09/{pr-summary,merge-proof}.json` and individual PR readbacks.
+  Source branches/worktrees are retained clean/pushed; no cleanup, main mirroring or new testing delivery has
+  occurred in this handbook task. Finish their Workflow merge lifecycle during Start before declaring readiness:
+  recheck/reuse source proof, retire only proven merged sources, mirror main, rebuild/verify the combined stack
+  with the remaining app PRs and deliver a verified testing update. This is pending maintenance, not a blocker
+  or permission to choose a new improvement. The installed `ef6216f8` remains the last verified delivered build.
+- [ ] **Pending external review — six own PRs:** #2724/#2722/#2717/#2661/#2660/#2613. All exact heads and
+  expected green rosters remain unchanged. No new comments/reviews on any of the ten checked PRs, so no reply
+  is due. API mergeability was UNKNOWN at readback; the six branches merge cleanly in the local upstream check.
+  Prior owner invitations remain posted once; do not repeat them. Readbacks are in the private folder above;
+  original invitations are in `private/review-requests-2026-10-08/`.
 
-**Closure recovery, 8 Oct 22:59 TRT:** thirteen code worktrees clean; root plus eleven source branches pushed, and the older
-parked wording candidate below remains local-only. Main/origin/upstream still 8e94d559. Testing-stack c13e8873,
+**Current recovery, 9 Oct:** thirteen code worktrees clean; root plus eleven source branches pushed, and the older
+parked wording candidate below remains local-only. Main/origin remain 8e94d559; upstream is now 9229293b
+(thirteen commits ahead), with synchronization pending above. Testing-stack c13e8873,
 testing-build/local+remote testing-latest ef6216f8. No running local/external task job, stash, safety tag or
-unfinished Git operation. Only this task's temporary regression branch/worktree, combined source checkout and
+unfinished Git operation. Only the completed HRV task's temporary regression branch/worktree, combined source checkout and
 two protected old testing tags were retired after proof. The old stack/build/tag are independently recoverable
 from `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/pre-testing.bundle` and
 `pre-testing-recovered.git` (exact tips/full fsck verified). Keep these and the parked wording candidate.
 Private reports/logs/IPA/original simulator snapshots depend on this Mac; public backup does not upload them.
 Simulator's original app/data/preferences were restored and verified after shutdown; the agent made no
-physical-phone changes. Closure readback is `private/hrv-clean-buffer-2026-10-08/session-close.json`:
-all ten PR heads/expected green rosters/comments/reviews unchanged, five release assets and the cached IPA
-digest still agree, all three local job exit files contain 0, and no external run is active. Job recovery is
-already complete: cache `hrv-clean-buffer-2026-10-08/{full-verify,staging-ios,ship}.exit`, with `ship.log`
+physical-phone changes. The 8 Oct closure readback remains
+`private/hrv-clean-buffer-2026-10-08/session-close.json`; current PR/merge changes are recorded above.
+No new task job or release was dispatched in this handbook task. Prior job recovery is complete: cache
+`hrv-clean-buffer-2026-10-08/{full-verify,staging-ios,ship}.exit`, with `ship.log`
 ending `shipped ef6216f8`; do not restart them. A fresh chat is safe on this Mac; there is no handover blocker.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
-work stays parked, not delivered or discarded. This closed session finished only the bounded HRV buffer improvement.
+work stays parked, not delivered or discarded. The current request revises session prompts; it does not resume
+wording or begin the queued scientific assessment.
 
 - [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
   `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
@@ -126,14 +133,10 @@ ended-banner check (after roughly 8 h, open NOOP and check one banner). Do these
 Utku's recent nights were atypical, sometimes strap-off/swiped away: infer gaps from logs rather than asking him to
 keep a diary. Compare staging changes on the same nights, never one night against another.
 
-## PRs — checked 8 Oct
+## PRs — checked 9 Oct
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2742](https://github.com/ryanbr/noop/pull/2742) | `codex/hrv-clean-buffer` / `c71b48af` | Exact output/adjacency preserved on 137,267 cases; final helper CPU −30.0–30.7%. Full Apple + Android passed, all 17 upstream checks and actual steps green. Combined iOS/Android/eleven Swift jobs and verified release ef6216f8 delivered. No unanswered review. Await maintainer. |
-| [#2738](https://github.com/ryanbr/noop/pull/2738) | `codex/stress-load-cancellation` / `63e19100` | Seven Apple cancellation boundaries plus three Android reads; all six exact-head checks/actual steps passed, full/quick local and both Android stages passed, original/fixed production-path replay and simulator controls. No new review; prior verified testing release `c8eb1cd0` delivered; that installation confirmed by Utku and normal Stress appearance reported. Android core remains #2725's separate work. |
-| [#2737](https://github.com/ryanbr/noop/pull/2737) | `codex/network-privacy-docs` / `a4f14442` | Source-backed canonical network inventory and linked guide corrections; all three exact-head checks passed, all six published blobs/body matched local verification, no unanswered maintainer review. Documentation only; no app release. Await maintainer. |
-| [#2729](https://github.com/ryanbr/noop/pull/2729) | `codex/charge-baseline-usability` / `3e59a667` | Optional-baseline score/driver/trace eligibility; full local verify and final Android passed, exact original-math oracle. All 17 upstream checks passed on the exact head; no unanswered maintainer review. Independently verified update `e722e0c4` delivered. Await maintainer. |
 | [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no unanswered maintainer review. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no unanswered maintainer review. Await maintainer. |
@@ -141,9 +144,10 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
 
-All ten PRs are open and mergeable with their full green rosters. #2613 is 86 commits behind but merges cleanly;
-it needs no speculative rebase.
-24 PRs merged, including #2659 on 4 Oct; the dated list and validation are in [History](HISTORY.md).
+All six remaining PRs are open with unchanged full green rosters; the local source check merges each cleanly into
+current upstream. API mergeability was UNKNOWN at readback. #2613 is 99 commits behind; do not rebase speculatively.
+#2742/#2738/#2737/#2729 merged on 9 Oct, with exact source proof retained and follow-up pending in Now.
+28 PRs merged, including these four; the dated record and validation are in [History](HISTORY.md).
 Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
 
 ## Git and latest release
@@ -160,8 +164,9 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   Reports `private/hrv-clean-buffer-2026-10-08/release-*.json`; IPA cache `hrv-clean-buffer-2026-10-08/release-ef6216f8/`.
   Installation confirmed by Utku at session close; just update was required, no wipe or new phone/data test.
 
-- `main`, `origin/main`, `upstream/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; exact mirror, remote
-  upstream tip rechecked during shipping.
+- `main` and `origin/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; both remain clean/identical.
+  `upstream/main`: **`9229293b8614973599846a5f8004768d9694026e`**, fetched 9 Oct, thirteen commits ahead.
+  Main mirroring and the merged-PR testing refresh are pending existing maintenance in Now.
 - Previous `testing-stack` before this delivery: **`6c81515138d5c3b573e2029609fcf6ff919ddfc4`** (local/remote), base `8e94d559` plus
   #2613/#2660/#2661/#2722/#2724/#2729/#2738. Combined local iOS build passed, Android **37791822785** actual
   build/unit steps passed and Swift **37791827346** all eleven jobs passed at that exact head.
@@ -285,13 +290,14 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-After the Sessions start procedure reconciles current state and any genuinely new review, perform one
-**read-only comparison of current upstream's Swift/Kotlin spectral calculation and R-R timestamp reconstruction**
-against [the retained varying-signal audit](audits/biometric-pipeline-2026-10-07/README.md) and
-[the packed/coarse-timestamp prerequisite](audits/stress-load-cancellation-2026-10-08/README.md).
-Record whether power units, frequency grid and elapsed/missing/packed-record time are already handled together.
-If upstream has repaired them, verify and record that fact rather than duplicate it. If gaps remain, record the
-coupled varying-signal/reference validation needed before selecting one bounded numeric repair; unavailable
-reference data stays an explicit pending requirement, with no export request until its need is defined.
-This assessment has not started. #2742 and ef6216f8 implementation/verification/delivery/installation are complete:
-do not repeat them. Keep wording parked, phone/data deferrals and posted owner invitations preserved.
+**Carryover for Start:** after standard recovery, recheck the four merged PRs and current refs against
+`private/session-prompts-2026-10-09/merge-proof.json`. If heads/merge commits are unchanged, reuse the verified
+source proof and finish Workflow's existing merge lifecycle (sections 5–7), beginning with mirroring clean
+main to the fetched upstream tip; preserve sources until cleanup conditions are met. Then complete the combined
+stack's required verification/testing delivery before declaring the chat ready. If source/refs changed or a
+check is unavailable, preserve branches and record the exact unresolved proof/dependency before proceeding.
+Do not repeat the original PRs, replies, HRV verification or already-delivered `ef6216f8` release.
+
+When carryover is finished or genuinely blocked, report readiness and wait for Utku's next prompt. Spectral
+units/grid/time analysis is an **unstarted candidate for Deep improvement or Deep search**, recorded in Backlog;
+it is not an instruction to begin research during Start. Keep wording parked and phone/data deferrals preserved.
