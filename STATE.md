@@ -17,8 +17,16 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   hash/signing identity/split coverage and use scoped REA/JDK/JADX tooling. Start with connection/sync and data
   paths, then examine the wider areas above. No strap writes, sign-in or health export required for static work.
   Preserve upstream's clean-room/scope rules; any NOOP improvement needs its own evidence/parity/testing.
-- [ ] **REA outreach follow-up — external input pending.** Zero GitHub comments at readback; Utku will name
-  Reddit and Discord destinations. Neither posted. Exact drafts/status/readbacks/metadata/PR evidence in ignored
+- [ ] **REA outreach — choose destinations and post under Utku's 9 Oct instruction.** He now asks the agent
+  to find the best places itself, overriding the previous requirement for him to name Reddit/Discord destinations.
+  Inspect official NOOP/REA community links, current rules, relevance and available signed-in access, then post
+  one useful message per selected audience and read it back. Selected r/NoopBand, official REA Discord and
+  official Noop Community Discord (#general invite channels verified; check more specific channels/rules after
+  sign-in). Three plain drafts ready in `private/rea-2026-10-09/community-drafts.md`; destination/access evidence
+  in `community-destinations.json` there. Reddit in-app browser shows network-security/login notice; Discord
+  shows existing-account login. No relevant connector found. Safari actions refused while it was in use; left
+  alone. Account sign-in is the remaining dependency, not destination choice or posting permission. GitHub #1343
+  already exists and has zero replies at the latest check; do not duplicate it. Reddit/Discord not yet posted. Exact drafts/status/readbacks/metadata/PR evidence in ignored
   `private/rea-2026-10-09/`; clean pinned source in cache `rea-2026-10-09/source`. No running task job.
   Do not duplicate #1343 or claim original-app analysis complete. The requested study targets WHOOP, not NOOP alone.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
@@ -339,15 +347,18 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Obtain and verify an original WHOOP Android app package for private static inspection.** Target
-`com.whoop.android`; record source/version/SHA-256/signing identity and split-file coverage before trusting
-findings. Official Play listing and public APKMirror listings are known, but no app file is present or verified.
-If the package can be verified, check scoped REA/JDK/JADX prerequisites and begin the requested original-app
-review with connection/sync and data-to-score paths. If acquisition or tooling cannot proceed, record the exact
-missing input instead of claiming analysis happened or substituting a NOOP-only fixture. This is research
-carryover under Utku's clarified request, not an instruction to ship speculative NOOP changes.
+**After Utku signs in, verify Reddit/Discord access and post the saved community messages once.**
+Selected r/NoopBand, REA: Reverse Engineering Community, and Noop Community; verified invite channels
+are `#general`, with any more specific help/research/development channel chosen after reading server rules.
+Exact text and destination IDs are in ignored `private/rea-2026-10-09/community-drafts.md` and
+`community-destinations.json`. Reddit/REA Discord sign-in tabs were retained; recover by URLs if tab IDs
+are stale. Inspect actual signed-in state, current rules and any duplicate REA discussion before posting,
+then read back each URL/text/account and update the audit/State. If access remains unavailable, retain
+not-posted status and request only account access; Utku already delegated destination choice and posting.
+Do not duplicate GitHub #1343, register accounts, accept new terms, work around security controls or
+claim a message was sent merely because a draft/tab exists.
 
-Before further outreach, read existing REA Q&A #1343 and use the corrected saved text. Reddit/Discord stay
-unposted until Utku names destinations; check their rules, publish once and read back the result. The new-build
-WHOOP acceptance remains separately pending above; no presumed install, duplicate release or new export request.
-Parked work stays parked. No NOOP task job is running.
+Original WHOOP app research remains the next separate prepared task above: obtain/verify a genuine
+`com.whoop.android` package, check scoped REA/JDK/JADX tooling and inspect connection/sync/data paths
+before the wider app. No original app was inspected or NOOP change shipped in this outreach work.
+Phone acceptance stays pending; no presumed install, repeated release, new health export or parked work.

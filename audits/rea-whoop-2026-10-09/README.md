@@ -91,17 +91,37 @@ measurements. This is a research plan and corrected outreach, not completed orig
 
 ## Outreach and recovery
 
-Utku explicitly chose **post to REA's GitHub; he will name Reddit/Discord destinations**. REA's
-issue-template configuration directs questions to Discussions; Q&A is the appropriate category.
-The existing question was edited after Utku clarified the scope, with the title
-**Can REA help us study the original WHOOP app and improve NOOP?** and a simpler body covering
-the areas above. No second topic was created. It accurately describes a NOOP contributor and
-an untested REA use case; no claim of collaboration or accuracy achieved.
-**[Q&A #1343](https://github.com/morluto/rea/discussions/1343) published once**, 9 Oct 17:45:16 UTC,
-under `UtkuDenizAltiok`; independent API readback verified number/URL/author/category/title/full body,
-and public web readback confirmed visibility. The corrected title/body/author/category were independently read back after the edit; correction
-is complete. Zero comments at that check. Reddit and Discord remain unposted drafts for this broader request until their
-destinations are supplied and current rules checked.
+Utku first chose GitHub posting, then on 9 Oct explicitly delegated finding the best Reddit/Discord
+places and posting there. No further destination-choice or posting approval is needed. The messages
+ask about studying the original WHOOP app broadly and building/test-checking independent NOOP
+improvements; they make no claim that the analysis or an accuracy improvement already happened.
+
+[REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) was published once at 20:45:16
+Istanbul time and edited after his scope clarification. Its current title is **Can REA help us
+study the original WHOOP app and improve NOOP?** Corrected title/body/author/category were
+independently read back. Zero comments at the latest check. Do not create a second GitHub topic.
+
+| Selected place | Why this one | Posting status |
+|---|---|---|
+| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP README/issue template link; directly relevant users and contributors. Public rules require civility and prohibit spam/excessive promotion. | One tailored question ready; not posted. In-app browser shows network-security notice and existing-account login. Recheck visible rules/duplicates after sign-in. |
+| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | REA's official README invite; people who know its analysis workflow. Public Discord invite metadata confirms the server and `#general` channel. | One workflow question ready; not sent. Existing-account login required. Check rules and any more suitable help/research channel after sign-in. |
+| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | NOOP's official README/issue-template invite; same server linked on r/NoopBand. Public invite metadata confirms `#general`. Existing contributors can identify prior work and useful questions. | One project question ready; not sent. Check rules and a development/research channel if available after sign-in. |
+
+The old r/NOOPApp community is not the current upstream-linked destination. Broad r/whoop is
+less directly useful for this early tool/project question. r/ReverseEngineering routes questions
+to its weekly thread; there are no actual WHOOP-analysis findings to publish as a standalone post.
+r/AskReverseEngineering remains a possible later technical-question venue, but REA's own community
+is the more direct first audience. This is a relevance judgment, not a claim other communities ban
+NOOP. No mass crossposting or speculative bug issue is proposed.
+
+No relevant Reddit/Discord connector was returned by plugin discovery; the unrelated Vercel result
+was not suggested. The in-app browser is not signed in to these services. A Safari attempt was
+refused while it was in use and was left alone; no Safari posting or login is claimed. Reddit and
+REA Discord existing-account sign-in pages are retained for the user. Do not create an account,
+accept new terms or handle a CAPTCHA on the user's behalf. After user sign-in, verify actual access,
+check rules/duplicates, send the saved message once and read back its URL/text/account before
+marking it posted. Private `community-destinations.json` and `community-drafts.md` own the
+selected identities, access evidence and exact text. Only the GitHub question is published so far.
 
 Local source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
 Ignored `private/rea-2026-10-09/` retains metadata, npm version/digest, PR snapshots, exact outreach
