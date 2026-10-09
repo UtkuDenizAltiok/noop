@@ -24,6 +24,17 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   three new methods' selective discovery proven above; no new warning in changed source. Logs/result retained.
   Require PR #2747's expected eighteen upstream checks and actual workflow steps before final delivery; current
   publication/readbacks are in `private/deep-2026-10-09/pr-2747-publication.json`. No comments/reviews yet.
+  **PR verification complete:** all eighteen expected checks/seven workflows at exact d84f5a14 and actual
+  build/test steps passed; 2282 macOS/two existing skips and both app builds confirmed. Open/mergeable, no feedback.
+  Proof `pr-2747-verified.json`, seven retained upstream logs. Next public operation: `bash dist/tools/ship-build.sh
+  testing-stack` from root, for local/remote f5d252c9; old testing-build/latest ef6216f8 retained independently.
+  Helper may replace the rolling release while building; delivery remains pending until all four build jobs,
+  five uploaded assets and independent download/IPA/ref checks pass. Capture new build head/run/release IDs,
+  driver PID/log/exit markers `ship*` in cache; check the existing run before repeating any public operation.
+  **Shipping active:** build/local+remote testing-build **f519e57b8aa71a9fee1fa7570a21178e7a008d03**, run
+  **37924869961**, monitor PID **18039** (`bash dist/tools/ship-build.sh testing-stack` from root); cache
+  `ship.log`/`ship.pid`/`ship.exit`. Actual tree equals reviewed three-way preflight: only ten template-upload
+  workflow lines differ from verified f5d252c9. This is not delivered until independent completion evidence.
   Six existing PRs rechecked: unchanged heads/green rosters, no new comments/reviews. Upstream still eae23433.
   **Combined candidate:** `/Users/utk/.codex/worktrees/standard-hr-delivery/noop`, local branch
   `codex/standard-hr-delivery`, **f5d252c925bc0da335b01f482a2178ea96a1e3be** = upstream eae23433 plus
@@ -327,11 +338,11 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Finish PR #2747's upstream checks, then ship this verified stack.** Read current head/reviews/check roster;
-require all eighteen expected checks and actual workflow jobs/steps at d84f5a14. Existing final Android, local
-combined iOS and combined Android/eleven Swift jobs passed; do not repeat unchanged proof. If a check fails,
-inspect/fix its relevant source before publication. If all pass, journal and run the handbook's ship-build.sh
-for pushed/local testing-stack f5d252c9, capture new build/run/release IDs, wait and independently verify
-refs/tag/expected jobs/five assets/IPA HTTP/CRC/digest/identities/capabilities. Check an existing ship job before
-starting another. Preserve parked wording and old recovery; no unrelated improvement. Phone acceptance will
-need a simple new-build observation after delivery; no export/diary request.
+**Finish the existing testing release, run 37924869961 at f519e57b.** Check actual run/jobs/steps and cache
+ship.log/ship.exit; verify monitor PID 18039's command before any restart. All prerequisite PR eighteen checks,
+final Android, combined iOS/Android/eleven Swift jobs passed. Do not repeat them or dispatch a second release.
+Require meta/Android/iOS/macOS success, expected cleanup condition, five nonempty uploaded assets and independent
+ref/tag/target/download/IPA CRC/digest/identity/widget/background-capability checks. On actual relevant failure,
+inspect and fix/recover this existing run; retain old ef6216f8 source/release evidence. After completion, handle
+any new PR feedback, make State/History true, preserve/retire local staging safely, upload and verify handbook.
+Then give just-update and the necessary normal live-HR acceptance steps; no export/diary or unrelated improvement.
