@@ -2,39 +2,43 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — standard-HR repair; Android CI recovery needed, 9 Oct 2026
+## Now — standard-HR repair; final Android/combined verification, 9 Oct 2026
 
-- [ ] **Blocked, partly verified — standard-HR field integrity.** Reject incomplete declared fields before
-  effects in all three readers, preserving every complete-field HR/R-R/contact output and existing WHOOP 5
-  raw-ms handling, cadence, radio behavior, storage and formulas. Source: `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`,
-  branch `codex/standard-hr-integrity`, clean local commit **`d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4`**,
-  eleven intended files; **not pushed, no PR, no testing delivery**. [Assessment/contract/results](audits/standard-hr-integrity-2026-10-09/README.md).
-  Direct proof: 1,771,584 inputs, all 1,478,185 complete-field outputs identical, 254,325 previously accepted
-  malformed inputs refused. Original/mutated tests seen to fail assertions and restored exactly; audit owns detail.
-  Native protocol 817 tests/one existing skip passed. Full Apple verification at this head: 632/2143/327 packages,
-  lint/i18n/parity gates, 127 governance, 2282 macOS and iOS build passed (one import/two macOS existing skips).
-  Exit 0, `all steps passed`; generated Info.plist restored. 156 core Tools pass with a canonical per-process
-  temporary path; default macOS `/var` versus `/private/var` causes four unchanged assertions to fail on main
-  and candidate, both logs retained. Empty-device iOS launch rendered the initial disclaimer, exact installed
-  executable matched; disposable simulator retired, original DCAA8034 remains shut down/untouched. No strap proof.
-  **Blocker:** announced Android regression dispatch refused HTTP 422, `Actions has been disabled for this repository`;
-  zero runs started. Ordinary permission enabled, Android workflow active. Public fork Actions page says stopped
-  because of Actions usage and a maintainer can re-enable it. Owner asked to use the signed-in option; precise cause
-  beyond that notice unknown. No settings changed or restriction workaround attempted. Required Android assertion
-  proof/APK/full JVM, exact-head upstream CI, combined checks and testing delivery remain pending. Hardware
-  acceptance/malformed frequency and physiological accuracy unproven; no phone/export/diary request now.
-  **Preservation/recovery:** cache root `/Users/utk/Library/Caches/noop-handbook/deep-2026-10-09/`; feature and original
-  negative **`25e558e5a6b9830ccf5801e8506ecf21f87a21f7`** independently imported from `standard-hr-recovery.bundle`
-  into `standard-hr-recovered.git`, full fsck passed. Negative source/workflow restored to the whole feature tree,
-  hashes verified; temporary remote/local regression branch and worktree retired after zero-run readback.
-  Recreate that isolated probe only after CI recovery; warn before dispatch, require successful APK and exactly
-  three new assertion failures, then restore/retire again. Source/patch/bundles/private logs depend on this Mac;
-  handbook backup does not upload app source. Private folder `private/deep-2026-10-09/` holds blocker/restoration,
-  eleven-file source proof, PR readbacks and simulator report; local draft `private/pr-standard-hr-integrity-body.md`.
-  **Jobs:** all local task drivers finished; no external task run exists. Former verify PID 6912 exited 0;
-  `verify.log`/`verify.exit`, `protocol.log`/`protocol.exit`, `core-tools*` and `verify/d84f5a14/` retain results.
-  Check actual command/log/head before restarting anything; no old tool-session dependency. Do not repeat passed
-  Apple/direct proofs unless source or validation inputs change. Next safe action below owns CI recovery.
+- [ ] **Active, partly verified — standard-HR field integrity.** Reject incomplete declared fields before
+  effects in all three decoders, preserving every complete-field HR/R-R/contact output, WHOOP 5 raw-ms handling,
+  cadence, radio behavior, storage and formulas. Source worktree `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`,
+  branch `codex/standard-hr-integrity`, clean/pushed **d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4**; eleven intended
+  files, no PR/testing delivery yet. [Assessment/contract/results](audits/standard-hr-integrity-2026-10-09/README.md).
+  Direct proof: 1,771,584 inputs, all 1,478,185 complete-field outputs identical; 254,325 previously accepted
+  malformed inputs refused. Original/mutated Swift and all caller-gate assertions failed/restored exactly.
+  Native protocol 817/one existing skip passed. Full Apple verification: 632/2143/327 packages, all gates,
+  127 governance, 2282 macOS and iOS build passed (one import/two macOS existing skips); exit 0/all steps passed.
+  156 core Tools pass with canonical per-process temp path; four default Mac alias failures also occur on unchanged
+  main. Isolated iOS launch/render/executable match passed; disposable simulator retired, original untouched.
+  **CI recovery:** initial fork usage restriction resolved after Utku reported enabled. Accepted Android negative
+  run **37920499670** at saved **25e558e5a6b9830ccf5801e8506ecf21f87a21f7** built APK successfully; 12 tests,
+  exactly three intended assertion failures/nine controls passed. Source/workflow restored to the whole feature
+  tree and hashes checked; temporary local/remote branch/worktree retired. Original commit/patch remains bundled.
+  Final full Android **37921713840** running at d84f5a14; require actual APK/unit steps and changed-test discovery.
+  Then publish the verified PR, check its complete expected upstream roster/steps and finish combined testing delivery.
+  Six existing PRs rechecked: unchanged heads/green rosters, no new comments/reviews. Upstream still eae23433.
+  **Combined candidate:** `/Users/utk/.codex/worktrees/standard-hr-delivery/noop`, local branch
+  `codex/standard-hr-delivery`, **f5d252c925bc0da335b01f482a2178ea96a1e3be** = upstream eae23433 plus
+  #2613/#2660/#2661/#2722/#2724 and this repair. 45 intended files; derived map conflict resolved with net-source
+  commits and computed refresh, 290 known findings unchanged. All ten repair source/test files equal d84f5a14,
+  all 50 store/schema/backup source files equal installed ef6216f8. Parked wording/doc-only branches excluded.
+  iOS build PID **13631**, XcodeGen complete; log/exit/PID markers `combined-ios*` in cache below. Require
+  BUILD SUCCEEDED/exit 0 and restore generated Info.plist before testing-ref push. No other source mutation.
+  After local success: pinned testing-stack push/local ref update, combined Android/eleven Swift jobs, then ship
+  and independently verify release refs/assets/IPA/download. Existing pre-merge bundle retains old refs before replacement.
+  **Recovery:** cache `/Users/utk/Library/Caches/noop-handbook/deep-2026-10-09/`; private
+  `private/deep-2026-10-09/` owns run/restoration/source/combined readbacks. Feature/original probe independently
+  imported/full-fsck verified in `standard-hr-recovery.bundle`/`standard-hr-recovered.git`; local draft
+  `private/pr-standard-hr-integrity-body.md`. Full verify former PID 6912 exited 0; logs `verify/d84f5a14/`,
+  `verify.log`/`verify.exit`, `protocol*`, `core-tools*`, `android-negative.log` retained. Existing jobs must be checked
+  by actual run/head or PID command/log before restarting. Reuse unchanged passed Apple/direct proof.
+  Just update through AltStore after verified delivery; hardware acceptance/fault frequency remain unproven.
+  No phone/export/diary task now; a necessary normal live-HR/log observation will be specified after delivery.
 
 **Session prompt revision completed:** Utku's 9 Oct instruction is reflected in the four canonical prompts and
 procedures in [Sessions](SESSIONS.md), with linked Rules/README and reconciled State/History. Start finishes
@@ -55,8 +59,9 @@ Four prompts, 45 local links, fences, scope/PR/recovery requirements and unchang
   Prior owner invitations remain posted once; do not repeat them. Readbacks are in the private folder above;
   original invitations are in `private/review-requests-2026-10-08/`.
 
-**Current recovery, 9 Oct:** ten code worktrees: root plus seven preserved source branches clean/pushed,
-new feature above clean/local-only, parked detached wording candidate `ec329949` clean/local-only. Main/origin/
+**Current recovery, 9 Oct:** eleven code worktrees: root plus eight source branches pushed/clean; combined
+candidate local-only with build-generated plist pending restoration, parked detached wording candidate `ec329949`
+clean/local-only. Main/origin/
 upstream now `eae23433`; testing refs unchanged above. No stash, safety tag or unfinished Git operation. Existing
 bundles, private logs/IPA and original simulator snapshots stay on this Mac; the handbook does not upload them.
 Simulator remains restored/shut down; no physical-phone change. Old job logs are preserved; do not repeat the
@@ -95,8 +100,7 @@ The prior wording-session closure and simulator restoration remain in History an
 the latest HRV simulator restoration is `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
 This proves logical SQLite equality and preference-byte equality after shutdown, not byte-identical WAL layout.
 Completed cancellation delivery, installation confirmations and owner invitations are in [History](HISTORY.md).
-Android verification/delivery is externally blocked by the fork Actions usage restriction recorded above;
-source and evidence can be preserved. The unfinished wording work is paused by Utku's
+Fork Actions restriction is resolved; required verification/delivery are active above. Source and evidence are preserved. The unfinished wording work is paused by Utku's
 closure/priority instruction; pending scientific reference/data needs remain separate. No phone test/export needed.
 
 ## Phone
@@ -313,13 +317,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Recover fork Actions for this same repair.** Read the owner's signed-in Actions usage/re-enable notice and
-the saved blocker record; do not toggle an already-enabled ordinary permission or dispatch repeatedly.
-After confirmed re-enable, first check existing task runs and the saved source/head. If no run exists, recreate
-the isolated regression branch at saved 25e558e5 from the recovery bundle and resume the announced selective
-Android probe; require successful APK plus exactly three new assertion failures, restore exact feature
-source/workflow and retire the temporary branch/worktree. Then final Android,
-verified PR/combined-stack checks and testing delivery finish the same task and merge refresh.
-If the maintainer option is absent or refusal persists, save its exact notice and keep this task blocked;
-do not publish unverified source or substitute a new improvement. Native/full Apple checks already passed.
-Preserve parked wording, private evidence and phone/data deferrals; no duplicate merges/probes/releases.
+**Check the active final Android and combined iOS jobs.** Read Android run 37921713840's exact head/jobs/steps
+and `combined-ios.log`/`combined-ios.exit`; verify PID 13631's command before any restart. If either fails,
+inspect and fix its relevant source/job failure. If both pass, restore generated plist, publish this same
+verified repair's PR, require its expected upstream roster and actual steps, then push the verified combined
+stack with a pinned lease, run combined Android/Swift and complete independent testing-release verification.
+Do not dispatch a duplicate, repeat passed unchanged Apple/direct proof, revive parked wording or start another
+improvement. Record each accepted job/PR/release ID and actual result; phone acceptance remains a later observation.

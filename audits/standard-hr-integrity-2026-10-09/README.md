@@ -89,17 +89,18 @@ isolated empty iPhone 17 Pro/iOS 27.0 device; installed executable matched. No a
 numeric fixture injected. Disposable device retired; original simulator stays shut down and untouched.
 This is launch/render evidence only, not live HR or strap acceptance.
 
-Android verification is blocked: the announced selective regression dispatch was refused HTTP 422 before
-creating a run. Ordinary repository Actions permission is enabled and the workflow active, but the public
-Actions page says the fork is stopped because of its usage and a maintainer can re-enable it. Owner recovery
-requested; precise usage/account cause remains unknown. No Android assertion proof, PR, combined checks,
-new release or real-strap validation is claimed. Source is locally committed and independently bundled/
-imported/fsck-verified; source bundles, logs and private readbacks depend on this Mac. The public handbook
-backup uploads this audit, not local app source. Current recovery lives in [State](../../STATE.md).
+The initial Android dispatch was refused HTTP 422 despite enabled ordinary permissions/active workflow,
+with a fork usage/re-enable notice. After Utku reported enabling Actions, exact saved negative branch 25e558e5
+run **37920499670** was accepted: successful APK; **12 actual tests, exactly three intended assertion failures
+and nine controls passed**. Source/workflow restored to the entire feature tree and hashes verified; temporary
+branch/worktree retired. Final full Android **37921713840** is running at d84f5a14. No PR, combined CI, new
+release or real-strap acceptance is claimed yet. The feature source is now pushed for verification; original
+probe, private readbacks/logs/bundles still depend on this Mac. Current recovery lives in [State](../../STATE.md).
 Reproduce source comparisons with `python3 run.py <code-worktree> <cache-directory>`.
 
-The unrun Android probe's two temporary mutations were restored to the entire feature tree and hashes
-checked before retiring its remote/local branch and clean worktree. Commit 25e558e5 and patch remain in the
-independently imported recovery bundle. All local drivers finished; no task CI job exists. After owner
-re-enable, check existing jobs/source first, recreate that isolated probe, establish the promised assertion
-proof, then verify the final source, PR, combined stack and testing release. Keep the task incomplete until then.
+The combined local candidate f5d252c9 includes current upstream and the five open app PRs plus this repair.
+All ten repair source/test files match the verified feature, and all 50 store/schema/backup sources match the
+last delivered build; derived parity metadata refreshed with 290 known findings unchanged. Local iOS build,
+combined Android/Swift, PR checks and release verification remain in progress/pending. Just update after
+delivery; no wipe is required. This repair is incomplete until required delivery is established; hardware
+acceptance and actual malformed-packet frequency remain unproven.
