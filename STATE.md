@@ -2,7 +2,7 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — original WHOOP app study clarified; follow-up pending, 9 Oct 2026
+## Now — session closed, 9 Oct; phone acceptance and external review pending
 
 - [x] **REA scope and GitHub question corrected, 9 Oct.** Utku means studying the original WHOOP app
   across connection/sync, data/calculations, sleep/workouts, UI, performance and battery. The earlier packet-only
@@ -10,25 +10,22 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   Existing [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) edited once to
   `Can REA help us study the original WHOOP app and improve NOOP?`; simpler body/title/author/category verified
   by independent API readback. No duplicate topic; old and corrected readbacks retained privately.
-- [ ] **Original WHOOP app analysis — not started yet.** No WHOOP-named APK/IPA found in this checkout,
+- [ ] **Queued, not started — original WHOOP app analysis.** No WHOOP-named APK/IPA found in this checkout,
   Downloads or handbook cache; REA not installed/executed. Target original Android package `com.whoop.android`,
   verified against official Play listing. Public APKMirror listings are an acquisition lead only; no package
   downloaded or signer/digest verified. Obtain a genuine copy for private static inspection, record source/version/
   hash/signing identity/split coverage and use scoped REA/JDK/JADX tooling. Start with connection/sync and data
   paths, then examine the wider areas above. No strap writes, sign-in or health export required for static work.
   Preserve upstream's clean-room/scope rules; any NOOP improvement needs its own evidence/parity/testing.
-- [ ] **REA outreach — choose destinations and post under Utku's 9 Oct instruction.** He now asks the agent
-  to find the best places itself, overriding the previous requirement for him to name Reddit/Discord destinations.
-  Inspect official NOOP/REA community links, current rules, relevance and available signed-in access, then post
-  one useful message per selected audience and read it back. Selected r/NoopBand, official REA Discord and
-  official Noop Community Discord (#general invite channels verified; check more specific channels/rules after
-  sign-in). Three plain drafts ready in `private/rea-2026-10-09/community-drafts.md`; destination/access evidence
-  in `community-destinations.json` there. Reddit in-app browser shows network-security/login notice; Discord
-  shows existing-account login. No relevant connector found. Safari actions refused while it was in use; left
-  alone. Account sign-in is the remaining dependency, not destination choice or posting permission. GitHub #1343
-  already exists and has zero replies at the latest check; do not duplicate it. Reddit/Discord not yet posted. Exact drafts/status/readbacks/metadata/PR evidence in ignored
-  `private/rea-2026-10-09/`; clean pinned source in cache `rea-2026-10-09/source`. No running task job.
-  Do not duplicate #1343 or claim original-app analysis complete. The requested study targets WHOOP, not NOOP alone.
+- [x] **Best community destinations and posts prepared.** Selected [r/NoopBand](https://www.reddit.com/r/NoopBand/),
+  [REA Discord](https://discord.com/invite/GkcryMnJDM) and [Noop Community Discord](https://discord.com/invite/wKgyqVdjrP),
+  based on official project links and verified public invite metadata. Invite channels are `#general`; server
+  rules/more specific channels require membership access. Three plain copyable drafts and evidence saved in
+  ignored `private/rea-2026-10-09/community-drafts.md` / `community-destinations.json`.
+- [ ] **User-deferred publication — Utku will post later himself.** Reddit/Discord were not posted. Earlier
+  account-login limits are recorded, but are no longer an input the agent should request. Do not keep seeking
+  login or send the drafts unless Utku later asks for agent publication. Temporary sign-in tabs closed; original
+  user GitHub tab retained. GitHub #1343 is already published/corrected, zero replies at closing readback.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
   are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
   storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
@@ -56,6 +53,15 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 - [x] **Existing four-merge refresh completed:** #2742/#2738/#2737/#2729 exact merge-series proof, source retirement,
   eae23433 main mirror and this verified combined delivery complete. No duplicate intermediate release.
 
+**Closing verification:** ten clean code worktrees, nine branch heads equal current fork refs; detached
+local-only candidate ec329949 retained. Seven PR heads/full green rosters/comments/reviews unchanged, no unanswered
+feedback. Current release 407854745/run 37924869961/ref/tag still f519e57b, five unchanged nonempty assets;
+cached IPA SHA-256 matches GitHub, ZIP CRC/plist 12.1.0 (436) valid, download HTTP200. No task job, stash or
+unfinished Git operation remains. Current upstream still 18de275e; later UI refresh remains unstarted.
+Private closing readbacks: `private/rea-2026-10-09/session-close-*.json` and final checkpoint/upload report.
+No source change/rebuild/release was opened during REA assessment or closure. A new chat on this Mac is safe;
+private logs/drafts/bundles and the parked local-only candidate remain here rather than in handbook uploads.
+
 **Recovery:** ten clean code worktrees: root plus eight pushed source branches and preserved local-only detached
 wording candidate ec329949. Managed delivery staging f5d252c9 archived/read back; temporary branch retired after
 fork retention proof. Probe source/workflow restored exactly and temporary branch retired; simulator smoke device
@@ -79,8 +85,8 @@ Session prompts/roles were completed/uploaded earlier; [Sessions](SESSIONS.md) i
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
-work stays parked, not delivered or discarded. The current request authorizes one independently selected
-functional improvement after essential existing follow-up; it does not resume wording work.
+work stays parked, not delivered or discarded. The selected functional improvement was completed and delivered above. Original WHOOP app research is
+unstarted future work; Start recovers existing obligations and waits rather than launching it or wording work.
 
 - [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
   `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
@@ -257,17 +263,14 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   exactly equal testing-build; IPA HTTP 200, downloaded ZIP/plist identity/size/SHA-256 verified against GitHub’s
   asset digest. Metadata: `private/release-{metadata,assets,run,ipa}-01b55ac2.json`.
 - Earlier installed release: **`6de9d6d`**, 6 Oct; its prior metadata remains in `private/release-*-6de9d6d.*`.
-- Code worktrees: root `main`; new managed `/Users/utk/.codex/worktrees/hrv-clean-buffer/noop`
-  (`codex/hrv-clean-buffer` / `c71b48af`); siblings `noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
-  `/Users/utk/.codex/worktrees/docs-navigation/noop` and `/Users/utk/.codex/worktrees/hrv-spectral-power/noop`
-  (`codex/hrv-sdnn-quality` / `b6e53f38`), plus `/Users/utk/.codex/worktrees/rhr-one-pass/noop`
-  (`codex/rhr-one-pass` / `14783994`) and `/Users/utk/.codex/worktrees/charge-baseline-usability/noop`
-  (`codex/charge-baseline-usability` / `3e59a667`). All PR code is clean/pushed; handbook is this `dist` worktree.
-  New documentation worktree `/Users/utk/.codex/worktrees/network-privacy/noop` is
-  `codex/network-privacy-docs` / `a4f14442`; plus `/Users/utk/.codex/worktrees/stress-load-cancellation/noop`, `codex/stress-load-cancellation` /
-  `63e19100`. New saved wording worktree `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop` is
-  `codex/stress-spectral-explanations` / `0285a675`; the detached local-only staging candidate is documented in Now.
-  Entries reinstalled for all thirteen code worktrees after cleanup.
+- **Current code worktrees (ten, verified at closure):** root `/Users/utk/Developer/noop` on main;
+  siblings `/Users/utk/Developer/noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
+  `/Users/utk/.codex/worktrees/docs-navigation/noop`, `hrv-spectral-power/noop` (SDNN branch),
+  `rhr-one-pass/noop`, `standard-hr-integrity/noop` and `stress-spectral-explanations/noop`.
+  All nine branch heads are clean/pushed. The tenth is the clean local-only detached ec329949 candidate
+  at `/Users/utk/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/staging-noop`, retained
+  as described in Now. Handbook is the separate dist worktree. Merged HRV/charge/network/Stress-cancellation
+  worktrees were retired earlier after recovery/source proofs; they are not active checkouts to recover again.
 - Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
   versions. No throwaway regression branch/stash or safety tag; the local-only scratch candidate in Now is retained. Old stack `858d8c99` and
   build `e722e0c4` independently recovered from task-cache `pre-testing.bundle` into `pre-testing-recovered.git`,
@@ -347,18 +350,14 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**After Utku signs in, verify Reddit/Discord access and post the saved community messages once.**
-Selected r/NoopBand, REA: Reverse Engineering Community, and Noop Community; verified invite channels
-are `#general`, with any more specific help/research/development channel chosen after reading server rules.
-Exact text and destination IDs are in ignored `private/rea-2026-10-09/community-drafts.md` and
-`community-destinations.json`. Reddit/REA Discord sign-in tabs were retained; recover by URLs if tab IDs
-are stale. Inspect actual signed-in state, current rules and any duplicate REA discussion before posting,
-then read back each URL/text/account and update the audit/State. If access remains unavailable, retain
-not-posted status and request only account access; Utku already delegated destination choice and posting.
-Do not duplicate GitHub #1343, register accounts, accept new terms, work around security controls or
-claim a message was sent merely because a draft/tab exists.
+**In the new chat, read PR #2747's current head, checks and feedback before any code action.** Compare it
+with saved d84f5a14, then reconcile the other six existing PRs and REA Q&A #1343 through the normal Start
+procedure. If new actionable maintainer feedback exists, complete that existing obligation once with its
+required verification. If none exists, keep new-build phone acceptance pending and report readiness; do not
+repeat checks/releases, acquire an APK, install REA or begin a new investigation just to fill the session.
 
-Original WHOOP app research remains the next separate prepared task above: obtain/verify a genuine
-`com.whoop.android` package, check scoped REA/JDK/JADX tooling and inspect connection/sync/data paths
-before the wider app. No original app was inspected or NOOP change shipped in this outreach work.
-Phone acceptance stays pending; no presumed install, repeated release, new health export or parked work.
+Original WHOOP app research is queued/unstarted: after Start, Utku can send Deep search for the wider
+REA review. Its first research step is obtaining/verifying the original Android app, then scoped tooling
+and connection/sync/data inspection before the other areas. Reddit/Discord drafts are for Utku to post
+later himself; no login request or automatic posting under Start. Preserve parked wording/science/data
+requirements and the local-only candidate. No NOOP job remains to wait for or restart.

@@ -92,7 +92,8 @@ measurements. This is a research plan and corrected outreach, not completed orig
 ## Outreach and recovery
 
 Utku first chose GitHub posting, then on 9 Oct explicitly delegated finding the best Reddit/Discord
-places and posting there. No further destination-choice or posting approval is needed. The messages
+places and posting there. He subsequently chose to write/post later himself. Agent publication is now deferred; do not keep
+asking for login or send the drafts unless he later requests agent posting. The messages
 ask about studying the original WHOOP app broadly and building/test-checking independent NOOP
 improvements; they make no claim that the analysis or an accuracy improvement already happened.
 
@@ -103,9 +104,9 @@ independently read back. Zero comments at the latest check. Do not create a seco
 
 | Selected place | Why this one | Posting status |
 |---|---|---|
-| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP README/issue template link; directly relevant users and contributors. Public rules require civility and prohibit spam/excessive promotion. | One tailored question ready; not posted. In-app browser shows network-security notice and existing-account login. Recheck visible rules/duplicates after sign-in. |
-| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | REA's official README invite; people who know its analysis workflow. Public Discord invite metadata confirms the server and `#general` channel. | One workflow question ready; not sent. Existing-account login required. Check rules and any more suitable help/research channel after sign-in. |
-| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | NOOP's official README/issue-template invite; same server linked on r/NoopBand. Public invite metadata confirms `#general`. Existing contributors can identify prior work and useful questions. | One project question ready; not sent. Check rules and a development/research channel if available after sign-in. |
+| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP README/issue template link; directly relevant users and contributors. Public rules require civility and prohibit spam/excessive promotion. | One tailored question ready; not posted. Utku will post later himself. Public rules checked; respect the no-spam rule. |
+| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | REA's official README invite; people who know its analysis workflow. Public Discord invite metadata confirms the server and `#general` channel. | One workflow question ready; not sent. Utku will post later himself. Read rules and use a more specific help/research channel if provided. |
+| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | NOOP's official README/issue-template invite; same server linked on r/NoopBand. Public invite metadata confirms `#general`. Existing contributors can identify prior work and useful questions. | One project question ready; not sent. Utku will post later himself. Read rules and use a development/research channel if provided. |
 
 The old r/NOOPApp community is not the current upstream-linked destination. Broad r/whoop is
 less directly useful for this early tool/project question. r/ReverseEngineering routes questions
@@ -117,11 +118,12 @@ NOOP. No mass crossposting or speculative bug issue is proposed.
 No relevant Reddit/Discord connector was returned by plugin discovery; the unrelated Vercel result
 was not suggested. The in-app browser is not signed in to these services. A Safari attempt was
 refused while it was in use and was left alone; no Safari posting or login is claimed. Reddit and
-REA Discord existing-account sign-in pages are retained for the user. Do not create an account,
-accept new terms or handle a CAPTCHA on the user's behalf. After user sign-in, verify actual access,
-check rules/duplicates, send the saved message once and read back its URL/text/account before
-marking it posted. Private `community-destinations.json` and `community-drafts.md` own the
-selected identities, access evidence and exact text. Only the GitHub question is published so far.
+REA Discord sign-in pages were initially prepared. Utku then took over posting and requested session
+closure, so those temporary tabs were closed; the original GitHub tab remains. Account access no
+longer blocks the agent's task: destination selection and copyable drafts are complete, and publication
+is user-deferred. Private `community-destinations.json` and `community-drafts.md` retain the identities,
+access evidence and text. Only the GitHub question is published so far. The final handbook records
+an unstarted original-app investigation; Start must recover and wait, not start that investigation.
 
 Local source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
 Ignored `private/rea-2026-10-09/` retains metadata, npm version/digest, PR snapshots, exact outreach
