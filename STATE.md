@@ -2,7 +2,16 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session prompts revised; existing merge follow-up pending, 9 Oct 2026
+## Now — deep improvement active; merge follow-up first, 9 Oct 2026
+
+- [ ] **Active deep session.** Utku invoked Deep improvement in this prepared chat. Refresh only changed source,
+  PR and job facts; preserve parked wording and phone/data deferrals. Complete the four proven merge follow-ups,
+  assess current whole-pipeline evidence and primary sources, then choose one bounded priority with preregistered
+  completion evidence. Current upstream advanced to `eae23433` (12.1.0 beta plus ECG fixes); no new maintainer
+  comment/review requires a reply. Private journal/readbacks: `private/deep-2026-10-09/`, cache same name.
+  Next existing actions: bundle retained refs before cleanup; fast-forward fork/root main; retire proven merged
+  sources; reconstruct the remaining app stack and verify it. No duplicate testing release: if the chosen repair
+  is ready in this session, the final verified combined delivery will also complete the inherited refresh.
 
 **Session prompt revision completed:** Utku's 9 Oct instruction is reflected in the four canonical prompts and
 procedures in [Sessions](SESSIONS.md), with linked Rules/README and reconciled State/History. Start finishes
@@ -43,8 +52,8 @@ ending `shipped ef6216f8`; do not restart them. A fresh chat is safe on this Mac
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
-work stays parked, not delivered or discarded. The current request revises session prompts; it does not resume
-wording or begin the queued scientific assessment.
+work stays parked, not delivered or discarded. The current request authorizes one independently selected
+functional improvement after essential existing follow-up; it does not resume wording work.
 
 - [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
   `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
