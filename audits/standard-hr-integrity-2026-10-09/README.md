@@ -93,14 +93,15 @@ The initial Android dispatch was refused HTTP 422 despite enabled ordinary permi
 with a fork usage/re-enable notice. After Utku reported enabling Actions, exact saved negative branch 25e558e5
 run **37920499670** was accepted: successful APK; **12 actual tests, exactly three intended assertion failures
 and nine controls passed**. Source/workflow restored to the entire feature tree and hashes verified; temporary
-branch/worktree retired. Final full Android **37921713840** is running at d84f5a14. No PR, combined CI, new
-release or real-strap acceptance is claimed yet. The feature source is now pushed for verification; original
+branch/worktree retired. Final full Android **37921713840** passed at d84f5a14; actual APK/full JVM task executed.
+[PR #2747](https://github.com/ryanbr/noop/pull/2747) published/attached with exact head/body/eleven-file readback;
+eighteen expected checks present, final roster/steps still pending. No new release or real-strap acceptance claimed. The feature source is now pushed for verification; original
 probe, private readbacks/logs/bundles still depend on this Mac. Current recovery lives in [State](../../STATE.md).
 Reproduce source comparisons with `python3 run.py <code-worktree> <cache-directory>`.
 
 The combined local candidate f5d252c9 includes current upstream and the five open app PRs plus this repair.
 All ten repair source/test files match the verified feature, and all 50 store/schema/backup sources match the
-last delivered build; derived parity metadata refreshed with 290 known findings unchanged. Local iOS build,
-combined Android/Swift, PR checks and release verification remain in progress/pending. Just update after
+last delivered build; derived parity metadata refreshed with 290 known findings unchanged. Local iOS build passed; combined Android **37922207424** actual APK/full JVM and Swift **37922210902**
+all eleven expected jobs/22 actual build/test steps passed. PR checks/release verification remain pending. Just update after
 delivery; no wipe is required. This repair is incomplete until required delivery is established; hardware
 acceptance and actual malformed-packet frequency remain unproven.

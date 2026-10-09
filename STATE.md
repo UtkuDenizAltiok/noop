@@ -8,7 +8,8 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   effects in all three decoders, preserving every complete-field HR/R-R/contact output, WHOOP 5 raw-ms handling,
   cadence, radio behavior, storage and formulas. Source worktree `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`,
   branch `codex/standard-hr-integrity`, clean/pushed **d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4**; eleven intended
-  files, no PR/testing delivery yet. [Assessment/contract/results](audits/standard-hr-integrity-2026-10-09/README.md).
+  files. [PR #2747](https://github.com/ryanbr/noop/pull/2747) published/attached: exact head/body/title/eleven files
+  read back; expected eighteen checks present, still running. No testing delivery yet. [Assessment/contract/results](audits/standard-hr-integrity-2026-10-09/README.md).
   Direct proof: 1,771,584 inputs, all 1,478,185 complete-field outputs identical; 254,325 previously accepted
   malformed inputs refused. Original/mutated Swift and all caller-gate assertions failed/restored exactly.
   Native protocol 817/one existing skip passed. Full Apple verification: 632/2143/327 packages, all gates,
@@ -19,16 +20,24 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   run **37920499670** at saved **25e558e5a6b9830ccf5801e8506ecf21f87a21f7** built APK successfully; 12 tests,
   exactly three intended assertion failures/nine controls passed. Source/workflow restored to the whole feature
   tree and hashes checked; temporary local/remote branch/worktree retired. Original commit/patch remains bundled.
-  Final full Android **37921713840** running at d84f5a14; require actual APK/unit steps and changed-test discovery.
-  Then publish the verified PR, check its complete expected upstream roster/steps and finish combined testing delivery.
+  Final full Android **37921713840** passed at d84f5a14: actual APK/full JVM task executed successfully,
+  three new methods' selective discovery proven above; no new warning in changed source. Logs/result retained.
+  Require PR #2747's expected eighteen upstream checks and actual workflow steps before final delivery; current
+  publication/readbacks are in `private/deep-2026-10-09/pr-2747-publication.json`. No comments/reviews yet.
   Six existing PRs rechecked: unchanged heads/green rosters, no new comments/reviews. Upstream still eae23433.
   **Combined candidate:** `/Users/utk/.codex/worktrees/standard-hr-delivery/noop`, local branch
   `codex/standard-hr-delivery`, **f5d252c925bc0da335b01f482a2178ea96a1e3be** = upstream eae23433 plus
   #2613/#2660/#2661/#2722/#2724 and this repair. 45 intended files; derived map conflict resolved with net-source
   commits and computed refresh, 290 known findings unchanged. All ten repair source/test files equal d84f5a14,
   all 50 store/schema/backup source files equal installed ef6216f8. Parked wording/doc-only branches excluded.
-  iOS build PID **13631**, XcodeGen complete; log/exit/PID markers `combined-ios*` in cache below. Require
-  BUILD SUCCEEDED/exit 0 and restore generated Info.plist before testing-ref push. No other source mutation.
+  iOS build former PID **13631** finished; log/exit/PID markers `combined-ios*` in cache below.
+  BUILD SUCCEEDED/exit 0 and generated Info.plist restored. No source mutation.
+  **Combined iOS finished:** exit 0/BUILD SUCCEEDED at f5d252c9; generated plist restored, source clean.
+  Pinned testing-stack lease from c13e8873 succeeded; local/remote now f5d252c9. Combined Android **37922207424**
+  and Swift Packages **37922210902** passed at that exact head: APK/full JVM actually executed; all eleven
+  expected Swift matrix jobs and 22 actual build/test steps succeeded. Logs/roster/readbacks retained. Old refs retained in independent pre-merge recovery. This is a CI candidate
+  only; testing-build/latest remain installed ef6216f8 until verified shipping. No release dispatched. Actual three-way
+  shipping-template preflight cleanly adds only ten upload-workflow lines and preserves upstream safeguards/identity/Release config.
   After local success: pinned testing-stack push/local ref update, combined Android/eleven Swift jobs, then ship
   and independently verify release refs/assets/IPA/download. Existing pre-merge bundle retains old refs before replacement.
   **Recovery:** cache `/Users/utk/Library/Caches/noop-handbook/deep-2026-10-09/`; private
@@ -50,7 +59,7 @@ Four prompts, 45 local links, fences, scope/PR/recovery requirements and unchang
   exact merge-series trees proven; root/fork main now `eae23433`, all four merged source branches retired;
   HRV worktree archived through the app. Seven old tips independently imported from cache
   `deep-2026-10-09/pre-merge.bundle` and fully fsck-verified before cleanup. Remaining app PRs stay separate.
-  Testing refs remain `c13e8873`/`ef6216f8`; no new release dispatched. The final verified combined delivery
+  Testing-stack now `f5d252c9`, build/latest remain `ef6216f8`; no new release dispatched. The final verified combined delivery
   of this repair will also complete this refresh, avoiding a duplicate intermediate phone release.
 - [ ] **Pending external review — six own PRs:** #2724/#2722/#2717/#2661/#2660/#2613. All exact heads and
   expected green rosters remain unchanged. No new comments/reviews on any of the ten checked PRs, so no reply
@@ -178,8 +187,9 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
 
 ## Git and latest release
 
-- Current testing-stack **`c13e8873e3e06c234abbe757dbcfcc5a997962e7`**, local/remote, prior stack plus #2742.
-  Local iOS passed; Android **37829415471** and Swift **37829420443** (all eleven jobs/actual steps) passed.
+- Current testing-stack **`f5d252c925bc0da335b01f482a2178ea96a1e3be`**, local/remote, current upstream plus five
+  open app PRs and standard-HR repair. Local iOS passed; Android **37922207424** actual APK/full JVM and Swift
+  **37922210902** all eleven expected jobs/22 actual build/test steps passed. Previous c13e8873 independently retained.
 - Current testing-build/local+remote testing-latest **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**,
   stack plus unchanged template-upload workflow only. Release **407179578**, run **37830619829**: actual
   meta/Android/iOS/macOS build/package/upload jobs passed; conditional cleanup skipped. Monitor exited 0 with
@@ -317,10 +327,11 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Check the active final Android and combined iOS jobs.** Read Android run 37921713840's exact head/jobs/steps
-and `combined-ios.log`/`combined-ios.exit`; verify PID 13631's command before any restart. If either fails,
-inspect and fix its relevant source/job failure. If both pass, restore generated plist, publish this same
-verified repair's PR, require its expected upstream roster and actual steps, then push the verified combined
-stack with a pinned lease, run combined Android/Swift and complete independent testing-release verification.
-Do not dispatch a duplicate, repeat passed unchanged Apple/direct proof, revive parked wording or start another
-improvement. Record each accepted job/PR/release ID and actual result; phone acceptance remains a later observation.
+**Finish PR #2747's upstream checks, then ship this verified stack.** Read current head/reviews/check roster;
+require all eighteen expected checks and actual workflow jobs/steps at d84f5a14. Existing final Android, local
+combined iOS and combined Android/eleven Swift jobs passed; do not repeat unchanged proof. If a check fails,
+inspect/fix its relevant source before publication. If all pass, journal and run the handbook's ship-build.sh
+for pushed/local testing-stack f5d252c9, capture new build/run/release IDs, wait and independently verify
+refs/tag/expected jobs/five assets/IPA HTTP/CRC/digest/identities/capabilities. Check an existing ship job before
+starting another. Preserve parked wording and old recovery; no unrelated improvement. Phone acceptance will
+need a simple new-build observation after delivery; no export/diary request.
