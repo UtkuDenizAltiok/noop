@@ -1,19 +1,16 @@
 # REA for WHOOP / NOOP — 9 Oct 2026
 
-**Utku's actual request:** use REA to study the original WHOOP app and use what we learn to
-improve NOOP across the whole app. The initial assessment/post focused too narrowly on packet
-fields. He corrected that on 9 Oct and asked for normal, simple language. The original app is
-the target; inspecting NOOP alone would not answer his request.
+**Latest outreach scope, 10 Oct:** ask whether REA could help NOOP across syncing, data/calculations,
+sleep/workouts, screens and battery use, and invite experienced community members to investigate. Use the
+owner's requested plain newcomer wording: he does not know much about REA or coding. Current work is these
+questions, not a claim that original-app analysis or a score improvement has happened.
 
-**Recommendation:** start with the original Android app because REA has an explicit APK/JADX
-workflow. Study connection/sync, data handling, sleep/workouts, local calculations, screens,
-background work and battery use. Find which work the app does itself and which it asks servers
-to do; app inspection cannot reveal code that exists only on those servers. Keep useful findings,
-then choose and verify NOOP changes rather than promise that every area will improve.
+**Recommendation:** ask people who know REA what is possible, whether relevant work already exists and
+whether someone is interested in helping. The earlier Android/JADX assessment below is retained technical
+reference. It does not establish how WHOOP's app works or authorize a new local investigation.
 
-No original WHOOP app has been inspected yet. REA was not installed or executed and no NOOP
-source, formula, device command or build changed. The technical evidence below establishes
-possible tool capabilities, not a completed reverse-engineering result.
+No original WHOOP app acquired/inspected; REA not installed/run. No NOOP source/formula/device command/build
+changed during this outreach. Latest continuation scope is saved privately and linked from State.
 
 ## Evidence and confidence
 
@@ -67,60 +64,56 @@ proof of improvement. Its [official API](https://developer.whoop.com/api/) offer
 account data including already-computed scores; REA cannot infer unavailable cloud-side code
 from a client binary. An API dependency would also change NOOP's offline strap-sync model.
 
-## First practical step and verification
+## Reference prerequisites for a possible investigation
 
-Obtain a genuine original WHOOP Android app package for private, static inspection. Record its
-source, package ID, version, SHA-256 and signing identity; a download-page claim alone is not
-verification. A package may include split APKs, so record which files are present and missing.
+A genuine original Android package and private static inspection would need source, package ID, version,
+SHA-256/signing identity and split-file coverage verified; a download-page claim alone is insufficient.
 The 9 Oct filename search found no WHOOP-named APK/IPA in this checkout, Downloads or the
 handbook cache. Public APKMirror listings are an acquisition lead, not a file already obtained
 or verified. No credentials or health export are needed for static inspection.
 
-Check scoped REA/JDK/JADX prerequisites and actual package/provider capabilities before running
-analysis. Keep app files and recovered material in ignored/private cache storage, outside NOOP
-source and public handbook commits. Read the app without launching it, touching a strap or
-signing in. Begin by mapping connection/sync and data-to-score paths, then examine the other
-areas above; report unknown or server-only parts plainly. A small known-source fixture is an
-optional tool check, not a replacement for studying the original app.
+Scoped REA/JDK/JADX and actual provider capabilities would need checking. Any future materials must stay
+outside NOOP source/public handbook, with independently verified findings and server-only unknowns stated.
+These are reference prerequisites, not a next action under the current outreach scope.
 
 Each finding must point to its app/version evidence and be checked independently where possible.
 Before a NOOP change, define the benefit and its test, preserve upstream's clean-room/scope rules,
 and keep Swift/Kotlin parity. UI observation can suggest behaviour; decompiled code is not a
 ready-made implementation to paste into NOOP. Better health estimates still need independent
-measurements. This is a research plan and corrected outreach, not completed original-app analysis.
+measurements. No original-app analysis has been completed; current questions seek community advice and voluntary help.
 
 ## Outreach and recovery
 
-Utku authorized one NOOP GitHub topic as well as the existing REA question, and instructed us to assume
-he posted/sent the selected Reddit/Discord messages. Their external URLs and exact sent text are unverified.
-No duplicate posting or account-login request is needed.
+The owner clarified on 10 Oct that he had not sent the Reddit/Discord messages and authorized the agent to
+publish through his signed-in browser. The old assumed-sent record is superseded. After further wording
+instructions, all five places now say he does not know REA/coding much, ask whether it could improve NOOP
+and invite experienced people to help. No owner commitment to perform analysis and no personal health data.
 
-[REA Q&A #1343](https://github.com/morluto/rea/discussions/1343), **Can REA help us study the original WHOOP
-app and improve NOOP?**, now links to [NOOP proposal #2752](https://github.com/ryanbr/noop/issues/2752),
-**Use REA to study the original WHOOP app and find NOOP improvements**. The proposal links back to REA.
-Both bodies/titles/authors/crosslinks independently read back; zero replies at closing. NOOP Discussions are
-disabled, so one clearly identified research-proposal issue was used. No third GitHub cross-post is useful now.
-Creation requested enhancement; the returned issue has no label, which does not prevent the proposal being read.
+Existing [NOOP #2752](https://github.com/ryanbr/noop/issues/2752), **Could someone use REA to help improve
+NOOP?**, and [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343), **Could REA help improve NOOP
+by studying the original WHOOP app?**, were edited in place and independently read back exactly, with mutual
+links. Both remain without replies at the current check. NOOP Discussions disabled, so one proposal issue was
+used; no new/duplicate GitHub topic needed.
 
-| Selected place | Why this one | Status |
+| Place | Why | Verified message |
 |---|---|---|
-| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP official links; directly relevant users/contributors. Public rules prohibit spam/excessive promotion. | Owner-instructed assumption: posted. External URL/text unverified. |
-| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | Official REA invite; practical analysis advice. Public invite metadata confirms server and `#general`. | Owner-instructed assumption: sent. Member-only rules/channels and message URL/text unverified. |
-| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | Official NOOP invite; existing work and user priorities. Public metadata confirms server and `#general`. | Owner-instructed assumption: sent. Member-only rules/channels and message URL/text unverified. |
+| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current official NOOP community; users can name useful improvements. Civility/no-spam rules read. | [Published post](https://www.reddit.com/r/NoopBand/comments/1x2043f/could_studying_the_original_whoop_app_with_rea/) |
+| [NOOP Discord](https://discord.com/invite/wKgyqVdjrP) | Existing developers; `#dev-talk` is more appropriate than `#general` for this question. Rules read. | [Sent message](https://discord.com/channels/1523991899336216696/1524343656075628654/1558258467045646459) |
+| [REA Discord](https://discord.gg/GkcryMnJDM) | Experienced REA users; `#general` explicitly invites questions/help. Rules read. | [Sent message](https://discord.com/channels/1556595354999332884/1556595356199030809/1558260192364204194) |
 
-No official REA subreddit was found in the [current official project links](https://github.com/morluto/rea)
-and web search. Its linked community is Discord plus GitHub; this does not establish that no unofficial subreddit
-exists. REA's own community is the best first audience for tool advice; NOOP's own community for app priorities.
-The old r/NOOPApp is not the current upstream-linked destination; broader wearable/reversing communities remain
-possible later venues for concrete findings, not a reason for mass crossposting this proposal.
+One post/message per community, verified as owner account and exact final text. Reddit's rich editor did not
+persist its first edit; saved Markdown edit and final page readback proved the correction. NOOP's final edit
+was replaced with normal keyboard selection/paste after a DOM fill appended old text; exact saved readback
+proves only the final wording remains. Stale Discord GitHub previews were suppressed; links remain clickable.
+REA joined using the existing account's in-app Join Server UI, English role only; optional research roles skipped.
+No new account, credentials, private file upload or software installation. Temporary anonymous invite tab closed;
+original Discord/GitHub tabs retained, published Reddit tab marked as a deliverable.
 
-Three updated copyable texts include both GitHub links in ignored `private/rea-2026-10-09/community-drafts.md`;
-`community-link-update.md` is a short addendum for an existing post. `posting-status.json` explicitly distinguishes
-verified GitHub publication from owner-assumed Reddit/Discord publication. The earlier account/login limitations
-are historical; they do not block closure. Temporary sign-in tabs closed earlier, user GitHub tab retained.
+No official REA subreddit was found in its current official community links/search. Discord and GitHub are its
+linked communities; this does not prove no unofficial subreddit exists. No wider mass crossposting.
 
-Local pinned source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
-Private `rea-2026-10-09/` holds community metadata, exact text/readbacks, publication recovery notes and current
-PR/release/source checks. Public audit can be recovered from handbook; private records depend on this Mac.
-Seven own PRs retain exact heads/full successful rosters and no new unanswered feedback. #2724 has an unchanged
-merge conflict; six others mergeable. Original WHOOP analysis remains unstarted; Start recovers and waits.
+Current ignored `private/rea-2026-10-09/posting-status.json` and `posting-2026-10-10/` own exact bodies,
+URLs/authors/screenshots, publication/correction readbacks and the latest continuation boundary. Read those
+before any proposed REA-related execution. Public technical evidence is in this audit; private scope/evidence
+depend on this Mac. Seven own PRs unchanged/full green/no new feedback at 10 Oct check; #2724's existing merge
+conflict remains, six others mergeable. No app implementation/rebuild/release or running analysis job.

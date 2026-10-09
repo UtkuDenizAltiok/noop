@@ -103,12 +103,11 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
-**Original WHOOP app research with REA (Utku's clarified request, 9 Oct).**
-[Assessment and plan](audits/rea-whoop-2026-10-09/README.md) cover connection/sync, data and calculations,
-sleep/workouts, screens, background work and battery. The original app is the target; the earlier packet-only
-and NOOP-fixture-first focus was too narrow. No original app inspected yet and no improvement demonstrated.
-Acquisition/setup/outreach status live in State. Choose individual NOOP changes only after evidence and tests;
-retain the app's clean-room, offline and parity requirements.
+**REA feasibility and voluntary community help (latest scope, 10 Oct).**
+[Assessment and published questions](audits/rea-whoop-2026-10-09/README.md) cover syncing, sleep/workouts,
+calculations, screens and battery use. Await community advice/prior work; no original app inspected or benefit
+from REA demonstrated. Earlier acquisition/setup notes are reference only. Read the latest private continuation
+boundary linked from State before proposing execution; outreach does not authorize an implementation.
 
 1. **A score reviewed against the literature, one per session** — recovery, strain, HRV (RMSSD windowing, artefact
    rejection), resting HR, respiration, SpO2. Read `StrandAnalytics` for it, its tests and open issues, compare with

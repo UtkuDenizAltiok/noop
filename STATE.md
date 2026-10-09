@@ -1,32 +1,31 @@
 # State
 
-Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **10 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session closed: outreach and phone acceptance complete, 9 Oct
+## Now — community questions published and verified, 10 Oct
 
-- [x] **Authorized GitHub follow-up complete.** Published one original-WHOOP-app research proposal,
-  [NOOP #2752](https://github.com/ryanbr/noop/issues/2752), and added its link to existing
-  [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343). Both titles/bodies/authors and mutual
-  links independently read back; zero comments on either at closing. NOOP Discussions are disabled, so this
-  uses a clearly identified proposal issue; creation requested enhancement but the returned issue has no label.
-  No other GitHub topic opened. Private `rea-2026-10-09/crosslink-verification.json` owns posting proof.
-  [REA audit](audits/rea-whoop-2026-10-09/README.md) owns tool evidence and the whole-app scope.
-- [x] **Community messages organized; assumed sent by owner.** Utku explicitly instructs us to assume his
-  Reddit/Discord messages were posted/sent. Their external URLs and actual text are unverified; do not treat
-  the updated drafts as verified published text, send duplicates or ask for login. Selected
-  [r/NoopBand](https://www.reddit.com/r/NoopBand/),
-  [REA Discord](https://discord.com/invite/GkcryMnJDM) and
-  [Noop Community Discord](https://discord.com/invite/wKgyqVdjrP). Official invites lead to `#general`;
-  more specific member-only channels/rules unobserved. Three simple drafts now include both GitHub links in
-  `private/rea-2026-10-09/community-drafts.md`; a short addendum is in `community-link-update.md`.
-  No official REA subreddit was found in its current official links/web search; this does not prove none exists.
-- [ ] **Queued, not started — original WHOOP app analysis.** No original WHOOP APK/IPA acquired/inspected;
-  REA not installed/executed. Target Android package `com.whoop.android`, verified against official Play listing.
-  APKMirror is an acquisition lead only, not verified source/signature. A later Deep search/task should obtain
-  a genuine package privately, record source/version/hash/signer/split coverage, check scoped REA/JDK/JADX
-  prerequisites, then inspect connection/sync/data paths before sleep/workouts, local/server calculations,
-  screens and battery. No score improvement demonstrated; no strap write/sign-in/health export needed for
-  initial static work. Preserve clean-room/offline/parity boundaries and independently validate any finding.
+**Current scope:** plain feasibility questions and an invitation for experienced community members to help
+NOOP. The posts say the owner does not know REA/coding much; no personal commitment to perform an analysis.
+Before planning any REA-related continuation, read ignored `private/rea-2026-10-09/posting-status.json` and
+`posting-2026-10-10/journal.json` for the latest execution boundary. Outreach is not implementation authority.
+
+- [x] **Both existing GitHub topics updated and verified.** [NOOP #2752](https://github.com/ryanbr/noop/issues/2752)
+  and [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) now use the requested simple newcomer
+  wording, ask whether REA could help and encourage experienced people to investigate. Both bodies/authors/
+  mutual links independently read back; no replies at the current check. No duplicate GitHub topic.
+- [x] **Reddit and Discord actually published by the agent, 10 Oct.** The prior assumption that the owner sent
+  messages is superseded by his correction and the agent's verified publication. One question in r/NoopBand,
+  one in NOOP `#dev-talk`, one in REA `#general`, all linking both GitHub topics. Rules read; REA membership
+  completed through the existing signed-in Discord session, English role only, optional research roles skipped.
+  Initial Reddit/NOOP messages were edited in place after owner wording/scope corrections; no duplicate post.
+  Outdated Discord link previews suppressed. Exact final text/author/URL and screenshots retained privately in
+  `private/rea-2026-10-09/posting-2026-10-10/`; `publication-verification.json` proves all five current texts.
+  [REA audit](audits/rea-whoop-2026-10-09/README.md#outreach-and-recovery) owns the community message links.
+  No personal strap log or measurements posted; no original-app inspection/tool execution/app code change.
+- [ ] **Deferred — original WHOOP app analysis.** No WHOOP APK/IPA acquired/inspected, REA not installed/run,
+  no score/efficiency improvement claimed from REA. Current work is asking the community what's possible and
+  inviting experienced help. Earlier capability/prerequisite notes are reference material, not a running task.
+  Check the private continuation boundary above before interpreting any later general improvement prompt.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
   are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
   storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
@@ -57,12 +56,13 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 - [x] **Existing four-merge refresh completed:** #2742/#2738/#2737/#2729 exact merge-series proof, source retirement,
   eae23433 main mirror and this verified combined delivery complete. No duplicate intermediate release.
 
-**Closing verification:** ten clean code worktrees, nine branch heads equal current fork refs; detached
+**9 Oct code/release checkpoint (retained):** ten clean code worktrees, nine branch heads equal current fork refs; detached
 local-only candidate ec329949 retained. Seven PR heads/full green rosters/comments/reviews unchanged, no unanswered
 feedback. #2724 has an unchanged upstream merge conflict; six others are mergeable. Current release 407854745/run 37924869961/ref/tag still f519e57b, five unchanged nonempty assets;
 cached IPA SHA-256 matches GitHub, ZIP CRC/plist 12.1.0 (436) valid, download HTTP200. No task job, stash or
 unfinished Git operation remains. Current upstream still 18de275e; later UI refresh remains unstarted.
-Private closing readbacks: `private/rea-2026-10-09/session-close-*.json` and final checkpoint/upload report.
+Private 9 Oct readbacks: `private/rea-2026-10-09/session-close-*.json`. Latest outreach/readbacks and 10 Oct
+source/status/upload proof are in `private/rea-2026-10-09/posting-2026-10-10/`.
 No source change/rebuild/release was opened during REA assessment or closure. A new chat on this Mac is safe;
 private logs/drafts/bundles and the parked local-only candidate remain here rather than in handbook uploads.
 
@@ -89,8 +89,8 @@ Session prompts/roles were completed/uploaded earlier; [Sessions](SESSIONS.md) i
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
-work stays parked, not delivered or discarded. The selected functional improvement was completed and delivered above. Original WHOOP app research is
-unstarted future work; Start recovers existing obligations and waits rather than launching it or wording work.
+work stays parked, not delivered or discarded. The selected functional improvement was completed and delivered above. Original WHOOP app analysis is
+unstarted/deferred; current REA scope is community questions. Start recovers existing obligations and waits.
 
 - [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
   `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
@@ -187,7 +187,7 @@ ended-banner check (after roughly 8 h, open NOOP and check one banner). Do these
 Utku's recent nights were atypical, sometimes strap-off/swiped away: infer gaps from logs rather than asking him to
 keep a diary. Compare staging changes on the same nights, never one night against another.
 
-## PRs — checked 9 Oct
+## PRs — checked 10 Oct
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
@@ -199,7 +199,7 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 | [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
 | [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
 
-All seven PRs are open with unchanged full green rosters/no new feedback at post-release readback. #2747
+All seven PRs are open with unchanged heads/full green rosters/no new feedback at 10 Oct outreach readback. #2747
 merges cleanly with latest upstream; earlier six merge proofs were at eae23433. Do not rebase speculatively.
 #2742/#2738/#2737/#2729 merged on 9 Oct, exact source proof/source retirement/verified refresh complete.
 28 PRs merged, including these four; the dated record and validation are in [History](HISTORY.md).
@@ -356,13 +356,13 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **In the new chat, read PR #2747's current head, checks and feedback before any code action.** Compare it
-with saved d84f5a14, then reconcile the other six PRs and NOOP issue #2752 / REA Q&A #1343 through normal Start.
-If new actionable maintainer feedback exists, complete that existing obligation once with required verification.
-If none exists, report readiness and wait for Utku's next prompt. Basic phone acceptance is complete; do not
-repeat installation/log requests/checks/releases, acquire an APK or install REA just to fill Start.
+with saved d84f5a14, then reconcile the other six PRs and the five outreach links in the REA audit through normal
+Start. Read `private/rea-2026-10-09/posting-status.json` and `posting-2026-10-10/journal.json` for the latest scope.
+If new actionable maintainer feedback exists, finish that existing obligation once with required verification.
+If none exists, report readiness and wait for the owner's next prompt. Community answers are pending external
+input; these posts do not promise an owner-led investigation. Do not repost or repeat phone acceptance/release.
 
-Original WHOOP app research awaits a later Deep search/task after Start. First research step: obtain and verify
-its original Android package, then scoped tooling and connection/sync/data inspection. Community messages are
-assumed sent by owner, URLs/text unverified; no duplicate posting or login request. Preserve parked wording,
-science/data requirements, #2724's unchanged merge-conflict state and local-only candidate. No NOOP job remains
-to wait for or restart. Fresh chat is safe on this Mac; private logs/drafts/cache/bundles depend on this Mac.
+Original WHOOP app analysis is deferred, no job exists for it. Earlier acquisition/setup notes are reference
+material. Preserve parked wording/science/data requirements, #2724's unchanged merge conflict and the local-only
+candidate. No NOOP job remains to wait for or restart. Fresh chat is safe on this Mac; private scope/evidence,
+logs/drafts/cache/bundles depend on this Mac. No automatic watcher or new task was created.
