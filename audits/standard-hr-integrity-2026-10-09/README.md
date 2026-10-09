@@ -114,3 +114,15 @@ Managed staging worktree archived/read back, temporary branch retired; source re
 needed ignored evidence in cache. All task drivers finished. Later upstream 18de275e only changes Today UI in
 five unrelated files: no repair-source overlap, repair merges cleanly, not included in this delivered base eae23433.
 It was recorded without starting a new rebase/improvement/release. [State](../../STATE.md) owns recovery/next action.
+
+## Phone acceptance, 9 Oct follow-up
+
+Supplied private strap log observes NOOP 12.1.0 (436), consistent with the delivered testing build. Latest
+app run passes basic real-WHOOP live HR/R-R collection, persistence and history offload acceptance. No logged
+current phone disconnect/pause, store retry/failure or timeout in that run. Older app runs/strap-console events
+were separated. Raw log and detailed assessment remain ignored/private; no personal measurements uploaded.
+
+The header does not cryptographically identify the source commit. Range-rejection counters do not count the
+completion predicate's early returns, so incomplete-packet frequency/gate exercise on hardware is unmeasured.
+Software/oracle/mutation proof owns that behavior. No accuracy, rendered-UI or current-build energy claim.
+Basic acceptance complete; no further installation, short-log test or full export is needed. State owns handover.

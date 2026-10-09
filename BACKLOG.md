@@ -20,7 +20,7 @@ beat times cannot mean blindly using row `ts`. Validate original/rejected interv
 clock splices, missing blocks and coarse timestamps against known varying signals before choosing the estimator.
 No physiological accuracy claim without independent truth. Standard-HR truncated fields were selected for the
 [current bounded repair](audits/standard-hr-integrity-2026-10-09/README.md); implementation/local proof are saved,
-required software verification/PR/testing delivery are complete; real-WHOOP acceptance is pending in State. Optical/ratio descriptions remain a separate low-priority candidate.
+required software verification/PR/testing delivery and basic real-WHOOP acceptance are complete in State. Optical/ratio descriptions remain a separate low-priority candidate.
 The [buffer-reuse assessment](audits/hrv-clean-buffer-2026-10-08/README.md) confirms that the original
 Apple's pure parser, Android's pure parser and the WHOOP client's inline parser all skip declared energy bytes
 without checking completeness and accept a final half R-R word. The Bluetooth SIG HRS/Profile require preserving

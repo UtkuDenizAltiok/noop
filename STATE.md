@@ -2,30 +2,31 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — session closed, 9 Oct; phone acceptance and external review pending
+## Now — session closed: outreach and phone acceptance complete, 9 Oct
 
-- [x] **REA scope and GitHub question corrected, 9 Oct.** Utku means studying the original WHOOP app
-  across connection/sync, data/calculations, sleep/workouts, UI, performance and battery. The earlier packet-only
-  focus was too narrow. [Audit](audits/rea-whoop-2026-10-09/README.md) owns tool evidence and the wider plan.
-  Existing [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) edited once to
-  `Can REA help us study the original WHOOP app and improve NOOP?`; simpler body/title/author/category verified
-  by independent API readback. No duplicate topic; old and corrected readbacks retained privately.
-- [ ] **Queued, not started — original WHOOP app analysis.** No WHOOP-named APK/IPA found in this checkout,
-  Downloads or handbook cache; REA not installed/executed. Target original Android package `com.whoop.android`,
-  verified against official Play listing. Public APKMirror listings are an acquisition lead only; no package
-  downloaded or signer/digest verified. Obtain a genuine copy for private static inspection, record source/version/
-  hash/signing identity/split coverage and use scoped REA/JDK/JADX tooling. Start with connection/sync and data
-  paths, then examine the wider areas above. No strap writes, sign-in or health export required for static work.
-  Preserve upstream's clean-room/scope rules; any NOOP improvement needs its own evidence/parity/testing.
-- [x] **Best community destinations and posts prepared.** Selected [r/NoopBand](https://www.reddit.com/r/NoopBand/),
-  [REA Discord](https://discord.com/invite/GkcryMnJDM) and [Noop Community Discord](https://discord.com/invite/wKgyqVdjrP),
-  based on official project links and verified public invite metadata. Invite channels are `#general`; server
-  rules/more specific channels require membership access. Three plain copyable drafts and evidence saved in
-  ignored `private/rea-2026-10-09/community-drafts.md` / `community-destinations.json`.
-- [ ] **User-deferred publication — Utku will post later himself.** Reddit/Discord were not posted. Earlier
-  account-login limits are recorded, but are no longer an input the agent should request. Do not keep seeking
-  login or send the drafts unless Utku later asks for agent publication. Temporary sign-in tabs closed; original
-  user GitHub tab retained. GitHub #1343 is already published/corrected, zero replies at closing readback.
+- [x] **Authorized GitHub follow-up complete.** Published one original-WHOOP-app research proposal,
+  [NOOP #2752](https://github.com/ryanbr/noop/issues/2752), and added its link to existing
+  [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343). Both titles/bodies/authors and mutual
+  links independently read back; zero comments on either at closing. NOOP Discussions are disabled, so this
+  uses a clearly identified proposal issue; creation requested enhancement but the returned issue has no label.
+  No other GitHub topic opened. Private `rea-2026-10-09/crosslink-verification.json` owns posting proof.
+  [REA audit](audits/rea-whoop-2026-10-09/README.md) owns tool evidence and the whole-app scope.
+- [x] **Community messages organized; assumed sent by owner.** Utku explicitly instructs us to assume his
+  Reddit/Discord messages were posted/sent. Their external URLs and actual text are unverified; do not treat
+  the updated drafts as verified published text, send duplicates or ask for login. Selected
+  [r/NoopBand](https://www.reddit.com/r/NoopBand/),
+  [REA Discord](https://discord.com/invite/GkcryMnJDM) and
+  [Noop Community Discord](https://discord.com/invite/wKgyqVdjrP). Official invites lead to `#general`;
+  more specific member-only channels/rules unobserved. Three simple drafts now include both GitHub links in
+  `private/rea-2026-10-09/community-drafts.md`; a short addendum is in `community-link-update.md`.
+  No official REA subreddit was found in its current official links/web search; this does not prove none exists.
+- [ ] **Queued, not started — original WHOOP app analysis.** No original WHOOP APK/IPA acquired/inspected;
+  REA not installed/executed. Target Android package `com.whoop.android`, verified against official Play listing.
+  APKMirror is an acquisition lead only, not verified source/signature. A later Deep search/task should obtain
+  a genuine package privately, record source/version/hash/signer/split coverage, check scoped REA/JDK/JADX
+  prerequisites, then inspect connection/sync/data paths before sleep/workouts, local/server calculations,
+  screens and battery. No score improvement demonstrated; no strap write/sign-in/health export needed for
+  initial static work. Preserve clean-room/offline/parity boundaries and independently validate any finding.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
   are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
   storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
@@ -41,21 +42,24 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   Delivered build/tag **f519e57b8aa71a9fee1fa7570a21178e7a008d03**, run **37924869961**, release **407854745**:
   four build jobs passed/cleanup skipped, five assets/ref/target/tag verified; IPA HTTP200/CRC/GitHub SHA256/
   identities/widget/background capabilities retained. NOOP **12.1.0 (436)**, just update. Details in Git below.
-- [ ] **Phone acceptance — new build not yet confirmed installed.** Wear WHOOP 5.0, just update through AltStore,
-  open NOOP and allow two minutes of normal connected use; confirm live HR/current sync. Save the new-build strap
-  log: More tab → under App, Test Centre → Diagnostic Tools, Strap log → Save…; attach it for private acceptance
-  analysis. This is needed for the new BLE gate, not a repeat of the old allocation-only test. No `.noopbak`,
-  diary, forced disconnect, wipe or repeat reminder test. Hardware acceptance/fault frequency remain unproven;
-  software tests do not establish physiological accuracy. Latest confirmed installed remains ef6216f8 until answered.
+- [x] **Basic phone acceptance passed from supplied 9 Oct log.** Header observes NOOP 12.1.0 (436),
+  consistent with delivered f519e57b; it does not identify a Git commit cryptographically. Latest app run shows
+  normal live HR/R-R collection and successful persistence/history offloads, with no logged current phone
+  disconnect/pause, insert retry/failure or timeout. Four app runs were separated; older events were not
+  attributed to this build. Source and exact raw log privately preserved byte-for-byte under
+  `private/phone-acceptance-2026-10-09/`; `assessment.json` / `README.md` own counters, limits and diagnostics.
+  No repeat installation/log/export/wipe/diary needed. Incomplete-packet rejection is proved by software tests;
+  its hardware frequency, UI rendering, physiological accuracy and battery effect remain unmeasured.
 - [ ] **Pending external review — seven own PRs:** #2747/#2724/#2722/#2717/#2661/#2660/#2613. Post-release
-  readbacks show unchanged exact heads/full green rosters, no new comments/reviews to answer. Existing owner
+  readbacks show unchanged exact heads/full green rosters, no new comments/reviews to answer. #2724 remains
+  CONFLICTING (also present in the earlier snapshot); other six are MERGEABLE. No speculative rebase opened. Existing owner
   invitations stay posted once. Do not repeat replies/reviews/releases because context is missing.
 - [x] **Existing four-merge refresh completed:** #2742/#2738/#2737/#2729 exact merge-series proof, source retirement,
   eae23433 main mirror and this verified combined delivery complete. No duplicate intermediate release.
 
 **Closing verification:** ten clean code worktrees, nine branch heads equal current fork refs; detached
 local-only candidate ec329949 retained. Seven PR heads/full green rosters/comments/reviews unchanged, no unanswered
-feedback. Current release 407854745/run 37924869961/ref/tag still f519e57b, five unchanged nonempty assets;
+feedback. #2724 has an unchanged upstream merge conflict; six others are mergeable. Current release 407854745/run 37924869961/ref/tag still f519e57b, five unchanged nonempty assets;
 cached IPA SHA-256 matches GitHub, ZIP CRC/plist 12.1.0 (436) valid, download HTTP200. No task job, stash or
 unfinished Git operation remains. Current upstream still 18de275e; later UI refresh remains unstarted.
 Private closing readbacks: `private/rea-2026-10-09/session-close-*.json` and final checkpoint/upload report.
@@ -116,19 +120,20 @@ The prior wording-session closure and simulator restoration remain in History an
 the latest HRV simulator restoration is `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
 This proves logical SQLite equality and preference-byte equality after shutdown, not byte-identical WAL layout.
 Completed cancellation delivery, installation confirmations and owner invitations are in [History](HISTORY.md).
-Fork Actions restriction resolved; implementation/required verification/delivery are complete. Phone acceptance remains pending above. The unfinished wording work is paused by Utku's
-closure/priority instruction; pending scientific reference/data needs remain separate. Only the new-build acceptance above is requested; no full export/diary.
+Fork Actions restriction resolved; implementation/required verification/delivery and basic phone acceptance are
+complete. The unfinished wording work remains parked by Utku's closure/priority instruction; scientific
+reference/data needs remain separate. No phone evidence request is active.
 
 ## Phone
 
-**Newest delivered, 9 Oct — f519e57b, NOOP 12.1.0 (436):** packet integrity repair plus the proven merge refresh;
-production id/data/widget/background capabilities retained. Just update over the existing app through AltStore;
-installation and WHOOP 5.0 live acceptance unconfirmed. The short new-build log request lives in Now; no backup
-export/wipe/diary. This preventive change may look the same: it refuses an incomplete message that previously
-could still publish plausible HR/R-R data. Frequency and real-strap acceptance are unmeasured until observed.
+**Newest delivered and observed running, 9 Oct — f519e57b, NOOP 12.1.0 (436):** packet-integrity repair
+plus proven merge refresh; production identity/data/widget/background capabilities retained. Supplied log
+observes this version/build and passes basic live HR/R-R persistence/history acceptance. Header alone does not
+identify a Git commit. No further update or short acceptance log is requested. This preventive change may look
+the same: it refuses incomplete declared measurement fields before publishing data. Malformed-packet frequency,
+score accuracy and current-build energy effects remain unmeasured. Personal log/analysis stay ignored/private.
 
-
-**Latest confirmed installed update, 8 Oct — `ef6216f8`:** HRV cleaner uses a per-call neighbour
+**Previous explicitly confirmed installed update, 8 Oct — `ef6216f8`:** HRV cleaner uses a per-call neighbour
 buffer; exact math, results, coverage, freshness and screens retained. Verified release/IPA details are in Git
 below. Utku explicitly said he updated at this session's close; the instruction was **just update** through
 AltStore, keeping the existing app/data. No repeat installation, Stress cancellation test, log/export or special
@@ -164,7 +169,7 @@ The prior confirmed installed update **`c8eb1cd0`** was delivered and installati
 `com.noopapp.noop`, display name NOOP, 12.0.0 (435), widget retained; its delivery instruction was just update
 over the existing app through AltStore. No migration change/fresh start was required. Neither previous
 `e722e0c4`, `01b55ac2` nor `f60718a9` was separately confirmed installed. Same-version headers cannot identify
-testing commits; explicit user confirmations establish these installations, with `ef6216f8` now the latest.
+testing commits; explicit user confirmations establish these installations, with the newer observed 12.1.0 (436) recorded above.
 
 **Sync-stopped reminder confirmed on the phone:** the log scheduled it for about 00:31; Utku reported seeing
 it around **00:32 on 7 Oct**. The log then shows an app launch at 00:35. Do not repeat the three-hour test.
@@ -186,8 +191,8 @@ keep a diary. Compare staging changes on the same nights, never one night agains
 
 | Upstream PR | Branch / head | Evidence and next action |
 |---|---|---|
-| [#2747](https://github.com/ryanbr/noop/pull/2747) | `codex/standard-hr-integrity` / `d84f5a14` | Reject incomplete known measurement fields before effects. Full Apple/fork Android, original/mutation proofs and all 18 upstream checks/actual steps passed. Delivered f519e57b; phone acceptance pending. Await maintainer. |
-| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Await maintainer. |
+| [#2747](https://github.com/ryanbr/noop/pull/2747) | `codex/standard-hr-integrity` / `d84f5a14` | Reject incomplete known measurement fields before effects. Full Apple/fork Android, original/mutation proofs and all 18 upstream checks/actual steps passed. Delivered f519e57b; basic phone acceptance passed. Await maintainer. |
+| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Upstream merge conflict remains; no new feedback. Await maintainer. |
 | [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no unanswered maintainer review. Included in verified `01b55ac2`. Await maintainer. |
 | [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no unanswered maintainer review. Await maintainer. |
 | [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
@@ -351,13 +356,13 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **In the new chat, read PR #2747's current head, checks and feedback before any code action.** Compare it
-with saved d84f5a14, then reconcile the other six existing PRs and REA Q&A #1343 through the normal Start
-procedure. If new actionable maintainer feedback exists, complete that existing obligation once with its
-required verification. If none exists, keep new-build phone acceptance pending and report readiness; do not
-repeat checks/releases, acquire an APK, install REA or begin a new investigation just to fill the session.
+with saved d84f5a14, then reconcile the other six PRs and NOOP issue #2752 / REA Q&A #1343 through normal Start.
+If new actionable maintainer feedback exists, complete that existing obligation once with required verification.
+If none exists, report readiness and wait for Utku's next prompt. Basic phone acceptance is complete; do not
+repeat installation/log requests/checks/releases, acquire an APK or install REA just to fill Start.
 
-Original WHOOP app research is queued/unstarted: after Start, Utku can send Deep search for the wider
-REA review. Its first research step is obtaining/verifying the original Android app, then scoped tooling
-and connection/sync/data inspection before the other areas. Reddit/Discord drafts are for Utku to post
-later himself; no login request or automatic posting under Start. Preserve parked wording/science/data
-requirements and the local-only candidate. No NOOP job remains to wait for or restart.
+Original WHOOP app research awaits a later Deep search/task after Start. First research step: obtain and verify
+its original Android package, then scoped tooling and connection/sync/data inspection. Community messages are
+assumed sent by owner, URLs/text unverified; no duplicate posting or login request. Preserve parked wording,
+science/data requirements, #2724's unchanged merge-conflict state and local-only candidate. No NOOP job remains
+to wait for or restart. Fresh chat is safe on this Mac; private logs/drafts/cache/bundles depend on this Mac.

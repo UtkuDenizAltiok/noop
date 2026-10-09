@@ -91,42 +91,36 @@ measurements. This is a research plan and corrected outreach, not completed orig
 
 ## Outreach and recovery
 
-Utku first chose GitHub posting, then on 9 Oct explicitly delegated finding the best Reddit/Discord
-places and posting there. He subsequently chose to write/post later himself. Agent publication is now deferred; do not keep
-asking for login or send the drafts unless he later requests agent posting. The messages
-ask about studying the original WHOOP app broadly and building/test-checking independent NOOP
-improvements; they make no claim that the analysis or an accuracy improvement already happened.
+Utku authorized one NOOP GitHub topic as well as the existing REA question, and instructed us to assume
+he posted/sent the selected Reddit/Discord messages. Their external URLs and exact sent text are unverified.
+No duplicate posting or account-login request is needed.
 
-[REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) was published once at 20:45:16
-Istanbul time and edited after his scope clarification. Its current title is **Can REA help us
-study the original WHOOP app and improve NOOP?** Corrected title/body/author/category were
-independently read back. Zero comments at the latest check. Do not create a second GitHub topic.
+[REA Q&A #1343](https://github.com/morluto/rea/discussions/1343), **Can REA help us study the original WHOOP
+app and improve NOOP?**, now links to [NOOP proposal #2752](https://github.com/ryanbr/noop/issues/2752),
+**Use REA to study the original WHOOP app and find NOOP improvements**. The proposal links back to REA.
+Both bodies/titles/authors/crosslinks independently read back; zero replies at closing. NOOP Discussions are
+disabled, so one clearly identified research-proposal issue was used. No third GitHub cross-post is useful now.
+Creation requested enhancement; the returned issue has no label, which does not prevent the proposal being read.
 
-| Selected place | Why this one | Posting status |
+| Selected place | Why this one | Status |
 |---|---|---|
-| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP README/issue template link; directly relevant users and contributors. Public rules require civility and prohibit spam/excessive promotion. | One tailored question ready; not posted. Utku will post later himself. Public rules checked; respect the no-spam rule. |
-| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | REA's official README invite; people who know its analysis workflow. Public Discord invite metadata confirms the server and `#general` channel. | One workflow question ready; not sent. Utku will post later himself. Read rules and use a more specific help/research channel if provided. |
-| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | NOOP's official README/issue-template invite; same server linked on r/NoopBand. Public invite metadata confirms `#general`. Existing contributors can identify prior work and useful questions. | One project question ready; not sent. Utku will post later himself. Read rules and use a development/research channel if provided. |
+| [r/NoopBand](https://www.reddit.com/r/NoopBand/) | Current NOOP official links; directly relevant users/contributors. Public rules prohibit spam/excessive promotion. | Owner-instructed assumption: posted. External URL/text unverified. |
+| [REA: Reverse Engineering Community](https://discord.com/invite/GkcryMnJDM) | Official REA invite; practical analysis advice. Public invite metadata confirms server and `#general`. | Owner-instructed assumption: sent. Member-only rules/channels and message URL/text unverified. |
+| [Noop Community](https://discord.com/invite/wKgyqVdjrP) | Official NOOP invite; existing work and user priorities. Public metadata confirms server and `#general`. | Owner-instructed assumption: sent. Member-only rules/channels and message URL/text unverified. |
 
-The old r/NOOPApp community is not the current upstream-linked destination. Broad r/whoop is
-less directly useful for this early tool/project question. r/ReverseEngineering routes questions
-to its weekly thread; there are no actual WHOOP-analysis findings to publish as a standalone post.
-r/AskReverseEngineering remains a possible later technical-question venue, but REA's own community
-is the more direct first audience. This is a relevance judgment, not a claim other communities ban
-NOOP. No mass crossposting or speculative bug issue is proposed.
+No official REA subreddit was found in the [current official project links](https://github.com/morluto/rea)
+and web search. Its linked community is Discord plus GitHub; this does not establish that no unofficial subreddit
+exists. REA's own community is the best first audience for tool advice; NOOP's own community for app priorities.
+The old r/NOOPApp is not the current upstream-linked destination; broader wearable/reversing communities remain
+possible later venues for concrete findings, not a reason for mass crossposting this proposal.
 
-No relevant Reddit/Discord connector was returned by plugin discovery; the unrelated Vercel result
-was not suggested. The in-app browser is not signed in to these services. A Safari attempt was
-refused while it was in use and was left alone; no Safari posting or login is claimed. Reddit and
-REA Discord sign-in pages were initially prepared. Utku then took over posting and requested session
-closure, so those temporary tabs were closed; the original GitHub tab remains. Account access no
-longer blocks the agent's task: destination selection and copyable drafts are complete, and publication
-is user-deferred. Private `community-destinations.json` and `community-drafts.md` retain the identities,
-access evidence and text. Only the GitHub question is published so far. The final handbook records
-an unstarted original-app investigation; Start must recover and wait, not start that investigation.
+Three updated copyable texts include both GitHub links in ignored `private/rea-2026-10-09/community-drafts.md`;
+`community-link-update.md` is a short addendum for an existing post. `posting-status.json` explicitly distinguishes
+verified GitHub publication from owner-assumed Reddit/Discord publication. The earlier account/login limitations
+are historical; they do not block closure. Temporary sign-in tabs closed earlier, user GitHub tab retained.
 
-Local source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
-Ignored `private/rea-2026-10-09/` retains metadata, npm version/digest, PR snapshots, exact outreach
-text and posting readback. The source snapshot can be reacquired from its public pinned commit;
-private records are not uploaded by handbook backup. Seven existing own PRs retain their exact
-heads/full successful check rosters and no new unanswered feedback at this research boundary.
+Local pinned source: `/Users/utk/Library/Caches/noop-handbook/rea-2026-10-09/source`.
+Private `rea-2026-10-09/` holds community metadata, exact text/readbacks, publication recovery notes and current
+PR/release/source checks. Public audit can be recovered from handbook; private records depend on this Mac.
+Seven own PRs retain exact heads/full successful rosters and no new unanswered feedback. #2724 has an unchanged
+merge conflict; six others mergeable. Original WHOOP analysis remains unstarted; Start recovers and waits.
