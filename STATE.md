@@ -4,14 +4,26 @@ Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 
 ## Now — deep improvement active; merge follow-up first, 9 Oct 2026
 
-- [ ] **Active deep session.** Utku invoked Deep improvement in this prepared chat. Refresh only changed source,
-  PR and job facts; preserve parked wording and phone/data deferrals. Complete the four proven merge follow-ups,
-  assess current whole-pipeline evidence and primary sources, then choose one bounded priority with preregistered
-  completion evidence. Current upstream advanced to `eae23433` (12.1.0 beta plus ECG fixes); no new maintainer
-  comment/review requires a reply. Private journal/readbacks: `private/deep-2026-10-09/`, cache same name.
-  Next existing actions: bundle retained refs before cleanup; fast-forward fork/root main; retire proven merged
-  sources; reconstruct the remaining app stack and verify it. No duplicate testing release: if the chosen repair
-  is ready in this session, the final verified combined delivery will also complete the inherited refresh.
+- [ ] **Active bounded repair — standard-HR field integrity.** Source worktree
+  `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch `codex/standard-hr-integrity`, clean local
+  commit **`d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4`**, not pushed/published yet. [Preregistered audit](audits/standard-hr-integrity-2026-10-09/README.md).
+  One pure protocol predicate gates all three production readers before effects; existing decoder bodies,
+  WHOOP raw-ms choice, compatibility, state/collection cadence, storage and physiological formulas retained.
+  The original parser fails exactly two new methods (80 assertions, zero unexpected) in an unhosted SwiftPM
+  probe built from actual production source/test files with module imports adapted; the fixed source passes
+  all six probe tests. A broken predicate fails 4,240 assertions, zero unexpected; all three real caller-gate
+  bypasses fail their wiring assertion. Original/restored source SHA256s verified. Logs/exit/PID markers in
+  cache `deep-2026-10-09/`; private mutation reports and PR readbacks in `private/deep-2026-10-09/`.
+  Direct old/new Swift comparison: 1,771,584 cases, 1,478,185 complete-field outputs identical, 293,399 incomplete
+  layouts refused (includes previously refused short HR). Final-head/newly-refused count recording pending.
+  27 original-Swift control rows and eight independently checked header masks pinned on both platforms;
+  256 flags × 65 lengths covered. Derived parity refresh passed with one new file/function pair and no new debt.
+  Remaining: full native protocol suite, full Apple verification, announced Android negative probe/restoration,
+  final Kotlin APK/full JVM tests, exact-head upstream roster/steps, combined stack checks and verified testing
+  delivery. Real strap acceptance/malformed frequency remain unproven; request only a necessary new-build
+  live-HR/log check after delivery. No old phone/export/diary request revived.
+  No local build is running at this checkpoint; all probe/mutation jobs exited. Next local command is the
+  protocol suite, followed sequentially by `NOOP_REPO=<feature> bash dist/tools/verify.sh`; retain durable logs.
 
 **Session prompt revision completed:** Utku's 9 Oct instruction is reflected in the four canonical prompts and
 procedures in [Sessions](SESSIONS.md), with linked Rules/README and reconciled State/History. Start finishes
@@ -19,36 +31,24 @@ eligible carryover then waits; deep modes use the prepared chat; Finish complete
 Four prompts, 45 local links, fences, scope/PR/recovery requirements and unchanged Mac setup checked; report
 `private/session-prompts-2026-10-09/document-verification.json`. No app implementation or release was started.
 
-- [ ] **Existing carryover — merge follow-up for #2742/#2738/#2737/#2729.** All four merged on 9 Oct;
-  source equivalence and inclusion in upstream `9229293b` are verified. Merge commits respectively
-  `54196f03`, `88654a00`, `86e880db`, `0b729405` (the Charge series also includes `bba256fa`).
-  Reports: `private/session-prompts-2026-10-09/{pr-summary,merge-proof}.json` and individual PR readbacks.
-  Source branches/worktrees are retained clean/pushed; no cleanup, main mirroring or new testing delivery has
-  occurred in this handbook task. Finish their Workflow merge lifecycle during Start before declaring readiness:
-  recheck/reuse source proof, retire only proven merged sources, mirror main, rebuild/verify the combined stack
-  with the remaining app PRs and deliver a verified testing update. This is pending maintenance, not a blocker
-  or permission to choose a new improvement. The installed `ef6216f8` remains the last verified delivered build.
+- [ ] **Existing carryover — verified testing refresh after four merges.** #2742/#2738/#2737/#2729
+  exact merge-series trees proven; root/fork main now `eae23433`, all four merged source branches retired;
+  HRV worktree archived through the app. Seven old tips independently imported from cache
+  `deep-2026-10-09/pre-merge.bundle` and fully fsck-verified before cleanup. Remaining app PRs stay separate.
+  Testing refs remain `c13e8873`/`ef6216f8`; no new release dispatched. The final verified combined delivery
+  of this repair will also complete this refresh, avoiding a duplicate intermediate phone release.
 - [ ] **Pending external review — six own PRs:** #2724/#2722/#2717/#2661/#2660/#2613. All exact heads and
   expected green rosters remain unchanged. No new comments/reviews on any of the ten checked PRs, so no reply
   is due. API mergeability was UNKNOWN at readback; the six branches merge cleanly in the local upstream check.
   Prior owner invitations remain posted once; do not repeat them. Readbacks are in the private folder above;
   original invitations are in `private/review-requests-2026-10-08/`.
 
-**Current recovery, 9 Oct:** thirteen code worktrees clean; root plus eleven source branches pushed, and the older
-parked wording candidate below remains local-only. Main/origin remain 8e94d559; upstream is now 9229293b
-(thirteen commits ahead), with synchronization pending above. Testing-stack c13e8873,
-testing-build/local+remote testing-latest ef6216f8. No running local/external task job, stash, safety tag or
-unfinished Git operation. Only the completed HRV task's temporary regression branch/worktree, combined source checkout and
-two protected old testing tags were retired after proof. The old stack/build/tag are independently recoverable
-from `~/Library/Caches/noop-handbook/hrv-clean-buffer-2026-10-08/pre-testing.bundle` and
-`pre-testing-recovered.git` (exact tips/full fsck verified). Keep these and the parked wording candidate.
-Private reports/logs/IPA/original simulator snapshots depend on this Mac; public backup does not upload them.
-Simulator's original app/data/preferences were restored and verified after shutdown; the agent made no
-physical-phone changes. The 8 Oct closure readback remains
-`private/hrv-clean-buffer-2026-10-08/session-close.json`; current PR/merge changes are recorded above.
-No new task job or release was dispatched in this handbook task. Prior job recovery is complete: cache
-`hrv-clean-buffer-2026-10-08/{full-verify,staging-ios,ship}.exit`, with `ship.log`
-ending `shipped ef6216f8`; do not restart them. A fresh chat is safe on this Mac; there is no handover blocker.
+**Current recovery, 9 Oct:** ten code worktrees: root plus seven preserved source branches clean/pushed,
+new feature above clean/local-only, parked detached wording candidate `ec329949` clean/local-only. Main/origin/
+upstream now `eae23433`; testing refs unchanged above. No stash, safety tag or unfinished Git operation. Existing
+bundles, private logs/IPA and original simulator snapshots stay on this Mac; the handbook does not upload them.
+Simulator remains restored/shut down; no physical-phone change. Old job logs are preserved; do not repeat the
+already-delivered `ef6216f8` release. Live task job IDs, heads, logs and completion criteria belong in the entry above.
 
 **Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
 his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
@@ -173,9 +173,10 @@ Before any PR action, recheck its current head, reviews and CI. Drafts/evidence 
   Reports `private/hrv-clean-buffer-2026-10-08/release-*.json`; IPA cache `hrv-clean-buffer-2026-10-08/release-ef6216f8/`.
   Installation confirmed by Utku at session close; just update was required, no wipe or new phone/data test.
 
-- `main` and `origin/main`: **`8e94d559be273ec8d74832fe5db78898be83cc11`**; both remain clean/identical.
-  `upstream/main`: **`9229293b8614973599846a5f8004768d9694026e`**, fetched 9 Oct, thirteen commits ahead.
-  Main mirroring and the merged-PR testing refresh are pending existing maintenance in Now.
+- `main`, `origin/main`, `upstream/main`: **`eae23433c2948d1df6e39e7607ec94fcf34a28b7`**,
+  fast-forwarded and mirrored 9 Oct. Includes four proven own merges, later ECG repairs and 12.1.0 beta.
+  Merged sources retired only after independent seven-tip bundle import/full fsck. Combined testing refresh
+  remains pending in Now and will accompany this session's bounded repair delivery.
 - Previous `testing-stack` before this delivery: **`6c81515138d5c3b573e2029609fcf6ff919ddfc4`** (local/remote), base `8e94d559` plus
   #2613/#2660/#2661/#2722/#2724/#2729/#2738. Combined local iOS build passed, Android **37791822785** actual
   build/unit steps passed and Swift **37791827346** all eleven jobs passed at that exact head.
@@ -299,14 +300,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Carryover for Start:** after standard recovery, recheck the four merged PRs and current refs against
-`private/session-prompts-2026-10-09/merge-proof.json`. If heads/merge commits are unchanged, reuse the verified
-source proof and finish Workflow's existing merge lifecycle (sections 5–7), beginning with mirroring clean
-main to the fetched upstream tip; preserve sources until cleanup conditions are met. Then complete the combined
-stack's required verification/testing delivery before declaring the chat ready. If source/refs changed or a
-check is unavailable, preserve branches and record the exact unresolved proof/dependency before proceeding.
-Do not repeat the original PRs, replies, HRV verification or already-delivered `ef6216f8` release.
-
-When carryover is finished or genuinely blocked, report readiness and wait for Utku's next prompt. Spectral
-units/grid/time analysis is an **unstarted candidate for Deep improvement or Deep search**, recorded in Backlog;
-it is not an instruction to begin research during Start. Keep wording parked and phone/data deferrals preserved.
+**Resume the active repair, not a new investigation.** Inspect `codex/standard-hr-integrity` and the durable
+logs/PID/exit markers under cache `deep-2026-10-09/` before restarting any job. If source matches the saved
+head/digests and no job remains running, finish the native protocol/full Apple checks, the announced Android
+negative probe with exact restoration, final Android tests and the same repair's PR/combined testing delivery.
+If a step fails, inspect its actual log/head and fix that relevant failure before claiming completion. Check
+existing PR feedback at useful boundaries and record each reply once. Preserve parked wording, private evidence
+and phone/data deferrals. Current statuses and job recovery belong in Now; do not redo completed merges or probes.
