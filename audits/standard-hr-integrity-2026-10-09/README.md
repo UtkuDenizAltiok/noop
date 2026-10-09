@@ -95,13 +95,22 @@ run **37920499670** was accepted: successful APK; **12 actual tests, exactly thr
 and nine controls passed**. Source/workflow restored to the entire feature tree and hashes verified; temporary
 branch/worktree retired. Final full Android **37921713840** passed at d84f5a14; actual APK/full JVM task executed.
 [PR #2747](https://github.com/ryanbr/noop/pull/2747) published/attached with exact head/body/eleven-file readback;
-eighteen expected checks present, final roster/steps still pending. No new release or real-strap acceptance claimed. The feature source is now pushed for verification; original
+all eighteen expected checks/seven actual workflows passed at d84f5a14. No real-strap acceptance claimed. The feature source is now pushed for verification; original
 probe, private readbacks/logs/bundles still depend on this Mac. Current recovery lives in [State](../../STATE.md).
 Reproduce source comparisons with `python3 run.py <code-worktree> <cache-directory>`.
 
-The combined local candidate f5d252c9 includes current upstream and the five open app PRs plus this repair.
+The combined local candidate f5d252c9 includes tested upstream base eae23433 and the five open app PRs plus this repair.
 All ten repair source/test files match the verified feature, and all 50 store/schema/backup sources match the
 last delivered build; derived parity metadata refreshed with 290 known findings unchanged. Local iOS build passed; combined Android **37922207424** actual APK/full JVM and Swift **37922210902**
-all eleven expected jobs/22 actual build/test steps passed. PR checks/release verification remain pending. Just update after
-delivery; no wipe is required. This repair is incomplete until required delivery is established; hardware
-acceptance and actual malformed-packet frequency remain unproven.
+all eleven expected jobs/22 actual build/test steps passed. PR checks passed. Delivered **f519e57b** via run **37924869961**, release **407854745**: four actual build jobs
+succeeded (conditional cleanup skipped), five nonempty assets/ref/target/tag independently verified. IPA HTTP200,
+ZIP CRC/GitHub SHA256, production identity **NOOP 12.1.0 (436)**, widget/watch/background capabilities checked.
+SHA256 `9538ceb78d6cab0d13b40b9a5742d3a3797a2233df31795b76e65e5d21bbe894`, 21,960,388 bytes. Only ten
+template-upload workflow lines differ from verified stack; three-way preflight/tree equal. Just update, no wipe.
+Source/verification/PR/testing delivery complete; installation/hardware acceptance and malformed-packet frequency
+remain unproven. Request a short normal connected-use live-HR/log check on the new build, not a full export.
+
+Managed staging worktree archived/read back, temporary branch retired; source remains on fork stack/build and
+needed ignored evidence in cache. All task drivers finished. Later upstream 18de275e only changes Today UI in
+five unrelated files: no repair-source overlap, repair merges cleanly, not included in this delivered base eae23433.
+It was recorded without starting a new rebase/improvement/release. [State](../../STATE.md) owns recovery/next action.
