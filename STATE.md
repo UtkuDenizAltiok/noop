@@ -2,8 +2,17 @@
 
 Updated **9 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — delivered; phone acceptance and maintainer review pending, 9 Oct 2026
+## Now — REA assessed/GitHub posted; phone and external follow-up pending, 9 Oct 2026
 
+- [x] **REA assessment and GitHub outreach complete, 9 Oct.** [Audit](audits/rea-whoop-2026-10-09/README.md)
+  owns pinned source/version evidence, clean-room boundary and proposed readiness pilot. REA may help protocol-fact
+  investigation; no WHOOP adapter or demonstrated accuracy gain, and no REA execution/install or app change.
+  User explicitly authorized GitHub posting; [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343)
+  published once as UtkuDenizAltiok. Exact API/body/title/author/category and public visibility read back.
+- [ ] **REA outreach follow-up — external input pending.** Zero GitHub comments at readback; Utku will name
+  Reddit and Discord destinations. Neither posted. Exact drafts/status/readbacks/metadata/PR evidence in ignored
+  `private/rea-2026-10-09/`; clean pinned source in cache `rea-2026-10-09/source`. No running task job.
+  Do not duplicate #1343 or claim tool/WHOOP trial complete. A pilot is a candidate awaiting a task, not Start work.
 - [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
   are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
   storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
@@ -322,11 +331,11 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Receive the new-build phone acceptance, then handle existing PR feedback.** Implementation, required source/CI
-verification and testing delivery are complete; no task job remains. Confirm whether Utku installed the linked
-f519e57b IPA through AltStore, then analyze his short WHOOP 5.0 log/normal live-HR observation privately. Establish
-current accepted notifications/collection and retain any failures; never infer installation from the same version
-header alone. If an actual regression appears, investigate this same repair with source/log evidence. If no input
-exists, keep acceptance pending, recheck seven existing PRs for actionable feedback and wait for his next prompt.
-Do not repeat completed checks/releases, select another improvement or apply the later unrelated UI commit under
-Start. Preserve parked wording, data deferrals and saved evidence; no `.noopbak`/diary/wipe request.
+**Read [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) for replies before further outreach.**
+The requested assessment and GitHub publication are complete, with exact saved readback in
+`private/rea-2026-10-09/discussion-readback.json`. If Utku supplies Reddit/Discord destinations, inspect the
+current community rules and publish the relevant saved draft once within this request, then read back its URL/text
+and record the outcome. If destinations or useful replies are absent, retain this external pending step and wait;
+do not infer a recipient, duplicate the topic, install REA or begin the proposed pilot under Start. This is outreach
+carryover; a tool/WHOOP investigation needs a specific task/deep prompt. The new-build WHOOP acceptance remains
+separately pending above, with no presumed install, duplicate release or new export request. Preserve parked work.
