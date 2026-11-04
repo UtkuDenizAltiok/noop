@@ -39,6 +39,10 @@ request an export without a defined need. Give enough explanation to understand 
   strap reliability and measured efficiency under the mandate above. Handle mandatory upstream resource/parity
   requirements only as necessary for a prioritized functional change. Preserve the already-saved Stress wording
   branch at lowest priority; its pending state lives in State, not an implied instruction to finish it next.
+- **Simple mode is the next feature (Utku, 4 Nov 2026).** He finds the app overwhelming and wants a simpler,
+  plainly explained default view with nothing removed; plan in `features/simple-mode.md`. This is product work he
+  asked for, so its required translations (the i18n CI gate) are part of it, not the low-priority language work
+  above. He asked for it to be built carefully and error-free in a later session, not rushed.
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove

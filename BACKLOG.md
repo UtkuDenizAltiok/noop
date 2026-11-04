@@ -7,6 +7,10 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 ## Priority — 9 Oct 2026
 
+**Next, chosen by Utku on 4 Nov 2026: [Simple mode](features/simple-mode.md).** A calm default view that shows
+each number once and explains it, with every feature still one tap away. Design, final copy, files and the
+verification checklist are recorded there; nothing is built yet. Build it when he says go.
+
 Language/copy/translation work is lowest priority under [Utku's latest instruction](RULES.md#settled-decisions).
 The saved, unfinished spectral wording change is parked in State; do not use it to restart language work.
 

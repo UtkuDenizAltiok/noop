@@ -1,0 +1,294 @@
+# Simple mode — plan (not started)
+
+Status: **planned 4 Nov 2026, nothing built yet.** Utku asked for the design and analysis to be recorded now and built
+in a later session "perfect and error free". Branch to create when work starts: `feat/simple-mode`, cut from
+current `upstream/main` (the fork's `main` stays an exact upstream mirror). This page is the one home for the plan;
+State/Backlog only link here.
+
+## What Utku asked for (4 Nov 2026)
+
+In his words: the app is "AI slop" with "too many things in it". He can't tell what is too much, too little, good
+or bad, so he asked for a careful analysis and a better version. He shared a WHOOP 5.0 user's feedback, summarised:
+
+- Too much information, functionality and terminology, much of it unexplained.
+- A regular user can't tell what matters or what to do with it.
+- They are NOT asking to remove advanced features. They want the important things explained and the rest
+  presented so it doesn't overwhelm first-time users: "a basic/advanced mode or better explanations for metrics".
+
+So the goal is: **same app, same numbers, nothing deleted, but a calm default view that explains itself.**
+
+## What is actually wrong (checked in code and in the simulator, 4 Nov)
+
+The problem is less "too many features" than **repetition, two names for one thing, and no explanations**.
+
+1. **The default Today repeats itself.** With default settings, Today shows HRV three times (Key Metrics tile,
+   Recovery Vitals row, Your Cards card), resting heart rate three times, breathing twice, and each of the three
+   scores twice (the big rings plus Key Metrics tiles). Sources: `KeyMetric.defaultOrder`
+   (`Strand/Data/KeyMetricPrefs.swift`), `DashboardCard.defaultSelection` (`Strand/Screens/DashboardCards.swift`:
+   stress, fitnessAge, vitality, hrv, restingHr), `recoveryVitalsSection` (`Strand/Liquid/LiquidTodayView.swift`).
+2. **Two names for one thing.** The big ring says **Charge**, the tile below says **Recovery** for the same number;
+   ring **Effort** vs tile **Strain**. A WHOOP user knows Recovery/Strain/Sleep and is never told the mapping.
+3. **One word for two things.** The readiness pill next to the greeting says **"Rest"** on a low day
+   (`readinessWord` in `LiquidTodayView.swift`) while **Rest** is also the sleep score.
+4. **Jargon labels.** "Synthesis", "Recovery Vitals", "Provenance", "Live Body Console", "Lab Book",
+   "Your Data, Fused", "Rhythm", "Intelligence". Screen subtitles are slogans instead of explanations:
+   Trends "The thread of you over time.", Explore "Every signal, one tap deep.", Compare "Overlay signals, draw
+   conclusions.", Insights "Interrogate what affects what.", Workouts "Every session, threaded together."
+5. **More has 27 entries** in 4 groups (`StrandiOS/App/RootTabView.swift`), including five overlapping "insights"
+   screens (What Moves You, Intelligence, Insights, Explore, Compare). Two different screens are both titled
+   "Insights" (`InsightsHubView`, listed as "What Moves You", and `InsightsView`, listed as "Insights").
+   Correction to what was said in chat: 27, not 28.
+6. **Beta and diagnostic things sit on the main screen.** "Start session BETA" right under the scores; a
+   "DATA SOURCES · Provenance" card at the bottom of Today; the Coach tab is shown even when no AI provider is set
+   up (it needs the user's own API key, and it is the one feature that sends data off the phone).
+7. **The explainer exists but is hard to read.** `ScoringGuideView` says Effort uses "heart-rate-reserve zones
+   (Karvonen) … (Edwards / Banister) … a logarithmic 0-100 scale". Accurate, but not for a regular user. Its copy is
+   marked "single approved source of truth, shared verbatim across macOS / iOS / Android", so leave it as the
+   technical layer and add a plain layer in front of it.
+
+Already fine, keep as is: Settings already collapses rarely used sections behind "Advanced" (`SettingsView`,
+`SettingsDisclosureGroup`); Today sections can already be reordered and hidden (`TodayLayoutPrefs`); the scoring
+guide's confidence labels (Calibrating / Building / Solid) are a good idea that just needs plain wording.
+
+Observed but NOT yet confirmed, check before acting:
+- Trends in the demo showed "CHARGE 50" at the top and "Week in review · CHARGE 41" lower on the same screen.
+  Probably two different windows (this week so far vs last 7 days), but unlabelled. If confirmed, it breaks the
+  AGENTS.md rule "two readouts of one fact must not disagree" and is its own small PR, not part of this one.
+- In the simulator demo, Today showed "—" and "No data" for Charge while Trends had data. Likely a demo-seed
+  artefact (no scored row for today). Confirm before assuming it is a real bug.
+- Existing bug found while reading: the tab-swipe gesture in `RootTabView` steps tags with `selectedTab ± 1`
+  clamped to 0…4. When Coach is off, tag 3 has no tab, so swiping from Sleep lands on a blank tab. Simple mode
+  will hide Coach more often, so this must be fixed as part of the work (step through the visible tags instead).
+
+## Upstream context (check again before starting)
+
+- [ryanbr/noop#2463](https://github.com/ryanbr/noop/issues/2463) "Proposal: an opt-in Simple view" makes the same
+  diagnosis. A community member (`andremiliano`) built an iOS prototype called "Glance" on their fork
+  (`glance-prototype` branch), opt-in, off by default, not merged as of 4 Nov. **Before writing code, check whether
+  Glance or any Simple view has landed upstream.** If it has, build on it instead of duplicating (Rules: never
+  duplicate or undo upstream work).
+- Upstream commit `18de275e` "take the workout Start back off Today" removes the big green Start workout button
+  that the fork's `main` still shows. The fork's `main` was 26 commits behind upstream on 4 Nov; start from
+  current `upstream/main`.
+
+## The design
+
+### Decisions
+
+- **One switch: Settings → "Simple mode".** On = the calm view below. Off = today's app exactly as it is now.
+  Nothing is deleted in either mode, and every feature stays reachable in Simple mode through More → All features.
+- **Default ON in the fork**, because Utku asked for a simpler app. On his phone the update changes Today and More
+  straight away; the release note must say how to get the old view back (Settings → Simple mode off). For an
+  upstream PR, propose default OFF, matching #2463.
+- **Presentation only.** No score, formula, stored value, migration or backup key changes. Every number shown comes
+  from the same code the full view uses. Swift and Kotlin analytics stay byte-identical because they are untouched.
+- **Full mode stays identical to upstream** so future upstream merges stay easy. The wording fixes (the "Rest"
+  pill, the Charge/Recovery mapping) apply in Simple mode only; they are worth proposing upstream separately.
+- **Simple mode ignores the Full-mode Today layout** (order, hidden sections, Your Cards, Key Metrics choices) and
+  does not change it. Turning Simple mode off brings the user's own layout back untouched.
+- **Platforms:** iOS first (Utku's phone), and shared files must keep the macOS app compiling. Android is a
+  separate follow-up; say so in the PR (UI parity is feature-level, analytics are untouched).
+- **Preference key:** `noop.simpleMode` (Bool), default `true`. Shared by name with Android later, like
+  `noop.coachEnabled`. Not added to the `.noopbak` whitelist in this change (that is a byte-identical contract
+  with Android; do it together with the Android twin).
+
+### Today in Simple mode
+
+Fixed order, top to bottom:
+
+1. Header: day title, profile/settings button, add button, battery button. **Hide the Customise (sliders) button**
+   in Simple mode, since the layout is fixed there.
+2. Health alert banner and active-workout card stay exactly as now (safety and an in-progress workout must never be
+   hidden).
+3. **The three scores.** Same rings. Under each label add one small grey word: Charge → "Recovery",
+   Effort → "Strain", Rest → "Sleep" (these words already exist in the catalogue: the Key Metrics tiles use
+   "Recovery" and "Strain"). Tapping a ring still opens its history. Tapping the label opens the new plain guide
+   (below) at that score instead of the technical scoring guide.
+4. **Greeting + one sentence.** The existing synthesis card with the header "SYNTHESIS" renamed to "IN SHORT".
+   The readiness pill words become Push / Maintain / **Go easy** (only "Rest" changes, to end the clash with the
+   Rest score). The confidence pill (Calibrating, etc.) stays.
+5. **"WHAT'S BEHIND YOUR CHARGE"** (the existing Recovery Vitals card, renamed). One caption line:
+   "Charge is built mostly from these overnight readings." Each row gets a small hint under its name:
+   HRV "higher is usually better", Resting heart rate "lower is usually better", Breaths per minute
+   "steady is normal". Values, colours and tap-through routes unchanged.
+6. **"TODAY'S ACTIVITY"**: two tiles, Steps and Calories, built with the existing `ktileFor(.steps)` /
+   `ktileFor(.calories)` so the values match Full mode exactly. Check that `load()` fills their values even when the
+   Key Metrics section is not shown, and render them without the "detailed" sparkline in Simple mode.
+7. Heart rate card (unchanged).
+8. Last workout card (unchanged).
+9. The user's own opt-ins, unchanged and still self-hiding when off: menstrual cycle, journal, added cards,
+   "looks like a workout?" suggestion.
+10. A small card: **"What do these numbers mean?"** that opens the plain guide.
+
+Hidden in Simple mode (all still in Full mode): Start session BETA, the Key Metrics grid, Your Cards, the Data
+Sources card. Result: every number appears once.
+
+### Tabs in Simple mode
+
+Today · Trends · Sleep · More. The **Coach tab shows only if Coach is switched on AND an AI provider is set up**
+(`AICoachEngine.isConfigured`; it is not `@Published`, so read it in `body` and accept that the tab appears on the
+next redraw after setup). When the tab is hidden, Coach stays reachable from More. Handle every route that selects
+tag 3: `router .coach` (notification tap, Today launcher) must open Coach as a sheet when its tab is hidden, never a
+blank tab; switching Simple mode on while standing on Coach moves to Today (same as the existing coachEnabled
+handling); the swipe gesture steps through visible tabs only.
+
+### More in Simple mode (12 rows instead of 27)
+
+- **YOUR BODY:** Live heart rate (`.live`), Health monitor (`.health`), Stress (`.stress`)
+- **TRAINING:** Workouts (`.workouts`), Lift Log (`.liftLog`, Utku's finished feature), Breathe (`.breathe`)
+- **TOOLS:** Alarms (`.alarms`), Coach (`.coach`, only when its tab is hidden and Coach is on)
+- **YOUR DATA:** Apple Health (`.appleHealth`), Backup & Sync (`.backupSync`)
+- **HELP:** What the numbers mean (new), Settings (`.settings`)
+- Last row, set apart: **All features** — "Everything NOOP can do, in one list". Pushes the current grouped list
+  unchanged (all 27 rows, same collapsible groups, same saved open/closed state).
+
+Implementation shape: move the current four `moreSection` groups into a reusable view so the same list renders
+both as the Full-mode More tab and as the pushed "All features" screen; add `MoreDestination.allFeatures` and
+`.plainGuide`. Also add the "What the numbers mean" row to the Full list (in the App group) so the guide exists in
+both modes. Check that Devices stays reachable in Simple mode (today: Live → Manage devices, and the router sheet).
+
+### Settings
+
+A new card at the very top, before Profile: title **"Simple mode"**, a switch, and the blurb: "Shows the essentials
+and explains them. Turn it off to see every feature and arrange Today yourself. Nothing is deleted either way."
+Everything else in Settings stays as it is.
+
+### The plain guide: "What the numbers mean"
+
+New shared view `Strand/Screens/PlainGuideView.swift` (iOS + macOS). Works as a pushed screen (from More and
+Today) and as a sheet with a close button (from the score labels), optionally opening at one entry. Each entry is a
+collapsed row (title + one line) that expands to a short paragraph. Score entries end with a "How NOOP calculates
+it" button that opens the existing `ScoringGuideView` at that score, so the technical text keeps its single home.
+
+Screen title "What the numbers mean"; subtitle "Plain explanations of every score and reading. Tap one to learn
+more." Section headers: YOUR THREE SCORES · WHAT'S BEHIND YOUR CHARGE · SLEEP · OTHER NUMBERS · GOOD TO KNOW.
+"Also called %@" line where an entry has a familiar other name.
+
+Final English copy (each fact was checked against the code on 4 Nov; re-check the marked ones when building):
+
+**YOUR THREE SCORES**
+
+- **Charge** — also called Recovery. *How ready your body is today.*
+  A score from 0 to 100, worked out while you sleep. It mostly compares your heart-rate variability and resting
+  heart rate with your own normal, and also looks at your sleep, breathing and skin temperature. Higher means more
+  ready. On a low day, take it easier and get to bed earlier.
+- **Effort** — also called Strain. *How hard your heart has worked today.*
+  Counts workouts and everyday activity, from 0 to 100 (or 0 to 21 if you chose that scale in Settings). It only
+  goes up during the day and starts fresh each day. There's no perfect number: aim higher when your Charge is
+  good, and lower when it's low. A score near 100 is rare.
+- **Rest** — also called Sleep score. *How well you slept last night.*
+  A score from 0 to 100. The biggest part is how long you slept compared with how much you needed. It also looks at
+  how much of your time in bed was sleep, how much was deep and REM sleep, and how regular your bed and wake times
+  are. Higher is better.
+
+**WHAT'S BEHIND YOUR CHARGE**
+
+- **Heart-rate variability (HRV)** — *Tiny changes in the time between heartbeats. Higher than your normal is good.*
+  Measured in milliseconds (ms) while you sleep. Everyone's normal is different, so only compare it with your own.
+  Alcohol, late meals, stress, illness and hard training usually push it down for a night or two.
+- **Resting heart rate** — *Your heart rate at rest, measured while you sleep. Lower than your normal is good.*
+  Measured in beats per minute (bpm). A few beats above your normal can come from a hard day, alcohol, heat, stress
+  or an illness starting. It usually drops slowly as your fitness improves.
+- **Breathing rate** — also called Respiratory rate. *Breaths per minute while you sleep. It barely changes from
+  night to night.* Most adults breathe about 12 to 20 times a minute at rest. Because it is so steady, a clear jump
+  above your normal is worth noticing: it can be an early sign of illness.
+- **Skin temperature** — *How warm your skin is overnight.*
+  NOOP shows it either as a temperature or as the change from your own normal. Small changes are normal. A rise
+  that lasts a few nights can come with illness, heat or a hormonal cycle.
+- **Blood oxygen (SpO₂)** — *How much oxygen your blood carries, estimated while you sleep.*
+  Most healthy people read 95% or higher. Not every strap can measure it. A reading marked "strap estimate
+  (unverified)" is a rough guide only. This is not a medical test.
+
+**SLEEP**
+
+- **Sleep need and sleep debt** — *How much sleep you need, and how far behind you are.*
+  Sleep need is the amount NOOP aims for you each night. Sleep debt is sleep you've missed recently compared with
+  that need. Paying it back takes a few longer or earlier nights, not one huge sleep.
+  *(Verify when building: how sleep need is personalised; the default is 8 h, `Rest.defaultNeedHours`.)*
+- **Sleep stages** — *Light, deep and REM sleep, plus short wake-ups.*
+  Light sleep fills most of the night. Deep sleep is the most physically restoring and comes mostly early in the
+  night. REM is dreaming sleep and comes more toward morning. Short wake-ups are normal. The strap estimates stages
+  from heart rate and movement, so treat them as a guide, not a lab result.
+
+**OTHER NUMBERS**
+
+- **Stress** — *How "switched on" your body looked during the day, from 0 to 3.*
+  Based on your heart rate and heart-rate variability while you're awake. 0 is calm and 3 is very high. Exercise
+  raises your heart rate too, so NOOP tries to leave workout time out.
+  *(Verify: the activity-masking in `StressDayCurve` / `DaytimeStress`.)*
+- **Heart-rate zones** — *Five bands of effort, from easy (zone 1) to all-out (zone 5).*
+  They're worked out from your profile, such as your age. Time in higher zones adds more to your Effort.
+- **Estimates** — *Steps, calories, fitness age, VO₂ max and Vitality are helpful guesses, not exact measurements.*
+  Steps and calories come from your strap or, if connected, from Apple Health. Fitness age, VO₂ max and Vitality
+  are long-term fitness estimates that change slowly over weeks. Watch the direction, not the exact number.
+
+**GOOD TO KNOW**
+
+- **Calibrating, Building, Solid** — *How sure NOOP is about a score.*
+  Calibrating means NOOP is still learning your normal, which takes about 4 nights of wear. Building means there's
+  enough to show a score, but it will get more accurate. Solid means everything it needs is there. No data means
+  there was nothing to score yet. If NOOP can't work out a score honestly, it shows a dash instead of guessing.
+- **Why NOOP doesn't match the WHOOP app** — *Same ideas, different maths.*
+  NOOP works everything out on your phone using published science. WHOOP's own formulas are private, so NOOP's
+  scores usually move the same way as WHOOP's but won't match exactly. Both are estimates from a wrist strap, not
+  medical advice.
+
+## Files expected to change
+
+| File | Change |
+|---|---|
+| `Strand/Data/SimpleModePrefs.swift` (new) | Key, default, the Simple Today section list, pure helpers for visible tabs and swipe stepping (testable). |
+| `Strand/Screens/PlainGuideView.swift` (new) | The guide: entry model, sections, expand/collapse, sheet + pushed forms, link to `ScoringGuideView`. |
+| `StrandiOS/App/RootTabView.swift` | Simple tabs, Coach routing when its tab is hidden, swipe fix, Simple More, All features, guide row. |
+| `Strand/Liquid/LiquidTodayView.swift` | Simple section list, hero captions, label → plain guide, IN SHORT, Go easy, renamed vitals + hints, activity row, guide card, hide Customise. |
+| `Strand/App/TabRoute.swift` | `case plainGuide` and its destination (check every exhaustive switch, macOS `RootView` too). |
+| `Strand/Screens/SettingsView.swift` | Simple mode card at the top. |
+| `Strand/Resources/Localizable.xcstrings` | Every new string with real translations for all nine shipped locales (see below). |
+| `StrandTests/…` (new tests) | Default on; Simple Today list includes hero and excludes liveSession/keyMetrics/yourCards; Full layout prefs untouched; visible tabs with Coach on/off/configured; swipe never lands on a missing tag; guide entries have unique ids and non-empty text. |
+
+Do not touch: analytics, storage, BLE, the `.noopbak` whitelist, `ScoringGuideView` copy, Android (separate PR).
+
+## Requirements that make or break the build (learned 4 Nov)
+
+- **Translations are a hard CI gate.** `Tools/i18n_audit.py --ci <base>` fails on any new string in
+  `Strand/Resources/Localizable.xcstrings` missing **de, es, fr or pt-PT**, and blocks growth of missing **it, pl,
+  ru, zh-Hans, zh-Hant**. It also counts "translations" that are just the English text. So every new string needs a
+  real translation in all nine locales. Expect about 75 new strings; add them with a small script that edits the
+  JSON catalogue, then run the gate. This is required CI work for a feature Utku asked for, not optional language
+  work (see Rules, settled decisions).
+- **`xcodegen generate` dirties `StrandiOS/Resources/Info.plist`** (it adds the `.stalebattery` background-task id
+  that `project.yml` lists but the committed plist lacks). Restore it with `git checkout -- StrandiOS/Resources/Info.plist`
+  before committing; it is not part of this change.
+- **Doc comment lint:** insert new declarations above a neighbour's doc block, never between a doc block and its
+  declaration (`AGENTS.md`).
+- **Design tokens only:** `StrandPalette`, `StrandFont`, `NoopMetrics`, shared components; no hard-coded colours or
+  sizes.
+- **Shared files must compile for macOS too** (`LiquidTodayView`, `SettingsView`, `TabRoute`, the new guide).
+
+## Verification checklist (all must pass before delivery)
+
+1. `git fetch upstream`; re-check #2463 / Glance and upstream changes to `RootTabView`, `LiquidTodayView`,
+   `SettingsView`, `TabRoute`. Create `feat/simple-mode` from `upstream/main`.
+2. `xcodegen generate`, then build `NOOPiOS` for the simulator and `Strand` for macOS
+   (`CODE_SIGNING_ALLOWED=NO`). Restore Info.plist afterwards.
+3. `StrandTests` on macOS (`xcodebuild … -scheme Strand test`), including the new tests.
+4. `python3 Tools/i18n_audit.py --ci upstream/main`, `python3 -m unittest discover` for `Tools/` (the
+   tools-python suite reads app source and catalogues), and `Tools/doc_comment_lint.py`.
+5. Simulator walk-through in BOTH modes, light and dark, plus the largest text size: Today top to bottom, every
+   tab, More → every Simple row and All features → a few rows, the guide (pushed and as a sheet from each score
+   label), Settings switch on/off and back, Coach routes with no provider. Demo data:
+   `xcrun simctl launch "iPhone 18 Pro" com.noopapp.noop --demo-seed` (the first launch seeds; relaunch to see the
+   data). The simulator screenshot tool can show the frame from before the last tap; take a second screenshot after
+   a short wait before judging.
+6. Before/after screenshots go in the PR and in `private/`.
+7. Testing build to Utku's phone per `WORKFLOW.md` §6: "just update". Tell him exactly what he will notice and how
+   to switch back (Settings → Simple mode off).
+
+## Follow-ups (separate PRs, not part of this one)
+
+- Android twin of Simple mode (Compose `TodayScreen`, More, Settings), plus the `.noopbak` key on both platforms.
+- Rewrite the slogan subtitles into plain descriptions (list in "What is actually wrong", item 4).
+- Give the two "Insights" screens different names; consider merging What Moves You / Intelligence / Insights /
+  Explore / Compare into one "Patterns" hub in Full mode.
+- Propose the "Rest" pill wording and the Charge = Recovery mapping upstream for Full mode too.
+- Confirm or rule out the Trends 50 vs 41 observation.
