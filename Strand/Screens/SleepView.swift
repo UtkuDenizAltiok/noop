@@ -487,7 +487,7 @@ struct SleepView: View {
         case .stages:          hero(model)
         case .bodyClock:       bodyClockDial(model)
         case .nightDetail:     NightDetailCard(model: model)
-        case .sleepDebt:       SleepDebtLedgerCard(model: model)
+        case .sleepDebt:       SleepDebtLedgerCard(model: model, plain: simpleMode)
         case .stagesVsTypical: StagesVsTypicalCard(model: model)
         case .asleepDuration:  durationTrend(model)
         }
@@ -857,6 +857,16 @@ struct SleepView: View {
         return "\(start)-\(end)"
     }
 
+    /// Simple mode's stage-card subtitle: the same two figures said in words ("6h 49m in bed, asleep for 98%
+    /// of it") and the staging caveat without the jargon. An Oura night keeps its own caption, which says
+    /// the ring classified the stages itself.
+    private func plainStageSubtitle(_ night: Night, isPersisted: Bool, ouraCaption: String) -> String {
+        let base = String(localized: "\(durationText(night.timeInBed)) in bed, asleep for \(efficiencyText(night)) of it")
+        guard isPersisted else { return base }
+        let caveat = repo.activeDeviceIsOura ? ouraCaption : String(localized: "stages are estimates")
+        return base + " · " + caveat
+    }
+
     /// The stage-breakdown ChartCard for a decoded night: hypnogram when intervals
     /// reconstruct, else the proportional stage bar. Intervals are passed in so offset 0
     /// uses the memoized `model.intervals` rather than re-deriving them. (#160)
@@ -870,9 +880,11 @@ struct SleepView: View {
         let stageCaption = repo.activeDeviceIsOura
             ? String(localized: "raw on-device stages")
             : String(localized: "stages approximate (on-device)")
-        let subtitle = isPersisted
-            ? String(localized: "\(durationText(night.timeInBed)) in bed · \(efficiencyText(night)) efficiency · \(stageCaption)")
-            : String(localized: "\(durationText(night.timeInBed)) in bed · \(efficiencyText(night)) efficiency")
+        let subtitle = simpleMode
+            ? plainStageSubtitle(night, isPersisted: isPersisted, ouraCaption: stageCaption)
+            : isPersisted
+                ? String(localized: "\(durationText(night.timeInBed)) in bed · \(efficiencyText(night)) efficiency · \(stageCaption)")
+                : String(localized: "\(durationText(night.timeInBed)) in bed · \(efficiencyText(night)) efficiency")
         VStack(alignment: .leading, spacing: NoopMetrics.space2) {
             if intervals.count >= 2 {
                 // #sleep-chart-style (Settings → Appearance): Classic keeps the per-stage timeline ROWS
@@ -1020,7 +1032,14 @@ struct SleepView: View {
             // peak, so the tallest spike is full height whatever its absolute size and heights do not
             // compare between nights. The strap calibrates no absolute magnitude, so naming the scale
             // is the honest axis label rather than a number. Twin of the Kotlin `MotionStrip` label.
-            Text("Move, relative to tonight")
+            // Simple mode says the same scale rule in words: heights are relative to this night's peak.
+            Group {
+                if simpleMode {
+                    Text("How much you moved through the night. Taller means more movement; heights only compare within this night.")
+                } else {
+                    Text("Move, relative to tonight")
+                }
+            }
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
             if night.motionEpochs.count >= 2 {
@@ -1181,7 +1200,13 @@ struct SleepView: View {
         let pct = Int((coverage * 100).rounded(.down))
         return HStack(alignment: .top, spacing: 8) {
             SourceBadge("Partly recorded", tint: StrandPalette.statusWarning)
-            Text("Only \(pct)% of this night's window has stage data. The stage totals cover only that part of the night.")
+            Group {
+                if simpleMode {
+                    Text("Sleep stages were recorded for only \(pct)% of this night, so the stage times cover only that part.")
+                } else {
+                    Text("Only \(pct)% of this night's window has stage data. The stage totals cover only that part of the night.")
+                }
+            }
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -1554,7 +1579,10 @@ struct SleepView: View {
                 Text(durationText(restorative))
                     .font(StrandFont.number(26))
                     .foregroundStyle(StrandPalette.sleepREM)
-                Text("RESTORATIVE SLEEP")
+                // Simple mode names what the figure is (deep + REM) instead of the WHOOP term for it.
+                Group {
+                    if simpleMode { Text("Deep + REM sleep").textCase(.uppercase) } else { Text("RESTORATIVE SLEEP") }
+                }
                     .font(StrandFont.overline)
                     .tracking(StrandFont.overlineTracking)
                     .foregroundStyle(StrandPalette.textTertiary)

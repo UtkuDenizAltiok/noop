@@ -106,6 +106,9 @@ struct LiquidTodayView: View {
     /// shows (`ChargeBreakdownWiring`), for the row the Charge ring displays. Resolved in `load()`, only
     /// while Simple mode is on; empty while the baseline calibrates, so the card falls back to the vitals.
     @State private var cachedChargeDrivers: [ChargeDriver] = []
+    /// The same row's raw skin-temperature deviation (°C), so the plain skin-temperature row can show a
+    /// Fahrenheit reader the converted figure from the unrounded value.
+    @State private var cachedChargeSkinDevC: Double?
 
     /// Live Sessions (silent guardian) beta gate — the SAME key the Settings toggle writes. Default ON
     /// (the entry is BETA-labelled in-UI); off removes the Start-session control entirely.
@@ -732,7 +735,8 @@ struct LiquidTodayView: View {
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .charge } else { guideSection = .charge } },
                           detailRoute: .metric(HeroRingMetric.charge),
-                          caption: simpleMode ? String(localized: "Recovery") : nil)
+                          caption: simpleMode ? String(localized: "Recovery") : nil,
+                          subcaption: simpleMode ? simpleChargeCarriedDay : nil)
             // #45: the hero Effort must honour the user's Effort scale like every other Effort read-out.
             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
             // one decimal on the compressed 0–21 axis to match the app-wide `effortDisplay` convention
@@ -1207,13 +1211,17 @@ struct LiquidTodayView: View {
                     }
                     HStack(spacing: 5) {
                         Circle().fill(StrandPalette.chargeColor).frame(width: 6, height: 6)
-                        Text(chargeDisplay.stateLabel)
+                        Text(chargeStateWord)
                             .font(StrandFont.caption.weight(.bold))
                             .foregroundStyle(StrandPalette.chargeColor)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1))
+                    // Simple mode: the word explains itself on tap (the guide's entry on these labels).
+                    .contentShape(Capsule())
+                    .onTapGesture { if simpleMode { plainGuideTerm = .confidence } }
+                    .accessibilityAddTraits(simpleMode ? .isButton : [])
                 }
                 .fixedSize(horizontal: true, vertical: false)   // pills keep their natural width — no "Calibrating" wrap
             }
@@ -1245,7 +1253,7 @@ struct LiquidTodayView: View {
                         // readiness one-liner here — the same swap classic makes (`calibrationDetail ??
                         // synthesisCardDetail`), so the count the short greeting pill can't carry lands in
                         // the card and both Today screens read identically.
-                        Text(chargeDisplay.calibrationDetail ?? synthLine)
+                        Text((simpleMode ? simpleCalibrationDetail : chargeDisplay.calibrationDetail) ?? synthLine)
                             .font(StrandFont.body).foregroundStyle(StrandPalette.textPrimary)
                             .fixedSize(horizontal: false, vertical: true)
                         // The reason the count is not moving, when nights are arriving empty. Sits under
@@ -1400,7 +1408,10 @@ struct LiquidTodayView: View {
         let hrv = displayDay?.avgHrv ?? hrvDay?.avgHrv
         let rhr = (displayDay?.restingHr ?? restingHrDay?.restingHr).map(Double.init)
         let resp = displayDay?.respRateBpm ?? vitalsDay?.respRateBpm
-        let drivers = cachedChargeDrivers
+        // Same rows, points and order as the full view's Charge sheet, in everyday words (PlainChargeWording).
+        let drivers = cachedChargeDrivers.map {
+            PlainChargeWording.driver($0, skinTempDevC: cachedChargeSkinDevC, temperatureUnit: temperatureUnit)
+        }
         return card {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline) {
@@ -1427,11 +1438,12 @@ struct LiquidTodayView: View {
                     vitalRow(String(localized: "Resting heart rate"), unitText(rhr, "bpm"),
                              StrandPalette.metricRose, fracOver(rhr, 100), route: .metric("rhr"),
                              hint: String(localized: "lower is usually better"))
-                    vitalRow(String(localized: "Breaths per minute"), unitText(resp, "rpm", decimals: 1),
+                    vitalRow(String(localized: "Breaths per minute"),
+                             unitText(resp, String(localized: "breaths/min"), decimals: 1),
                              StrandPalette.accent, fracOver(resp, 24), route: .metric("resp_rate"),
                              hint: String(localized: "steady is normal"))
                 } else {
-                    Text("How last night's readings moved your Charge, compared with your own normal.")
+                    Text("How last night's readings moved your Charge, compared with your own normal. The number on the right is how many points each one added or took away.")
                         .font(StrandFont.caption)
                         .foregroundStyle(StrandPalette.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -1937,8 +1949,10 @@ struct LiquidTodayView: View {
         if simpleMode, let row = priorScored ?? day, let baselines = repo.chargeBaselines {
             cachedChargeDrivers = ChargeBreakdownWiring.breakdown(
                 baselines: baselines, row: row, sleepPerfPercent: restScore)?.drivers ?? []
+            cachedChargeSkinDevC = row.skinTempDevC
         } else {
             cachedChargeDrivers = []
+            cachedChargeSkinDevC = nil
         }
         // StressModel loops the full history to build its baseline — run it OFF the main actor so a big
         // history doesn't stutter the UI. Snapshot the inputs (value types) into the detached task.
@@ -2136,6 +2150,28 @@ struct LiquidTodayView: View {
         return labels.isEmpty ? nil : labels.joined(separator: " + ")
     }
 
+    /// Simple mode's calibration progress for the summary card: the same night count as
+    /// `ChargeDisplay.calibrationDetail`, said without "baseline". Nil unless the baseline is calibrating.
+    private var simpleCalibrationDetail: String? {
+        guard case .calibrating(let nights) = chargeDisplay else { return nil }
+        return String(localized: "Learning what's normal for you: \(nights) of \(Baselines.minNightsSeed) nights so far. Keep wearing the strap to bed and your scores fill in.")
+    }
+
+    /// Simple mode's second line under the Charge ring when it shows an earlier day's score: that day
+    /// ("Last night · 4 Nov"), which the full view computes but never shows. Nil for today's own score.
+    private var simpleChargeCarriedDay: String? {
+        if case .carried(_, let when) = chargeDisplay { return when }
+        return nil
+    }
+
+    /// The Charge-state pill's word. Simple mode says "Earlier score" for a carried score, because the
+    /// carried row can be older than last night (its date is in the ring's caption); the full view keeps
+    /// its own short word.
+    private var chargeStateWord: String {
+        if simpleMode, case .carried = chargeDisplay { return String(localized: "Earlier score") }
+        return chargeDisplay.stateLabel
+    }
+
     private var readinessWord: String? {
         switch readiness.level {
         case .primed: return String(localized: "Push")
@@ -2163,7 +2199,10 @@ struct LiquidTodayView: View {
         case .balanced: return String(localized: "You're in a good spot for training.")
         case .strained: return String(localized: "Signals are down a touch. Keep it easy today.")
         case .rundown: return String(localized: "Several recovery signals are down. Prioritise rest today.")
-        case .insufficient: return String(localized: "Still learning your baseline. A few more nights and this fills in.")
+        case .insufficient:
+            return simpleMode
+                ? String(localized: "Still learning what's normal for you. Wear the strap to bed for a few more nights and this fills in.")
+                : String(localized: "Still learning your baseline. A few more nights and this fills in.")
         }
     }
 
@@ -2437,6 +2476,8 @@ private struct HeroScoreCell: View {
     var detailRoute: TabRoute? = nil
     /// A small grey line under the label naming the score's familiar other name (Simple mode), or nil.
     var caption: String? = nil
+    /// A second grey line under the caption (Simple mode: the day an earlier score comes from), or nil.
+    var subcaption: String? = nil
 
     /// The gauge, linked when there is somewhere to go.
     ///
@@ -2491,6 +2532,12 @@ private struct HeroScoreCell: View {
                     .foregroundStyle(StrandPalette.textSecondary)
                     if let caption {
                         Text(caption)
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .lineLimit(1).minimumScaleFactor(0.7)
+                    }
+                    if let subcaption {
+                        Text(subcaption)
                             .font(StrandFont.caption)
                             .foregroundStyle(StrandPalette.textTertiary)
                             .lineLimit(1).minimumScaleFactor(0.7)
