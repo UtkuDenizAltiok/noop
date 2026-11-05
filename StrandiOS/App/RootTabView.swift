@@ -22,6 +22,13 @@ struct RootTabView: View {
     /// attached and would otherwise keep posting AI notifications for a feature the wearer switched off.
     @AppStorage("noop.coachEnabled") private var coachEnabled = true
     @AppStorage("noop.bottomBarAutoHide") private var bottomBarAutoHide = false
+    /// Simple mode (`SimpleModePrefs`): the calm Today, the short More list and, unless Coach is set up,
+    /// no Coach tab. Every screen stays reachable through More → All features.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    /// Whether an AI provider is set up, re-read by `CoachConfiguredProbe` on appear and on every tab
+    /// switch. Held here rather than observed: observing the Coach engine would redraw the whole tab shell
+    /// on every streamed reply token.
+    @State private var coachConfigured = false
 
     /// The live gym session, owned at the app root — see `LiftSessionController`.
     @EnvironmentObject private var liftSession: LiftSessionController
@@ -57,21 +64,20 @@ struct RootTabView: View {
     /// a no-op). Threaded into each tab's root via `\.scrollToTopSignal`; ScreenScaffold / LiquidTodayView
     /// scroll to their top anchor when their tab's token changes.
     @State private var scrollTop: [Int] = Array(repeating: 0, count: 5)
-    /// Which More-tab groups are expanded (S2). Insights + Body stay open at rest; Data + App collapse to
-    /// just their header until tapped. Persisted (#860 item 2): the user's open/closed choice must SURVIVE
-    /// leaving and re-entering the More tab (and relaunch), not reset to the seed every visit. Backed by an
-    /// `@AppStorage` CSV string (keyed identically to the Android `MoreSectionPrefs`), bridged to a
-    /// `Set<String>` through `MoreSectionPrefs` so the section logic below is unchanged.
-    @AppStorage(MoreSectionPrefs.storageKey) private var expandedMoreSectionsCSV = MoreSectionPrefs.defaultCSV
-    private var expandedMoreSections: Set<String> { MoreSectionPrefs.decode(expandedMoreSectionsCSV) }
-
     /// V8 liquid redesign is the default Today; the Settings toggle lets a user fall back to the classic
     /// Today if they prefer it (keyed identically to the SettingsView toggle). Default ON.
     @AppStorage("noop.liquidTodayEnabled") private var liquidTodayEnabled = true
 
-    /// The Today tab root, honouring the liquid/classic preference.
+    /// The Today tab root, honouring the liquid/classic preference. Simple mode is built on the liquid
+    /// Today, so it uses that screen whatever the classic preference says.
     @ViewBuilder private var todayTabRoot: some View {
-        if liquidTodayEnabled { LiquidTodayView() } else { TodayView() }
+        if liquidTodayEnabled || simpleMode { LiquidTodayView() } else { TodayView() }
+    }
+
+    /// Whether the Coach tab (tag 3) exists right now. See `SimpleModePrefs.showsCoachTab`.
+    private var showsCoachTab: Bool {
+        SimpleModePrefs.showsCoachTab(simpleMode: simpleMode, coachEnabled: coachEnabled,
+                                      coachConfigured: coachConfigured)
     }
 
     /// Native tab selection binding. SwiftUI sends taps on the already-selected item through the
@@ -107,6 +113,9 @@ struct RootTabView: View {
     ///
     /// Only a decisive horizontal flick switches tabs, and Today is carved out because it uses
     /// horizontal swipe to change DAYS. Both thresholds are unchanged from the original gesture.
+    ///
+    /// The step walks the VISIBLE tabs. Stepping the raw tag by one landed on tag 3 whenever the Coach tab
+    /// was absent, which no tab claims, so a swipe from Sleep showed a blank tab.
     private var tabSwipeGesture: some Gesture {
         DragGesture(minimumDistance: 24)
             .onEnded { v in
@@ -114,7 +123,9 @@ struct RootTabView: View {
                 guard selectedTab != 0 else { return }
                 let dx = v.translation.width, dy = v.translation.height
                 guard abs(dx) > 60, abs(dx) > abs(dy) * 1.6 else { return }
-                let next = min(4, max(0, selectedTab + (dx < 0 ? 1 : -1)))
+                let next = SimpleModePrefs.swipeTarget(
+                    from: selectedTab, forward: dx < 0,
+                    visible: SimpleModePrefs.visibleTabTags(showsCoach: showsCoachTab))
                 if next != selectedTab {
                     withAnimation(.timingCurve(0.22, 1, 0.36, 1, duration: 0.24)) { selectedTab = next }
                 }
@@ -135,18 +146,21 @@ struct RootTabView: View {
             // Coach is absent: `tabPaths` and `scrollTop` are indexed by tag, and More stays tag 4 in both
             // shapes, so a wearer's More tab keeps its identity, its navigation path and its scroll
             // position across a flip instead of inheriting Coach's.
-            if coachEnabled {
+            // Simple mode also hides it until a provider is set up (`SimpleModePrefs.showsCoachTab`).
+            if showsCoachTab {
                 tab(CoachView(), "Coach", "sparkles", path: $tabPaths[3], scrollSignal: scrollTop[3]).tag(3)
             }
             moreTab(path: $tabPaths[4], scrollSignal: scrollTop[4]).tag(4)
         }
         .tint(StrandPalette.accent)
-        // Switching Coach off while STANDING on it leaves `selectedTab` pointing at a tag no tab claims
-        // any more, which renders as an empty tab rather than as an error. Send that wearer to Today, and
-        // only in that case, so a flip made from anywhere else does not move them.
-        .onChangeCompat(of: coachEnabled) { enabled in
-            if !enabled && selectedTab == 3 { selectedTab = 0 }
+        // Removing the Coach tab while STANDING on it (Coach switched off, or Simple mode switched on with no
+        // provider) leaves `selectedTab` pointing at a tag no tab claims any more, which renders as an empty
+        // tab rather than as an error. Send that wearer to Today, and only in that case, so a flip made from
+        // anywhere else does not move them.
+        .onChangeCompat(of: showsCoachTab) { shown in
+            if !shown && selectedTab == 3 { selectedTab = 0 }
         }
+        .background(CoachConfiguredProbe(trigger: selectedTab, configured: $coachConfigured))
         // #1841: the same "Hide bar when scrolling" preference Android drives its own bar with. Here the
         // system owns the behaviour — iOS 26's tab bar MINIMISES to a pill on scroll down rather than
         // sliding away entirely, so this is the platform's read of the same intent, not a copy of ours.
@@ -220,6 +234,13 @@ struct RootTabView: View {
                 // wearer would land on a BLANK tab. Dropping the request leaves them where they were, which
                 // is the honest answer for a feature that is switched off.
                 guard coachEnabled else {
+                    router.requestedDestination = nil
+                    break
+                }
+                // Simple mode with no provider has no Coach tab either: open Coach as a sheet instead, so
+                // the tap lands on Coach (its setup card) rather than on a tag no tab claims.
+                guard showsCoachTab else {
+                    routedPillar = .coach
                     router.requestedDestination = nil
                     break
                 }
@@ -458,64 +479,22 @@ struct RootTabView: View {
     // + SectionHeader's UPPERCASE overline + the 28pt section rhythm). Rebuilt on the shared page chrome:
     // ScreenScaffold for the title1 "More" + subtitle, a `SectionHeader` overline per group, and the group's
     // rows in a single grouped NoopCard with hairline dividers — the same row idiom Settings/Health use.
+    //
+    // Simple mode shows the everyday screens instead (`SimpleMoreIndex`) and keeps the full list one tap
+    // away as "All features" (`FullMoreIndex`, the identical list), so nothing becomes unreachable.
     private func moreTab(path: Binding<NavigationPath>, scrollSignal: Int) -> some View {
         NavigationStack(path: path) {
-            ScreenScaffold(title: "More", subtitle: "Everything else, one tap away",
+            ScreenScaffold(title: "More",
+                           subtitle: simpleMode
+                               ? "The everyday screens. Everything else is under All features."
+                               : "Everything else, one tap away",
                            onRefresh: { await repo.refresh() },
                            topBackground: liquidScaffoldSky()) {
-                moreSection("Insights") {
-                    MoreRow("What Moves You", "wand.and.sparkles", .insightsHub)
-                    MoreRow("Intelligence", "brain.head.profile", .intelligence)
-                    // K3: Coach promoted to a top-level tab — no longer listed under More.
-                    MoreRow("Insights", "lightbulb.fill", .insights)
-                    MoreRow("Explore", "square.grid.2x2.fill", .explore)
-                    MoreRow("Compare", "rectangle.split.2x1.fill", .compare)
-                }
-                moreSection("Body") {
-                    MoreRow("Live", "waveform.path.ecg", .live)
-                    MoreRow("Workouts", "figure.run", .workouts)
-                    MoreRow("Lift Log", "dumbbell.fill", .liftLog)
-                    MoreRow("Health", "heart.text.square.fill", .health)
-                    MoreRow("Lab Book", "books.vertical.fill", .labBook)
-                    MoreRow("Stress", "bolt.heart.fill", .stress)
-                    MoreRow("Breathe", "wind", .breathe)
-                    MoreRow("Intervals", "timer", .intervals)
-                    // Experimental beat-to-beat regularity visualization — self-gates on its own consent.
-                    MoreRow("Rhythm", "waveform.path", .rhythm)
-                }
-                moreSection("Data") {
-                    MoreRow("Your Data, Fused", "square.stack.3d.up.fill", .fusedRecord)
-                    MoreRow("Apple Health", "heart.fill", .appleHealth)
-                    MoreRow("Mi Band", "figure.walk.motion", .miBand)
-                    MoreRow("Data Sources", "externaldrive.fill", .dataSources)
-                    MoreRow("Backup & Sync", "externaldrive.fill.badge.icloud", .backupSync)
-                    // #155: HealthKit-free Apple Health path for sideloaded installs (Siri Shortcut
-                    // reads the opt-in Documents/noop_sync.txt drop file).
-                    MoreRow("Shortcuts Export", "square.and.arrow.up.fill", .shortcutsExport)
-                    // The plain 4.0 vs 5.0/MG capability grid — what NOOP reads live off each strap.
-                    MoreRow("NOOP Limitations", "list.bullet.rectangle", .noopLimitations)
-                }
-                moreSection("App") {
-                    // #805/#811: the v7.3.1 #766 alarm consolidation moved Smart Alarm under a single
-                    // "Alarms" sidebar entry (RootView .smartAlarm) but the regression dropped the row
-                    // from the iPhone More list, leaving Alarms unreachable on iPhone. Restore it here
-                    // (route to SmartAlarmView, the cross-platform iOS/macOS surface).
-                    //
-                    // Notifications (RootView .notifications) is deliberately NOT added: that screen is
-                    // macOS-only (it picks which Mac apps tap your wrist via NSWorkspace, imports AppKit,
-                    // and project.yml excludes Screens/NotificationSettingsView.swift from the iOS target),
-                    // so it can't compile or apply on iPhone. iPhone's wrist-alert controls live on the
-                    // Automations screen instead. Its absence from the iPhone More list is correct.
-                    MoreRow("Alarms", "alarm.fill", .alarms)
-                    MoreRow("Automations", "wand.and.stars", .automations)
-                    // The Test Centre (the diagnostics + bug-report hub) gets a first-class home here, not
-                    // just buried in Settings, so the feedback loop is one tap from the More tab.
-                    MoreRow("Test Centre", "stethoscope", .testCentre)
-                    MoreRow("Siri & Shortcuts", "mic.fill", .siriShortcuts)
-                    // #477 lives here rather than inside Settings: the strap-battery levers are the
-                    // ones people reach for when a strap is running down, so they get their own row.
-                    MoreRow("Power saving", "battery.25", .powerSaving)
-                    MoreRow("Settings", "gearshape.fill", .settings)
+                if simpleMode {
+                    // Coach is listed here only while it has no tab of its own.
+                    SimpleMoreIndex(showsCoachRow: coachEnabled && !showsCoachTab)
+                } else {
+                    FullMoreIndex()
                 }
             }
             // The rows push MoreDestination VALUES so a re-tap of the More tab can pop them off the
@@ -535,6 +514,77 @@ struct RootTabView: View {
         // Scroll the More index to the top on an at-root re-tap (#198 follow-up); read by its ScreenScaffold.
         .environment(\.scrollToTopSignal, scrollSignal)
         .tabItem { Label("More", systemImage: "ellipsis") }
+    }
+}
+
+/// The full More index: every screen, in four collapsible groups. It is the More tab in the full view and
+/// the "All features" screen in Simple mode, so the two can never list different screens.
+private struct FullMoreIndex: View {
+    /// Which More-tab groups are expanded (S2). Insights + Body stay open at rest; Data + App collapse to
+    /// just their header until tapped. Persisted (#860 item 2): the user's open/closed choice must SURVIVE
+    /// leaving and re-entering the More tab (and relaunch), not reset to the seed every visit. Backed by an
+    /// `@AppStorage` CSV string (keyed identically to the Android `MoreSectionPrefs`), bridged to a
+    /// `Set<String>` through `MoreSectionPrefs` so the section logic below is unchanged.
+    @AppStorage(MoreSectionPrefs.storageKey) private var expandedMoreSectionsCSV = MoreSectionPrefs.defaultCSV
+    private var expandedMoreSections: Set<String> { MoreSectionPrefs.decode(expandedMoreSectionsCSV) }
+
+    var body: some View {
+        moreSection("Insights") {
+            MoreRow("What Moves You", "wand.and.sparkles", .insightsHub)
+            MoreRow("Intelligence", "brain.head.profile", .intelligence)
+            // K3: Coach promoted to a top-level tab — no longer listed under More.
+            MoreRow("Insights", "lightbulb.fill", .insights)
+            MoreRow("Explore", "square.grid.2x2.fill", .explore)
+            MoreRow("Compare", "rectangle.split.2x1.fill", .compare)
+        }
+        moreSection("Body") {
+            MoreRow("Live", "waveform.path.ecg", .live)
+            MoreRow("Workouts", "figure.run", .workouts)
+            MoreRow("Lift Log", "dumbbell.fill", .liftLog)
+            MoreRow("Health", "heart.text.square.fill", .health)
+            MoreRow("Lab Book", "books.vertical.fill", .labBook)
+            MoreRow("Stress", "bolt.heart.fill", .stress)
+            MoreRow("Breathe", "wind", .breathe)
+            MoreRow("Intervals", "timer", .intervals)
+            // Experimental beat-to-beat regularity visualization — self-gates on its own consent.
+            MoreRow("Rhythm", "waveform.path", .rhythm)
+        }
+        moreSection("Data") {
+            MoreRow("Your Data, Fused", "square.stack.3d.up.fill", .fusedRecord)
+            MoreRow("Apple Health", "heart.fill", .appleHealth)
+            MoreRow("Mi Band", "figure.walk.motion", .miBand)
+            MoreRow("Data Sources", "externaldrive.fill", .dataSources)
+            MoreRow("Backup & Sync", "externaldrive.fill.badge.icloud", .backupSync)
+            // #155: HealthKit-free Apple Health path for sideloaded installs (Siri Shortcut
+            // reads the opt-in Documents/noop_sync.txt drop file).
+            MoreRow("Shortcuts Export", "square.and.arrow.up.fill", .shortcutsExport)
+            // The plain 4.0 vs 5.0/MG capability grid — what NOOP reads live off each strap.
+            MoreRow("NOOP Limitations", "list.bullet.rectangle", .noopLimitations)
+        }
+        moreSection("App") {
+            // #805/#811: the v7.3.1 #766 alarm consolidation moved Smart Alarm under a single
+            // "Alarms" sidebar entry (RootView .smartAlarm) but the regression dropped the row
+            // from the iPhone More list, leaving Alarms unreachable on iPhone. Restore it here
+            // (route to SmartAlarmView, the cross-platform iOS/macOS surface).
+            //
+            // Notifications (RootView .notifications) is deliberately NOT added: that screen is
+            // macOS-only (it picks which Mac apps tap your wrist via NSWorkspace, imports AppKit,
+            // and project.yml excludes Screens/NotificationSettingsView.swift from the iOS target),
+            // so it can't compile or apply on iPhone. iPhone's wrist-alert controls live on the
+            // Automations screen instead. Its absence from the iPhone More list is correct.
+            MoreRow("Alarms", "alarm.fill", .alarms)
+            MoreRow("Automations", "wand.and.stars", .automations)
+            // The Test Centre (the diagnostics + bug-report hub) gets a first-class home here, not
+            // just buried in Settings, so the feedback loop is one tap from the More tab.
+            MoreRow("Test Centre", "stethoscope", .testCentre)
+            MoreRow("Siri & Shortcuts", "mic.fill", .siriShortcuts)
+            // #477 lives here rather than inside Settings: the strap-battery levers are the
+            // ones people reach for when a strap is running down, so they get their own row.
+            MoreRow("Power saving", "battery.25", .powerSaving)
+            // The plain-language guide to every score, in both views.
+            MoreRow("What the numbers mean", "questionmark.circle.fill", .plainGuide)
+            MoreRow("Settings", "gearshape.fill", .settings)
+        }
     }
 
     /// One titled, COLLAPSIBLE group in the More index (S2): the app's overline (UPPERCASE) becomes a
@@ -592,6 +642,111 @@ struct RootTabView: View {
     }
 }
 
+/// Simple mode's More index: the everyday screens in five short, always-open groups, then "All features"
+/// for everything else. Every row here is also in `FullMoreIndex`; Simple mode chooses, it never removes.
+private struct SimpleMoreIndex: View {
+    /// True while Coach is switched on but has no tab (no provider set up yet), so it stays reachable.
+    let showsCoachRow: Bool
+
+    var body: some View {
+        simpleSection("Your body") {
+            MoreRow("Live heart rate", "waveform.path.ecg", .live)
+            MoreRow("Health monitor", "heart.text.square.fill", .health)
+            MoreRow("Stress", "bolt.heart.fill", .stress)
+        }
+        simpleSection("Training") {
+            MoreRow("Workouts", "figure.run", .workouts)
+            MoreRow("Lift Log", "dumbbell.fill", .liftLog)
+        }
+        simpleSection("Daily tools") {
+            MoreRow("Alarms", "alarm.fill", .alarms)
+            MoreRow("Breathe", "wind", .breathe)
+            if showsCoachRow {
+                MoreRow("Coach", "sparkles", .coach)
+            }
+        }
+        simpleSection("Your data") {
+            MoreRow("Apple Health", "heart.fill", .appleHealth)
+            MoreRow("Backup & Sync", "externaldrive.fill.badge.icloud", .backupSync)
+        }
+        simpleSection("Help") {
+            MoreRow("What the numbers mean", "questionmark.circle.fill", .plainGuide)
+            MoreRow("Settings", "gearshape.fill", .settings)
+        }
+        allFeaturesRow
+    }
+
+    /// A titled group that is always open: with three rows or fewer each, collapsing would only add taps.
+    private func simpleSection<Rows: View>(_ title: LocalizedStringKey,
+                                           @ViewBuilder rows: @escaping () -> Rows) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title).strandOverline()
+            NoopCard(padding: 0) {
+                VStack(spacing: 0) { rows() }
+                    .clipShape(RoundedRectangle(cornerRadius: NoopMetrics.cardRadius, style: .continuous))
+            }
+        }
+    }
+
+    /// The way to every other screen, set apart from the groups so it reads as "the rest", not one more row.
+    private var allFeaturesRow: some View {
+        NavigationLink(value: MoreDestination.allFeatures) {
+            HStack(spacing: 14) {
+                Image(systemName: "square.grid.3x3.fill")
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundStyle(StrandPalette.accent)
+                    .frame(width: 26, alignment: .center)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("All features")
+                        .font(StrandFont.body)
+                        .foregroundStyle(StrandPalette.textPrimary)
+                    Text("Every screen and tool, exactly as before.")
+                        .font(StrandFont.caption)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(minHeight: 44)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(NoopPanelSurface(cornerRadius: NoopMetrics.cardRadius))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+/// Re-reads whether an AI provider is set up, without making the tab shell observe the Coach engine.
+///
+/// The engine publishes on every streamed reply token, and `isConfigured` itself is not published (it
+/// reads the Keychain), so the shell keeps a plain copy that this probe refreshes on appear and whenever
+/// `trigger` (the selected tab) changes: a wearer who sets Coach up and moves on gets the tab at once.
+/// Only this zero-size view subscribes, so a token redraws nothing but it.
+private struct CoachConfiguredProbe: View {
+    let trigger: Int
+    @Binding var configured: Bool
+    @EnvironmentObject private var coach: AICoachEngine
+
+    var body: some View {
+        Color.clear
+            .frame(width: 0, height: 0)
+            .accessibilityHidden(true)
+            .onAppear { refresh() }
+            .onChangeCompat(of: trigger) { _ in refresh() }
+    }
+
+    private func refresh() {
+        let now = coach.isConfigured
+        if now != configured { configured = now }
+    }
+}
+
 /// Every screen the More index links to, as a `Hashable` value the tab's `NavigationPath` can carry
 /// (#198): a closure-destination push would bypass the path and be un-poppable on tab re-tap. The
 /// per-screen chrome the old inline links applied lives at the single `navigationDestination(for:)`
@@ -601,6 +756,8 @@ private enum MoreDestination: Hashable {
     case live, workouts, liftLog, health, labBook, stress, breathe, intervals, rhythm
     case fusedRecord, appleHealth, miBand, dataSources, backupSync, shortcutsExport, noopLimitations
     case alarms, automations, testCentre, siriShortcuts, powerSaving, settings
+    /// Simple mode: the full grouped list, and the plain-language guide (also listed in the full view).
+    case allFeatures, plainGuide
 
     @ViewBuilder var destination: some View {
         switch self {
@@ -632,6 +789,12 @@ private enum MoreDestination: Hashable {
         case .siriShortcuts:   SiriShortcutsSettingsView()
         case .powerSaving:     PowerSavingView()
         case .settings:        SettingsView()
+        case .allFeatures:
+            ScreenScaffold(title: "All features", subtitle: "Every screen and tool NOOP has.",
+                           topBackground: liquidScaffoldSky()) {
+                FullMoreIndex()
+            }
+        case .plainGuide:      PlainGuideView()
         }
     }
 }
