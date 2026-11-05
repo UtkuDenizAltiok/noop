@@ -43276,7 +43276,7 @@
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Edifício"
+            "value": "Em formação"
           }
         },
         "ru": {
@@ -43300,7 +43300,7 @@
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Budynek"
+            "value": "W trakcie"
           }
         }
       }
@@ -128517,19 +128517,19 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "推送"
+            "value": "加大强度"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "推播"
+            "value": "加大強度"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Naciskać"
+            "value": "Działaj"
           }
         }
       }
