@@ -1,20 +1,26 @@
 # State
 
-Updated **5 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — Simple mode on the testing build; four upstream fixes open, 5 Nov
+## Now — Simple mode v3 (plain wording) on the testing build, 6 Nov
 
-- [x] **Simple mode** built, verified and in the testing stack: [Simple mode](features/simple-mode.md).
-- [x] **Testing build verified, 5 Nov evening:** `testing-build` `bd98dc41` = stack `0d9c961e` (tree of
-  `tmp/stack-2026-11-05b`: upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2 + #2897 #2898 #2899
-  #2900 #2901; #2896's swipe fix is already inside Simple mode) + template. Run
-  [42071541163](https://github.com/UtkuDenizAltiok/noop/actions/runs/42071541163) green; release `testing-latest`
-  targets `bd98dc41`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), contains the Simple mode strings. Before
-  shipping: Release build for a real iPhone and all 2331 StrandTests green locally. **Just update.**
-  Next stack rebuild: take #2900's Android test update `0a6c50cd` (the phone build only assembles, no tests).
-- [ ] **Upstream PRs opened 5 Nov, awaiting review:** #2896 (tab swipe), #2897 (translations), #2898 (Info.plist),
-  #2899 (Charge skin temperature once), #2900 (one sleep need for hours-vs-needed), #2901 (Trends average label). Older open PRs: #2747 and #2724 now CONFLICTING with upstream main (their
-  content still applied cleanly in the stack); #2722, #2717, #2661, #2660, #2613 mergeable.
+- [x] **Simple mode v3 built and verified:** `feat/simple-mode` `5269b8a6` (worktree `~/Developer/noop-simple`),
+  plain wording on Simple Today and Simple Sleep; details and verification in
+  [Simple mode, Round 3](features/simple-mode.md#round-3-6-nov-2026-plain-wording-on-simple-today-and-simple-sleep).
+- [x] **Testing build verified, 6 Nov:** `testing-build` `4d18cf00` = merge commit over the old build `bd98dc41`
+  whose tree equals `3763b277` = stack `a863d3c8` + `fork/ships-template`. Stack `a863d3c8` (pushed as a
+  fast-forward over `0d9c961e`) = upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2/v3 +
+  #2897–#2901 + `0a6c50cd` (#2900 Android test); catalogue merged by key with `xcmerge.py`. Before shipping:
+  iPhone Release build green, StrandTests 2337 green, i18n gate exit 0, parity acceptance 50 OK. Run
+  [42115214139](https://github.com/UtkuDenizAltiok/noop/actions/runs/42115214139) green; release `testing-latest`
+  (id 435778305) targets `4d18cf00`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), new strings present
+  (checked de "Früherer Wert"). **Just update.**
+- [ ] **Upstream PRs opened 5 Nov, awaiting review (no comments as of 6 Nov):** #2896 (tab swipe), #2897
+  (translations), #2898 (Info.plist), #2899 (Charge skin temperature once), #2900 (one sleep need for
+  hours-vs-needed), #2901 (Trends average label). On all six the upstream NOOPiOS leg was cancelled with no
+  runner (upstream capacity). Upstream main unchanged since 2a1de760 (25 Oct). Older open PRs: #2747 and #2724
+  CONFLICTING with upstream main (their content still applied cleanly in the stack); #2722, #2717, #2661,
+  #2660, #2613 mergeable.
 
 ## Now — community questions published and verified, 10 Oct
 
@@ -369,14 +375,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**In the new chat, read PR #2747's current head, checks and feedback before any code action.** Compare it
-with saved d84f5a14, then reconcile the other six PRs and the five outreach links in the REA audit through normal
-Start. Read `private/rea-2026-10-09/posting-status.json` and `posting-2026-10-10/journal.json` for the latest scope.
-If new actionable maintainer feedback exists, finish that existing obligation once with required verification.
-If none exists, report readiness and wait for the owner's next prompt. Community answers are pending external
-input; these posts do not promise an owner-led investigation. Do not repost or repeat phone acceptance/release.
+**Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
+First reconcile our six 5 Nov PRs for maintainer feedback (answer each once); the 6 Nov phone build is verified. Then the roadmap's next item: 1(a), the plain screen subtitles as one upstream PR for
+both platforms. Ask Utku for first impressions of Simple mode on his phone only when useful.
 
-Original WHOOP app analysis is deferred, no job exists for it. Earlier acquisition/setup notes are reference
-material. Preserve parked wording/science/data requirements, #2724's unchanged merge conflict and the local-only
-candidate. No NOOP job remains to wait for or restart. Fresh chat is safe on this Mac; private scope/evidence,
-logs/drafts/cache/bundles depend on this Mac. No automatic watcher or new task was created.
+Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
+WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;
+private evidence, logs and caches live on this Mac only.

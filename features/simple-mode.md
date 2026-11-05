@@ -8,10 +8,12 @@ simple UI, plain English wording, and fixing proven errors (biometrics, sensors,
 important is removed: Settings → Simple mode switches between the calm view and the full app. Full authority: decide
 and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just update").
 
-**Where things are (5 Nov 2026, end of the first chat):**
+**Where things are (6 Nov 2026, end of the second chat):**
 - `feat/simple-mode` on the fork (`ee74a4a1` v1: Today, More, guide, Settings switch; `6dca7333` v2: Sleep,
-  Trends). Default ON in the fork; iOS + shared Mac code only; no Android twin yet.
-- Phone: `testing-latest` = `testing-build` `bd98dc41` (stack `0d9c961e` + template), NOOP 12.1.0 (439), verified.
+  Trends; `5269b8a6` v3: plain wording on Today and Sleep, see "Round 3"). Default ON in the fork; iOS + shared
+  Mac code only; no Android twin yet. Worktree `~/Developer/noop-simple`.
+- Phone: `testing-latest` = `testing-build` `4d18cf00` (stack `a863d3c8` + template, with v3), NOOP 12.1.0 (439),
+  verified 6 Nov. Just update.
   Details in [State](../STATE.md).
 - Upstream PRs, all ours, awaiting maintainers: [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
   [#2897](https://github.com/ryanbr/noop/pull/2897) wrong pl/pt-PT/zh labels,
@@ -45,7 +47,12 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
 - Verify citations before writing them (one journal name was wrong in a draft commit message and was corrected).
 
 **Roadmap, in order** (re-check upstream and State first):
-1. **Plain wording pass** (new focus, 5 Nov). **Not too short:** a rewrite must explain at least as much as the
+1. **Plain wording pass** (new focus, 5 Nov). **Simple Today and Simple Sleep done in v3 (6 Nov, "Round 3").**
+   Still to do, in this order: (a) the slogan subtitles below, as ONE upstream PR for both modes (they are
+   shared screens; Android has the same subtitles, so do both platforms); (b) Simple Trends and the screens
+   Simple More opens (fold into roadmap item 2); (c) the full view's Charge driver text (analytics strings
+   pinned byte-for-byte with Kotlin: change at the display layer on both platforms, as `PlainChargeWording`
+   does for Simple mode, never in the analytics). **Not too short:** a rewrite must explain at least as much as the
    original, just in human words; cut jargon and repetition, never meaning. Where a short label is needed, the full
    explanation stays one tap away (the guide or an info button), and it stays complete. Principles: say what it is
    and what to do in everyday words; compare
@@ -74,7 +81,7 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
 3. **Full view, two readouts of one fact:** the Night detail sleep-debt tile (imported WHOOP figure) vs the ledger
    (NOOP's own) both say "sleep debt" with different numbers (finding 8). Label the source or align the rule, both
    platforms.
-4. **Next stack rebuild:** include `0a6c50cd`; when #2896 merges, switch `SimpleModePrefs.swipeTarget` /
+4. **Next stack rebuild:** (`0a6c50cd` is in since 6 Nov.) When #2896 merges, switch `SimpleModePrefs.swipeTarget` /
    `visibleTabTags` to the upstream `TabSwipe`.
 5. **Android twin of Simple mode** (+ `noop.simpleMode` in the `.noopbak` whitelist on both platforms), then
    propose Simple mode upstream (default OFF there, per #2463).
@@ -449,3 +456,39 @@ biometrics, sensors, methods or efficiency; no language work.
     `effortDisplay` convention, only the Today ring is whole.
 12. Upstream CI note: the NOOPiOS leg of App build on #2896/#2897/#2899 was cancelled with no runner ever assigned
     (infra, not code); a comment on each PR asks for a re-run (the fork cannot re-run upstream jobs).
+
+## Round 3 (6 Nov 2026): plain wording on Simple Today and Simple Sleep
+
+`feat/simple-mode` commit `5269b8a6`. Same numbers, same order, same rules; only words, only in Simple mode.
+- **Charge rows** ("What's behind your Charge") go through `Strand/Screens/PlainChargeWording.swift`, a display-
+  layer translator: "89 ms · 85 ms baseline · above baseline, supporting recovery" reads "89 ms · usually 85 ms ·
+  Higher than your normal, which raised your Charge." The sentence is chosen by the signed points the chip
+  prints, so it can never say "raised" beside a negative chip (pinned over 1,000+ rows from the real driver
+  builder). "Sleep quality 92%" is the Rest score, so it reads "Rest 92". Unknown future verdicts fall back to
+  the original text. The caption says what the chip number is.
+- **Skin temperature** in those rows uses °F for a Fahrenheit reader (from the unrounded deviation, 9/5, no +32)
+  and a degree sign. Finding 5 is fixed for Simple mode; the full view still prints "+0.4 C vs baseline".
+- **Earlier score:** when today's Charge is not ready, the ring carries the latest scored day. Upstream's Liquid
+  Today computes that day's caption ("Last night · 4 Nov") but never shows it, and its pill says "Last night"
+  even for a days-old score. Simple mode shows the day under the ring and the pill says "Earlier score". The
+  pill opens the guide at its entry (which now explains Earlier score), and the guide now scrolls to the entry
+  it is opened at. Candidate upstream fix for the full view: show the carried day.
+- **First nights:** the summary says "Learning what's normal for you: N of 4 nights so far…" instead of
+  "Learning your baseline".
+- **Sleep:** debt card title "Sleep debt", plain advice (need + debt tonight clears it; older shortfalls count
+  less: the ledger's 0.55 carry), a line saying what the bars are, "Sleep need"; stage card "6h 49m in bed,
+  asleep for 98% of it · stages are estimates" and "Deep + REM sleep"; plain movement-strip and partly-recorded
+  notes.
+- 36 new strings (all nine locales), 2 fork-only v1 strings replaced and removed.
+
+Verification (6 Nov): branch: NOOPiOS simulator build, StrandTests 2320 green (6 new in
+`PlainChargeWordingTests`), i18n gate exit 0, doc lint clean, Tools core 338 OK, parity acceptance 50 OK,
+simulator check of Simple Today (carried day, rows, pill → guide at the entry), the calibrating state and
+Simple Sleep. Stack `a863d3c8`: iPhone Release build, StrandTests 2337, i18n, parity acceptance; shipped as
+`testing-build` `4d18cf00` (run 42115214139). Details in State.
+
+Findings this round:
+13. Carried Charge's day never shown in the Liquid Today, and the pill's "Last night" can be wrong (above).
+14. The Sleep ring's "of 100" is faint white on the light ring face (both modes); not changed.
+15. The guide opened at an entry did not scroll to it (fixed in v3).
+
