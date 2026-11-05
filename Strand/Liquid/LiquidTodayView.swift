@@ -98,6 +98,14 @@ struct LiquidTodayView: View {
     @State private var showSettings = false
     @State private var synthesisExpanded = false
     @State private var showLiveSession = false
+    /// Simple mode (`SimpleModePrefs`): the calm, fixed Today that shows each figure once and explains it.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    /// The plain guide entry presented as a sheet from a Simple-mode score label (nil = closed).
+    @State private var plainGuideTerm: PlainGuideTerm?
+    /// Simple mode's "What's behind your Charge" rows: the same breakdown the classic Today's Charge sheet
+    /// shows (`ChargeBreakdownWiring`), for the row the Charge ring displays. Resolved in `load()`, only
+    /// while Simple mode is on; empty while the baseline calibrates, so the card falls back to the vitals.
+    @State private var cachedChargeDrivers: [ChargeDriver] = []
 
     /// Live Sessions (silent guardian) beta gate — the SAME key the Settings toggle writes. Default ON
     /// (the entry is BETA-labelled in-UI); off removes the Start-session control entirely.
@@ -359,45 +367,54 @@ struct LiquidTodayView: View {
                     // pinned above the reorderable block so an active manual workout is immediately visible
                     // and taps straight through to Live. Renders nothing when no workout is active.
                     ActiveWorkoutIndicatorSection()
-                    // #today-layout (parity with Android): every Today section — the Charge/Effort/Rest hero
-                    // and Start-session included — renders in the user's saved order. Reorder via the Arrange
-                    // sheet (the header's up/down button; native drag rows); the order persists under the
-                    // byte-identical "today.sectionOrder" key Android uses. A gated-off Start-session renders
-                    // nothing and keeps its slot in the saved order.
-                    ForEach(sectionOrder) { section in
-                        switch section {
-                        case .hero:
-                            heroCard
-                            if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
-                        case .liveSession: if liveSessionsBeta { liveSessionStartRow }
-                        case .synthesis: synthesisSection
-                        case .keyMetrics: keyMetricsSection
-                        case .workouts: lastWorkoutsSection
-                        case .heartRate: heartRateSection
-                        case .recoveryVitals: recoveryVitalsSection
-                        case .yourCards: yourCardsSection
-                        case .menstrualCycle:
-                            if selectedDayOffset == 0 { MenstrualCycleHomeCard() }
-                        // #656: the persistent journal widget (last-7-days strip + tap-through). Now a
-                        // reorderable section like the others — the Arrange sheet moves it. Today only;
-                        // the card self-hides when the reminder toggle is off (an empty branch renders
-                        // nothing yet keeps its slot). Twin of Android TodayScreen's JOURNAL arm.
-                        case .journal: if selectedDayOffset == 0 { JournalReminderCard() }
-                        // #today-hosted-cards: cards the user pulled in from the Trends/Sleep tabs, in the
-                        // order they arranged. Empty (renders nothing) until they add one in Customise.
-                        // Today-only, matching Android's addedCards section gate + the classic TodayView.
-                        case .addedCards: if selectedDayOffset == 0 { hostedCardsSection }
+                    // Simple mode: a fixed, calm order that shows each figure once and explains it. It reads
+                    // none of the full view's layout prefs, so switching it off restores the wearer's own
+                    // arrangement below untouched (see `SimpleModePrefs`).
+                    if simpleMode {
+                        ForEach(SimpleTodaySection.allCases) { section in
+                            simpleSection(section)
                         }
+                    } else {
+                        // #today-layout (parity with Android): every Today section — the Charge/Effort/Rest hero
+                        // and Start-session included — renders in the user's saved order. Reorder via the Arrange
+                        // sheet (the header's up/down button; native drag rows); the order persists under the
+                        // byte-identical "today.sectionOrder" key Android uses. A gated-off Start-session renders
+                        // nothing and keeps its slot in the saved order.
+                        ForEach(sectionOrder) { section in
+                            switch section {
+                            case .hero:
+                                heroCard
+                                if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
+                            case .liveSession: if liveSessionsBeta { liveSessionStartRow }
+                            case .synthesis: synthesisSection
+                            case .keyMetrics: keyMetricsSection
+                            case .workouts: lastWorkoutsSection
+                            case .heartRate: heartRateSection
+                            case .recoveryVitals: recoveryVitalsSection
+                            case .yourCards: yourCardsSection
+                            case .menstrualCycle:
+                                if selectedDayOffset == 0 { MenstrualCycleHomeCard() }
+                            // #656: the persistent journal widget (last-7-days strip + tap-through). Now a
+                            // reorderable section like the others — the Arrange sheet moves it. Today only;
+                            // the card self-hides when the reminder toggle is off (an empty branch renders
+                            // nothing yet keeps its slot). Twin of Android TodayScreen's JOURNAL arm.
+                            case .journal: if selectedDayOffset == 0 { JournalReminderCard() }
+                            // #today-hosted-cards: cards the user pulled in from the Trends/Sleep tabs, in the
+                            // order they arranged. Empty (renders nothing) until they add one in Customise.
+                            // Today-only, matching Android's addedCards section gate + the classic TodayView.
+                            case .addedCards: if selectedDayOffset == 0 { hostedCardsSection }
+                            }
+                        }
+                        // Opt-in "looks like a workout?" suggestion, dropped in the liquid Home rewrite. Its
+                        // Settings toggle (PuffinExperiment.autoDetectWorkoutsKey) had no visible effect on the
+                        // DEFAULT screen: the card's only mount was classic TodayView, so a user could switch
+                        // auto-detect on and never be shown a single suggestion. Same position classic uses
+                        // (after the cards block, before Data Sources) and the same leaf Android renders.
+                        // Self-gates on the toggle AND on the detector finding an unsaved, un-dismissed window,
+                        // so it renders nothing by default.
+                        AutoWorkoutCard()
+                        dataSourcesSection
                     }
-                    // Opt-in "looks like a workout?" suggestion, dropped in the liquid Home rewrite. Its
-                    // Settings toggle (PuffinExperiment.autoDetectWorkoutsKey) had no visible effect on the
-                    // DEFAULT screen: the card's only mount was classic TodayView, so a user could switch
-                    // auto-detect on and never be shown a single suggestion. Same position classic uses
-                    // (after the cards block, before Data Sources) and the same leaf Android renders.
-                    // Self-gates on the toggle AND on the detector finding an unsaved, un-dismissed window,
-                    // so it renders nothing by default.
-                    AutoWorkoutCard()
-                    dataSourcesSection
                     Color.clear.frame(height: 90) // floating tab-bar clearance
                 }
                 .padding(.horizontal, NoopMetrics.screenHPadding)
@@ -464,12 +481,15 @@ struct LiquidTodayView: View {
         .liquidMediumHaptic(trigger: pullHaptic)
         // hydrationSeq joins the id so logging a drink re-reads the card immediately, the same trigger set
         // classic TodayView's reloadHydration() uses.
-        .task(id: "\(repo.refreshSeq)-\(selectedDayOffset)-\(repo.hydrationSeq)-\(hydrationEnabled)-\(dayCycleModeRaw)") {
+        .task(id: "\(repo.refreshSeq)-\(selectedDayOffset)-\(repo.hydrationSeq)-\(hydrationEnabled)-\(dayCycleModeRaw)-\(simpleMode)") {
             DashboardCardPrefs.migrateLegacyStepsAverage()
             await load()
         }
         .sheet(item: $guideSection) { section in
             NavigationStack { ScoringGuideView(initialSection: section, onClose: { guideSection = nil }) }
+        }
+        .sheet(item: $plainGuideTerm) { term in
+            PlainGuideView(initialTerm: term, onClose: { plainGuideTerm = nil })
         }
         .sheet(item: $customizationDestination) { destination in
             TodayCustomizationSheet(
@@ -621,18 +641,21 @@ struct LiquidTodayView: View {
                     .accessibilityLabel("Profile and settings")
                     LiquidAddButton()
                     LiquidBatteryButton()
-                    // One entry point for section order/visibility and both nested card editors.
-                    Button { customizationDestination = .today } label: {
-                        Image(systemName: "slider.horizontal.3")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(StrandPalette.textPrimary)
-                            .frame(
-                                width: NoopMetrics.compactControlSize,
-                                height: NoopMetrics.compactControlSize
-                            )
+                    // One entry point for section order/visibility and both nested card editors. Simple mode
+                    // has a fixed layout, so it drops the control rather than offering edits it ignores.
+                    if !simpleMode {
+                        Button { customizationDestination = .today } label: {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(StrandPalette.textPrimary)
+                                .frame(
+                                    width: NoopMetrics.compactControlSize,
+                                    height: NoopMetrics.compactControlSize
+                                )
+                        }
+                        .nativeLiquidGlassHeaderButton()
+                        .accessibilityLabel("Customize Today")
                     }
-                    .nativeLiquidGlassHeaderButton()
-                    .accessibilityLabel("Customize Today")
                 }
                 .background(
                     GeometryReader { proxy in
@@ -701,10 +724,15 @@ struct LiquidTodayView: View {
             // the state pill) rather than an empty vessel, matching the classic Today, the widget/watch/Live
             // Activity (`Repository.widgetAnchor`) and Android. Effort deliberately does NOT carry — it is
             // today's own accumulation, so yesterday's number would be a false statement, not a stale one.
+            // Simple mode names each score's familiar other name under its label (Recovery / Strain / Sleep,
+            // the words the Key Metrics tiles already use) and sends the label to the plain guide rather than
+            // the technical scoring guide, which stays one tap further inside it.
             HeroScoreCell(label: String(localized: "Charge"), score: chargeDisplay.pct,
                           tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
-                          animated: dataLoaded, onGuide: { guideSection = .charge },
-                          detailRoute: .metric(HeroRingMetric.charge))
+                          animated: dataLoaded,
+                          onGuide: { if simpleMode { plainGuideTerm = .charge } else { guideSection = .charge } },
+                          detailRoute: .metric(HeroRingMetric.charge),
+                          caption: simpleMode ? String(localized: "Recovery") : nil)
             // #45: the hero Effort must honour the user's Effort scale like every other Effort read-out.
             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
             // one decimal on the compressed 0–21 axis to match the app-wide `effortDisplay` convention
@@ -712,13 +740,16 @@ struct LiquidTodayView: View {
             HeroScoreCell(label: String(localized: "Effort"),
                           score: effortStrain(displayDay).map { UnitFormatter.effortValue($0, scale: effortScale) },
                           tint: StrandPalette.effortColor, animated: dataLoaded,
-                          onGuide: { guideSection = .effort },
+                          onGuide: { if simpleMode { plainGuideTerm = .effort } else { guideSection = .effort } },
                           maxValue: effortScale == .whoop ? 21 : 100,
                           decimals: effortScale == .whoop ? 1 : 0,
-                          detailRoute: .metric(HeroRingMetric.effort))
+                          detailRoute: .metric(HeroRingMetric.effort),
+                          caption: simpleMode ? String(localized: "Strain") : nil)
             HeroScoreCell(label: String(localized: "Rest"), score: restScore, tint: StrandPalette.restColor,
-                          animated: dataLoaded, onGuide: { guideSection = .rest },
-                          detailRoute: .metric(HeroRingMetric.rest))
+                          animated: dataLoaded,
+                          onGuide: { if simpleMode { plainGuideTerm = .rest } else { guideSection = .rest } },
+                          detailRoute: .metric(HeroRingMetric.rest),
+                          caption: simpleMode ? String(localized: "Sleep") : nil)
                 .overlay(alignment: .top) {
                     if let sourceLabel = heroSourceLabel {
                         SourceBadge("\(sourceLabel)", tint: StrandPalette.textSecondary)
@@ -1193,8 +1224,16 @@ struct LiquidTodayView: View {
                 card {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("SYNTHESIS").font(StrandFont.overline).tracking(1.6)
-                                .foregroundStyle(StrandPalette.textSecondary)
+                            // Simple mode says what the card is in plain words; the full view keeps its label.
+                            Group {
+                                if simpleMode {
+                                    Text("In short").textCase(.uppercase)
+                                } else {
+                                    Text("SYNTHESIS")
+                                }
+                            }
+                            .font(StrandFont.overline).tracking(1.6)
+                            .foregroundStyle(StrandPalette.textSecondary)
                             Spacer()
                             Text(synthesisExpanded
                                  ? String(localized: "hide")
@@ -1283,24 +1322,33 @@ struct LiquidTodayView: View {
     /// never claims otherwise. `LiquidPressStyle` is not decoration: a bare `NavigationLink` applies the
     /// default link chrome and would tint the whole row, which is the same reason `cardLink` carries it.
     private func vitalRow(_ label: String, _ value: String, _ tint: Color, _ frac: Double?,
-                          route: TabRoute? = nil) -> some View {
+                          route: TabRoute? = nil, hint: String? = nil) -> some View {
         Group {
             if let route {
-                NavigationLink(value: route) { vitalRowBody(label, value, tint, frac, linked: true) }
+                NavigationLink(value: route) { vitalRowBody(label, value, tint, frac, linked: true, hint: hint) }
                     .buttonStyle(LiquidPressStyle())
             } else {
-                vitalRowBody(label, value, tint, frac, linked: false)
+                vitalRowBody(label, value, tint, frac, linked: false, hint: hint)
             }
         }
     }
 
+    /// `hint` is Simple mode's one-line reading aid ("higher is usually better"); nil renders the row
+    /// exactly as the full view always has.
     private func vitalRowBody(_ label: String, _ value: String, _ tint: Color, _ frac: Double?,
-                              linked: Bool) -> some View {
+                              linked: Bool, hint: String? = nil) -> some View {
         HStack(spacing: 12) {
             // Same as cardLinkBody: without this the disc eats the row's NavigationLink tap.
             LiquidVessel(value: frac, tint: tint, animated: false, tapPassesThrough: true)
                 .frame(width: 26, height: 26)
-            Text(label).font(StrandFont.subhead).foregroundStyle(StrandPalette.textSecondary)
+            if let hint {
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(label).font(StrandFont.subhead).foregroundStyle(StrandPalette.textSecondary)
+                    Text(hint).font(StrandFont.caption).foregroundStyle(StrandPalette.textTertiary)
+                }
+            } else {
+                Text(label).font(StrandFont.subhead).foregroundStyle(StrandPalette.textSecondary)
+            }
             Spacer()
             Text(value).font(StrandFont.number(15)).foregroundStyle(StrandPalette.textPrimary)
             if linked {
@@ -1308,6 +1356,132 @@ struct LiquidTodayView: View {
                     .foregroundStyle(StrandPalette.textTertiary)
             }
         }
+    }
+
+    // MARK: - Simple mode
+
+    /// One Simple-mode section. Every value comes from the same reads the full view's sections use; the
+    /// opt-in cards keep their own Today-only and feature gates.
+    @ViewBuilder
+    private func simpleSection(_ section: SimpleTodaySection) -> some View {
+        switch section {
+        case .scores:
+            heroCard
+            if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
+        case .summary:
+            synthesisSection
+        case .behindCharge:
+            simpleBehindChargeSection
+        case .activity:
+            simpleActivitySection
+        case .heartRate:
+            heartRateSection
+        case .workouts:
+            lastWorkoutsSection
+            // The "looks like a workout?" suggestion sits with the workouts it would add to. Self-gating.
+            AutoWorkoutCard()
+        case .menstrualCycle:
+            if selectedDayOffset == 0 { MenstrualCycleHomeCard() }
+        case .journal:
+            if selectedDayOffset == 0 { JournalReminderCard() }
+        case .addedCards:
+            if selectedDayOffset == 0 { hostedCardsSection }
+        case .guide:
+            simpleGuideCard
+        }
+    }
+
+    /// Why today's Charge is what it is. Once the baseline is learned, each driver row shows last night's
+    /// value against the wearer's own normal and how far it moved the score: the same rows, from the same
+    /// resolver, as the classic Today's Charge sheet. While the baseline calibrates there is nothing to
+    /// compare against yet, so the card shows the three overnight vitals with a one-line reading aid each,
+    /// with the same per-field carry and the same tap-through routes as the full view's vitals card.
+    private var simpleBehindChargeSection: some View {
+        let hrv = displayDay?.avgHrv ?? hrvDay?.avgHrv
+        let rhr = (displayDay?.restingHr ?? restingHrDay?.restingHr).map(Double.init)
+        let resp = displayDay?.respRateBpm ?? vitalsDay?.respRateBpm
+        let drivers = cachedChargeDrivers
+        return card {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("What's behind your Charge")
+                        .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
+                        .foregroundStyle(StrandPalette.textSecondary)
+                    Spacer(minLength: 8)
+                    Button { plainGuideTerm = .hrv } label: {
+                        Image(systemName: "info.circle")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("What the numbers mean")
+                }
+                if drivers.isEmpty {
+                    Text("Charge is built mostly from these overnight readings. Once NOOP knows your normal, this shows how each one moved your score.")
+                        .font(StrandFont.caption)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    vitalRow(String(localized: "Heart-rate variability"), unitText(hrv, "ms"),
+                             StrandPalette.metricCyan, fracOver(hrv, 120), route: .metric("hrv"),
+                             hint: String(localized: "higher is usually better"))
+                    vitalRow(String(localized: "Resting heart rate"), unitText(rhr, "bpm"),
+                             StrandPalette.metricRose, fracOver(rhr, 100), route: .metric("rhr"),
+                             hint: String(localized: "lower is usually better"))
+                    vitalRow(String(localized: "Breaths per minute"), unitText(resp, "rpm", decimals: 1),
+                             StrandPalette.accent, fracOver(resp, 24), route: .metric("resp_rate"),
+                             hint: String(localized: "steady is normal"))
+                } else {
+                    Text("How last night's readings moved your Charge, compared with your own normal.")
+                        .font(StrandFont.caption)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    let maxMagnitude = drivers.map { abs($0.deltaPoints) }.max() ?? 1
+                    ForEach(Array(drivers.enumerated()), id: \.offset) { _, driver in
+                        ChargeDriverRow(driver: driver, maxMagnitude: maxMagnitude)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Steps and calories: the two everyday activity numbers, as the same tiles (and the same imported-first
+    /// values and tap-through details) the full view's Key Metrics grid draws for them.
+    private var simpleActivitySection: some View {
+        VStack(spacing: 8) {
+            sectionHead("ACTIVITY")
+            HStack(alignment: .top, spacing: NoopMetrics.gap) {
+                ktileFor(.steps, hrv: nil, rhr: nil)
+                ktileFor(.calories, hrv: nil, rhr: nil)
+            }
+        }
+    }
+
+    /// The way into the plain-language guide, at the foot of the Simple Today.
+    private var simpleGuideCard: some View {
+        NavigationLink(value: TabRoute.plainGuide) {
+            card {
+                HStack(spacing: 12) {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(StrandPalette.accent)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("What do these numbers mean?")
+                            .font(StrandFont.subhead.weight(.semibold))
+                            .foregroundStyle(StrandPalette.textPrimary)
+                        Text("Every score and reading, explained simply.")
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .accessibilityHidden(true)
+                }
+            }
+        }
+        .buttonStyle(LiquidPressStyle())
     }
 
     // MARK: - Key metrics grid
@@ -1467,6 +1641,10 @@ struct LiquidTodayView: View {
         }
     }
 
+    /// Whether the tiles draw their trend graph: the editor's Detailed-tiles switch, in the full view only.
+    /// Simple mode's activity tiles stay plain whatever that switch says.
+    private var showsDetailedTiles: Bool { keyMetricsDetailed && !simpleMode }
+
     private func ktile(_ label: String, icon: String, _ value: String, _ unit: String, _ tint: Color, _ frac: Double?,
                        key: String? = nil, detailMetric: MetricDescriptor? = nil, caption: String? = nil) -> some View {
         let displayValue = Self.tileDisplayValue(value, unit: unit)
@@ -1504,7 +1682,7 @@ struct LiquidTodayView: View {
             // windowed to the editor's 1-week / 2-week / 1-month choice (the Android twin). A metric with no
             // windowed series keeps a clear placeholder of the same height so every tile in a detailed row
             // stays equal-height with its bars aligned.
-            if keyMetricsDetailed {
+            if showsDetailedTiles {
                 let spark = key.map { windowedSpark($0) } ?? []
                 if spark.count >= 2 {
                     Sparkline(values: spark,
@@ -1520,7 +1698,7 @@ struct LiquidTodayView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(minHeight: keyMetricsDetailed ? 154 : 116, alignment: .topLeading)
+        .frame(minHeight: showsDetailedTiles ? 154 : 116, alignment: .topLeading)
         .background(NoopPanelSurface(tint: tint, cornerRadius: 18, surfaceOpacity: cardOpacity))
         // #430 parity: tap -> the metric's trend detail (the same Explore dossier its MetricRow pushes,
         // closure-based NavigationLink per #38). A metric with no catalog entry stays inert.
@@ -1753,6 +1931,15 @@ struct LiquidTodayView: View {
             todayValue: restByDay[selectedDayKey], lastDay: restSeries.last?.day,
             lastValue: restSeries.last?.value, isTodaySelected: selectedDayOffset == 0,
             todayKey: selectedDayKey)
+        // Simple mode's Charge drivers, for the row the ring shows (the #543 carry, else the selected day)
+        // with the same inputs the classic Today's Charge sheet passes, so the two can never describe
+        // different nights. Not resolved while Simple mode is off: a view that shows none pays nothing.
+        if simpleMode, let row = priorScored ?? day, let baselines = repo.chargeBaselines {
+            cachedChargeDrivers = ChargeBreakdownWiring.breakdown(
+                baselines: baselines, row: row, sleepPerfPercent: restScore)?.drivers ?? []
+        } else {
+            cachedChargeDrivers = []
+        }
         // StressModel loops the full history to build its baseline — run it OFF the main actor so a big
         // history doesn't stutter the UI. Snapshot the inputs (value types) into the detached task.
         let storedStress = await stressA
@@ -1953,7 +2140,9 @@ struct LiquidTodayView: View {
         switch readiness.level {
         case .primed: return String(localized: "Push")
         case .balanced: return String(localized: "Maintain")
-        case .strained, .rundown: return String(localized: "Rest")
+        // Simple mode says "Go easy": "Rest" is also the name of the sleep score two inches above it, and
+        // the same word meaning two things is exactly the confusion Simple mode exists to remove.
+        case .strained, .rundown: return simpleMode ? String(localized: "Go easy") : String(localized: "Rest")
         case .insufficient: return nil
         }
     }
@@ -2246,6 +2435,8 @@ private struct HeroScoreCell: View {
     /// the same score land on the identical dossier rather than diverging. The LABEL keeps its own job:
     /// it opens the scoring guide, which is this screen's only route to that explainer.
     var detailRoute: TabRoute? = nil
+    /// A small grey line under the label naming the score's familiar other name (Simple mode), or nil.
+    var caption: String? = nil
 
     /// The gauge, linked when there is somewhere to go.
     ///
@@ -2287,16 +2478,24 @@ private struct HeroScoreCell: View {
         VStack(spacing: 7) {
             gaugeView
             Button(action: onGuide) {
-                HStack(spacing: 3) {
-                    // #74: one line, shrink-to-fit rather than wrap under large Dynamic Type (mirrors the
-                    // score number above) so CHARGE/EFFORT/REST never grow the hero card to two lines.
-                    Text(label.uppercased()).font(StrandFont.overline).tracking(1.6)
-                        .lineLimit(1).minimumScaleFactor(0.7)
-                    Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold)).opacity(0.6)
+                VStack(spacing: 2) {
+                    HStack(spacing: 3) {
+                        // #74: one line, shrink-to-fit rather than wrap under large Dynamic Type (mirrors the
+                        // score number above) so CHARGE/EFFORT/REST never grow the hero card to two lines.
+                        Text(label.uppercased()).font(StrandFont.overline).tracking(1.6)
+                            .lineLimit(1).minimumScaleFactor(0.7)
+                        Image(systemName: "chevron.right").font(.system(size: 9, weight: .semibold)).opacity(0.6)
+                    }
+                    // Theme-aware hero label (#1160): normal text token — readable on Dark and Light
+                    // panel surfaces alike (was onDark* when the hero fill was pinned dark).
+                    .foregroundStyle(StrandPalette.textSecondary)
+                    if let caption {
+                        Text(caption)
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .lineLimit(1).minimumScaleFactor(0.7)
+                    }
                 }
-                // Theme-aware hero label (#1160): normal text token — readable on Dark and Light
-                // panel surfaces alike (was onDark* when the hero fill was pinned dark).
-                .foregroundStyle(StrandPalette.textSecondary)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(Text("\(label), \(spokenScore). See how it is scored."))
