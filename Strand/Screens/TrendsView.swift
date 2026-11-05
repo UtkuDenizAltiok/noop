@@ -314,15 +314,17 @@ struct TrendsView: View {
                         // only when NO week in history has data. Past weeks render in the same format.
                         weeklyDigestNav
                             .staggeredAppear(index: 0)
-                        // The Charge / Effort / Rest trio, presented in NOOP's pip language. Left out of Simple
-                        // mode: it averages the range window, not the week, so beside the weekly digest above
-                        // it read as a second, different "this week" figure.
+                        rangeBar(recovery: metrics.recovery)
+                            .staggeredAppear(index: 1)
+                        // The Charge / Effort / Rest averages over the range selected just above, in NOOP's pip
+                        // language. Below the range control and titled "Average": it averages that window (3M by
+                        // default), so above the control and titled "Week in review" it read as a second,
+                        // different figure for the week the digest at the top already summarises. Simple mode
+                        // leaves it to the full view: the digest and the charts below already cover it.
                         if !simpleMode {
                             weekInReview(charge: metrics.recovery, effort: metrics.strain, rest: metrics.rest)
-                                .staggeredAppear(index: 1)
+                                .staggeredAppear(index: 2)
                         }
-                        rangeBar(recovery: metrics.recovery)
-                            .staggeredAppear(index: 2)
                         heroRecovery(recovery: metrics.recovery)
                             .staggeredAppear(index: 3)
                         smallMultiples(hrv: metrics.hrv, rhr: metrics.rhr, strain: metrics.strain)
@@ -503,7 +505,7 @@ struct TrendsView: View {
         if chargeAvg != nil || effortAvg != nil || restAvg != nil {
             NoopCard {
                 VStack(alignment: .leading, spacing: NoopMetrics.cardInnerSpacing) {
-                    SectionHeader("Week in review", overline: "Charge · Effort · Rest")
+                    SectionHeader("Average", overline: "Charge · Effort · Rest")
                     if let v = chargeAvg {
                         pipScoreRow(label: "Charge", value: v, range: 0...100,
                                     tint: StrandPalette.chargeColor, frac: v / 100,
