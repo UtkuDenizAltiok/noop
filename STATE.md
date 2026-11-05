@@ -1,6 +1,13 @@
 # State
 
-Updated **10 Oct 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **5 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+
+## Now — Simple mode built, phone build waiting for approval, 5 Nov
+
+- [x] **Simple mode implemented and verified** on `feat/simple-mode` (`ee74a4a1`). Design, verification and the
+  findings list: [Simple mode](features/simple-mode.md).
+- [ ] **Phone build:** rebuilt stack pushed as `testing-stack-next` (`14cb60d2`). Needs Utku's OK to replace
+  `testing-stack` (force-push with lease) and run `bash dist/tools/ship-build.sh testing-stack`. Just update.
 
 ## Now — community questions published and verified, 10 Oct
 

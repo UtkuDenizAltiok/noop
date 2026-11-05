@@ -7,9 +7,9 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 ## Priority — 9 Oct 2026
 
-**Next, chosen by Utku on 4 Nov 2026: [Simple mode](features/simple-mode.md).** A calm default view that shows
-each number once and explains it, with every feature still one tap away. Design, final copy, files and the
-verification checklist are recorded there; nothing is built yet. Build it when he says go.
+**[Simple mode](features/simple-mode.md) is built and verified (5 Nov 2026).** Its page lists the findings made
+while building it (a fixed blank-tab swipe, a doubled skin-temperature row, wrong pl/pt-PT/zh labels, upstream
+plist drift); each is a candidate for its own small PR.
 
 Language/copy/translation work is lowest priority under [Utku's latest instruction](RULES.md#settled-decisions).
 The saved, unfinished spectral wording change is parked in State; do not use it to restart language work.

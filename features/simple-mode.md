@@ -1,9 +1,11 @@
-# Simple mode — plan (not started)
+# Simple mode
 
-Status: **planned 4 Nov 2026, nothing built yet.** Utku asked for the design and analysis to be recorded now and built
-in a later session "perfect and error free". Branch to create when work starts: `feat/simple-mode`, cut from
-current `upstream/main` (the fork's `main` stays an exact upstream mirror). This page is the one home for the plan;
-State/Backlog only link here.
+Status: **built and verified 5 Nov 2026; waiting for Utku's OK to publish the phone build.** Source branch
+`feat/simple-mode` (commit `ee74a4a1`, on `upstream/main` 2a1de760), pushed to the fork. The rebuilt testing stack
+(`upstream/main` + every open app PR of ours + Simple mode + the parity-metadata refresh, head `14cb60d2`) is pushed as
+`testing-stack-next`; replacing `testing-stack` and running `ship-build.sh` needs his approval, because the agent's
+safety check refused the force-push. Installation when it ships: **just update** (presentation only, no stored data
+changed). This page is the one home for the feature; State/Backlog only link here.
 
 ## What Utku asked for (4 Nov 2026)
 
@@ -292,3 +294,47 @@ Do not touch: analytics, storage, BLE, the `.noopbak` whitelist, `ScoringGuideVi
   Explore / Compare into one "Patterns" hub in Full mode.
 - Propose the "Rest" pill wording and the Charge = Recovery mapping upstream for Full mode too.
 - Confirm or rule out the Trends 50 vs 41 observation.
+
+## What was built (5 Nov 2026)
+
+Everything in "The design" above, with these settled details:
+- `Strand/Data/SimpleModePrefs.swift`: the key, the default, the Coach-tab rule, the visible-tab list and the swipe
+  step (pure, tested), and `SimpleTodaySection` (its own enum, so the Android-shared `TodaySection` contract is
+  untouched).
+- `Strand/Screens/PlainGuideView.swift`: the guide, 15 entries in 5 groups, with the copy above (blood oxygen says
+  "95 percent" in words so no `%` reaches a localized string).
+- "What's behind your Charge" shows the Charge driver rows from `ChargeBreakdownWiring` (the classic Today sheet's
+  resolver, same row, same inputs) once the baseline is learned, and the three vitals with reading hints while it
+  calibrates. The separate skin-temperature row the classic sheet adds is not repeated (see findings).
+- Coach configured state is re-read by a zero-size probe on appear and on every tab switch, so the tab shell never
+  observes the Coach engine (which publishes on every streamed token).
+- The Mac app uses the simple Today too when Simple mode is on; its sidebar is unchanged.
+- 69 new catalogue strings, translated for all nine locales.
+
+Verification (all on 5 Nov): NOOPiOS simulator build, Strand macOS build, StrandTests all green (11 new in
+`SimpleModeTests`), `i18n_audit.py --ci upstream/main` exit 0, `doc_comment_lint.py` clean, Tools core 338 tests and
+the parity-governance suites green (the 4 `test_check_source_references` failures seen with the default macOS temp
+path are the known `/tmp` alias issue and pass with a canonical `TMPDIR`). Simulator walk-through: Simple Today on a
+day with data and on an unscored day, the guide pushed and as a sheet from a score label, Simple More, All features
+and a row inside it, the Settings switch both ways live (the simulator tap tool does not flip the iOS 26 switch; a
+slide does), full view identical to upstream, light and dark. Stack: release build for a real iPhone green, parity
+refresh through the guarded flow (`ratchet errors=0`), i18n gate exit 0; the only conflict was the catalogue, merged
+by key with `xcmerge.py` (every key kept).
+
+## Findings while building (not changed unless stated)
+
+1. **Fixed here:** the iOS tab swipe stepped the raw tag, so with no Coach tab a swipe from Sleep showed a blank tab
+   (tag 3). Worth its own small upstream PR (check whether Android's bar has the same shape).
+2. **Two readouts of one fact (classic Today):** the Charge sheet lists skin temperature twice when the night has a
+   deviation: once as a `ChargeDrivers` row and again as `SkinTempDeviationRow`, both from `skinTempDevC`.
+3. **Cosmetic, both platforms:** the skin-temperature driver prints "+0.0 C" without the degree sign
+   (`ChargeDrivers` value text; Kotlin twin must change with it).
+4. **Clearly wrong existing translations:** the confidence label "Building" is "Budynek" (pl) and "Edifício" (pt-PT),
+   both the noun "a building"; the readiness word "Push" is "推送/推播" (zh, a push notification) and "Naciskać" (pl,
+   "to press"). Language work is lowest priority, but these change the meaning.
+5. **German collisions:** Recovery and Rest are both "Erholung", Effort and Strain both "Belastung", so the Simple
+   captions repeat the label in German.
+6. **Upstream drift:** `xcodegen generate` adds the `.stalebattery` background-task id to
+   `StrandiOS/Resources/Info.plist`; `project.yml` declares it but the committed plist lacks it.
+7. Unconfirmed, not chased: the Trends "CHARGE 50" vs "Week in review · CHARGE 41" pair; demo Today showing
+   "0 total" workouts; demo Charge 41 beside positive driver rows (synthetic stored score, not a real disagreement).
