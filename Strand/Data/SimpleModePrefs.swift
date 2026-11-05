@@ -39,6 +39,13 @@ enum SimpleModePrefs {
         showsCoach ? [0, 1, 2, 3, 4] : [0, 1, 2, 4]
     }
 
+    /// The Sleep cards Simple mode shows, in order, below the pinned score: the night itself, then the one
+    /// sleep-debt figure with its plain advice, then how long the wearer has been sleeping. Manual sleep
+    /// marks, the body-clock dial, the metric tiles (which repeat the score and show a second debt figure)
+    /// and the stages-vs-typical card stay in the full view; the night card already compares each stage
+    /// with the wearer's typical on tap.
+    static let sleepSections: [SleepSection] = [.stages, .sleepDebt, .asleepDuration]
+
     /// The tab a horizontal swipe moves to. It steps through the VISIBLE tags only, so a hidden Coach
     /// tab is skipped instead of being selected as a blank tab, and it stops at either end.
     static func swipeTarget(from current: Int, forward: Bool, visible: [Int]) -> Int {

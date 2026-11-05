@@ -138,8 +138,12 @@ struct SleepView: View {
 
     /// The analytical cards to render, in saved order minus the hidden set.
     private var sleepVisibleSections: [SleepSection] {
-        SleepLayoutPrefs.visibleOrder(orderRaw: sleepSectionOrderRaw, hiddenRaw: sleepHiddenSectionsRaw)
+        if simpleMode { return SimpleModePrefs.sleepSections }
+        return SleepLayoutPrefs.visibleOrder(orderRaw: sleepSectionOrderRaw, hiddenRaw: sleepHiddenSectionsRaw)
     }
+    /// Simple mode (`SimpleModePrefs`): a fixed, short Sleep tab that leads with the night. It never reads
+    /// or writes the full view's Sleep layout, so switching it off restores the wearer's own arrangement.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
 
     var body: some View {
         // Resolve the memoized model for THIS render. `dataKey` is O(1)-ish (counts + last-row
@@ -182,12 +186,15 @@ struct SleepView: View {
                             .padding(.horizontal, -16)
                             .padding(.top, -24)
                             .staggeredAppear(index: 0)
-                        alarmsEntry
+                        // Simple mode leads with the night and keeps Alarms at the foot; the full view keeps
+                        // its own order.
+                        if !simpleMode { alarmsEntry }
                         // #sleep-layout: the analytical cards render in the user's saved order minus the
                         // hidden set, below the pinned Rest hero. Reordered via the Arrange sheet.
                         ForEach(Array(sleepVisibleSections.enumerated()), id: \.element) { idx, section in
                             sleepSectionView(section, resolved).staggeredAppear(index: idx + 1)
                         }
+                        if simpleMode { alarmsEntry }
                     }
                 } else {
                     emptyState
@@ -575,17 +582,39 @@ struct SleepView: View {
                 .accessibilityElement(children: .combine)
             }
 
+            // Simple mode answers the first question about a night under the score: how long, against how
+            // much was needed. The need is the one the debt ledger below measures against (the night's
+            // imported need when WHOOP provided one), so the two cards cannot disagree about it.
+            if simpleMode, score != nil, night.stages.asleep > 0 {
+                let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
+                let needMin = repo.importedSleep[wakeDay]?.needMin ?? model.normativeNeedMin
+                // On its own panel: this line lands where the night scene fades into the canvas, so plain
+                // white text (like the state word above) washes out in Light mode.
+                Text("\(durationText(night.stages.asleep)) asleep · \(durationText(needMin)) needed")
+                    .font(StrandFont.subhead.weight(.semibold))
+                    .foregroundStyle(StrandPalette.textPrimary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 7)
+                    .background(NoopPanelSurface(cornerRadius: 16))
+                    .padding(.top, 8)
+            }
+
             SourceBadge(
                 score != nil ? heroSource(for: night) : (repo.activeDeviceIsOura ? "Oura" : "On-device"),
                 tint: StrandPalette.restColor
             )
             .padding(.top, 8)
 
-            // Subtle Customize at the hero foot — functional, not competing with the gauge.
-            sleepArrangeAffordance
-                .padding(.horizontal, 16)
-                .padding(.top, 6)
-                .padding(.bottom, 6)
+            // Subtle Customize at the hero foot — functional, not competing with the gauge. Simple mode has a
+            // fixed layout, so it drops the control.
+            if !simpleMode {
+                sleepArrangeAffordance
+                    .padding(.horizontal, 16)
+                    .padding(.top, 6)
+                    .padding(.bottom, 6)
+            } else {
+                Color.clear.frame(height: 12)
+            }
         }
         .frame(maxWidth: .infinity)
     }

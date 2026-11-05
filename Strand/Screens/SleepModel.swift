@@ -217,6 +217,10 @@ struct SleepModel {
     /// Recency-weighted sleep-debt estimate across the latest 14 usable nights, with
     /// raw per-night deltas for context. Computed once per data change.
     let sleepDebtLedger: SleepDebtLedger
+
+    /// The normative nightly need (minutes) the debt ledger measures against (`debtNeedMin`), resolved
+    /// once per data change so the Simple-mode hero can say "asleep · needed" against the SAME need.
+    let normativeNeedMin: Double
 }
 
 /// Explicit inputs for `SleepModel.build(_:)` — a snapshot of the repository state the builder reads.
@@ -583,6 +587,7 @@ extension SleepModel {
             typicalRemMin: typicalStageMin(days: inputs.days, \.remMin),
             typicalLightMin: typicalStageMin(days: inputs.days, \.lightMin),
             trendPoints: durationTrendPoints(days: inputs.days),
-            sleepDebtLedger: debtLedger(days: inputs.days, napSleepMinByDay: napSleepMinByDay))
+            sleepDebtLedger: debtLedger(days: inputs.days, napSleepMinByDay: napSleepMinByDay),
+            normativeNeedMin: debtNeedMin(days: inputs.days))
     }
 }

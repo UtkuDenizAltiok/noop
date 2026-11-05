@@ -45,6 +45,8 @@ struct TrendsView: View {
     }
 
     @State private var range: Range = .quarter
+    /// Simple mode (`SimpleModePrefs`): the week, the charts and the calendar, without the advanced cards.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
 
     // #436 — shareable offline trends report (PDF over a date range). The sheet owns its
     // own range picker; this just presents it with the loaded history.
@@ -312,9 +314,13 @@ struct TrendsView: View {
                         // only when NO week in history has data. Past weeks render in the same format.
                         weeklyDigestNav
                             .staggeredAppear(index: 0)
-                        // The Charge / Effort / Rest trio, presented in NOOP's pip language.
-                        weekInReview(charge: metrics.recovery, effort: metrics.strain, rest: metrics.rest)
-                            .staggeredAppear(index: 1)
+                        // The Charge / Effort / Rest trio, presented in NOOP's pip language. Left out of Simple
+                        // mode: it averages the range window, not the week, so beside the weekly digest above
+                        // it read as a second, different "this week" figure.
+                        if !simpleMode {
+                            weekInReview(charge: metrics.recovery, effort: metrics.strain, rest: metrics.rest)
+                                .staggeredAppear(index: 1)
+                        }
                         rangeBar(recovery: metrics.recovery)
                             .staggeredAppear(index: 2)
                         heroRecovery(recovery: metrics.recovery)
@@ -324,12 +330,18 @@ struct TrendsView: View {
                         // Long-horizon training load (CTL/ATL/TSB). Uses the FULL history, not the
                         // range window — chronic load is inherently a 42-day horizon. Self-hides its
                         // chart behind an honest "needs N more days" state until enough history exists.
-                        TrainingLoadCard(days: repo.days)
-                            .staggeredAppear(index: 5)
+                        // Simple mode leaves out the athlete's fitness/fatigue/form chart and the PDF export;
+                        // both stay in the full view.
+                        if !simpleMode {
+                            TrainingLoadCard(days: repo.days)
+                                .staggeredAppear(index: 5)
+                        }
                         yearStrip
                             .staggeredAppear(index: 6)
-                        exportReportRow
-                            .staggeredAppear(index: 7)
+                        if !simpleMode {
+                            exportReportRow
+                                .staggeredAppear(index: 7)
+                        }
                     }
                 }
             }
