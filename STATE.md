@@ -17,8 +17,9 @@ Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   new subtitles present. **Just update.**
 - [ ] **Upstream PR opened 6 Nov:** [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen subtitles (both
   platforms), head `ea831f16`, branch `fix/plain-screen-subtitles` (worktree `~/Developer/noop-subtitles`).
-  Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI (no approval gate):
-  Android, i18n Coverage, Source Hygiene, Tools Python green; App build (macOS + iOS) still queued for a runner.
+  Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI all green at `ea831f16`:
+  Android, i18n Coverage, Source Hygiene, Tools Python, and App build run 42120031911 with BOTH legs run (NOOPiOS
+  compile success; Strand macOS build + StrandTests success). MERGEABLE, no comments yet.
 - [ ] **Upstream PRs opened 5 Nov, awaiting review (no comments as of 6 Nov):** #2896 (tab swipe), #2897
   (translations), #2898 (Info.plist), #2899 (Charge skin temperature once), #2900 (one sleep need for
   hours-vs-needed), #2901 (Trends average label). On all six the upstream NOOPiOS leg was cancelled with no
