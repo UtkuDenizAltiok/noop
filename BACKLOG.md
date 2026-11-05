@@ -7,11 +7,11 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 
 ## Priority — 9 Oct 2026
 
-**[Simple mode](features/simple-mode.md) is built and verified (5 Nov 2026).** Its page lists the findings made
-while building it (a fixed blank-tab swipe, a doubled skin-temperature row, wrong pl/pt-PT/zh labels, upstream
-plist drift); each is a candidate for its own small PR.
+**Current focus (Utku, 5 Nov 2026): the human-friendly NOOP project.** Its ordered roadmap (plain wording pass,
+Simple mode for the remaining screens, two-readout fixes, Android twin, then biometrics) lives in
+[Simple mode → Start here](features/simple-mode.md); the evidence-first biometric queue below still applies.
 
-Language/copy/translation work is lowest priority under [Utku's latest instruction](RULES.md#settled-decisions).
+Translation work is lowest priority (plain English wording is a priority since 5 Nov) under [Utku's latest instruction](RULES.md#settled-decisions).
 The saved, unfinished spectral wording change is parked in State; do not use it to restart language work.
 
 The [sensor/biometric audit](audits/biometric-pipeline-2026-10-07/README.md) records production-source review and

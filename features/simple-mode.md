@@ -1,16 +1,88 @@
-# Simple mode
+# Simple mode and the human-friendly NOOP project
 
-Status: **built, verified and shipped to the testing build, 5 Nov 2026.** Source branch `feat/simple-mode`
-(commit `ee74a4a1`, on `upstream/main` 2a1de760). The testing stack now carries it (see State for the build and
-release). Installation: **just update** (presentation only, no stored data changed). Not proposed upstream yet: that
-needs the Android twin and, per #2463, default OFF there. This page is the one home for the feature.
+## Start here (next chat)
 
-Stack note (5 Nov): the agent's safety check refuses force-pushes, so the rebuilt stack (`tmp/stack-2026-11-05`,
-`14cb60d2`) was recorded on `testing-stack` as a merge over the previous stack (`63b357f5`, tree identical), and
-`testing-build` the same way (`e1dc78bd` = stack + `fork/ships-template`). `ship-build.sh` force-pushes and so cannot
-run under that check; the workflow was dispatched and its release verified by hand with the same checks.
+**Goal** (Utku, 4–5 Nov 2026; rule in [Rules](../RULES.md#settled-decisions)): make NOOP easy to use and easy to
+understand for a regular WHOOP wearer, thinking like a physician, a fitness expert and a technologist. Three parts:
+simple UI, plain English wording, and fixing proven errors (biometrics, sensors, maths, methods, battery). Nothing
+important is removed: Settings → Simple mode switches between the calm view and the full app. Full authority: decide
+and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just update").
 
-## What Utku asked for (4 Nov 2026)
+**Where things are (5 Nov 2026, end of the first chat):**
+- `feat/simple-mode` on the fork (`ee74a4a1` v1: Today, More, guide, Settings switch; `6dca7333` v2: Sleep,
+  Trends). Default ON in the fork; iOS + shared Mac code only; no Android twin yet.
+- Phone: `testing-latest` = `testing-build` `bd98dc41` (stack `0d9c961e` + template), NOOP 12.1.0 (439), verified.
+  Details in [State](../STATE.md).
+- Upstream PRs, all ours, awaiting maintainers: [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
+  [#2897](https://github.com/ryanbr/noop/pull/2897) wrong pl/pt-PT/zh labels,
+  [#2898](https://github.com/ryanbr/noop/pull/2898) Info.plist drift,
+  [#2899](https://github.com/ryanbr/noop/pull/2899) skin temperature shown once,
+  [#2900](https://github.com/ryanbr/noop/pull/2900) one sleep need (Android test fixed in `0a6c50cd`),
+  [#2901](https://github.com/ryanbr/noop/pull/2901) Trends "Average" label. On all six the upstream `NOOPiOS` App
+  build leg is cancelled with 0 steps (no runner, upstream capacity); macOS build + StrandTests and Android CI pass.
+  The fork cannot re-run upstream jobs. Older open PRs: see State.
+
+**How to work (what this chat learned):**
+- Build: `xcodegen generate`, then `git checkout -- StrandiOS/Resources/Info.plist` (until #2898 merges);
+  `xcodebuild -scheme NOOPiOS -destination 'platform=iOS Simulator,name=iPhone 18 Pro' CODE_SIGNING_ALLOWED=NO build`;
+  full tests: `-scheme Strand -destination 'platform=macOS' test` (2331 tests on the stack).
+- Python tools need `/opt/homebrew/bin/python3.12` (system python is 3.9) and a canonical `TMPDIR` (realpath),
+  else 4 `test_check_source_references` tests fail on the macOS `/tmp` alias. CI gates to run before any PR:
+  `i18n_audit.py --ci upstream/main`, `doc_comment_lint.py`, `python3.12 -m unittest discover -p "test_*.py"` in
+  `Tools/`, and `tests.test_parity_governance_acceptance` (+ `--refresh-derived` for a combined stack).
+- New or changed English strings need real translations for de/es/fr/pt-PT (hard gate) and it/pl/ru/zh-Hans/zh-Hant
+  (ratchet; an English "translation" counts as an echo and fails). Add them with a small script that inserts
+  one-line JSON entries after `"strings": {` in `Strand/Resources/Localizable.xcstrings`; merge catalogue conflicts
+  by key with `dist/tools/xcmerge.py` (never by markers). Reusing an existing key avoids new translations.
+- Simulator: `xcrun simctl launch "iPhone 18 Pro" com.noopapp.noop --demo-seed` (first launch seeds 120 synthetic
+  days ending the day it ran; relaunch to see data; "today" may be unscored, swipe Today right for a scored day).
+  The screenshot tool can show the frame before the last action: wait and take a second one. iOS 26 switches do not
+  flip on tap in the tool; slide them. Turn Simple mode off without the UI: launch with `-noop.simpleMode NO`.
+- Safety-check limits on this Mac: force-push is refused (use the merge-commit route in
+  [Workflow §6](../WORKFLOW.md#6-builds-for-utkus-phone)); editing a posted GitHub comment was refused (get claims
+  right before posting); a looped `gh pr checks` was refused once (the app's `ccd_pr get_status` or
+  `gh run list --branch` work). In zsh always write `"${VAR}:refs/…"` (bare `$VAR:r` is a zsh modifier).
+- Verify citations before writing them (one journal name was wrong in a draft commit message and was corrected).
+
+**Roadmap, in order** (re-check upstream and State first):
+1. **Plain wording pass** (new focus, 5 Nov). Principles: say what it is and what to do in everyday words; compare
+   with "your normal" instead of "baseline"; one name per thing everywhere (Charge = recovery, Effort = strain,
+   Rest = sleep score); every screen subtitle says what the screen is for (no slogans); data-quality notes in plain
+   words; keep the technical method in the scoring guide only. Start with what Simple mode shows, then the full
+   view. Inventory already found (English source strings):
+   - Subtitles that are slogans: Trends "The thread of you over time.", Explore "Every signal, one tap deep.",
+     Compare "Overlay signals, draw conclusions.", Insights "Interrogate what affects what.", Workouts "Every
+     session, threaded together.", empty Sleep "Last night, read in two seconds.", Stress "Autonomic load across
+     your waking day", Live "Live Body Console" / "Current physiology, strap trust, and session controls in one
+     working view.", Intelligence "NOOP scores your charge, effort and rest itself: on-device, no cloud.".
+   - Jargon names: What Moves You / Intelligence / two different "Insights" screens / Explore / Compare, Lab Book,
+     Rhythm, "Your Data, Fused", "NOOP Limitations", Synthesis, Recovery Vitals, "Data Sources · Provenance".
+   - Sleep: "Carried · 4. Nov" tile captions (means "last value, from 4 Nov"), "Move, relative to tonight" / "No
+     movement detail for this night", "PARTLY RECORDED – Only 93% of this night's window has stage data…", "stages
+     approximate (on-device)", "Restorative", "vs typ", the ledger sentence "Meeting that complete sleep need clears
+     the displayed debt; recent shortfalls carry forward at a reduced weight." and "BALANCE / PER-NIGHT NEED /
+     NIGHTS", the hero word "Optimal" (white on a light fade in Light mode: also a contrast bug).
+   - Charge drivers (`ChargeDrivers` verdicts, analytics text shared byte-for-byte with Kotlin): "below baseline,
+     limiting recovery", "+11 pts" (points of Charge), "Sleep quality" (it is the Rest score), "+0.0 C vs baseline"
+     (no degree sign, always Celsius even for a Fahrenheit user). Changing these needs the Kotlin twin and an oracle.
+   - Today pills: "No data" / "Last night" / "Calibrating" need a one-line meaning on tap (the guide has it).
+2. **Simple mode for the screens Simple More opens:** Health monitor, Stress, Live heart rate, Workouts, Alarms.
+   Same method as Sleep/Trends: lead with the answer, show each fact once, advanced cards stay in the full view.
+3. **Full view, two readouts of one fact:** the Night detail sleep-debt tile (imported WHOOP figure) vs the ledger
+   (NOOP's own) both say "sleep debt" with different numbers (finding 8). Label the source or align the rule, both
+   platforms.
+4. **Next stack rebuild:** include `0a6c50cd`; when #2896 merges, switch `SimpleModePrefs.swipeTarget` /
+   `visibleTabTags` to the upstream `TabSwipe`.
+5. **Android twin of Simple mode** (+ `noop.simpleMode` in the `.noopbak` whitelist on both platforms), then
+   propose Simple mode upstream (default OFF there, per #2463).
+6. **Biometrics**: continue the evidence-first queue in [Backlog](../BACKLOG.md); change a number only with
+   evidence that it moves closer to the truth (Rules 2, 3).
+
+**Ask Utku for** (only when useful): first impressions after a few days on Simple mode; screenshots of anything
+confusing on the iPhone 16 Plus (430 pt wide: check the Today hero captions and the Sleep "asleep · needed" panel
+fit); a strap log if a number looks wrong.
+
+## History: what Utku asked for (4 Nov 2026)
 
 In his words: the app is "AI slop" with "too many things in it". He can't tell what is too much, too little, good
 or bad, so he asked for a careful analysis and a better version. He shared a WHOOP 5.0 user's feedback, summarised:

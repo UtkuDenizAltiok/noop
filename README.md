@@ -21,7 +21,7 @@ then use a task prompt, Deep improvement or Deep search. Finish completes active
 | REA suitability, WHOOP protocol research and outreach | [REA assessment](audits/rea-whoop-2026-10-09/README.md) |
 | Completed work and dated test results | [History](HISTORY.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md) |
-| Planned: Simple mode (design, copy, checklist) | [Simple mode plan](features/simple-mode.md) |
+| **Current focus:** human-friendly NOOP (Simple mode, plain wording, proven fixes) | [Start here](features/simple-mode.md) |
 | Agent entry | [AGENTS.md](AGENTS.md) |
 | Commands and analysis helpers | [tools/](tools/) |
 

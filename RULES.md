@@ -33,16 +33,28 @@ request an export without a defined need. Give enough explanation to understand 
   Deep search researches and saves a recommendation. Finish completes active work and essential existing obligations
   before handover; it does not abandon a feasible task or clear the backlog. Genuine blockers/limits and explicit
   deferrals stay honest. [Sessions](SESSIONS.md) owns the exact prompts and procedures; do not duplicate them elsewhere.
-- **English only; language improvements are lowest priority (Utku, 8 Oct 2026, session close).** He does not
-  care about other languages and does not want tokens spent fixing languages. Do not select wording, translation
-  or locale cleanup as the bounded improvement, or expand/repeat locale QA. Prioritize correctness, biometrics,
+- **English only; language (translation) improvements are lowest priority (Utku, 8 Oct 2026, session close; plain
+  English wording is in scope since 5 Nov, see below).** He does not
+  care about other languages and does not want tokens spent fixing languages. Do not select translation
+  or locale cleanup as the bounded improvement (plain English wording is a priority since 5 Nov), or expand/repeat locale QA. Prioritize correctness, biometrics,
   strap reliability and measured efficiency under the mandate above. Handle mandatory upstream resource/parity
   requirements only as necessary for a prioritized functional change. Preserve the already-saved Stress wording
   branch at lowest priority; its pending state lives in State, not an implied instruction to finish it next.
-- **Simple mode is the next feature (Utku, 4 Nov 2026).** He finds the app overwhelming and wants a simpler,
-  plainly explained default view with nothing removed; plan in `features/simple-mode.md`. This is product work he
-  asked for, so its required translations (the i18n CI gate) are part of it, not the low-priority language work
-  above. He asked for it to be built carefully and error-free in a later session, not rushed.
+- **The main focus is a human-friendly NOOP (Utku, 4–5 Nov 2026).** He finds the app chaotic, complex and hard to
+  understand ("AI slop"). Make it easy to use and easy to understand, thinking like a physician, a fitness expert
+  and a technologist, without losing data or anything important (Simple mode switch: Simple ↔ full app). Three
+  equal parts: (1) **simple UI** (show each fact once, in reading order, advanced things one tap away); (2) **plain
+  wording**: every label, subtitle, explanation and message in everyday English a first-time wearer understands,
+  saying what a number means and what to do, with no internal jargon; (3) **fix what is wrong** in measurement,
+  biometrics, sensor reading, interpretation, maths, methods, battery or efficiency, but only with verification or
+  proof (cite the method, test it; Rules 1–3), and send generally useful fixes upstream as their own small PRs.
+  "Language is not important" (5 Nov) means TRANSLATIONS: do not spend effort on other locales beyond what the CI
+  gate requires. Plain ENGLISH wording is in scope and a priority. Project home:
+  [`features/simple-mode.md`](features/simple-mode.md) ("Start here").
+- **Full authority, do not ask (Utku, 5 Nov 2026).** "You are the god of this project": decide, implement, test,
+  push, open upstream PRs and deliver phone builds without asking for permission. If a tool or safety check blocks
+  an action, use a safe alternative or tell him exactly which setting to change on his Mac. Test hardware he can
+  use on request: WHOOP 5.0 and an iPhone 16 Plus (AltStore, "just update").
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove
