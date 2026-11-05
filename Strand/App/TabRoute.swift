@@ -35,6 +35,9 @@ enum TabRoute: Hashable {
     case health
     case hydration
     case coupled
+    /// The plain-language guide to every score and reading ("What the numbers mean"), linked from the
+    /// Simple-mode Today.
+    case plainGuide
 }
 
 extension View {
@@ -71,6 +74,7 @@ extension View {
             case .health: HealthView()
             case .hydration: HydrationView()
             case .coupled: CoupledView()
+            case .plainGuide: PlainGuideView()
             }
         }
     }

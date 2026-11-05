@@ -260,6 +260,8 @@ struct SettingsView: View {
                        // Settings' own frosted cards sit on the dark canvas below the sky band, unchanged.
                        topBackground: liquidScaffoldSky()) {
             VStack(alignment: .leading, spacing: NoopMetrics.sectionSpacing) {
+                // Simple mode leads, so the one switch between the calm and the full app is never hunted for.
+                simpleModeCard.staggeredAppear(index: 0)
                 // Everyday sections stay expanded (S3): the ones a first-run user actually needs.
                 profileCard.staggeredAppear(index: 0)
                 unitsCard.staggeredAppear(index: 1)
@@ -356,6 +358,27 @@ struct SettingsView: View {
             DiagnosticsSheet(onClose: { showDiagnostics = false })
         }
         #endif
+    }
+
+    // MARK: - Simple mode
+
+    /// The switch between Simple mode and the full app (`SimpleModePrefs`). Presentation only: either way
+    /// NOOP records and scores exactly the same data, and nothing is deleted.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    private var simpleModeCard: some View {
+        SettingsSection(
+            icon: "eyeglasses",
+            title: "Simple mode",
+            blurb: "Shows the essentials and explains them. Turn it off to see every feature and arrange Today yourself. Nothing is deleted either way."
+        ) {
+            Toggle(isOn: $simpleMode) {
+                Text("Simple mode")
+                    .font(StrandFont.subhead)
+                    .foregroundStyle(StrandPalette.textPrimary)
+            }
+            .toggleStyle(.switch)
+            .tint(StrandPalette.accent)
+        }
     }
 
     // MARK: - Profile
