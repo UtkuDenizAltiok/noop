@@ -5,9 +5,13 @@ Updated **5 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
 ## Now — Simple mode on the testing build; four upstream fixes open, 5 Nov
 
 - [x] **Simple mode** built, verified and in the testing stack: [Simple mode](features/simple-mode.md).
-- [ ] **Testing build** `e1dc78bd` (stack `63b357f5` + template), run
-  [42062697450](https://github.com/UtkuDenizAltiok/noop/actions/runs/42062697450): release verification pending in
-  this session; update this line with the verified result. Just update.
+- [x] **Testing build verified, 5 Nov evening:** `testing-build` `bd98dc41` = stack `0d9c961e` (tree of
+  `tmp/stack-2026-11-05b`: upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2 + #2897 #2898 #2899
+  #2900 #2901; #2896's swipe fix is already inside Simple mode) + template. Run
+  [42071541163](https://github.com/UtkuDenizAltiok/noop/actions/runs/42071541163) green; release `testing-latest`
+  targets `bd98dc41`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), contains the Simple mode strings. Before
+  shipping: Release build for a real iPhone and all 2331 StrandTests green locally. **Just update.**
+  Next stack rebuild: take #2900's Android test update `0a6c50cd` (the phone build only assembles, no tests).
 - [ ] **Upstream PRs opened 5 Nov, awaiting review:** #2896 (tab swipe), #2897 (translations), #2898 (Info.plist),
   #2899 (Charge skin temperature once), #2900 (one sleep need for hours-vs-needed), #2901 (Trends average label). Older open PRs: #2747 and #2724 now CONFLICTING with upstream main (their
   content still applied cleanly in the stack); #2722, #2717, #2661, #2660, #2613 mergeable.
