@@ -97,6 +97,17 @@ final class SimpleModeTests: XCTestCase {
         XCTAssertFalse(SimpleTodaySection.omittedFullSections.contains(.hero), "The scores are never omitted.")
     }
 
+    // MARK: - Sleep
+
+    /// The Simple Sleep tab leads with the night and shows sleep debt once: the metric tiles, which repeat
+    /// the score and carry a second debt figure, stay in the full view.
+    func testSimpleSleepLeadsWithTheNightAndShowsDebtOnce() {
+        XCTAssertEqual(SimpleModePrefs.sleepSections.first, .stages)
+        XCTAssertTrue(SimpleModePrefs.sleepSections.contains(.sleepDebt))
+        XCTAssertFalse(SimpleModePrefs.sleepSections.contains(.nightDetail))
+        XCTAssertEqual(Set(SimpleModePrefs.sleepSections).count, SimpleModePrefs.sleepSections.count)
+    }
+
     // MARK: - The plain guide
 
     func testEveryGuideEntryIsCompleteAndBelongsToOneGroup() {
