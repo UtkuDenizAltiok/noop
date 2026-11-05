@@ -1,11 +1,14 @@
 # Simple mode
 
-Status: **built and verified 5 Nov 2026; waiting for Utku's OK to publish the phone build.** Source branch
-`feat/simple-mode` (commit `ee74a4a1`, on `upstream/main` 2a1de760), pushed to the fork. The rebuilt testing stack
-(`upstream/main` + every open app PR of ours + Simple mode + the parity-metadata refresh, head `14cb60d2`) is pushed as
-`testing-stack-next`; replacing `testing-stack` and running `ship-build.sh` needs his approval, because the agent's
-safety check refused the force-push. Installation when it ships: **just update** (presentation only, no stored data
-changed). This page is the one home for the feature; State/Backlog only link here.
+Status: **built, verified and shipped to the testing build, 5 Nov 2026.** Source branch `feat/simple-mode`
+(commit `ee74a4a1`, on `upstream/main` 2a1de760). The testing stack now carries it (see State for the build and
+release). Installation: **just update** (presentation only, no stored data changed). Not proposed upstream yet: that
+needs the Android twin and, per #2463, default OFF there. This page is the one home for the feature.
+
+Stack note (5 Nov): the agent's safety check refuses force-pushes, so the rebuilt stack (`tmp/stack-2026-11-05`,
+`14cb60d2`) was recorded on `testing-stack` as a merge over the previous stack (`63b357f5`, tree identical), and
+`testing-build` the same way (`e1dc78bd` = stack + `fork/ships-template`). `ship-build.sh` force-pushes and so cannot
+run under that check; the workflow was dispatched and its release verified by hand with the same checks.
 
 ## What Utku asked for (4 Nov 2026)
 
@@ -321,20 +324,53 @@ slide does), full view identical to upstream, light and dark. Stack: release bui
 refresh through the guarded flow (`ratchet errors=0`), i18n gate exit 0; the only conflict was the catalogue, merged
 by key with `xcmerge.py` (every key kept).
 
-## Findings while building (not changed unless stated)
+## Findings while building, and what happened to each
 
-1. **Fixed here:** the iOS tab swipe stepped the raw tag, so with no Coach tab a swipe from Sleep showed a blank tab
-   (tag 3). Worth its own small upstream PR (check whether Android's bar has the same shape).
-2. **Two readouts of one fact (classic Today):** the Charge sheet lists skin temperature twice when the night has a
-   deviation: once as a `ChargeDrivers` row and again as `SkinTempDeviationRow`, both from `skinTempDevC`.
-3. **Cosmetic, both platforms:** the skin-temperature driver prints "+0.0 C" without the degree sign
-   (`ChargeDrivers` value text; Kotlin twin must change with it).
-4. **Clearly wrong existing translations:** the confidence label "Building" is "Budynek" (pl) and "Edifício" (pt-PT),
-   both the noun "a building"; the readiness word "Push" is "推送/推播" (zh, a push notification) and "Naciskać" (pl,
-   "to press"). Language work is lowest priority, but these change the meaning.
-5. **German collisions:** Recovery and Rest are both "Erholung", Effort and Strain both "Belastung", so the Simple
-   captions repeat the label in German.
-6. **Upstream drift:** `xcodegen generate` adds the `.stalebattery` background-task id to
-   `StrandiOS/Resources/Info.plist`; `project.yml` declares it but the committed plist lacks it.
+1. **Tab swipe could land on a blank tab** when the Coach tab is absent (iOS only; Android has no tab swipe). Fixed
+   in Simple mode, and as a standalone upstream PR [ryanbr/noop#2896](https://github.com/ryanbr/noop/pull/2896)
+   (`TabSwipe`, 5 tests). If it merges, switch `SimpleModePrefs.swipeTarget` / `visibleTabTags` to `TabSwipe`.
+2. **Skin temperature printed twice** in the Apple Charge breakdown (driver row + `SkinTempDeviationRow`, same
+   `skinTempDevC`); Android draws it once. Upstream PR [ryanbr/noop#2899](https://github.com/ryanbr/noop/pull/2899).
+3. **Wrong Apple translations:** "Building" = "a building" (pl, pt-PT); "Push" = "push notification" (zh) and "to
+   press" (pl). Now match Android's existing wording: [ryanbr/noop#2897](https://github.com/ryanbr/noop/pull/2897).
+4. **Info.plist drift** after `xcodegen generate` (`.stalebattery` id): [ryanbr/noop#2898](https://github.com/ryanbr/noop/pull/2898).
+5. **Recorded, not changed:** the skin-temperature driver prints "+0.0 C" with no degree sign and always in Celsius,
+   even for a Fahrenheit user. It is analytics text pinned byte-for-byte on both platforms (`ChargeDrivers`
+   `skinTempDevText` and its Kotlin twin), so it needs a two-platform, oracle-verified change, ideally formatting the
+   unit at the display layer.
+6. **Recorded, not changed:** German collisions (Recovery and Rest both "Erholung", Effort and Strain both
+   "Belastung"), so the Simple captions repeat the label in German. Language work is lowest priority.
 7. Unconfirmed, not chased: the Trends "CHARGE 50" vs "Week in review · CHARGE 41" pair; demo Today showing
    "0 total" workouts; demo Charge 41 beside positive driver rows (synthetic stored score, not a real disagreement).
+
+The four upstream PRs (#2896–#2899) are not yet in the testing stack; add them at the next stack rebuild.
+
+## Round 2 (5 Nov 2026, evening): Sleep and Trends, two more upstream fixes
+
+Utku's direction: the main focus is a human-friendly, simple UI (nothing important lost); fix proven errors in
+biometrics, sensors, methods or efficiency; no language work.
+
+**Simple mode v2** (`feat/simple-mode` commit `6dca7333`):
+- Sleep leads with the night: score, then "6h 42m asleep · 8h 0m needed" on its own panel (white text washed out
+  in Light mode where the night scene fades), then the night card (bed/wake, stages, naps), sleep debt once (the
+  ledger, with its plain advice), the hours-slept trend, and Alarms at the foot. Sleep marks, the body-clock dial,
+  stages-vs-typical and the Night detail tiles stay in the full view. The need on the new line is the ledger's
+  (`SleepModel.normativeNeedMin`, or the night's imported need), so they cannot disagree.
+- Trends drops the mislabelled range-average trio, the CTL/ATL/TSB training-load chart and the PDF export row.
+- Verified: NOOPiOS build, StrandTests 2314 green, i18n gate, doc lint, simulator walk-through of both tabs.
+
+**Findings and fixes this round:**
+8. **Two sleep-debt numbers on one Sleep tab** ("35m" tile vs "1h 31m" ledger in the demo): the tile takes an
+   imported WHOOP debt verbatim, the ledger always computes NOOP's own; both just say "sleep debt". Simple mode
+   shows the ledger only. Full view still shows both (candidate: label the tile's source or align the rule).
+9. **"Hours vs needed" used a second sleep need** (mean sleep floored at 7.5h) while debt, the trend need line and
+   the Rest score use the normative need (P75 floored at 8h): fixed on both platforms in
+   [ryanbr/noop#2900](https://github.com/ryanbr/noop/pull/2900), with sources (Van Dongen 2003, Klerman & Dijk
+   2005, Watson 2015, Hirshkowitz 2015) and tests on both sides.
+10. **Trends "Week in review" averaged the 3M range, not the week**, above the range picker:
+    [ryanbr/noop#2901](https://github.com/ryanbr/noop/pull/2901) moves it below the picker and titles it "Average"
+    (both platforms, existing strings).
+11. Not a bug: Effort shows one decimal on the 0–100 scale in the digest ("37.0"); that is the app-wide
+    `effortDisplay` convention, only the Today ring is whole.
+12. Upstream CI note: the NOOPiOS leg of App build on #2896/#2897/#2899 was cancelled with no runner ever assigned
+    (infra, not code); a comment on each PR asks for a re-run (the fork cannot re-run upstream jobs).

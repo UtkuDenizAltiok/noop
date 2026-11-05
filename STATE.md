@@ -2,12 +2,15 @@
 
 Updated **5 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — Simple mode built, phone build waiting for approval, 5 Nov
+## Now — Simple mode on the testing build; four upstream fixes open, 5 Nov
 
-- [x] **Simple mode implemented and verified** on `feat/simple-mode` (`ee74a4a1`). Design, verification and the
-  findings list: [Simple mode](features/simple-mode.md).
-- [ ] **Phone build:** rebuilt stack pushed as `testing-stack-next` (`14cb60d2`). Needs Utku's OK to replace
-  `testing-stack` (force-push with lease) and run `bash dist/tools/ship-build.sh testing-stack`. Just update.
+- [x] **Simple mode** built, verified and in the testing stack: [Simple mode](features/simple-mode.md).
+- [ ] **Testing build** `e1dc78bd` (stack `63b357f5` + template), run
+  [42062697450](https://github.com/UtkuDenizAltiok/noop/actions/runs/42062697450): release verification pending in
+  this session; update this line with the verified result. Just update.
+- [ ] **Upstream PRs opened 5 Nov, awaiting review:** #2896 (tab swipe), #2897 (translations), #2898 (Info.plist),
+  #2899 (Charge skin temperature once), #2900 (one sleep need for hours-vs-needed), #2901 (Trends average label). Older open PRs: #2747 and #2724 now CONFLICTING with upstream main (their
+  content still applied cleanly in the stack); #2722, #2717, #2661, #2660, #2613 mergeable.
 
 ## Now — community questions published and verified, 10 Oct
 
