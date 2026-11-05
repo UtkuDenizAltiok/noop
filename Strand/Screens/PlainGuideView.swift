@@ -221,7 +221,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .estimates:
             return String(localized: "Steps and calories come from your strap or, if connected, from Apple Health. Fitness age, VO₂ max and Vitality are long-term fitness estimates that change slowly over weeks. Watch the direction, not the exact number.")
         case .confidence:
-            return String(localized: "Calibrating means NOOP is still learning your normal, which takes about 4 nights of wear. Building means there's enough to show a score, but it will get more accurate. Solid means everything it needs is there. No data means there was nothing to score yet. If NOOP can't work out a score honestly, it shows a dash instead of guessing.")
+            return String(localized: "Calibrating means NOOP is still learning your normal, which takes about 4 nights of wear. Building means there's enough to show a score, but it will get more accurate. Solid means everything it needs is there. No data means there was nothing to score yet. If NOOP can't work out a score honestly, it shows a dash instead of guessing. Earlier score means today's score isn't ready yet, so you see the most recent one; its date is under the Charge ring, and it updates once your strap has synced last night's sleep.")
         case .whoopDifference:
             return String(localized: "NOOP works everything out on your device using published science. WHOOP's own formulas are private, so NOOP's scores usually move the same way as WHOOP's but won't match exactly. Both are estimates from a wrist strap, not medical advice.")
         }
@@ -275,37 +275,45 @@ struct PlainGuideView: View {
     }
 
     private var content: some View {
-        ScreenScaffold(title: "What the numbers mean",
-                       subtitle: "Plain explanations of every score and reading. Tap one to learn more.",
-                       topBackground: liquidScaffoldSky()) {
-            ForEach(PlainGuideGroup.allCases) { group in
-                VStack(alignment: .leading, spacing: 10) {
-                    Text(group.title).strandOverline()
-                    NoopCard(padding: 0) {
-                        VStack(spacing: 0) {
-                            ForEach(Array(group.terms.enumerated()), id: \.element) { index, term in
-                                entry(term)
-                                if index < group.terms.count - 1 {
-                                    Rectangle()
-                                        .fill(StrandPalette.hairline)
-                                        .frame(height: NoopMetrics.hairlineWidth)
-                                        .padding(.leading, 56)
+        // Opened at one entry (a tapped label or pill), the guide also scrolls to it: the entries further
+        // down would otherwise open expanded but off screen.
+        ScrollViewReader { proxy in
+            ScreenScaffold(title: "What the numbers mean",
+                           subtitle: "Plain explanations of every score and reading. Tap one to learn more.",
+                           topBackground: liquidScaffoldSky()) {
+                ForEach(PlainGuideGroup.allCases) { group in
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(group.title).strandOverline()
+                        NoopCard(padding: 0) {
+                            VStack(spacing: 0) {
+                                ForEach(Array(group.terms.enumerated()), id: \.element) { index, term in
+                                    entry(term).id(term)
+                                    if index < group.terms.count - 1 {
+                                        Rectangle()
+                                            .fill(StrandPalette.hairline)
+                                            .frame(height: NoopMetrics.hairlineWidth)
+                                            .padding(.leading, 56)
+                                    }
                                 }
                             }
+                            .clipShape(RoundedRectangle(cornerRadius: NoopMetrics.cardRadius, style: .continuous))
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: NoopMetrics.cardRadius, style: .continuous))
                     }
                 }
+                Text("NOOP is not a medical device. If a reading worries you or you feel unwell, talk to a doctor.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 4)
             }
-            Text("NOOP is not a medical device. If a reading worries you or you feel unwell, talk to a doctor.")
-                .font(StrandFont.footnote)
-                .foregroundStyle(StrandPalette.textTertiary)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 4)
-        }
-        .background(StrandPalette.surfaceBase.ignoresSafeArea())
-        .sheet(item: $scoringSection) { section in
-            ScoringGuideView(initialSection: section, onClose: { scoringSection = nil })
+            .background(StrandPalette.surfaceBase.ignoresSafeArea())
+            .sheet(item: $scoringSection) { section in
+                ScoringGuideView(initialSection: section, onClose: { scoringSection = nil })
+            }
+            .onAppear {
+                guard let term = initialTerm else { return }
+                DispatchQueue.main.async { proxy.scrollTo(term, anchor: .top) }
+            }
         }
     }
 
