@@ -2,19 +2,23 @@
 
 Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — Simple mode v3 (plain wording) on the testing build, 6 Nov
+## Now — Simple mode v3 + plain screen subtitles on the testing build, 6 Nov
 
 - [x] **Simple mode v3 built and verified:** `feat/simple-mode` `5269b8a6` (worktree `~/Developer/noop-simple`),
   plain wording on Simple Today and Simple Sleep; details and verification in
   [Simple mode, Round 3](features/simple-mode.md#round-3-6-nov-2026-plain-wording-on-simple-today-and-simple-sleep).
-- [x] **Testing build verified, 6 Nov:** `testing-build` `4d18cf00` = merge commit over the old build `bd98dc41`
-  whose tree equals `3763b277` = stack `a863d3c8` + `fork/ships-template`. Stack `a863d3c8` (pushed as a
-  fast-forward over `0d9c961e`) = upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2/v3 +
-  #2897–#2901 + `0a6c50cd` (#2900 Android test); catalogue merged by key with `xcmerge.py`. Before shipping:
-  iPhone Release build green, StrandTests 2337 green, i18n gate exit 0, parity acceptance 50 OK. Run
-  [42115214139](https://github.com/UtkuDenizAltiok/noop/actions/runs/42115214139) green; release `testing-latest`
-  (id 435778305) targets `4d18cf00`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), new strings present
-  (checked de "Früherer Wert"). **Just update.**
+- [x] **Testing build verified, 6 Nov (late evening):** `testing-build` `1fe468c8` = merge over `4d18cf00` with
+  the tree of `ace63f26` = stack `3f147a69` + `fork/ships-template`. Stack `3f147a69` (pushed, fast-forward) =
+  `a863d3c8` (upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2/v3 + #2897–#2901 +
+  `0a6c50cd`) + #2903 `ea831f16`; catalogue merged by key. Before shipping: iPhone Release build green,
+  StrandTests 2337 green, i18n exit 0, parity acceptance OK. Run
+  [42120942031](https://github.com/UtkuDenizAltiok/noop/actions/runs/42120942031) green (iOS, Android, macOS);
+  release `testing-latest` (id 435819177) targets `1fe468c8`, five assets, IPA HTTP 200, NOOP 12.1.0 (439),
+  new subtitles present. **Just update.**
+- [ ] **Upstream PR opened 6 Nov:** [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen subtitles (both
+  platforms), head `ea831f16`, branch `fix/plain-screen-subtitles` (worktree `~/Developer/noop-subtitles`).
+  Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI (no approval gate):
+  Android, i18n Coverage, Source Hygiene, Tools Python green; App build (macOS + iOS) still queued for a runner.
 - [ ] **Upstream PRs opened 5 Nov, awaiting review (no comments as of 6 Nov):** #2896 (tab swipe), #2897
   (translations), #2898 (Info.plist), #2899 (Charge skin temperature once), #2900 (one sleep need for
   hours-vs-needed), #2901 (Trends average label). On all six the upstream NOOPiOS leg was cancelled with no
@@ -376,8 +380,9 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-First reconcile our six 5 Nov PRs for maintainer feedback (answer each once); the 6 Nov phone build is verified. Then the roadmap's next item: 1(a), the plain screen subtitles as one upstream PR for
-both platforms. Ask Utku for first impressions of Simple mode on his phone only when useful.
+First reconcile our seven open Simple-mode-era PRs (#2896–#2901, #2903) for maintainer feedback (answer each once);
+the 6 Nov phone build `1fe468c8` is verified. Then the roadmap's next item: 1(b), Simple Trends and the screens Simple More opens
+(Health monitor, Stress, Live, Workouts, Alarms), together with roadmap item 2. Ask Utku for first impressions of Simple mode on his phone only when useful.
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
 WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;

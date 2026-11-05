@@ -8,14 +8,15 @@ simple UI, plain English wording, and fixing proven errors (biometrics, sensors,
 important is removed: Settings → Simple mode switches between the calm view and the full app. Full authority: decide
 and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just update").
 
-**Where things are (6 Nov 2026, end of the second chat):**
+**Where things are (6 Nov 2026, second chat):**
 - `feat/simple-mode` on the fork (`ee74a4a1` v1: Today, More, guide, Settings switch; `6dca7333` v2: Sleep,
   Trends; `5269b8a6` v3: plain wording on Today and Sleep, see "Round 3"). Default ON in the fork; iOS + shared
   Mac code only; no Android twin yet. Worktree `~/Developer/noop-simple`.
-- Phone: `testing-latest` = `testing-build` `4d18cf00` (stack `a863d3c8` + template, with v3), NOOP 12.1.0 (439),
-  verified 6 Nov. Just update.
+- Phone: `testing-latest` = `testing-build` `1fe468c8` (stack `3f147a69` = v3 + #2903 subtitles, + template),
+  NOOP 12.1.0 (439), verified 6 Nov. Just update.
   Details in [State](../STATE.md).
-- Upstream PRs, all ours, awaiting maintainers: [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
+- Upstream PRs, all ours, awaiting maintainers: [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen
+  subtitles (6 Nov), [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
   [#2897](https://github.com/ryanbr/noop/pull/2897) wrong pl/pt-PT/zh labels,
   [#2898](https://github.com/ryanbr/noop/pull/2898) Info.plist drift,
   [#2899](https://github.com/ryanbr/noop/pull/2899) skin temperature shown once,
@@ -48,8 +49,9 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
 
 **Roadmap, in order** (re-check upstream and State first):
 1. **Plain wording pass** (new focus, 5 Nov). **Simple Today and Simple Sleep done in v3 (6 Nov, "Round 3").**
-   Still to do, in this order: (a) the slogan subtitles below, as ONE upstream PR for both modes (they are
-   shared screens; Android has the same subtitles, so do both platforms); (b) Simple Trends and the screens
+   (a) The slogan subtitles: done 6 Nov as upstream PR [#2903](https://github.com/ryanbr/noop/pull/2903) (both
+   platforms; branch `fix/plain-screen-subtitles`, worktree `~/Developer/noop-subtitles`; Live's title is now
+   "Live"; Android's five hard-coded subtitles became translated resources). Still to do, in this order: (b) Simple Trends and the screens
    Simple More opens (fold into roadmap item 2); (c) the full view's Charge driver text (analytics strings
    pinned byte-for-byte with Kotlin: change at the display layer on both platforms, as `PlainChargeWording`
    does for Simple mode, never in the analytics). **Not too short:** a rewrite must explain at least as much as the
