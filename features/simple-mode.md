@@ -45,7 +45,10 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
 - Verify citations before writing them (one journal name was wrong in a draft commit message and was corrected).
 
 **Roadmap, in order** (re-check upstream and State first):
-1. **Plain wording pass** (new focus, 5 Nov). Principles: say what it is and what to do in everyday words; compare
+1. **Plain wording pass** (new focus, 5 Nov). **Not too short:** a rewrite must explain at least as much as the
+   original, just in human words; cut jargon and repetition, never meaning. Where a short label is needed, the full
+   explanation stays one tap away (the guide or an info button), and it stays complete. Principles: say what it is
+   and what to do in everyday words; compare
    with "your normal" instead of "baseline"; one name per thing everywhere (Charge = recovery, Effort = strain,
    Rest = sleep score); every screen subtitle says what the screen is for (no slogans); data-quality notes in plain
    words; keep the technical method in the scoring guide only. Start with what Simple mode shows, then the full

@@ -45,7 +45,10 @@ request an export without a defined need. Give enough explanation to understand 
   and a technologist, without losing data or anything important (Simple mode switch: Simple ↔ full app). Three
   equal parts: (1) **simple UI** (show each fact once, in reading order, advanced things one tap away); (2) **plain
   wording**: every label, subtitle, explanation and message in everyday English a first-time wearer understands,
-  saying what a number means and what to do, with no internal jargon; (3) **fix what is wrong** in measurement,
+  saying what a number means and what to do, with no internal jargon. Not too short (Utku, 5 Nov): never cut an
+  explanation down until the meaning is lost. Optimise and humanise: keep every fact a wearer needs (what it is,
+  how it is measured in a sentence, what is good, what to do), in warm, clear sentences; shorten by removing jargon
+  and repetition, not understanding; (3) **fix what is wrong** in measurement,
   biometrics, sensor reading, interpretation, maths, methods, battery or efficiency, but only with verification or
   proof (cite the method, test it; Rules 1–3), and send generally useful fixes upstream as their own small PRs.
   "Language is not important" (5 Nov) means TRANSLATIONS: do not spend effort on other locales beyond what the CI
