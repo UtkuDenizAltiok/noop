@@ -8,13 +8,14 @@ Simple mode off (or More → All features) shows everything. Utku hands over all
 verify, ship; never ask him routine questions (Rules, 6 Nov). He tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just
 update"). 6 Nov: "I hate that the original looks like AI slop" — design carefully what to show, hide and emphasize.
 
-**Where things are (6 Nov 2026, end of chat 3):**
+**Where things are (6 Nov 2026, night, end of chat 3):**
 - `feat/simple-mode` (worktree `~/Developer/noop-simple`): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`, v4
-  `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`. iOS + shared Mac code; no Android twin yet.
-  Rounds 1–5 below.
+  `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`, Round 6 `256a2dc4` `c94f3260` `610c3505` `0a6f3021`.
+  iOS + shared Mac code; no Android twin yet. Rounds 1–6 below.
 - Stack: `testing-stack` = `af4a35d2` + v5 as `9d7ad9d8` `c72fad03` (fast-forward; upstream unchanged at
-  `2a1de760`), then the wind-down fix as `487c88ba`. Phone: `testing-latest` = `testing-build` `a3937ccf` (stack
-  `487c88ba` + template), NOOP 12.1.0 (439), verified 6 Nov evening (run 42259715814). Just update.
+  `2a1de760`), then the wind-down fix as `487c88ba`, then Round 6 as `3548093b`. Phone: `testing-latest` =
+  `testing-build` `281239ad` (stack `3548093b` + template), NOOP 12.1.0 (439), verified 6 Nov night (run
+  42280019994). Just update.
 - Upstream PRs (ours): #2896 tab swipe, #2897 translations, #2898 Info.plist, #2899 skin temp once, #2900 one
   sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source,
   #2906 wind-down uses the Sleep tab's need. No maintainer comments as of 6 Nov evening. CI: #2901 #2903 #2904 #2905 fully green. **#2896–#2900 show a red X only
@@ -54,11 +55,13 @@ update"). 6 Nov: "I hate that the original looks like AI slop" — design carefu
 
 **First 20 minutes of the next chat (carryover, in order):**
 1. Start procedure (`checkpoint.sh status --net`, `upstream-check.sh`). If upstream moved, check our PR branches
-   still merge; rebuild the stack only if needed. The phone build `a3937ccf` is verified (State "Now").
-2. PR care: read new comments on all nine PRs and answer each once. If #2896–#2900 are still red, close + reopen
-   them ONCE at a quiet hour (one at a time, a few minutes apart); verify every job, not the run's conclusion.
-3. Then continue the plan below at step 2 (the F9 nudge-need fix upstream, then the "Tonight" line), or F12.
-   Commit each step on `feat/simple-mode` (fork) unless it says UPSTREAM.
+   still merge; rebuild the stack only if needed. The phone build `281239ad` is verified (State "Now").
+2. PR care: read new comments on all ten PRs (#2896–#2906) and answer each once. If #2896–#2900 or #2906 are still
+   red only from a cancelled no-runner macOS leg, close + reopen them ONCE at a quiet hour (one at a time, a few
+   minutes apart); verify every job, not the run's conclusion. #2906 has Auto-fix on.
+3. Add `0a6f3021` (Alarms wording) to the stack at the next rebuild. Then continue the plan at step 6 (First run /
+   What's new in plain words), or F12 / F1+F13. Commit each step on
+   `feat/simple-mode` (fork) unless it says UPSTREAM.
 
 **The plan: Calm NOOP v5** (design reasoning in "Design v5" below; open findings F1–F12 there):
 1. ✓ **Today v5** (Apple, `5050c8f3`, Round 5): "Your day" with the suggested Effort range and progress, one
@@ -66,16 +69,15 @@ update"). 6 Nov: "I hate that the original looks like AI slop" — design carefu
    efficiency** (skip loading what only hidden sections use; measure before/after, Rule 1).
 2. **Sleep v5, "Tonight" line.** (a) ✓ opened as #2906: the UPSTREAM fix `fix/wind-down-sleep-need` `eb0391a0` (both
    platforms; the nudge keeps `windDown.sleepNeedMinutes` equal to the Sleep tab's need, Alarms copy states need +
-   lead; State "Now" has its verification and the PR status). (b) Next: the Simple Sleep line ("Tonight: in bed by
-   22:40 for 8h 40m of sleep") from `WindDownNudge.wakeMinutes(forWeekday:)` and `sleepNeedMinutes` (now the
-   Sleep tab's need), only when the nudge is ON (its wake time is only an input to the reminder, #2353: do not
-   present it as a promise when nothing fires), with the same weekday rule as the trigger.
-3. **Workouts (Simple):** lead with recent sessions and this week's summary; heart-rate-recovery trend, 13-week
-   calories and the activity breakdown stay in the full view; zones explained in words.
-4. **Settings (Simple):** inspect first (3,497 lines). Top: Simple mode, Profile, Units, Strap & devices,
-   Notifications, Backup; everything else in one "Advanced" group. Remove nothing.
-5. **Alarms:** copy check only. **Live:** leave as is (connect/re-pair lives there; its log is the evidence).
-6. **First run / What's new:** plain wording in Simple mode; check F10.
+   lead; State "Now" has its verification and the PR status). (b) ✓ the "Tonight" row on Simple Today (`256a2dc4`, Round 6).
+3. ✓ **Workouts (Simple)** (`c94f3260`, Round 6). Next on this screen only if Utku finds it unclear: what
+   "Typical effort" means (average Effort per session), said in one line.
+4. ✓ **Settings (Simple)** (`610c3505`, Round 6): Simple mode, Profile, Units, Strap, Live notifications open;
+   "More settings" (Appearance, Streak, Features, Sync) and Advanced closed; About. Next idea only with evidence
+   of confusion: the Profile card is long (photo, birth date, sex, weight, height, waist, HR max…).
+5. ✓ **Alarms:** copy check done (`0a6f3021`, Round 6). **Live:** leave as is (connect/re-pair lives there; its log
+   is the evidence).
+6. **First run / What's new:** plain wording in Simple mode (F10 checked: consistent with the README).
 7. **UPSTREAM small fixes**, both platforms where the code exists: F1 together with F13 (one PR: the honest
    "not in yet" line plus Apple reading today's key, Android already does), F2, F3, F5, F6 (one concern per PR).
 8. **Android twin of Simple mode** (after iOS v5 settles) + `noop.simpleMode` in the `.noopbak` whitelist on both
@@ -144,9 +146,10 @@ the guide. Before surfacing it, read the band's history (task #43 comments on bo
 - **F13** (UPSTREAM candidate): with no row for today the readiness verdict reads the newest row (an older night)
   beside an "Earlier score" Charge (Round 5).
 - **F14** (fork, done `9060515b`): a carried Rest ring now names its day (Round 5).
-- **F10** (check): the 12.0.0 "What's new" says "WHOOP 4.0 is the supported path… deeper metrics for 5/MG are
-  still being figured out", while NOOP scores Utku's 5.0 nightly. Verify against current upstream docs before
-  reporting.
+- **F10** (checked 6 Nov, no change): the 12.0.0 "What's new" expectation ("WHOOP 4.0 is the supported path… deeper
+  metrics for 5/MG are still being figured out") matches upstream's current README (WHOOP 5.0 / MG row and the
+  "analysis limits" section: live HR confirmed, some overnight inputs unavailable or incomplete on 5/MG). Honest,
+  consistent with the docs; not a bug.
 - **F11** (audit): one-decimal figures formatted through Foundation's locale formatter (finding 16) can differ
   from Android at a tie. Breathing and skin temperature are guarded; check the rest with a twin oracle.
 - **F12** (efficiency, measure first): Simple Today and Simple Stress hide sections whose data is still loaded
@@ -653,3 +656,50 @@ Findings this round:
   tail fallback) with no date under it, unlike Charge's "From 4 Nov". Simple mode now prints "From 4 Nov" under it
   (`SimpleDayPlan.carriedRestDay`, unit-tested; the fresh demo seed could not show a carried Rest on 6 Nov, so the
   carried case is proven by the test only, and today's own score was checked to show no date).
+
+## Round 6 (6 Nov 2026, night): the reminder's need, a "Tonight" row, Simple Workouts
+
+**UPSTREAM [#2906](https://github.com/ryanbr/noop/pull/2906)** (F9, both platforms): the wind-down nudge keeps its
+stored need equal to the Sleep tab's (`adoptSleepNeed` on each history change, writes only when the rounded need
+moves), and the Apple Alarms copy states need + lead. Details, oracle and CI in State "Now". Its macOS `Strand` leg
+was cancelled with no runner (the same GitHub capacity problem as #2896–#2900); a comment says so
+(issuecomment-6693087675). Lesson: `git commit --amend` of a pushed commit is refused as destructive; build a
+clean branch with `git merge --squash` from the old one instead (no force push, old branch untouched).
+
+**Tonight row** (`feat/simple-mode` `256a2dc4`, plan step 2b, on Today rather than the Sleep tab: the evening
+question belongs on the screen people open; the Sleep tab keeps its Alarms entry). In the Today sleep card,
+under "Last night": "Aim to be asleep by 22:20" + "That gives you 8h 40m of sleep before your 07:00 wake. Your
+wind-down reminder comes at 21:50." Rules (`SimpleDayPlan.tonightPlan`): only while the reminder is ON (#2353:
+its wake time is otherwise an unused setting) and only while the fall-asleep time is ahead (not late evening,
+not after midnight); the reminder's own inputs and wall-clock arithmetic, so "wind down at" is the minute the
+notification fires (tested, incl. per-day wake times and #1863's early wake). If last night's line shows a
+different need (WHOOP's imported need for that night), tonight's row leaves out its duration ("Your wind-down
+reminder comes at 22:30, ahead of your 07:00 wake.") instead of printing a second need. Today observes the four
+reminder keys (`SimpleDayPlan.ReminderKeys`, pinned by `WindDownMirrorKeyTests`) so switching the reminder off in
+Alarms removes the row at once. Depends on #2906 for the need to equal the Sleep tab's (true in the stack).
+
+**Simple Workouts** (`c94f3260`, plan step 3): Start / Add, the range picker, one summary card (typical Effort,
+sessions, active time, "Mostly Walking"), the sessions, then the zone split in words with the guide's zones entry.
+Left to the full view: Current/Archived, sport/source/search filters, multi-select, the stat tiles (they repeat
+the card), the 13-week calorie map, per-sport breakdown, heart-rate-recovery trend, the per-row source badge
+(it cut the date/time/duration line short) and the "Top sport 2×" tile. Simple mode shows the whole selected
+range (no hidden ten-newest cut, so the summary counts what the picker names) and applies no leftover filter;
+it skips the 100-day calorie read and the per-session HR reads (less work, not measured yet).
+
+Verification: branch StrandTests 2338 green (new `SimpleTonightPlanTests`, `WindDownMirrorKeyTests`), i18n exit
+0, doc lint, Tools 338, parity 50; simulator: Tonight row with the reminder on (and the no-number variant on the
+demo's imported need), gone with it off; Simple Workouts top to bottom. Lesson (Rule 11 again): a test helper
+named `instant(_:_:_:)` collided with `GarminExportParser.instant` and moved the parity baseline
+(`test-only-callsite|Packages/StrandImport`); renamed to `tonightFixtureInstant`.
+
+**Simple Settings** (`610c3505`, plan step 4): open: Simple mode, Profile, Units, Strap, Live notifications (iOS);
+one closed "More settings" row (same `SettingsDisclosureGroup` as Advanced) holds Appearance, Streak, Features
+(optional trackers) and Sync; Advanced and About unchanged. Simple mode also drops the "Settings" overline above
+every card (upstream candidate: it is noise in the full view too). Backup stays in Advanced because Simple More
+already lists "Backup & Sync" as its own screen. 3 new strings. Branch: StrandTests 2338, i18n 0, doc lint,
+Tools 338; simulator checked.
+
+**Alarms wording** (`0a6f3021`, plan step 5): Simple mode says the strap alarm's evidence plainly ("Confirmed on
+WHOOP 4.0. Keep a backup alarm for anything you can't miss.") instead of "community wire capture + on-device test,
+#535". The 5/MG experimental description and everything #2700 touches are left alone. NOT yet in the stack: add it
+at the next stack rebuild. Branch: StrandTests 2338, i18n 0, doc lint, Tools 338.

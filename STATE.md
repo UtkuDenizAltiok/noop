@@ -29,8 +29,17 @@ Updated **6 Nov 2026 (evening)**. ChatGPT/Codex owns project execution under [Ru
   `dist/private/pr-drafts/wind-down-sleep-need.md`. The fork also has a superseded branch
   `fix/wind-down-one-sleep-need` (`c16dd475` + a test fix; amending it was refused as destructive): same content,
   never a PR; delete it when convenient. Overlaps: #2700 (one Apple Alarms copy line) and our #2900 (one line in
-  `SleepModelLogic.kt`, resolved in the stack); whoever lands second needs a one-line rebase. Next: check its CI
-  (every job on the head) and answer feedback once.
+  `SleepModelLogic.kt`, resolved in the stack); whoever lands second needs a one-line rebase. Upstream CI on
+  `eb0391a0`: NOOPiOS, Android, i18n, doc comments, Tools all success; the macOS `Strand` leg CANCELLED with no
+  runner (0 steps); comment posted and read back (issuecomment-6693087675).
+- [x] **Round 6 phone build verified, 6 Nov night (Tonight row, Simple Workouts, Simple Settings):** `feat/simple-mode`
+  `256a2dc4` + `c94f3260` + `610c3505`, each branch-verified (StrandTests 2338, i18n, doc lint, Tools 338, parity 50,
+  simulator). Stack `testing-stack` `3548093b` (= `487c88ba` + the three; iPhone Release build green, StrandTests 2365
+  green, i18n, doc lint, parity 50) → `testing-build` `281239ad` (merge route, tree checked). Run
+  [42280019994](https://github.com/UtkuDenizAltiok/noop/actions/runs/42280019994): all jobs success; release
+  `testing-latest` (id 436908022) targets `281239ad`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), the de catalogue
+  has the new strings. The earlier run 42277790616 (without Settings) was cancelled as superseded. **Just update.**
+  Not yet seen on Utku's phone. `feat/simple-mode` `0a6f3021` (Alarms wording) is NOT in this build: next rebuild.
 - [x] **Phone build with the wind-down fix, verified 6 Nov evening:** `testing-stack` `487c88ba` (= `c72fad03` + the
   fix; iPhone Release build green, StrandTests 2357 green, i18n, doc lint, parity 50; fork Android CI on the stack
   [42259720867](https://github.com/UtkuDenizAltiok/noop/actions/runs/42259720867) green) → `testing-build`
@@ -433,7 +442,7 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-First: check #2906's CI (every job on head `eb0391a0`) and new comments on all ten PRs. The phone build `a3937ccf` is verified (just update). PR care (retry
+First: check #2906's CI (every job on head `eb0391a0`) and new comments on all ten PRs. The phone build `281239ad` is verified (just update); add `0a6f3021` at the next stack rebuild. PR care (retry
 #2896–#2900 once at a quiet hour if still red). Then plan step 2b: the Simple Sleep "Tonight" line; then F12
 (Simple mode skips loading what it hides, measured) and F1+F13 together upstream.
 
