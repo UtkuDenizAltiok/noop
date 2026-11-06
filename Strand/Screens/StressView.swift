@@ -55,6 +55,11 @@ struct StressView: View {
     @State private var daytimeUsesPersonalBaseline = false
     /// Drives the Breathe sheet presented from the sustained-stress suggestion.
     @State private var showBreathe = false
+    /// Simple mode (`SimpleModePrefs`): the stress level, today's markers, the day's timeline and the trend,
+    /// in plain words. The Advanced HRV readouts and the method card stay in the full view; the plain guide's
+    /// Stress entry takes the method card's place.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @State private var showStressGuide = false
 
     /// ADDITIVE, on-demand advanced readouts, computed live from the SAME day's R-R the
     /// daytime timeline already reads. These do NOT feed the 0..3 score or the timeline; they
@@ -224,14 +229,16 @@ struct StressView: View {
             // 1b. ADVANCED HRV readouts (additive, on-demand). A separate, clearly-labelled card
             //     that appears only when at least one engine returned a value. It sits BELOW the
             //     hero and never alters the hero, the markers or the timeline.
-            if hasAdvancedReadouts {
+            if hasAdvancedReadouts && !simpleMode {
                 advancedReadoutsCard()
                     .staggeredAppear(index: 1)
             }
 
             // 2. Today's numbers — uniform tiles in one grid.
             VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-                SectionHeader("Today", overline: "Markers", trailing: String(localized: "vs 30-day baseline"))
+                SectionHeader("Today", overline: "Markers",
+                              trailing: simpleMode ? String(localized: "vs your 30-day normal")
+                                                   : String(localized: "vs 30-day baseline"))
                 tileGrid(model)
             }
             .staggeredAppear(index: 1)
@@ -253,9 +260,17 @@ struct StressView: View {
             trendSection(model)
                 .staggeredAppear(index: 3)
 
-            // 5. Transparency — how the number is built.
-            methodologyCard(model)
-                .staggeredAppear(index: 4)
+            // 5. Transparency — how the number is built. Simple mode points to the plain explanation instead.
+            if simpleMode {
+                stressGuideCard
+                    .staggeredAppear(index: 4)
+            } else {
+                methodologyCard(model)
+                    .staggeredAppear(index: 4)
+            }
+        }
+        .sheet(isPresented: $showStressGuide) {
+            PlainGuideView(initialTerm: .stress, onClose: { showStressGuide = false })
         }
         // The sustained-stress suggestion opens the existing Breathe trainer in a sheet —
         // in-app and passive (no alert / notification), inheriting the app environment.
@@ -306,7 +321,9 @@ struct StressView: View {
             NoopCard(tint: StressRamp.calm) {
                 VStack(alignment: .leading, spacing: NoopMetrics.cardInnerSpacing) {
                     HStack {
-                        Text("Autonomic load through the day").strandOverline()
+                        Text(simpleMode ? LocalizedStringKey("Stress through the day")
+                                        : LocalizedStringKey("Autonomic load through the day"))
+                            .strandOverline()
                         Spacer()
                         // The peak of what is DRAWN, not of the whole hours (#2144). A sliding window
                         // can exceed both hourly neighbours when the busy stretch straddles a boundary,
@@ -378,7 +395,13 @@ struct StressView: View {
     /// Explicit `LocalizedStringKey` so BOTH variants stay in the string catalog (a ternary inside
     /// `Text(_:)` would resolve to the verbatim, non-localized `String` overload).
     private var daytimeTimelineCaption: LocalizedStringKey {
-        daytimeUsesPersonalBaseline
+        // Simple mode: the same two references, said without "proxy" and "baseline".
+        if simpleMode {
+            return daytimeUsesPersonalBaseline
+                ? "Each point is one waking hour, from 0 (calm) to 3 (very high), compared with how your days usually run. The bar below splits your day into calm, moderate and high stress time."
+                : "Each point is one waking hour, from 0 (calm) to 3 (very high), compared with your calmest hours today. The bar below splits your day into calm, moderate and high stress time."
+        }
+        return daytimeUsesPersonalBaseline
             ? "The line is each waking hour's 0-3 proxy, scored against your personal daytime baseline (how your own days usually run). The bar below splits your day into calm, moderate and high stress time."
             : "The line is each waking hour's 0-3 proxy, scored against your own calm hours today. The bar below splits your day into calm, moderate and high stress time."
     }
@@ -617,7 +640,8 @@ struct StressView: View {
                 let yTop = max(1, peak + 0.3)
                 ChartCard(
                     title: "Stress · \(range.label)",
-                    subtitle: String(localized: "Daily 0-3 proxy"),
+                    subtitle: simpleMode ? String(localized: "Daily stress, from 0 (calm) to 3 (very high)")
+                                         : String(localized: "Daily 0-3 proxy"),
                     trailing: String(localized: "avg \(StressTrace.formatLevel(avg))"),
                     tint: StressRamp.calm
                 ) {
@@ -666,6 +690,34 @@ struct StressView: View {
     }
 
     // MARK: 4 · Methodology (transparency)
+
+    /// Simple mode's way to the plain explanation of Stress (the guide, opened at its Stress entry).
+    private var stressGuideCard: some View {
+        Button { showStressGuide = true } label: {
+            NoopCard {
+                HStack(spacing: 12) {
+                    Image(systemName: "questionmark.circle.fill")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(StrandPalette.accent)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("What do these numbers mean?")
+                            .font(StrandFont.subhead.weight(.semibold))
+                            .foregroundStyle(StrandPalette.textPrimary)
+                        Text("Every score and reading, explained simply.")
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .accessibilityHidden(true)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
 
     private func methodologyCard(_ model: StressModel) -> some View {
         NoopCard(tint: StressRamp.calm) {

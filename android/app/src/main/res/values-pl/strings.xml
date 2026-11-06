@@ -2473,6 +2473,7 @@
     <string name="today_driver_value_percent">%1$d%%</string>
     <string name="today_driver_value_br_min">%1$s oddechów/min</string>
     <string name="today_driver_value_temp_deviation">%1$s °C względem bazy</string>
+    <string name="today_driver_value_temp_deviation_fahrenheit">%1$s °F względem bazy</string>
     <string name="today_driver_baseline_ms">baza %1$d ms</string>
     <string name="today_driver_baseline_bpm">baza %1$d ud./min</string>
     <string name="today_driver_baseline_br_min">baza %1$s oddechów/min</string>
@@ -2882,4 +2883,5 @@
     <string name="sleep_screen_subtitle">Jak długo i jak dobrze spałeś, noc po nocy.</string>
     <string name="workouts_screen_subtitle">Wszystkie Twoje treningi w jednym miejscu, zarejestrowane przez opaskę lub zaimportowane.</string>
     <string name="intelligence_screen_subtitle">Twoja Energia, Wysiłek i Odpoczynek dla każdego dnia, wyliczane przez sam NOOP na tym urządzeniu. Nic nie jest wysyłane do sieci.</string>
+    <string name="sleep_debt_from_whoop">Z WHOOP</string>
 </resources>

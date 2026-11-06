@@ -2583,7 +2583,8 @@
     <string name="today_driver_value_bpm">%1$d bpm</string>
     <string name="today_driver_value_percent">%1$d%%</string>
     <string name="today_driver_value_br_min">%1$s br/min</string>
-    <string name="today_driver_value_temp_deviation">%1$s C vs baseline</string>
+    <string name="today_driver_value_temp_deviation">%1$s °C vs baseline</string>
+    <string name="today_driver_value_temp_deviation_fahrenheit">%1$s °F vs baseline</string>
     <string name="today_driver_baseline_ms">%1$d ms baseline</string>
     <string name="today_driver_baseline_bpm">%1$d bpm baseline</string>
     <string name="today_driver_baseline_br_min">%1$s br/min baseline</string>
@@ -2895,4 +2896,5 @@
     <string name="sleep_screen_subtitle">How long and how well you slept, night by night.</string>
     <string name="workouts_screen_subtitle">All your workouts in one place, recorded by your strap or imported.</string>
     <string name="intelligence_screen_subtitle">Your Charge, Effort and Rest for each day, worked out by NOOP itself on this device. Nothing is sent online.</string>
+    <string name="sleep_debt_from_whoop">From WHOOP</string>
 </resources>

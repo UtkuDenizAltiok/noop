@@ -2377,6 +2377,7 @@
     <string name="today_driver_value_percent">%1$d%%</string>
     <string name="today_driver_value_br_min">%1$s 次呼吸/分</string>
     <string name="today_driver_value_temp_deviation">相对基线 %1$s°C</string>
+    <string name="today_driver_value_temp_deviation_fahrenheit">相对基线 %1$s°F</string>
     <string name="today_driver_baseline_ms">基线 %1$d 毫秒</string>
     <string name="today_driver_baseline_bpm">基线 %1$d 次/分</string>
     <string name="today_driver_baseline_br_min">基线 %1$s 次呼吸/分</string>
@@ -2836,4 +2837,5 @@
     <string name="sleep_screen_subtitle">你每晚睡了多久、睡得怎么样。</string>
     <string name="workouts_screen_subtitle">你所有的训练都在这里，无论是手环记录的还是导入的。</string>
     <string name="intelligence_screen_subtitle">你每天的充能、负荷和恢复，由 NOOP 在本设备上自行计算。不会上传任何数据。</string>
+    <string name="sleep_debt_from_whoop">来自 WHOOP</string>
 </resources>

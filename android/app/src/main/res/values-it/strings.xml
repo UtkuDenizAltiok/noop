@@ -2527,7 +2527,8 @@
     <string name="today_driver_value_bpm">%1$d bpm</string>
     <string name="today_driver_value_percent">%1$d%%</string>
     <string name="today_driver_value_br_min">%1$s resp/min</string>
-    <string name="today_driver_value_temp_deviation">%1$s C rispetto alla linea di base</string>
+    <string name="today_driver_value_temp_deviation">%1$s °C rispetto alla linea di base</string>
+    <string name="today_driver_value_temp_deviation_fahrenheit">%1$s °F rispetto alla linea di base</string>
     <string name="today_driver_baseline_ms">Linea di base %1$d ms</string>
     <string name="today_driver_baseline_bpm">Linea di base %1$d bpm</string>
     <string name="today_driver_baseline_br_min">Linea di base %1$s resp/min</string>
@@ -2834,4 +2835,5 @@
     <string name="sleep_screen_subtitle">Quanto e quanto bene hai dormito, notte per notte.</string>
     <string name="workouts_screen_subtitle">Tutti i tuoi allenamenti in un unico posto, registrati dalla fascia o importati.</string>
     <string name="intelligence_screen_subtitle">La tua Carica, Sforzo e Riposo di ogni giorno, calcolati da NOOP stesso su questo dispositivo. Non viene inviato nulla online.</string>
+    <string name="sleep_debt_from_whoop">Da WHOOP</string>
 </resources>

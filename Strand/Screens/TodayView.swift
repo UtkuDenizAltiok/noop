@@ -1084,7 +1084,7 @@ struct TodayView: View {
     }()
     /// "d MMM" for a stored `yyyy-MM-dd` day key, used by the carried-over Charge caption (#543). Falls
     /// back to the raw key if it can't be parsed so the caption is never empty.
-    private static func lastChargeDateFmt(_ dayKey: String) -> String {
+    static func lastChargeDateFmt(_ dayKey: String) -> String {
         guard let date = dayKeyParser.date(from: dayKey) else { return dayKey }
         let f = DateFormatter()
         f.locale = AppLanguage.activeLocale
