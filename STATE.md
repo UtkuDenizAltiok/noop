@@ -21,7 +21,7 @@ Updated **6 Nov 2026 (evening)**. ChatGPT/Codex owns project execution under [Ru
   the wind-down nudge uses the Sleep tab's need (F9, plan step 2a), branch `fix/wind-down-sleep-need` head
   `eb0391a0` (worktree `~/Developer/noop-winddown`, one commit on `upstream/main` `2a1de760`). Read back: OPEN,
   MERGEABLE, right head, full body (4,363 chars, includes the fork Android CI link). Upstream CI started at once
-  (no approval gate); bound to this session. Verified before opening: NOOPiOS build, StrandTests 2306 green (4 new
+  (no approval gate); bound to this session, Auto-fix ON (Utku's yes, 6 Nov evening). Verified before opening: NOOPiOS build, StrandTests 2306 green (4 new
   `WindDownSleepNeedTests`), i18n exit 0, doc lint, Tools 338, parity 50, oracle (28 inputs, Swift stdout pasted in
   `WindDownSleepNeedTest.kt`), fork Android CI
   [42258465615](https://github.com/UtkuDenizAltiok/noop/actions/runs/42258465615) green. The first `gh pr create`
