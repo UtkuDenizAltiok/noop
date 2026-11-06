@@ -69,9 +69,14 @@ enum PlainChargeWording {
     /// A skin-temperature deviation with its sign, one decimal and a degree sign. A difference converts to
     /// Fahrenheit by 9/5 with no +32 offset (`UnitFormatter.celsiusDeltaToFahrenheit`). POSIX decimals,
     /// like every other figure in these rows.
+    ///
+    /// Rounded once, half away from zero (the shared Swift/Kotlin display rule), and a zero is spelled out:
+    /// Foundation's locale formatter prints "-+0.0" for a negative zero and rounds a tie the other way from
+    /// Java's. Same rule as the full view's `ChargeBreakdownFormat.skinTempDeviationFigure` (upstream fix).
     static func skinTempDeviation(_ devC: Double, unit: TemperatureUnit) -> String {
-        let shown = unit == .fahrenheit ? UnitFormatter.celsiusDeltaToFahrenheit(devC) : devC
-        let number = String(format: "%+.1f", locale: Locale(identifier: "en_US_POSIX"), shown)
+        let raw = unit == .fahrenheit ? UnitFormatter.celsiusDeltaToFahrenheit(devC) : devC
+        let shown = (raw * 10).rounded(.toNearestOrAwayFromZero) / 10
+        let number = shown == 0 ? "+0.0" : String(format: "%+.1f", locale: Locale(identifier: "en_US_POSIX"), shown)
         return number + " " + UnitFormatter.temperatureUnit(unit)
     }
 
