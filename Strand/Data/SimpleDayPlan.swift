@@ -118,6 +118,74 @@ enum SimpleDayPlan {
         return tailDay
     }
 
+    /// The wind-down reminder's UserDefaults keys, which the Simple Today observes so a change on the Alarms
+    /// screen re-renders it. They are `WindDownNudge`'s own (private) keys, repeated here because that enum
+    /// keeps them private; `WindDownMirrorKeyTests` writes through each one and reads it back through
+    /// `WindDownNudge`, so a renamed key fails a test instead of silently going stale.
+    enum ReminderKeys {
+        static let enabled = "windDown.enabled"
+        static let wake = "windDown.wakeMinutes"
+        static let need = "windDown.sleepNeedMinutes"
+        static let perDayWake = "windDown.perDayWakeMinutes"
+    }
+
+    /// Tonight's sleep plan, from the wind-down reminder's own inputs.
+    struct TonightPlan: Equatable {
+        /// When the wind-down reminder fires: the reminder's own wall-clock time.
+        let windDown: Date
+        /// The latest time to fall asleep and still get the whole sleep need before the wake time.
+        let asleepBy: Date
+        /// The wake time the reminder is timed from.
+        let wake: Date
+        /// The sleep need the reminder uses (the Sleep tab's need once the history has synced).
+        let needMinutes: Int
+    }
+
+    /// Tonight's plan, or nil when Simple mode should say nothing about tonight.
+    ///
+    /// Built from exactly the inputs the wind-down reminder schedules from (`WindDownNudge`: the wake time
+    /// for the weekday being woken on, the sleep need and the lead), with the reminder's own wall-clock
+    /// arithmetic: minute-of-day offsets from the wake, wrapped onto the previous evening when they cross
+    /// midnight, so the "wind down at" time is the minute the reminder fires. Nil while the reminder is off,
+    /// because its wake time is then only an unused setting rather than a time anyone wakes at (#2353), and
+    /// nil once the fall-asleep time for the next wake has passed (late evening, or after midnight), so the
+    /// line never shows a plan that can no longer be followed.
+    static func tonightPlan(now: Date, calendar: Calendar, reminderOn: Bool, needMinutes: Int, leadMinutes: Int,
+                            wakeMinutesForWeekday: (Int) -> Int) -> TonightPlan? {
+        guard reminderOn else { return nil }
+        let today = calendar.startOfDay(for: now)
+        for offset in 0...1 {
+            guard let wakeDay = calendar.date(byAdding: .day, value: offset, to: today) else { continue }
+            let wakeMinute = wakeMinutesForWeekday(calendar.component(.weekday, from: wakeDay))
+            guard let wake = wallClock(wakeMinute, from: wakeDay, calendar: calendar), wake > now else { continue }
+            guard let asleepBy = wallClock(wakeMinute - needMinutes, from: wakeDay, calendar: calendar),
+                  let windDown = wallClock(wakeMinute - needMinutes - leadMinutes, from: wakeDay, calendar: calendar),
+                  asleepBy > now else { return nil }
+            return TonightPlan(windDown: windDown, asleepBy: asleepBy, wake: wake, needMinutes: needMinutes)
+        }
+        return nil
+    }
+
+    /// Whether tonight's line may state its sleep need as a duration. Not when the card's last-night line
+    /// already states a DIFFERENT need: that happens when WHOOP's own need for last night was imported (the
+    /// Sleep tab shows WHOOP's figure for that night) while tonight's plan uses NOOP's, and two needs on one
+    /// card would contradict each other. Compared in whole minutes, as both lines print them.
+    static func tonightStatesNeed(lastNightNeedMin: Double?, tonightNeedMin: Int) -> Bool {
+        guard let lastNightNeedMin else { return true }
+        return max(0, Int(lastNightNeedMin.rounded())) == tonightNeedMin
+    }
+
+    /// The wall-clock instant `minutes` after the start of `day`, where a negative or over-a-day value moves to
+    /// the neighbouring day first (floor division) and keeps its minute of day, the way the reminder's
+    /// calendar trigger does (`WindDownNudge.nudgeDayShift` + `nudgeMinuteOfDay`).
+    private static func wallClock(_ minutes: Int, from day: Date, calendar: Calendar) -> Date? {
+        let dayLength = 24 * 60
+        let shift = Int((Double(minutes) / Double(dayLength)).rounded(.down))
+        let minuteOfDay = minutes - shift * dayLength
+        guard let shiftedDay = calendar.date(byAdding: .day, value: shift, to: day) else { return nil }
+        return calendar.date(bySettingHour: minuteOfDay / 60, minute: minuteOfDay % 60, second: 0, of: shiftedDay)
+    }
+
     /// How many Charge readings the Simple Today lists before "Show all".
     static let leadingDriverCount = 3
 
