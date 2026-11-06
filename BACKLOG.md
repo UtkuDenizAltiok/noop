@@ -107,6 +107,15 @@ D. **A night's start moved 20 h later** (29–30 Sep log): a pass late in the ev
 
 ## Next candidates
 
+- **Full view, wrong or doubled claims found 6 Nov (upstream, both platforms where the code exists):** (1) the
+  readiness `.insufficient` summary says "Still learning your baseline" whenever today's row is missing, i.e.
+  every morning before the night syncs, for anyone with history; (2) the carried-score caption says "Last
+  night" for a score up to two days old; (3) Health's "Recovery contributors" repeat the Charge drivers with a
+  different (simple-average) baseline and a "14 days" footnote that contradicts the 4-night seed. Simple mode
+  already avoids all three ([Simple mode, Round 4](features/simple-mode.md)).
+- **One-decimal figures formatted through Foundation's locale formatter** can differ from Android at a tie and
+  print "-+0.0" (finding 16). Skin temperature fixed; audit the others with a twin oracle before claiming.
+
 **REA feasibility and voluntary community help (latest scope, 10 Oct).**
 [Assessment and published questions](audits/rea-whoop-2026-10-09/README.md) cover syncing, sleep/workouts,
 calculations, screens and battery use. Await community advice/prior work; no original app inspected or benefit

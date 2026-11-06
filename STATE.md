@@ -2,19 +2,24 @@
 
 Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — Simple mode v3 + plain screen subtitles on the testing build, 6 Nov
+## Now — Simple mode v4, two measurement fixes, 6 Nov
 
-- [x] **Simple mode v3 built and verified:** `feat/simple-mode` `5269b8a6` (worktree `~/Developer/noop-simple`),
+- [x] **Simple mode v3 + v4 built and verified:** `feat/simple-mode` `5269b8a6`, then v4 `6f073301` `a00000db`
+  `74182550` (Stress, Health, honest lines; StrandTests 2320 green) (worktree `~/Developer/noop-simple`),
   plain wording on Simple Today and Simple Sleep; details and verification in
   [Simple mode, Round 3](features/simple-mode.md#round-3-6-nov-2026-plain-wording-on-simple-today-and-simple-sleep).
-- [x] **Testing build verified, 6 Nov (late evening):** `testing-build` `1fe468c8` = merge over `4d18cf00` with
-  the tree of `ace63f26` = stack `3f147a69` + `fork/ships-template`. Stack `3f147a69` (pushed, fast-forward) =
-  `a863d3c8` (upstream 2a1de760 + the 11 earlier stack commits + Simple mode v1/v2/v3 + #2897–#2901 +
-  `0a6c50cd`) + #2903 `ea831f16`; catalogue merged by key. Before shipping: iPhone Release build green,
-  StrandTests 2337 green, i18n exit 0, parity acceptance OK. Run
-  [42120942031](https://github.com/UtkuDenizAltiok/noop/actions/runs/42120942031) green (iOS, Android, macOS);
-  release `testing-latest` (id 435819177) targets `1fe468c8`, five assets, IPA HTTP 200, NOOP 12.1.0 (439),
-  new subtitles present. **Just update.**
+- [x] **Testing build verified, 6 Nov morning:** `testing-build` `5f63e6fa` = merge over `1724a54e` with the tree
+  of `ee7a16d5` = stack `af4a35d2` + `fork/ships-template`. Stack `af4a35d2` (pushed, fast-forward) = `3f147a69`
+  + Simple v4 (Stress, honest lines) + #skin-unit `2d482919` (merged with #2899: both kept) + #debt-source
+  `a41d40d7` + Simple rounding `a00000db` + Simple Health `74182550`. Before shipping: iPhone Release build green,
+  StrandTests 2343 green, i18n exit 0, doc lint clean, parity acceptance OK, Tools 341 OK. Run
+  [42171643978](https://github.com/UtkuDenizAltiok/noop/actions/runs/42171643978) green; release `testing-latest`
+  (id 436150215) targets `5f63e6fa`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), new strings present (de
+  checks). **Just update.**
+- [ ] **Two upstream PRs ready, NOT opened (6 Nov):** the Mac's safety check refused `gh pr create` ("Create
+  Public Surface"). Branches `fix/charge-skin-temp-unit` `2d482919` and `fix/sleep-debt-tile-source` `a41d40d7`,
+  fork Android CI green on both heads; bodies in `private/pr-drafts-2026-11-06/`; details in
+  [Simple mode, Round 4](features/simple-mode.md). Needs Utku's OK (or a permission rule) to open.
 - [ ] **Upstream PR opened 6 Nov:** [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen subtitles (both
   platforms), head `ea831f16`, branch `fix/plain-screen-subtitles` (worktree `~/Developer/noop-subtitles`).
   Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI all green at `ea831f16`:
@@ -381,9 +386,11 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-First reconcile our seven open Simple-mode-era PRs (#2896–#2901, #2903) for maintainer feedback (answer each once);
-the 6 Nov phone build `1fe468c8` is verified. Then the roadmap's next item: 1(b), Simple Trends and the screens Simple More opens
-(Health monitor, Stress, Live, Workouts, Alarms), together with roadmap item 2. Ask Utku for first impressions of Simple mode on his phone only when useful.
+The phone build `5f63e6fa` is verified. First the two ready upstream PRs
+(`fix/charge-skin-temp-unit`, `fix/sleep-debt-tile-source`): open them only with Utku's OK, since the Mac's safety
+check refused `gh pr create` on 6 Nov (bodies in `private/pr-drafts-2026-11-06/`). Reconcile our open PRs
+(#2896–#2901, #2903) for feedback. Then roadmap item 2: Simple Workouts and Alarms (Live stays as it is), and
+the full-view candidates in Backlog ("Full view, wrong or doubled claims").
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
 WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;

@@ -10,10 +10,11 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
 
 **Where things are (6 Nov 2026, second chat):**
 - `feat/simple-mode` on the fork (`ee74a4a1` v1: Today, More, guide, Settings switch; `6dca7333` v2: Sleep,
-  Trends; `5269b8a6` v3: plain wording on Today and Sleep, see "Round 3"). Default ON in the fork; iOS + shared
+  Trends; `5269b8a6` v3: plain wording on Today and Sleep, see "Round 3"; `6f073301` + `a00000db` + `74182550`
+  v4: Stress, Health and honest lines, see "Round 4"). Default ON in the fork; iOS + shared
   Mac code only; no Android twin yet. Worktree `~/Developer/noop-simple`.
-- Phone: `testing-latest` = `testing-build` `1fe468c8` (stack `3f147a69` = v3 + #2903 subtitles, + template),
-  NOOP 12.1.0 (439), verified 6 Nov. Just update.
+- Phone: `testing-latest` = `testing-build` `5f63e6fa` (stack `af4a35d2` = v4 + #2903 + skin unit + debt source,
+  + template), NOOP 12.1.0 (439), verified 6 Nov morning. Just update.
   Details in [State](../STATE.md).
 - Upstream PRs, all ours, awaiting maintainers: [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen
   subtitles (6 Nov), [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
@@ -493,4 +494,43 @@ Findings this round:
 13. Carried Charge's day never shown in the Liquid Today, and the pill's "Last night" can be wrong (above).
 14. The Sleep ring's "of 100" is faint white on the light ring face (both modes); not changed.
 15. The guide opened at an entry did not scroll to it (fixed in v3).
+
+## Round 4 (6 Nov 2026, morning): Simple Stress, two upstream measurement fixes, honest lines
+
+**Simple mode v4** (`feat/simple-mode` `6f073301`, plus `a00000db`):
+- **Stress** in Simple mode keeps the level, today's markers, the day's timeline and the trend. The Advanced HRV
+  readouts and the method card stay in the full view; a link to the guide's Stress entry replaces the method
+  card. Plain labels: "vs your 30-day normal", "Stress through the day", "Daily stress, from 0 (calm) to 3
+  (very high)", and a timeline caption without "proxy"/"baseline".
+- **"Still learning your baseline" was false** for anyone with history: readiness `.insufficient` mostly means
+  today's row is not in yet (ReadinessEngine reads only today's row), so the line showed every morning before
+  the night synced. Simple mode says "Today's readings aren't in yet. They arrive once your strap syncs last
+  night's sleep." The full view still has the false line: upstream candidate (both platforms).
+- **"Last night · 4 Nov" on the 6th:** the carry caption says "Last night" for anything up to two days old
+  (`carryFreshnessDays = 2`). Simple mode shows only the date ("From 4 Nov"). Upstream candidate.
+- `a00000db`: Simple mode's skin-temperature figure now rounds like the full view and Android (below).
+- **Health monitor** (`74182550`): Simple mode leaves out the recovery contributors (they repeat Today's Charge
+  drivers but score against their own simple average of prior nights, and their footnote says 14 days while
+  the Charge seed is 4 nights: a full-view "two readouts" problem, upstream candidate) and the records/sources
+  links (still in All features).
+- Live was looked at and deliberately left alone: it is where people connect and re-pair, and its log card is
+  the evidence Utku sends. Workouts and Alarms are still to review (roadmap item 2).
+
+**Two upstream fixes, both platforms, ready but NOT yet opened** (the Mac's safety check refused `gh pr create`
+as "Create Public Surface" on 6 Nov; #2903 the evening before went through). Bodies saved in
+`private/pr-drafts-2026-11-06/`. Open with `gh pr create -R ryanbr/noop --base main --head
+UtkuDenizAltiok:<branch> --title "<commit subject>" --body-file <draft>` once allowed:
+- `fix/charge-skin-temp-unit` `2d482919` (worktree `~/Developer/noop-skinunit`): the Charge breakdown's skin
+  temperature ignored °F and had no degree sign, on both platforms. Display layer only. Fork Android CI
+  42167206054 green (APK + unit tests). Oracle: Swift twin over 21 inputs per unit, stdout pasted into
+  `ChargeDriverTempDeviationTest`.
+- `fix/sleep-debt-tile-source` `a41d40d7` (worktree `~/Developer/noop-debtsrc`): finding 8. The Night detail
+  tile now says "From WHOOP" when its latest value is WHOOP's imported figure (the ledger is always NOOP's).
+  Fork Android CI 42168057358 green.
+
+**Finding 16, Foundation formatting:** `String(format:locale:)` with `en_US_POSIX` prints "-+0.0" for a negative
+zero and rounds a shortest-representation tie half-to-even (0.25 → 0.2, -0.05 → -0.0), while plain
+`String(format:)` (C printf) and Java's Formatter differ again. Any one-decimal figure formatted that way can
+differ from Android at a tie. Breathing is already guarded by `RecoveryScorer.displayRounded`; skin temperature
+now is. Other one-decimal read-outs formatted with a locale are a candidate audit (measure before claiming).
 
