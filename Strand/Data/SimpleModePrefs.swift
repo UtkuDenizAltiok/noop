@@ -63,8 +63,11 @@ enum SimpleModePrefs {
 enum SimpleTodaySection: String, CaseIterable, Identifiable {
     /// The three score rings, each with its familiar other name underneath.
     case scores
-    /// The greeting, the one-word day verdict and the one-sentence summary.
+    /// "Your day": the greeting, the day's verdict in a sentence and, when it agrees with that verdict,
+    /// the suggested Effort range with today's progress (`SimpleDayPlan`).
     case summary
+    /// One line about last night's sleep against the need, tapping through to Sleep.
+    case sleepLine
     /// What shaped today's Charge, compared with the wearer's own normal.
     case behindCharge
     /// Steps and calories.
