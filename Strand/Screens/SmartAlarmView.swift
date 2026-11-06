@@ -21,6 +21,10 @@ struct SmartAlarmView: View {
     // alarm over BLE) and the behavior store (the alarm's persisted on/time/weekdays).
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var behavior: BehaviorStore
+    /// Simple mode (`SimpleModePrefs`) says the strap alarm's evidence in plain words: the facts stay (it
+    /// buzzes with NOOP closed, it is confirmed on WHOOP 4.0, keep a backup), the capture method and issue
+    /// number go.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
 
     @State private var windDownOn = WindDownNudge.isEnabled
     /// Shown when the user flips the nudge on but notifications are denied at the OS level — the reminder
@@ -231,7 +235,13 @@ struct SmartAlarmView: View {
                         Text("Wake me with a strap buzz")
                             .font(StrandFont.body)
                             .foregroundStyle(StrandPalette.textPrimary)
-                        Text("Arms the strap to buzz at your wake time, even if NOOP is closed. Sends the exact alarm command the official app sends, confirmed buzzing on a real WHOOP 4.0 (community wire capture + on-device test, #535). Keep a backup alarm for anything you truly can't miss.")
+                        Group {
+                            if simpleMode {
+                                Text("Arms the strap to buzz at your wake time, even if NOOP is closed. Confirmed on WHOOP 4.0. Keep a backup alarm for anything you can't miss.")
+                            } else {
+                                Text("Arms the strap to buzz at your wake time, even if NOOP is closed. Sends the exact alarm command the official app sends, confirmed buzzing on a real WHOOP 4.0 (community wire capture + on-device test, #535). Keep a backup alarm for anything you truly can't miss.")
+                            }
+                        }
                             .font(StrandFont.footnote)
                             .foregroundStyle(StrandPalette.textTertiary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -292,7 +302,13 @@ struct SmartAlarmView: View {
                             .foregroundStyle(StrandPalette.textTertiary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     } else {
-                        Text("Armed on the strap itself, so it can buzz at your wake time even if your phone is asleep or NOOP is closed. Sends the exact alarm command the official app sends, confirmed buzzing on a real WHOOP 4.0 (community wire capture + on-device test, #535). Keep a backup alarm for anything you truly can't miss.")
+                        Group {
+                            if simpleMode {
+                                Text("Armed on the strap itself, so it can buzz at your wake time even if your phone is asleep or NOOP is closed. Confirmed on WHOOP 4.0. Keep a backup alarm for anything you can't miss.")
+                            } else {
+                                Text("Armed on the strap itself, so it can buzz at your wake time even if your phone is asleep or NOOP is closed. Sends the exact alarm command the official app sends, confirmed buzzing on a real WHOOP 4.0 (community wire capture + on-device test, #535). Keep a backup alarm for anything you truly can't miss.")
+                            }
+                        }
                             .font(StrandFont.footnote)
                             .foregroundStyle(StrandPalette.textTertiary)
                             .frame(maxWidth: .infinity, alignment: .leading)
