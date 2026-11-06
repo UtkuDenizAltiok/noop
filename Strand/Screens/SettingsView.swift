@@ -251,6 +251,9 @@ struct SettingsView: View {
     /// (S3). Nothing is removed; every section below stays one tap away by expanding this group.
     /// Persisted so it remembers the user's choice; mirrors the Android `noop.settingsAdvancedOpen` key.
     @AppStorage(SettingsDisclosureDefaults.advancedOpenKey) private var advancedOpen = SettingsDisclosureDefaults.advancedOpenDefault
+    /// Whether Simple mode's "More settings" group is open. Closed on every visit: it holds the sections a
+    /// new wearer rarely needs, and Simple mode's point is a short screen.
+    @State private var simpleMoreOpen = false
 
     var body: some View {
         ScreenScaffold(title: "Settings",
@@ -262,6 +265,31 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: NoopMetrics.sectionSpacing) {
                 // Simple mode leads, so the one switch between the calm and the full app is never hunted for.
                 simpleModeCard.staggeredAppear(index: 0)
+                if simpleMode {
+                    // Simple mode keeps open only what a new wearer sets up: who they are, their units, the
+                    // strap, and the Lock Screen notifications. Appearance, the streak, the optional trackers
+                    // and sync behaviour sit behind one closed row, like Advanced below. Nothing is removed.
+                    profileCard.staggeredAppear(index: 0)
+                    unitsCard.staggeredAppear(index: 1)
+                    strapCard.staggeredAppear(index: 2)
+                    #if os(iOS)
+                    liveNotificationsCard.staggeredAppear(index: 3)
+                    #endif
+                    SettingsDisclosureGroup(
+                        title: "More settings",
+                        subtitle: "Appearance, your streak, optional trackers and sync. Tucked away to keep this screen short.",
+                        isExpanded: $simpleMoreOpen,
+                        hint: "Shows more settings sections"
+                    ) {
+                        appearanceCard
+                        streakCard
+                        featuresCard
+                        #if os(iOS)
+                        syncCard
+                        #endif
+                    }
+                    .staggeredAppear(index: 4)
+                } else {
                 // Everyday sections stay expanded (S3): the ones a first-run user actually needs.
                 profileCard.staggeredAppear(index: 0)
                 unitsCard.staggeredAppear(index: 1)
@@ -275,6 +303,7 @@ struct SettingsView: View {
                 #if os(iOS)
                 syncCard.staggeredAppear(index: 6)
                 #endif
+                }
 
                 // Lower-frequency sections collapse behind a single default-closed disclosure so the
                 // screen opens at ~6 sections instead of 11. Nothing is removed; every section here
@@ -2815,6 +2844,8 @@ private struct SettingsDisclosureGroup<Content: View>: View {
     let title: LocalizedStringKey
     let subtitle: LocalizedStringKey
     @Binding var isExpanded: Bool
+    /// What VoiceOver says the row does.
+    var hint: LocalizedStringKey = "Shows the advanced settings sections"
     @ViewBuilder var content: () -> Content
 
     var body: some View {
@@ -2845,7 +2876,7 @@ private struct SettingsDisclosureGroup<Content: View>: View {
             .buttonStyle(LiquidPressStyle())
             .accessibilityLabel(title)
             .accessibilityValue(isExpanded ? "Expanded" : "Collapsed")
-            .accessibilityHint("Shows the advanced settings sections")
+            .accessibilityHint(hint)
             .accessibilityAddTraits(.isButton)
 
             if isExpanded {
@@ -2864,12 +2895,15 @@ private struct SettingsSection<Content: View>: View {
     let title: LocalizedStringKey
     let blurb: LocalizedStringKey
     @ViewBuilder var content: () -> Content
+    /// Simple mode drops the "Settings" overline: every card on this screen is a setting, so the word
+    /// repeated over each one is noise.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
 
     var body: some View {
         StrandCard(padding: NoopMetrics.space5) {
             VStack(alignment: .leading, spacing: NoopMetrics.space4) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Settings").strandOverline()
+                    if !simpleMode { Text("Settings").strandOverline() }
                     HStack(spacing: NoopMetrics.space2 + 2) {
                         Image(systemName: icon)
                             .foregroundStyle(StrandPalette.accent)
