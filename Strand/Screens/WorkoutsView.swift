@@ -47,6 +47,11 @@ struct WorkoutsView: View {
             override: distanceSystemRaw)
     }
 
+    /// Simple mode (`SimpleModePrefs`): the session list right after one summary card, and none of the
+    /// controls or analyses a first-time wearer does not need (see `body`).
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    /// The plain guide entry presented as a sheet from Simple mode's zones card (nil = closed).
+    @State private var plainGuideTerm: PlainGuideTerm?
     // Effort display scale (#268) — drives the effort hero's read-out. Display-only.
     @AppStorage(UnitPrefs.effortScaleKey) private var effortScaleRaw = EffortScale.hundred.rawValue
     private var effortScale: EffortScale { UnitPrefs.resolveEffortScale(effortScaleRaw) }
@@ -203,26 +208,44 @@ struct WorkoutsView: View {
                 // Current / Archived applies to what the LIST and its summaries show. `unscopedRows`
                 // itself stays unscoped so the HR-recovery trend and the auto-widen probe keep seeing the
                 // whole window.
-                let windowRows = Self.scopedRows(unscopedRows, scope: scope)
+                // Simple mode shows the whole range: with the Current/Archived control hidden, a silent cut
+                // to the ten newest would make the summary count only part of what the range picker names.
+                let windowRows = simpleMode ? unscopedRows : Self.scopedRows(unscopedRows, scope: scope)
                 let groups = sportGroups(from: windowRows)
                 let zonesSummary = WorkoutZones.summary(from: windowRows)
 
-                workoutActionRow
-                scopeBar
-                rangeBar(rows: windowRows, effectiveRange: resolved)
-                if let postLogNote { postLogBanner(postLogNote) }
-                effortHero(rows: windowRows, effectiveRange: resolved, groups: groups)
-                summarySection(rows: windowRows, effectiveRange: resolved, groups: groups)
-                heatmapSection()
-                breakdownSection(groups: groups, rows: windowRows)
-                if let z = zonesSummary {
-                    zonesSection(z, totalSessions: windowRows.count)
+                if simpleMode {
+                    // Simple mode: start or add a workout, pick the range, one summary card, then the sessions
+                    // themselves, then the zone split in words. The duplicate stat tiles (they repeat the
+                    // card's sessions, time and top sport), the 13-week calorie map, the per-sport breakdown,
+                    // the heart-rate-recovery trend, the Current/Archived split, the sport/source/search
+                    // filters and multi-select stay in the full view (Settings → Simple mode off).
+                    workoutActionRow
+                    rangeBar(rows: windowRows, effectiveRange: resolved, showsFilters: false)
+                    if let postLogNote { postLogBanner(postLogNote) }
+                    effortHero(rows: windowRows, effectiveRange: resolved, groups: groups)
+                    sessionsSection(rows: windowRows)
+                    if let z = zonesSummary {
+                        zonesSection(z, totalSessions: windowRows.count)
+                    }
+                } else {
+                    workoutActionRow
+                    scopeBar
+                    rangeBar(rows: windowRows, effectiveRange: resolved)
+                    if let postLogNote { postLogBanner(postLogNote) }
+                    effortHero(rows: windowRows, effectiveRange: resolved, groups: groups)
+                    summarySection(rows: windowRows, effectiveRange: resolved, groups: groups)
+                    heatmapSection()
+                    breakdownSection(groups: groups, rows: windowRows)
+                    if let z = zonesSummary {
+                        zonesSection(z, totalSessions: windowRows.count)
+                    }
+                    recoveryTrendSection
+                    sessionsSection(rows: windowRows)
                 }
-                recoveryTrendSection
-                sessionsSection(rows: windowRows)
             }
         }
-        .task(id: repo.refreshSeq) {
+        .task(id: "\(repo.refreshSeq)-\(simpleMode)") {
             guard !usesPreviewRows else { return }
             // #797: read only the currently-loaded window (bounded on first paint), not the whole history.
             let r = await repo.workoutRows(days: loadedWindowDays ?? 4000)
@@ -235,7 +258,9 @@ struct WorkoutsView: View {
             }
             // 13-week active-calorie heatmap: pull ~100 days of daily metrics and map day → active kcal.
             // Loaded AFTER `loaded`/range are set so the secondary heatmap never delays the list's first
-            // paint — the card is hidden until this populates, then appears in place.
+            // paint — the card is hidden until this populates, then appears in place. Simple mode does not
+            // show the heatmap, so it does not read for it either.
+            guard !simpleMode else { dailyKcal = [:]; return }
             let toDay = todayDayString()
             let fromDate = Calendar.current.date(byAdding: .day, value: -100, to: Date()) ?? Date()
             let metrics = await repo.dailyMetrics(fromDay: Self.dayFormatter.string(from: fromDate), toDay: toDay)
@@ -256,7 +281,9 @@ struct WorkoutsView: View {
         .onChange(of: range) { newRange in
             Task { await expandWindowIfNeeded(for: newRange == .all ? .all : effectiveRange) }
         }
-        .task(id: recoveryTrendInputKey(rows: trendRows)) {
+        .task(id: simpleMode ? "simple" : recoveryTrendInputKey(rows: trendRows)) {
+            // Simple mode does not show the recovery trend, so it skips the per-session heart-rate reads too.
+            guard !simpleMode else { recoveryTrend = []; return }
             await loadRecoveryTrend(rows: trendRows)
         }
         .sheet(item: $sheet) { target in
@@ -295,6 +322,9 @@ struct WorkoutsView: View {
         // `profile`/`intelligence` properties above for why `model` can't live here.
         // #64: name the merged session when every selected row is a bare detected bout (there's no sport
         // to inherit). Reuses the "Start a workout" named-sport picker.
+        .sheet(item: $plainGuideTerm) { term in
+            PlainGuideView(initialTerm: term, onClose: { plainGuideTerm = nil })
+        }
         .workoutSelectionCover(item: $mergeSportPrompt) { target in
             StartWorkoutSheet(title: String(localized: "Name the merged session"),
                               subtitle: String(localized: "These sessions have no sport label yet. Pick one for the merged session."),
@@ -491,7 +521,7 @@ struct WorkoutsView: View {
         .padding(.horizontal, 2)
     }
 
-    private func rangeBar(rows: [WorkoutRow], effectiveRange: Range) -> some View {
+    private func rangeBar(rows: [WorkoutRow], effectiveRange: Range, showsFilters: Bool = true) -> some View {
         let fellBack = effectiveRange != range
         let caption = rangeCaption(rows: rows, effectiveRange: effectiveRange, fellBack: fellBack)
         return VStack(alignment: .leading, spacing: 8) {
@@ -501,7 +531,7 @@ struct WorkoutsView: View {
                 fillsAvailableWidth: true
             ) { $0.label }
                 .frame(maxWidth: .infinity, alignment: .leading)
-            filterBar
+            if showsFilters { filterBar }
             Text(caption)
                 .font(StrandFont.footnote)
                 .foregroundStyle(fellBack ? StrandPalette.statusWarning : StrandPalette.textTertiary)
@@ -635,7 +665,10 @@ struct WorkoutsView: View {
     /// The active filter (#64), composed once. Sport / source / search all apply AFTER the window cut,
     /// so the effort hero, tiles, breakdown, zones and list all read one filtered set.
     private var filter: WorkoutFilter {
-        WorkoutFilter(sport: sportFilter, sourceClass: sourceFilter, search: searchText)
+        // Simple mode has no filter controls, so it applies none: a filter left over from the full view
+        // would otherwise narrow the list with nothing on screen saying so.
+        simpleMode ? WorkoutFilter()
+            : WorkoutFilter(sport: sportFilter, sourceClass: sourceFilter, search: searchText)
     }
 
     /// Sessions inside a given range, RELATIVE TO THE LATEST session, then passed through the active
@@ -842,8 +875,12 @@ struct WorkoutsView: View {
                 heroCountStat(String(localized: "Sessions"), value: Double(rows.count),
                               format: { "\(Int($0.rounded()))" }, tint: StrandPalette.effortColor)
                 heroStat(String(localized: "Active"), String(localized: "\(oneDecimal(totalTimeH))h"), tint: StrandPalette.textPrimary)
-                heroStat(String(localized: "Top sport"), modal.count > 0 ? "\(modal.count)×" : "—",
-                         tint: StrandPalette.effortBright)
+                // "Top sport 2×" reads as a puzzle on its own; Simple mode keeps the sentence below, which says
+                // the same thing in words ("Mostly Walking").
+                if !simpleMode {
+                    heroStat(String(localized: "Top sport"), modal.count > 0 ? "\(modal.count)×" : "—",
+                             tint: StrandPalette.effortBright)
+                }
             }
             Text(modal.count > 0
                  ? "Mostly \(WorkoutSource.displaySport(modal.sport)) (\(effectiveRange.caption))."
@@ -1131,8 +1168,8 @@ struct WorkoutsView: View {
 
     private func zonesSection(_ z: WorkoutZones.Summary, totalSessions: Int) -> some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("HR Zones",
-                          overline: "Whoop import",
+            SectionHeader(simpleMode ? "Heart-rate zones" : "HR Zones",
+                          overline: simpleMode ? nil : "Whoop import",
                           trailing: totalSessions == 1
                               ? String(localized: "\(z.sessionsWithZones) of 1 session")
                               : String(localized: "\(z.sessionsWithZones) of \(totalSessions) sessions"))
@@ -1167,9 +1204,29 @@ struct WorkoutsView: View {
                             zoneStat(i + 1, minutes: z.minutes[i], total: z.totalMinutes)
                         }
                     }
-                    Text("Share of imported zone time, duration-weighted across sessions (approximate).")
-                        .font(StrandFont.footnote)
-                        .foregroundStyle(StrandPalette.textTertiary)
+                    if simpleMode {
+                        // The same split in words, with the guide's zones entry one tap away.
+                        Button { plainGuideTerm = .heartRateZones } label: {
+                            HStack(alignment: .top, spacing: 6) {
+                                Text("How your workout time split across the five heart-rate zones, from easy (zone 1) to all-out (zone 5). Only sessions imported from WHOOP carry zones.")
+                                    .font(StrandFont.footnote)
+                                    .foregroundStyle(StrandPalette.textTertiary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.leading)
+                                Spacer(minLength: 4)
+                                Image(systemName: "info.circle")
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundStyle(StrandPalette.textTertiary)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityHint(Text("What the numbers mean"))
+                    } else {
+                        Text("Share of imported zone time, duration-weighted across sessions (approximate).")
+                            .font(StrandFont.footnote)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
                 }
             }
         }
@@ -1211,9 +1268,10 @@ struct WorkoutsView: View {
                 SectionHeader("All Sessions",
                               overline: "Log",
                               trailing: String(localized: "\(rows.count) total"))
-                selectPill(rows: rows)
+                // Multi-select (merge, bulk delete) is a full-view tool; each row's ••• menu stays.
+                if !simpleMode { selectPill(rows: rows) }
             }
-            if selectionMode { selectionToolbar(rows: rows) }
+            if selectionMode && !simpleMode { selectionToolbar(rows: rows) }
             NoopCard(padding: 0) {
                 if usesCompactSessions {
                     // #64: full-width native rows, no horizontal scroll — the iPhone list reads like the
@@ -1525,7 +1583,9 @@ struct WorkoutsView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
-                sourceBadge(row.source)
+                // Simple mode leaves out where a session came from (it is on the detail screen), so the date,
+                // time and duration line is not cut short to make room for the badge.
+                if !simpleMode { sourceBadge(row.source) }
                 // Reserve the ••• column width inside the label; the interactive Menu is overlaid on top
                 // (below) so it captures its own taps instead of being swallowed by the row button (#318).
                 if !selectionMode {
