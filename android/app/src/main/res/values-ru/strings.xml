@@ -2762,4 +2762,5 @@
     <string name="sleep_screen_subtitle">Сколько и насколько хорошо вы спали, ночь за ночью.</string>
     <string name="workouts_screen_subtitle">Все ваши тренировки в одном месте: записанные браслетом или импортированные.</string>
     <string name="intelligence_screen_subtitle">Ваши Заряд, Усилие и Отдых за каждый день, рассчитанные самим NOOP на этом устройстве. Ничего не отправляется в интернет.</string>
+    <string name="sleep_debt_from_whoop">Данные WHOOP</string>
 </resources>

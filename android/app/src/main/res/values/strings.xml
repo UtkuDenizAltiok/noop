@@ -2896,4 +2896,5 @@
     <string name="sleep_screen_subtitle">How long and how well you slept, night by night.</string>
     <string name="workouts_screen_subtitle">All your workouts in one place, recorded by your strap or imported.</string>
     <string name="intelligence_screen_subtitle">Your Charge, Effort and Rest for each day, worked out by NOOP itself on this device. Nothing is sent online.</string>
+    <string name="sleep_debt_from_whoop">From WHOOP</string>
 </resources>

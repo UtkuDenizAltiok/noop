@@ -2883,4 +2883,5 @@
     <string name="sleep_screen_subtitle">Jak długo i jak dobrze spałeś, noc po nocy.</string>
     <string name="workouts_screen_subtitle">Wszystkie Twoje treningi w jednym miejscu, zarejestrowane przez opaskę lub zaimportowane.</string>
     <string name="intelligence_screen_subtitle">Twoja Energia, Wysiłek i Odpoczynek dla każdego dnia, wyliczane przez sam NOOP na tym urządzeniu. Nic nie jest wysyłane do sieci.</string>
+    <string name="sleep_debt_from_whoop">Z WHOOP</string>
 </resources>

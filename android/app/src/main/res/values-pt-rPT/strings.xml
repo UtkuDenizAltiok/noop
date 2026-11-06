@@ -2859,4 +2859,5 @@
     <string name="sleep_screen_subtitle">Quanto tempo e quão bem dormiste, noite a noite.</string>
     <string name="workouts_screen_subtitle">Todos os teus treinos num só lugar, registados pela banda ou importados.</string>
     <string name="intelligence_screen_subtitle">A tua Carga, Esforço e Descanso de cada dia, calculados pelo próprio NOOP neste dispositivo. Nada é enviado online.</string>
+    <string name="sleep_debt_from_whoop">Do WHOOP</string>
 </resources>
