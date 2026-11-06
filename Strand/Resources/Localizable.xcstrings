@@ -1,6 +1,8 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ vs baseline": {"localizations": {"en": {"stringUnit": {"state": "translated", "value": "%@ vs baseline"}}, "de": {"stringUnit": {"state": "translated", "value": "%@ gegenüber Basiswert"}}, "es": {"stringUnit": {"state": "translated", "value": "%@ frente a la referencia"}}, "fr": {"stringUnit": {"state": "translated", "value": "%@ par rapport à la référence"}}, "it": {"stringUnit": {"state": "translated", "value": "%@ rispetto alla linea di base"}}, "pl": {"stringUnit": {"state": "translated", "value": "%@ względem bazy"}}, "pt-PT": {"stringUnit": {"state": "translated", "value": "%@ face à referência"}}, "ru": {"stringUnit": {"state": "translated", "value": "%@ относительно нормы"}}, "zh-Hans": {"stringUnit": {"state": "translated", "value": "相对基线 %@"}}, "zh-Hant": {"stringUnit": {"state": "translated", "value": "相對基線 %@"}}}},
+    "%@ vs your normal": {"localizations": {"en": {"stringUnit": {"state": "translated", "value": "%@ vs your normal"}}, "de": {"stringUnit": {"state": "translated", "value": "%@ vs. dein Normalwert"}}, "es": {"stringUnit": {"state": "translated", "value": "%@ vs tu normal"}}, "fr": {"stringUnit": {"state": "translated", "value": "%@ vs votre normale"}}, "it": {"stringUnit": {"state": "translated", "value": "%@ rispetto al tuo normale"}}, "pl": {"stringUnit": {"state": "translated", "value": "%@ względem Twojej normy"}}, "pt-PT": {"stringUnit": {"state": "translated", "value": "%@ vs o teu normal"}}, "ru": {"stringUnit": {"state": "translated", "value": "%@ от вашей нормы"}}, "zh-Hans": {"stringUnit": {"state": "translated", "value": "%@，相较你的正常水平"}}, "zh-Hant": {"stringUnit": {"state": "translated", "value": "%@，相對你的正常值"}}}},
     "vs your 30-day normal": {"localizations": {"en": {"stringUnit": {"state": "translated", "value": "vs your 30-day normal"}}, "de": {"stringUnit": {"state": "translated", "value": "vs. dein 30-Tage-Normalwert"}}, "es": {"stringUnit": {"state": "translated", "value": "vs tu normal de 30 días"}}, "fr": {"stringUnit": {"state": "translated", "value": "vs votre normale sur 30 jours"}}, "it": {"stringUnit": {"state": "translated", "value": "rispetto al tuo normale di 30 giorni"}}, "pl": {"stringUnit": {"state": "translated", "value": "względem Twojej normy z 30 dni"}}, "pt-PT": {"stringUnit": {"state": "translated", "value": "vs o teu normal de 30 dias"}}, "ru": {"stringUnit": {"state": "translated", "value": "от вашей нормы за 30 дней"}}, "zh-Hans": {"stringUnit": {"state": "translated", "value": "对比你 30 天的正常水平"}}, "zh-Hant": {"stringUnit": {"state": "translated", "value": "對比你 30 天的正常水準"}}}},
     "Today's readings aren't in yet. They arrive once your strap syncs last night's sleep.": {"localizations": {"en": {"stringUnit": {"state": "translated", "value": "Today's readings aren't in yet. They arrive once your strap syncs last night's sleep."}}, "de": {"stringUnit": {"state": "translated", "value": "Die heutigen Messwerte sind noch nicht da. Sie kommen, sobald dein Band den Schlaf der letzten Nacht synchronisiert."}}, "es": {"stringUnit": {"state": "translated", "value": "Las mediciones de hoy aún no han llegado. Llegarán cuando tu banda sincronice el sueño de anoche."}}, "fr": {"stringUnit": {"state": "translated", "value": "Les mesures du jour ne sont pas encore là. Elles arrivent dès que votre bracelet synchronise votre sommeil de la nuit dernière."}}, "it": {"stringUnit": {"state": "translated", "value": "Le misurazioni di oggi non sono ancora arrivate. Arriveranno quando la fascia sincronizzerà il sonno di stanotte."}}, "pl": {"stringUnit": {"state": "translated", "value": "Dzisiejszych pomiarów jeszcze nie ma. Pojawią się, gdy opaska zsynchronizuje sen z ostatniej nocy."}}, "pt-PT": {"stringUnit": {"state": "translated", "value": "As medições de hoje ainda não chegaram. Chegam quando a tua banda sincronizar o sono da última noite."}}, "ru": {"stringUnit": {"state": "translated", "value": "Сегодняшних показателей пока нет. Они появятся, когда браслет синхронизирует сон прошлой ночи."}}, "zh-Hans": {"stringUnit": {"state": "translated", "value": "今天的读数还没到。手环同步昨晚的睡眠后就会出现。"}}, "zh-Hant": {"stringUnit": {"state": "translated", "value": "今天的讀數還沒到。手環同步昨晚的睡眠後就會出現。"}}}},
     "From %@": {"localizations": {"en": {"stringUnit": {"state": "translated", "value": "From %@"}}, "de": {"stringUnit": {"state": "translated", "value": "Vom %@"}}, "es": {"stringUnit": {"state": "translated", "value": "Del %@"}}, "fr": {"stringUnit": {"state": "translated", "value": "Du %@"}}, "it": {"stringUnit": {"state": "translated", "value": "Del %@"}}, "pl": {"stringUnit": {"state": "translated", "value": "Z %@"}}, "pt-PT": {"stringUnit": {"state": "translated", "value": "De %@"}}, "ru": {"stringUnit": {"state": "translated", "value": "От %@"}}, "zh-Hans": {"stringUnit": {"state": "translated", "value": "%@ 的分数"}}, "zh-Hant": {"stringUnit": {"state": "translated", "value": "%@ 的分數"}}}},
@@ -8004,70 +8006,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@%@"
-          }
-        }
-      }
-    },
-    "%@%@ C vs your normal": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$@ C vs. dein Normalwert"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "new",
-            "value": "%1$@%2$@ C vs your normal"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%@ C vs tu normal"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$@ C vs votre normale"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%@ C rispetto al tuo normale"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$@ C vs o teu normal"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$@ °C от вашей нормы"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%@ C，相较你的正常水平"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@%@ C，相對你的正常值"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$@%2$@ C kontra normalny"
           }
         }
       }
