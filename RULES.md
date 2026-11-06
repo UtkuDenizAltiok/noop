@@ -63,6 +63,11 @@ request an export without a defined need. Give enough explanation to understand 
   refused `gh pr create`, `gh pr close`/`reopen` on our PRs and the Auto-fix switch until he said yes in chat.
   When it blocks, explain the block once in plain words and name the permission rule that would allow it;
   never try to work around it.
+- **The Lift Log stays fully available in Simple mode (Utku, 6 Nov 2026, night).** It is his own feature (gym
+  sessions with records and taps, which he built and got merged upstream). Simple mode must never hide, shorten or
+  restyle any part of it: the More → Training entry, the whole `LiftLogView`, the active-session bar, its Lock
+  Screen session switch and the lifting-friendly Effort switch stay as they are in both modes. Checked 6 Nov; a
+  guard test is queued ([Simple mode → Start here](features/simple-mode.md#start-here-next-chat)).
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove

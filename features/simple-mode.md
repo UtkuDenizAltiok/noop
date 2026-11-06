@@ -8,82 +8,93 @@ Simple mode off (or More → All features) shows everything. Utku hands over all
 verify, ship; never ask him routine questions (Rules, 6 Nov). He tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just
 update"). 6 Nov: "I hate that the original looks like AI slop" — design carefully what to show, hide and emphasize.
 
-**Where things are (6 Nov 2026, night, end of chat 3):**
-- `feat/simple-mode` (worktree `~/Developer/noop-simple`): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`, v4
-  `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`, Round 6 `256a2dc4` `c94f3260` `610c3505` `0a6f3021`.
-  iOS + shared Mac code; no Android twin yet. Rounds 1–6 below.
-- Stack: `testing-stack` = `af4a35d2` + v5 as `9d7ad9d8` `c72fad03` (fast-forward; upstream unchanged at
-  `2a1de760`), then the wind-down fix as `487c88ba`, then Round 6 as `3548093b`. Phone: `testing-latest` =
-  `testing-build` `281239ad` (stack `3548093b` + template), NOOP 12.1.0 (439), verified 6 Nov night (run
-  42280019994). Just update.
-- Upstream PRs (ours): #2896 tab swipe, #2897 translations, #2898 Info.plist, #2899 skin temp once, #2900 one
-  sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source,
-  #2906 wind-down uses the Sleep tab's need. No maintainer comments as of 6 Nov evening. CI: #2901 #2903 #2904 #2905 fully green. **#2896–#2900 show a red X only
-  because GitHub had no macOS runner** (annotation: "The job was not acquired by Runner of type hosted even
-  after multiple attempts"): on these exact heads the NOOPiOS leg passed on 6 Nov and the Strand leg (with
-  StrandTests) passed on 5 Nov; each attempt lost the other leg. `gh run rerun` needs admin; close + reopen
-  re-runs everything on the same head (done twice on 6 Nov).
-- Other worktrees: `~/Developer/noop-subtitles` (#2903), `noop-skinunit` (#2904), `noop-debtsrc` (#2905),
-  `noop-winddown` (#2906, `fix/wind-down-sleep-need`, the F9 fix).
+**Lift Log stays fully available in Simple mode (Utku, 6 Nov night; rule in [Rules](../RULES.md#settled-decisions)).**
+His own feature (gym sessions with records and taps, merged upstream). Never hide, shorten or restyle any part of it
+in Simple mode. Checked 6 Nov: More → Training → Lift Log (Simple list, `RootTabView` `MoreRow(.liftLog)`) and All
+features; `LiftLogView` has no Simple-mode branch; the active-session bar (`LiftSessionBar`) sits at the app root in
+both modes; Settings keeps "Lift Log session" (Live notifications) and the lifting-friendly Effort switch (Banister,
+in Units) open in Simple mode. Only cosmetic difference: Simple Workouts hides every row's source badge, so a lifting
+row no longer says "Lifting" there (one line to bring back if he wants it). A guard test is queue item 2 below.
 
-**How to work (what this chat learned):**
+**Where things are (6 Nov 2026, night, end of chat 3):**
+- `feat/simple-mode` (worktree `~/Developer/noop-simple`, pushed): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`,
+  v4 `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`, Round 6 `256a2dc4` `c94f3260` `610c3505`
+  `0a6f3021`. iOS + shared Mac code; no Android twin yet. Rounds 1–6 below say what each did.
+- Stack: `testing-stack` `3548093b` (upstream `2a1de760` + our open PRs + Simple mode through `610c3505` + #2906).
+  **`0a6f3021` (Alarms wording) is NOT in it yet.** Phone: `testing-latest` = `testing-build` `281239ad`, NOOP
+  12.1.0 (439), verified 6 Nov night (run 42280019994). Just update. Not yet seen on Utku's phone.
+- Upstream PRs (ours, all open, no maintainer comments as of 6 Nov night): #2896 tab swipe, #2897 translations,
+  #2898 Info.plist, #2899 skin temp once, #2900 one sleep need, #2901 Trends "Average", #2903 plain subtitles,
+  #2904 skin temp unit, #2905 sleep-debt source, #2906 wind-down uses the Sleep tab's need (Auto-fix ON, bound to
+  chat 3). Green: #2901 #2903 #2904 #2905. **#2896–#2900 and #2906 are red only because GitHub had no macOS
+  runner** ("The job was not acquired by Runner of type hosted even after multiple attempts", 0 steps); every leg
+  that ran passed; the Strand build + StrandTests pass locally on those heads. `gh run rerun` needs admin; close +
+  reopen re-runs on the same head (done twice on 6 Nov for #2896–#2900; not yet for #2906).
+- Other worktrees: `~/Developer/noop-subtitles` (#2903), `noop-skinunit` (#2904), `noop-debtsrc` (#2905),
+  `noop-winddown` (#2906, `fix/wind-down-sleep-need` `eb0391a0`). Fork branch `fix/wind-down-one-sleep-need` is a
+  superseded copy of #2906 (never a PR); delete when convenient.
+
+**How to work (what the chats learned):**
 - Build: `xcodegen generate`, then `git checkout -- StrandiOS/Resources/Info.plist` (until #2898 merges);
   `xcodebuild -scheme NOOPiOS -destination 'platform=iOS Simulator,name=iPhone 18 Pro' CODE_SIGNING_ALLOWED=NO build`;
-  full tests: `-scheme Strand -destination 'platform=macOS' test` (2331 tests on the stack).
-- Python tools need `/opt/homebrew/bin/python3.12` (system python is 3.9) and a canonical `TMPDIR` (realpath),
-  else 4 `test_check_source_references` tests fail on the macOS `/tmp` alias. CI gates to run before any PR:
-  `i18n_audit.py --ci upstream/main`, `doc_comment_lint.py`, `python3.12 -m unittest discover -p "test_*.py"` in
-  `Tools/`, and `tests.test_parity_governance_acceptance` (+ `--refresh-derived` for a combined stack).
-- New or changed English strings need real translations for de/es/fr/pt-PT (hard gate) and it/pl/ru/zh-Hans/zh-Hant
-  (ratchet; an English "translation" counts as an echo and fails). Add them with a small script that inserts
-  one-line JSON entries after `"strings": {` in `Strand/Resources/Localizable.xcstrings`; merge catalogue conflicts
-  by key with `dist/tools/xcmerge.py` (never by markers). Reusing an existing key avoids new translations.
-- Simulator: `xcrun simctl launch "iPhone 18 Pro" com.noopapp.noop --demo-seed` (first launch seeds 120 synthetic
-  days ending the day it ran; relaunch to see data; "today" may be unscored, swipe Today right for a scored day).
-  The screenshot tool can show the frame before the last action: wait and take a second one. iOS 26 switches do not
-  flip on tap in the tool; slide them. Turn Simple mode off without the UI: launch with `-noop.simpleMode NO`.
-- Safety-check limits on this Mac: force-push is refused (use the merge-commit route in
-  [Workflow §6](../WORKFLOW.md#6-builds-for-utkus-phone)); editing a posted GitHub comment was refused (get claims
-  right before posting); a looped `gh pr checks` was refused once (the app's `ccd_pr get_status` or
-  `gh run list --branch` work). In zsh always write `"${VAR}:refs/…"` (bare `$VAR:r` is a zsh modifier).
-- Verify citations before writing them (one journal name was wrong in a draft commit message and was corrected).
-- 6 Nov: the Mac's safety check refused `gh pr create`, `gh pr close`/`reopen` and the Auto-fix switch until Utku
-  said yes in chat. When it blocks, tell him once which permission rule allows it (e.g. `Bash(gh pr close:*)`,
-  `Bash(gh pr reopen:*)`, `Bash(gh pr create:*)`); never work around it.
-- Foundation's `String(format:locale:)` rounds ties half-to-even and prints "-+0.0" (finding 16): for any
-  one-decimal figure shared with Android, round explicitly half away from zero first.
+  full tests: `-scheme Strand -destination 'platform=macOS' test` (2338 on the branch, 2365 on the stack).
+- Python tools need `/opt/homebrew/bin/python3.12` and a canonical `TMPDIR` (`export TMPDIR=$(realpath "$TMPDIR")`).
+  Gates before any commit: `Tools/i18n_audit.py --ci upstream/main`, `Tools/doc_comment_lint.py`,
+  `python3.12 -m unittest discover -p "test_*.py"` in `Tools/` (includes `tests.test_parity_governance_acceptance`).
+- Translations: every new English string needs all nine locales (de/es/fr/pt-PT hard gate; it/pl/ru/zh ratchet; an
+  English echo fails). Insert one-line JSON entries after `"strings": {` with a small script (count `%@`/`%lld`;
+  use positional `%1$@` where word order changes, e.g. zh); merge catalogue conflicts by key with
+  `dist/tools/xcmerge.py`. A `Text(verbatim: "\(a)–\(b)")` literal is flagged as un-extracted copy: build such
+  strings in a helper (`SimpleDayPlan.rangeText`).
+- Rule 11 bites: a test helper named like ANY production function (same name + arity, any package) moves the parity
+  baseline (`instant(_:_:_:)` vs `GarminExportParser.instant`). Prefix test helpers (`tonightFixture…`).
+- Doc comments: insert a new declaration ABOVE a neighbour's doc/`//` comment, never between it and its line.
+- Simulator: `xcrun simctl launch "iPhone 18 Pro" com.noopapp.noop --demo-seed` seeds 120 days ending that day
+  (uninstall first to reseed); relaunch to see data. Launch args set prefs for one run: `-noop.simpleMode NO`,
+  `-windDown.enabled YES -windDown.wakeMinutes 420`. The screenshot can lag one action: wait, shoot again.
+  Coordinates are points (screenshot px ÷ 3). The demo carries WHOOP-imported sleep needs (7h 16m).
+- Phone build: add commits to the stack as a fast-forward (cherry-pick onto `origin/testing-stack` in a scratch
+  worktree, verify iPhone Release build + StrandTests + gates, push), then `testing-build` by the merge-commit route
+  ([Workflow §6](../WORKFLOW.md#6-builds-for-utkus-phone)), dispatch "Testing build (fork)", verify release target,
+  five assets, IPA HTTP 200 and a new string in the IPA's `de.lproj`. The macOS leg takes ~25–30 min. A superseded
+  running build may be cancelled (`gh run cancel`) and replaced by one combined build.
+- Android is tested on the fork only: `gh workflow run "Android CI" --ref <branch>` (push does not trigger it).
+- Safety-check limits on this Mac: force-push and `git commit --amend` of a pushed commit are refused (build a clean
+  branch with `git merge --squash` instead); `gh pr create`, close/reopen and the Auto-fix switch need Utku's yes in
+  chat (permission rules `Bash(gh pr create:*)` etc.); `sleep N; cmd` chains are refused (use an `until` loop or a
+  background job). In zsh write `"${VAR}:refs/…"`.
+- Foundation's `String(format:locale:)` rounds ties half-to-even (finding 16): round half away from zero first for
+  any one-decimal figure shared with Android. Verify citations before writing them.
 
 **First 20 minutes of the next chat (carryover, in order):**
-1. Start procedure (`checkpoint.sh status --net`, `upstream-check.sh`). If upstream moved, check our PR branches
-   still merge; rebuild the stack only if needed. The phone build `281239ad` is verified (State "Now").
-2. PR care: read new comments on all ten PRs (#2896–#2906) and answer each once. If #2896–#2900 or #2906 are still
-   red only from a cancelled no-runner macOS leg, close + reopen them ONCE at a quiet hour (one at a time, a few
-   minutes apart); verify every job, not the run's conclusion. #2906 has Auto-fix on.
-3. Add `0a6f3021` (Alarms wording) to the stack at the next rebuild. Then continue the plan at step 6 (First run /
-   What's new in plain words), or F12 / F1+F13. Commit each step on
-   `feat/simple-mode` (fork) unless it says UPSTREAM.
+1. Start procedure (`bash dist/tools/checkpoint.sh status --net`, `bash dist/tools/upstream-check.sh`). If upstream
+   moved, check our PR branches still merge (#2906 vs #2900 and #2700 overlap by one line each) and fast-forward the
+   fork's `main`.
+2. PR care: comments on all ten PRs (#2896–#2906), answer each once. Retry the no-runner legs (#2896–#2900, #2906)
+   ONCE at a quiet hour (close + reopen, one at a time); verify every job on the head. #2906's Auto-fix watch is
+   bound to chat 3's session: in the new chat bind it again (`ccd_pr bind_pr` with its URL) and turn Auto-fix on
+   only with Utku's yes (the switch asks him).
+3. Ask Utku (once, simply) whether he updated and what he noticed on Today / Workouts / Settings / the Tonight row.
 
-**The plan: Calm NOOP v5** (design reasoning in "Design v5" below; open findings F1–F12 there):
-1. ✓ **Today v5** (Apple, `5050c8f3`, Round 5): "Your day" with the suggested Effort range and progress, one
-   "Last night" line, top-3 Charge readings, F8, and F14 (`9060515b`). Still open from this step: **F12
-   efficiency** (skip loading what only hidden sections use; measure before/after, Rule 1).
-2. **Sleep v5, "Tonight" line.** (a) ✓ opened as #2906: the UPSTREAM fix `fix/wind-down-sleep-need` `eb0391a0` (both
-   platforms; the nudge keeps `windDown.sleepNeedMinutes` equal to the Sleep tab's need, Alarms copy states need +
-   lead; State "Now" has its verification and the PR status). (b) ✓ the "Tonight" row on Simple Today (`256a2dc4`, Round 6).
-3. ✓ **Workouts (Simple)** (`c94f3260`, Round 6). Next on this screen only if Utku finds it unclear: what
-   "Typical effort" means (average Effort per session), said in one line.
-4. ✓ **Settings (Simple)** (`610c3505`, Round 6): Simple mode, Profile, Units, Strap, Live notifications open;
-   "More settings" (Appearance, Streak, Features, Sync) and Advanced closed; About. Next idea only with evidence
-   of confusion: the Profile card is long (photo, birth date, sex, weight, height, waist, HR max…).
-5. ✓ **Alarms:** copy check done (`0a6f3021`, Round 6). **Live:** leave as is (connect/re-pair lives there; its log
-   is the evidence).
-6. **First run / What's new:** plain wording in Simple mode (F10 checked: consistent with the README).
-7. **UPSTREAM small fixes**, both platforms where the code exists: F1 together with F13 (one PR: the honest
-   "not in yet" line plus Apple reading today's key, Android already does), F2, F3, F5, F6 (one concern per PR).
-8. **Android twin of Simple mode** (after iOS v5 settles) + `noop.simpleMode` in the `.noopbak` whitelist on both
-   platforms (byte-identical contract); then propose Simple mode upstream, default OFF (#2463).
-9. **Measurement audit:** F11 (finding 16 across other one-decimal figures, by twin oracle); then the Backlog
-   biometric queue (evidence first, Rules 2–3).
+**Keep going: the next improvements, in order** (one bounded step at a time, each verified and shipped):
+1. **Stack + phone build with `0a6f3021`** (Alarms wording), plus whatever the next steps add.
+2. **Lift Log guard test:** make the Simple More list data (e.g. `SimpleModePrefs.moreRows` read by
+   `RootTabView`) and pin in `SimpleModeTests` that it contains `.liftLog`, so no future Simple change can drop it.
+3. **F12 efficiency (Rule 1, measure first):** Simple Today still loads data only hidden sections use (Key Metrics
+   sparks, Your Cards) and Simple Stress still computes Advanced HRV (`freqHRV`, `stressIndex` in `loadDaytime`).
+   Skip them in Simple mode; CPU before/after with the simulator `ps` method (Workflow §11); full view unchanged.
+4. **UPSTREAM F1 + F13 in one PR:** the false "Still learning your baseline" readiness line (both platforms) and Apple
+   reading today's key in `ReadinessEngine.evaluate` like Android; tests on both sides.
+5. **First run / What's new in plain words** (plan step 6) for Simple mode.
+6. **UPSTREAM small fixes**, one per PR: F2 ("Last night" for a two-day-old score), F3 (Health "Recovery
+   contributors" duplicate + 14-day vs 4-night footnote), F5 (Sleep ring "of 100" contrast), F6 (Stress chips
+   truncate), plus the redundant "Settings" overline on every Settings card.
+7. **Android twin of Simple mode** + `noop.simpleMode` in the `.noopbak` whitelist on both platforms; then propose
+   Simple mode upstream, default OFF (#2463). The Tonight row needs #2906 merged first.
+8. **F11 audit** (one-decimal figures by twin oracle), then the Backlog biometric queue (evidence first).
+
+**Done so far (the plan, for reference):** Today v5 (Round 5); wind-down need fix #2906 + Tonight row, Simple
+Workouts, Simple Settings, Alarms wording (Round 6); Sleep, Trends, Stress, Health (Rounds 2–4). Live stays as is.
 
 Each step: build NOOPiOS + Strand, StrandTests, i18n gate (translations for all nine locales via the insertion
 script), doc lint, Tools tests; simulator check in Simple and full view; then the testing stack + phone build
@@ -112,14 +123,16 @@ over weeks, whether things are improving; and, rarely but importantly, a warning
 **Show / emphasize / hide, screen by screen** (✓ done, → next):
 | Screen | Show and emphasize | Hide in Simple (still in full view) |
 |---|---|---|
-| Today | ✓ rings + captions, ✓ plain Charge drivers, ✓ honest summary lines; → "Your day" card with suggested Effort range and progress; → one sleep line | ✓ Key Metrics, Your Cards, Start session beta, Data sources |
-| Sleep | ✓ score, hours vs need, night card, debt ledger in words, trend; → "Tonight" bedtime line | ✓ sleep marks, body clock, stages vs typical, Night detail tiles |
+| Today | ✓ rings + captions (dates on carried Charge/Rest), ✓ "Your day" (verdict + suggested Effort range + progress), ✓ sleep card (Last night + Tonight), ✓ top-3 Charge readings | ✓ Key Metrics, Your Cards, Start session beta, Data sources |
+| Sleep | ✓ score, hours vs need (one resolver with Today), night card, debt ledger in words, trend (Tonight lives on Today) | ✓ sleep marks, body clock, stages vs typical, Night detail tiles |
 | Trends | ✓ score trends, Average below its range | ✓ CTL/ATL/TSB, PDF export |
 | Stress | ✓ level, markers vs your normal, day timeline, trend, guide link | ✓ Advanced HRV, method card |
 | Health | ✓ sync, heart rate, vitals, skin temp, Fitness Age, Vitality | ✓ recovery contributors (duplicate), records/sources links |
-| Workouts | → recent sessions first, weekly summary, zones in words | → HR-recovery trend, 13-week calories, activity breakdown |
-| Settings | → essentials first | → everything else inside one Advanced group |
-| Live, Alarms, Lift Log, Breathe | unchanged | — |
+| Workouts | ✓ Start/Add, range, one summary card, sessions, zones in words | ✓ filters/search, Current/Archived, multi-select, stat tiles, 13-week calories, breakdown, HR-recovery trend, source badges |
+| Settings | ✓ Simple mode, Profile, Units, Strap, Live notifications | ✓ "More settings" (Appearance, Streak, Features, Sync), Advanced (unchanged), "Settings" overline |
+| Alarms | ✓ plain strap-alarm evidence (`0a6f3021`) | the capture method and issue number |
+| Lift Log | **everything, always** (Utku's rule, 6 Nov) | nothing, ever |
+| Live, Breathe | unchanged | — |
 
 **The suggested Effort range** (step 1): NOOP already has an approved, presentation-only mapping,
 `CoupledView.optimalStrainRange(recovery:)` (byte-identical with Android's `optimalStrainRange`): Charge ≥ 67 →

@@ -1,5 +1,9 @@
 # The Lift Log — feature reference
 
+**Simple mode (Utku, 6 Nov 2026):** the Lift Log stays fully available and unchanged in Simple mode: the
+More → Training entry, the whole screen, the active-session bar, its Lock Screen switch and the lifting-friendly
+Effort switch. See [Rules](../RULES.md#settled-decisions) and [Simple mode](simple-mode.md#start-here-next-chat).
+
 The gym log book inside NOOP, built with Utku 2–23 Sep 2026 and merged upstream (#2098, #2099, #2232, #2403). The
 journey that built it is finished (24 Sep 2026); this page is what anyone changing NOOP needs so as not to break it:
 what it does, every file behind it, the invariants that keep it right (numbered 1–48, cited as "Lift Log rule N"),

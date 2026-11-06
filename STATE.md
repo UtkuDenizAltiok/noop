@@ -1,8 +1,14 @@
 # State
 
-Updated **6 Nov 2026 (evening)**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **6 Nov 2026 (night, end of chat 3)**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
 
-## Now — Simple Today v5, 6 Nov (evening)
+## Now — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
+
+Parked on Utku's request (high context). Everything is committed, pushed and verified; nothing is running. The
+next chat starts from [Simple mode → Start here](features/simple-mode.md#start-here-next-chat) ("First 20
+minutes", then "Keep going: the next improvements"). New standing rule: the Lift Log stays fully available in
+Simple mode ([Rules](RULES.md#settled-decisions)).
+
 
 - [x] **Today v5 built and verified on the branch:** `feat/simple-mode` `5050c8f3` ("Your day" with the suggested
   Effort range and progress, one "Last night" line shared with Simple Sleep, top-3 Charge readings, F8) and
