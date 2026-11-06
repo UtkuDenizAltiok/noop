@@ -56,6 +56,11 @@ struct HealthView: View {
 /// HR tick — the static sections depend on `repo`/`profile`/`model` snapshots only. Shared by the
 /// history-present path and the first-run live path so the stack is defined once.
 private struct HealthSectionsStack: View {
+    /// Simple mode (`SimpleModePrefs`) leaves out two sections: the recovery contributors, which repeat
+    /// Today's "What's behind your Charge" with their own simple-average baseline (so the two can disagree),
+    /// and the records/sources links, which stay one tap away under More → All features.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionGap) {
             // Manual "Sync now" + honest sync status (#364). Its own view so the ~1Hz HR stream
@@ -75,7 +80,7 @@ private struct HealthSectionsStack: View {
             // Screen-5 recovery detail: the CONTRIBUTORS to today's recovery as
             // labelled progress bars (HRV / Resting HR / Sleep / Respiratory), each
             // scored against the on-device baseline. Depends only on `repo`.
-            RecoveryContributorsSection()
+            if !simpleMode { RecoveryContributorsSection() }
             // The static vitals grid is its own view depending only on `repo`,
             // so it is unaffected by live HR ticks.
             VitalsSection()
@@ -85,7 +90,7 @@ private struct HealthSectionsStack: View {
             SkinTempSection()
             // v5 deep-links: the records logbook + the multi-device fused record, reachable
             // from their honest Health home as drill-in rows (not their own destinations).
-            HealthHubLinksSection()
+            if !simpleMode { HealthHubLinksSection() }
         }
     }
 }
