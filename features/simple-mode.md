@@ -22,7 +22,9 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
   [#2898](https://github.com/ryanbr/noop/pull/2898) Info.plist drift,
   [#2899](https://github.com/ryanbr/noop/pull/2899) skin temperature shown once,
   [#2900](https://github.com/ryanbr/noop/pull/2900) one sleep need (Android test fixed in `0a6c50cd`),
-  [#2901](https://github.com/ryanbr/noop/pull/2901) Trends "Average" label. On all six the upstream `NOOPiOS` App
+  [#2901](https://github.com/ryanbr/noop/pull/2901) Trends "Average" label,
+  [#2904](https://github.com/ryanbr/noop/pull/2904) skin temperature unit, [#2905](https://github.com/ryanbr/noop/pull/2905)
+  sleep-debt tile source (6 Nov). On all six the upstream `NOOPiOS` App
   build leg is cancelled with 0 steps (no runner, upstream capacity); macOS build + StrandTests and Android CI pass.
   The fork cannot re-run upstream jobs. Older open PRs: see State.
 
@@ -516,10 +518,9 @@ Findings this round:
 - Live was looked at and deliberately left alone: it is where people connect and re-pair, and its log card is
   the evidence Utku sends. Workouts and Alarms are still to review (roadmap item 2).
 
-**Two upstream fixes, both platforms, ready but NOT yet opened** (the Mac's safety check refused `gh pr create`
-as "Create Public Surface" on 6 Nov; #2903 the evening before went through). Bodies saved in
-`private/pr-drafts-2026-11-06/`. Open with `gh pr create -R ryanbr/noop --base main --head
-UtkuDenizAltiok:<branch> --title "<commit subject>" --body-file <draft>` once allowed:
+**Two upstream fixes, both platforms, opened 6 Nov as [#2904](https://github.com/ryanbr/noop/pull/2904) and
+[#2905](https://github.com/ryanbr/noop/pull/2905)** after Utku's explicit yes (the Mac's safety check had first
+refused `gh pr create` as "Create Public Surface"; an explicit request in chat let it through):
 - `fix/charge-skin-temp-unit` `2d482919` (worktree `~/Developer/noop-skinunit`): the Charge breakdown's skin
   temperature ignored °F and had no degree sign, on both platforms. Display layer only. Fork Android CI
   42167206054 green (APK + unit tests). Oracle: Swift twin over 21 inputs per unit, stdout pasted into

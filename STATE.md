@@ -16,10 +16,12 @@ Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   [42171643978](https://github.com/UtkuDenizAltiok/noop/actions/runs/42171643978) green; release `testing-latest`
   (id 436150215) targets `5f63e6fa`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), new strings present (de
   checks). **Just update.**
-- [ ] **Two upstream PRs ready, NOT opened (6 Nov):** the Mac's safety check refused `gh pr create` ("Create
-  Public Surface"). Branches `fix/charge-skin-temp-unit` `2d482919` and `fix/sleep-debt-tile-source` `a41d40d7`,
-  fork Android CI green on both heads; bodies in `private/pr-drafts-2026-11-06/`; details in
-  [Simple mode, Round 4](features/simple-mode.md). Needs Utku's OK (or a permission rule) to open.
+- [ ] **Upstream PRs opened 6 Nov (morning), on Utku's explicit yes:** [#2904](https://github.com/ryanbr/noop/pull/2904)
+  Charge skin temperature in the reader's unit (`fix/charge-skin-temp-unit` `2d482919`, worktree
+  `~/Developer/noop-skinunit`) and [#2905](https://github.com/ryanbr/noop/pull/2905) the sleep-debt tile names
+  WHOOP's figure (`fix/sleep-debt-tile-source` `a41d40d7`, worktree `~/Developer/noop-debtsrc`). Both read back:
+  right heads, MERGEABLE, full bodies. Upstream CI started at once (no approval gate); fork Android CI was green
+  on both heads before opening. Check upstream results next session; answer feedback once.
 - [ ] **Upstream PR opened 6 Nov:** [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen subtitles (both
   platforms), head `ea831f16`, branch `fix/plain-screen-subtitles` (worktree `~/Developer/noop-subtitles`).
   Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI all green at `ea831f16`:
@@ -386,10 +388,8 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-The phone build `5f63e6fa` is verified. First the two ready upstream PRs
-(`fix/charge-skin-temp-unit`, `fix/sleep-debt-tile-source`): open them only with Utku's OK, since the Mac's safety
-check refused `gh pr create` on 6 Nov (bodies in `private/pr-drafts-2026-11-06/`). Reconcile our open PRs
-(#2896–#2901, #2903) for feedback. Then roadmap item 2: Simple Workouts and Alarms (Live stays as it is), and
+The phone build `5f63e6fa` is verified. First reconcile our open PRs (#2896–#2901, #2903, #2904, #2905):
+CI results on #2904/#2905 (opened 6 Nov morning) and any maintainer feedback (answer each once). Then roadmap item 2: Simple Workouts and Alarms (Live stays as it is), and
 the full-view candidates in Backlog ("Full view, wrong or doubled claims").
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
