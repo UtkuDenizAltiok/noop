@@ -109,6 +109,8 @@ struct LiquidTodayView: View {
     /// The same row's raw skin-temperature deviation (°C), so the plain skin-temperature row can show a
     /// Fahrenheit reader the converted figure from the unrounded value.
     @State private var cachedChargeSkinDevC: Double?
+    /// The day an earlier Charge score comes from (the carried row), for Simple mode's "From 4 Nov" line.
+    @State private var carriedChargeDayKey: String?
 
     /// Live Sessions (silent guardian) beta gate — the SAME key the Settings toggle writes. Default ON
     /// (the entry is BETA-labelled in-UI); off removes the Start-session control entirely.
@@ -1860,6 +1862,7 @@ struct LiquidTodayView: View {
             priorScored: priorScored,
             calibrationNights: calNights,
             todayKey: tkey)
+        carriedChargeDayKey = priorScored?.day
 
         let cal = Calendar.current
         let dayStart = cal.startOfDay(for: selectedLogicalDay)
@@ -2157,11 +2160,14 @@ struct LiquidTodayView: View {
         return String(localized: "Learning what's normal for you: \(nights) of \(Baselines.minNightsSeed) nights so far. Keep wearing the strap to bed and your scores fill in.")
     }
 
-    /// Simple mode's second line under the Charge ring when it shows an earlier day's score: that day
-    /// ("Last night · 4 Nov"), which the full view computes but never shows. Nil for today's own score.
+    /// Simple mode's second line under the Charge ring when it shows an earlier day's score: the day it
+    /// comes from ("From 4 Nov"), which the full view computes but never shows. Only the date: the full
+    /// caption says "Last night" for anything up to two days old (`TodayView.carryFreshnessDays`), which
+    /// names the wrong night on the second day. Nil for today's own score.
     private var simpleChargeCarriedDay: String? {
-        if case .carried(_, let when) = chargeDisplay { return when }
-        return nil
+        guard case .carried = chargeDisplay, let key = carriedChargeDayKey else { return nil }
+        let date = TodayView.lastChargeDateFmt(key)
+        return String(localized: "From \(date)")
     }
 
     /// The Charge-state pill's word. Simple mode says "Earlier score" for a carried score, because the
@@ -2200,8 +2206,11 @@ struct LiquidTodayView: View {
         case .strained: return String(localized: "Signals are down a touch. Keep it easy today.")
         case .rundown: return String(localized: "Several recovery signals are down. Prioritise rest today.")
         case .insufficient:
+            // `.insufficient` mostly means there is no row for today yet (ReadinessEngine reads only today's
+            // row), so "still learning your baseline" was false for anyone with history, every morning before
+            // the night synced. A calibrating wearer never sees this line: the night count replaces it.
             return simpleMode
-                ? String(localized: "Still learning what's normal for you. Wear the strap to bed for a few more nights and this fills in.")
+                ? String(localized: "Today's readings aren't in yet. They arrive once your strap syncs last night's sleep.")
                 : String(localized: "Still learning your baseline. A few more nights and this fills in.")
         }
     }
