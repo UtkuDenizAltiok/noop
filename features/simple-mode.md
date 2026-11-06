@@ -16,14 +16,14 @@ update"). 6 Nov: "I hate that the original looks like AI slop" — design carefu
   `2a1de760`), then the wind-down fix as `487c88ba`. Phone: `testing-latest` = `testing-build` `a3937ccf` (stack
   `487c88ba` + template), NOOP 12.1.0 (439), verified 6 Nov evening (run 42259715814). Just update.
 - Upstream PRs (ours): #2896 tab swipe, #2897 translations, #2898 Info.plist, #2899 skin temp once, #2900 one
-  sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source.
-  No maintainer comments as of 6 Nov evening. CI: #2901 #2903 #2904 #2905 fully green. **#2896–#2900 show a red X only
+  sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source,
+  #2906 wind-down uses the Sleep tab's need. No maintainer comments as of 6 Nov evening. CI: #2901 #2903 #2904 #2905 fully green. **#2896–#2900 show a red X only
   because GitHub had no macOS runner** (annotation: "The job was not acquired by Runner of type hosted even
   after multiple attempts"): on these exact heads the NOOPiOS leg passed on 6 Nov and the Strand leg (with
   StrandTests) passed on 5 Nov; each attempt lost the other leg. `gh run rerun` needs admin; close + reopen
   re-runs everything on the same head (done twice on 6 Nov).
 - Other worktrees: `~/Developer/noop-subtitles` (#2903), `noop-skinunit` (#2904), `noop-debtsrc` (#2905),
-  `noop-winddown` (`fix/wind-down-sleep-need`, the F9 fix; PR not yet opened, see State "Now").
+  `noop-winddown` (#2906, `fix/wind-down-sleep-need`, the F9 fix).
 
 **How to work (what this chat learned):**
 - Build: `xcodegen generate`, then `git checkout -- StrandiOS/Resources/Info.plist` (until #2898 merges);
@@ -64,7 +64,7 @@ update"). 6 Nov: "I hate that the original looks like AI slop" — design carefu
 1. ✓ **Today v5** (Apple, `5050c8f3`, Round 5): "Your day" with the suggested Effort range and progress, one
    "Last night" line, top-3 Charge readings, F8, and F14 (`9060515b`). Still open from this step: **F12
    efficiency** (skip loading what only hidden sections use; measure before/after, Rule 1).
-2. **Sleep v5, "Tonight" line.** (a) ✓ built: the UPSTREAM fix `fix/wind-down-sleep-need` `eb0391a0` (both
+2. **Sleep v5, "Tonight" line.** (a) ✓ opened as #2906: the UPSTREAM fix `fix/wind-down-sleep-need` `eb0391a0` (both
    platforms; the nudge keeps `windDown.sleepNeedMinutes` equal to the Sleep tab's need, Alarms copy states need +
    lead; State "Now" has its verification and the PR status). (b) Next: the Simple Sleep line ("Tonight: in bed by
    22:40 for 8h 40m of sleep") from `WindDownNudge.wakeMinutes(forWeekday:)` and `sleepNeedMinutes` (now the
@@ -139,7 +139,7 @@ the guide. Before surfacing it, read the band's history (task #43 comments on bo
 - **F6** (UPSTREAM): Stress tiles truncate their comparison chips ("+2 vs…") at phone width.
 - **F7** (done as #2904): Charge breakdown skin temperature ignored °F.
 - **F8** (fork, done in v5): one name, "Breathing rate".
-- **F9** (fixed on `fix/wind-down-sleep-need` `eb0391a0`, PR pending Utku's yes; Round 5): the nudge's need was a
+- **F9** (fixed upstream as #2906, `eb0391a0`; Round 5): the nudge's need was a
   stored default 8 h nothing set on either platform; it now follows the Sleep tab's need.
 - **F13** (UPSTREAM candidate): with no row for today the readiness verdict reads the newest row (an older night)
   beside an "Earlier score" Charge (Round 5).

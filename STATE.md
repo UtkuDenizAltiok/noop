@@ -17,21 +17,20 @@ Updated **6 Nov 2026 (evening)**. ChatGPT/Codex owns project execution under [Ru
   success. Release `testing-latest` (id 436657179) targets `fc57000f`, five assets, IPA HTTP 200, NOOP 12.1.0 (439),
   `com.noopapp.noop`; the IPA's en/de catalogues contain the v5 strings ("Your day" / "Dein Tag"). **Just update.**
   Not yet seen on Utku's phone.
-- [ ] **Wind-down nudge uses the Sleep tab's need (F9, plan step 2a), UPSTREAM PR NOT YET OPENED:** branch
-  `fix/wind-down-sleep-need` `eb0391a0` (worktree `~/Developer/noop-winddown`, one commit on `upstream/main`
-  `2a1de760`, pushed to the fork). Both platforms: `WindDownNudge.adoptSleepNeed` / `WindDownStore.adoptSleepNeed`
-  keep `windDown.sleepNeedMinutes` equal to `SleepModel.debtNeedMin` / new Kotlin `debtNeedMin(days)`; Apple
-  Alarms copy states need + lead. Verified: NOOPiOS build, StrandTests 2306 green (4 new
-  `WindDownSleepNeedTests`), i18n exit 0, doc lint, Tools 338, parity 50, oracle (28 inputs, Swift stdout pasted
-  in `WindDownSleepNeedTest.kt`), fork Android CI
-  [42258465615](https://github.com/UtkuDenizAltiok/noop/actions/runs/42258465615) green on `eb0391a0`.
-  **`gh pr create` was refused by Claude Code's safety check ("Create Public Surface")**: needs Utku's explicit
-  yes in chat, or the permission rule `Bash(gh pr create:*)`. Ready-to-use body:
-  `dist/private/pr-drafts/wind-down-sleep-need.md` (title "fix(alarms): time the wind-down nudge from the sleep
-  need the Sleep tab states"). The fork also has a superseded branch `fix/wind-down-one-sleep-need` (`c16dd475` +
-  a test fix; amending it was refused as destructive): same content, never a PR; delete it when convenient.
-  In the stack it conflicts with #2900 in `SleepModelLogic.kt` (resolved: #2900's comment + the shared call); the
-  PR should say whichever lands second needs that one-line rebase, as it already says for #2700.
+- [ ] **Upstream PR opened 6 Nov evening, on Utku's explicit yes:** [#2906](https://github.com/ryanbr/noop/pull/2906)
+  the wind-down nudge uses the Sleep tab's need (F9, plan step 2a), branch `fix/wind-down-sleep-need` head
+  `eb0391a0` (worktree `~/Developer/noop-winddown`, one commit on `upstream/main` `2a1de760`). Read back: OPEN,
+  MERGEABLE, right head, full body (4,363 chars, includes the fork Android CI link). Upstream CI started at once
+  (no approval gate); bound to this session. Verified before opening: NOOPiOS build, StrandTests 2306 green (4 new
+  `WindDownSleepNeedTests`), i18n exit 0, doc lint, Tools 338, parity 50, oracle (28 inputs, Swift stdout pasted in
+  `WindDownSleepNeedTest.kt`), fork Android CI
+  [42258465615](https://github.com/UtkuDenizAltiok/noop/actions/runs/42258465615) green. The first `gh pr create`
+  was refused by the safety check ("Create Public Surface") until Utku said yes. Body source:
+  `dist/private/pr-drafts/wind-down-sleep-need.md`. The fork also has a superseded branch
+  `fix/wind-down-one-sleep-need` (`c16dd475` + a test fix; amending it was refused as destructive): same content,
+  never a PR; delete it when convenient. Overlaps: #2700 (one Apple Alarms copy line) and our #2900 (one line in
+  `SleepModelLogic.kt`, resolved in the stack); whoever lands second needs a one-line rebase. Next: check its CI
+  (every job on the head) and answer feedback once.
 - [x] **Phone build with the wind-down fix, verified 6 Nov evening:** `testing-stack` `487c88ba` (= `c72fad03` + the
   fix; iPhone Release build green, StrandTests 2357 green, i18n, doc lint, parity 50; fork Android CI on the stack
   [42259720867](https://github.com/UtkuDenizAltiok/noop/actions/runs/42259720867) green) → `testing-build`
@@ -434,9 +433,7 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-First: if Utku has said yes in chat, open the wind-down PR from `fix/wind-down-sleep-need` with the saved body
-(`dist/private/pr-drafts/wind-down-sleep-need.md`), read it back, and bind/watch its CI; if not, it waits (do not
-retry the refused command). The phone build `a3937ccf` is verified (just update). PR care (retry
+First: check #2906's CI (every job on head `eb0391a0`) and new comments on all ten PRs. The phone build `a3937ccf` is verified (just update). PR care (retry
 #2896–#2900 once at a quiet hour if still red). Then plan step 2b: the Simple Sleep "Tonight" line; then F12
 (Simple mode skips loading what it hides, measured) and F1+F13 together upstream.
 
