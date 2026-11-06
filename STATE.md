@@ -52,7 +52,7 @@ Simple mode ([Rules](RULES.md#settled-decisions)).
   `a3937ccf` (merge route, tree checked). Run [42259715814](https://github.com/UtkuDenizAltiok/noop/actions/runs/42259715814)
   all jobs success; release `testing-latest` (id 436778938) targets `a3937ccf`, five assets, IPA HTTP 200, NOOP
   12.1.0 (439). Supersedes `fc57000f`. **Just update.** Not yet seen on Utku's phone.
-- [ ] **PR care 6 Nov evening:** no maintainer comments on any of our nine PRs; #2901 #2903 #2904 #2905 fully
+- [ ] **PR care 6 Nov evening:** no maintainer comments on any of our ten PRs (#2896–#2906, as of 6 Nov night); #2901 #2903 #2904 #2905 fully
   green; #2896–#2900 still red only because the Strand leg was CANCELLED with no runner (10:40 UTC). Not retried
   this afternoon: they were closed and reopened twice already on 6 Nov and a third round in US hours would only add
   maintainer notifications. Retry ONCE at a quiet hour (after ~20:00 UTC or a weekend morning), one PR at a time,
