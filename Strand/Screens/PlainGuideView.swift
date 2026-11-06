@@ -49,6 +49,8 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
     case bloodOxygen
     case sleepNeed
     case sleepStages
+    /// What the "Your day" card's verdict and suggested Effort range mean.
+    case dayPlan
     case stress
     case heartRateZones
     case estimates
@@ -65,7 +67,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
             return .behindCharge
         case .sleepNeed, .sleepStages:
             return .sleep
-        case .stress, .heartRateZones, .estimates:
+        case .dayPlan, .stress, .heartRateZones, .estimates:
             return .other
         case .confidence, .whoopDifference:
             return .goodToKnow
@@ -95,6 +97,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .bloodOxygen:      return "drop.fill"
         case .sleepNeed:        return "bed.double.fill"
         case .sleepStages:      return "moon.zzz.fill"
+        case .dayPlan:          return "figure.run"
         case .stress:           return "bolt.heart.fill"
         case .heartRateZones:   return "speedometer"
         case .estimates:        return "figure.walk"
@@ -116,6 +119,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .bloodOxygen:      return StrandPalette.metricCyan
         case .sleepNeed:        return StrandPalette.restColor
         case .sleepStages:      return StrandPalette.restColor
+        case .dayPlan:          return StrandPalette.chargeColor
         case .stress:           return StrandPalette.metricAmber
         case .heartRateZones:   return StrandPalette.effortColor
         case .estimates:        return StrandPalette.chargeColor
@@ -136,6 +140,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .bloodOxygen:      return String(localized: "Blood oxygen (SpO₂)")
         case .sleepNeed:        return String(localized: "Sleep need and sleep debt")
         case .sleepStages:      return String(localized: "Sleep stages")
+        case .dayPlan:          return String(localized: "Your day and suggested Effort")
         case .stress:           return String(localized: "Stress")
         case .heartRateZones:   return String(localized: "Heart-rate zones")
         case .estimates:        return String(localized: "Estimates")
@@ -178,6 +183,8 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
             return String(localized: "How much sleep you need, and how far behind you are.")
         case .sleepStages:
             return String(localized: "Light, deep and REM sleep, plus short wake-ups.")
+        case .dayPlan:
+            return String(localized: "What today's numbers suggest you do, and how hard to go.")
         case .stress:
             return String(localized: "How “switched on” your body looked during the day, from 0 to 3.")
         case .heartRateZones:
@@ -214,6 +221,8 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
             return String(localized: "Sleep need is the amount NOOP aims for you each night. Sleep debt is sleep you've missed recently compared with that need. Paying it back takes a few longer or earlier nights, not one huge sleep.")
         case .sleepStages:
             return String(localized: "Light sleep fills most of the night. Deep sleep is the most physically restoring and comes mostly early in the night. REM is dreaming sleep and comes more toward morning. Short wake-ups are normal. The strap estimates stages from heart rate and movement, so treat them as a guide, not a lab result.")
+        case .dayPlan:
+            return String(localized: "The word at the top of Your day (Push, Maintain or Go easy) and the sentence under it weigh your heart-rate variability, resting heart rate and breathing against your normal, plus how quickly your training has built up. The suggested Effort range comes from your Charge: a high Charge suggests a hard day, a middle one a moderate day, and a low one an easy day. The bar shows the range and how far today's Effort has got. It's a rule of thumb, not a target you must hit. The range is left out when today's Charge isn't ready yet, or when your Charge and your other signals point different ways; then go by the sentence.")
         case .stress:
             return String(localized: "Based on your heart rate and heart-rate variability while you're awake. 0 is calm and 3 is very high. Exercise raises your heart rate too, so NOOP tries to leave workout time out. A busy day reading high is normal; several high days in a row are a sign to slow down.")
         case .heartRateZones:

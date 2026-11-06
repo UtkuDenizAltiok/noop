@@ -715,14 +715,19 @@ struct SleepView: View {
             }
 
             // Simple mode answers the first question about a night under the score: how long, against how
-            // much was needed. The need is the one the debt ledger below measures against (the night's
-            // imported need when WHOOP provided one), so the two cards cannot disagree about it.
-            if simpleMode, score != nil, night.stages.asleep > 0 {
-                let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
-                let needMin = repo.importedSleep[wakeDay]?.needMin ?? model.normativeNeedMin
+            // much was needed. Both figures come from `SimpleDayPlan.sleepVersusNeed`, which the Simple
+            // Today's sleep line also uses: the asleep total of the same day row the score above is read
+            // from (the decoded night only when that row has none), and the need the debt ledger below
+            // measures against. So Today, this line and the ledger state one night and one need.
+            let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
+            if simpleMode, score != nil,
+               let figures = SimpleDayPlan.sleepVersusNeed(
+                   asleepMin: repo.days.last(where: { $0.day == wakeDay })?.totalSleepMin ?? night.stages.asleep,
+                   importedNeedMin: repo.importedSleep[wakeDay]?.needMin,
+                   normativeNeedMin: model.normativeNeedMin) {
                 // On its own panel: this line lands where the night scene fades into the canvas, so plain
                 // white text (like the state word above) washes out in Light mode.
-                Text("\(durationText(night.stages.asleep)) asleep · \(durationText(needMin)) needed")
+                Text("\(SimpleDayPlan.durationText(figures.asleep)) asleep · \(SimpleDayPlan.durationText(figures.need)) needed")
                     .font(StrandFont.subhead.weight(.semibold))
                     .foregroundStyle(StrandPalette.textPrimary)
                     .padding(.horizontal, 14)
