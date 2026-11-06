@@ -118,6 +118,13 @@ struct LiquidTodayView: View {
     /// The day an earlier Rest score comes from (the ring's fresh-tail carry), for Simple mode's "From 4 Nov"
     /// line under the Rest ring. Nil for the selected day's own score and while Simple mode is off.
     @State private var carriedRestDayKey: String?
+    /// Mirrors of the wind-down reminder's stored settings (`WindDownNudge`'s keys), observed only so Today
+    /// re-renders when the Alarms screen changes them; `simpleTonightPlan` reads the values through
+    /// `WindDownNudge`. `WindDownMirrorKeyTests` pins that these keys are the ones the reminder reads.
+    @AppStorage(SimpleDayPlan.ReminderKeys.enabled) private var windDownEnabledMirror = false
+    @AppStorage(SimpleDayPlan.ReminderKeys.wake) private var windDownWakeMirror = 0
+    @AppStorage(SimpleDayPlan.ReminderKeys.need) private var windDownNeedMirror = 0
+    @AppStorage(SimpleDayPlan.ReminderKeys.perDayWake) private var windDownPerDayMirror = Data()
     /// Whether Simple mode's Charge card lists every driver rather than the three that moved it most.
     @State private var simpleDriversExpanded = false
 
@@ -1564,26 +1571,44 @@ struct LiquidTodayView: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// Simple mode's one line about last night: asleep against the need, tapping through to Sleep. Today
-    /// only (the Sleep tab opens on the newest night, so a past day's line would land on another night),
-    /// and only when the day row recorded sleep: a night that has not synced yet shows no line rather
-    /// than a claim that no sleep was tracked.
+    /// Simple mode's sleep card: last night (asleep against the need) and, while the wind-down reminder is on,
+    /// tonight's plan, tapping through to Sleep. Today only (the Sleep tab opens on the newest night, so a past
+    /// day's card would land on another night). Each row shows only when it has something true to say: last
+    /// night once the day row recorded sleep (a night that has not synced yet makes no claim), tonight while
+    /// its fall-asleep time is still ahead (`SimpleDayPlan.tonightPlan`).
     @ViewBuilder
     private var simpleSleepLine: some View {
-        if selectedDayOffset == 0, let sleep = cachedSimpleSleep {
+        let tonight = simpleTonightPlan
+        if selectedDayOffset == 0, cachedSimpleSleep != nil || tonight != nil {
             NavigationLink(value: TabRoute.sleep) {
                 HStack(spacing: 12) {
-                    Image(systemName: "moon.stars.fill")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(StrandPalette.restColor)
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Last night")
-                            .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
-                            .foregroundStyle(StrandPalette.textTertiary)
-                        Text("\(SimpleDayPlan.durationText(sleep.asleep)) asleep · \(SimpleDayPlan.durationText(sleep.need)) needed")
-                            .font(StrandFont.subhead.weight(.semibold))
-                            .foregroundStyle(StrandPalette.textPrimary)
+                    VStack(alignment: .leading, spacing: 12) {
+                        if let sleep = cachedSimpleSleep {
+                            simpleSleepRow(icon: "moon.stars.fill", title: String(localized: "Last night")) {
+                                Text("\(SimpleDayPlan.durationText(sleep.asleep)) asleep · \(SimpleDayPlan.durationText(sleep.need)) needed")
+                                    .font(StrandFont.subhead.weight(.semibold))
+                                    .foregroundStyle(StrandPalette.textPrimary)
+                            }
+                        }
+                        if let tonight {
+                            let clock = AppClock.hourMinuteFormatter()
+                            simpleSleepRow(icon: "bed.double.fill", title: String(localized: "Tonight")) {
+                                Text("Aim to be asleep by \(clock.string(from: tonight.asleepBy))")
+                                    .font(StrandFont.subhead.weight(.semibold))
+                                    .foregroundStyle(StrandPalette.textPrimary)
+                                Group {
+                                    if SimpleDayPlan.tonightStatesNeed(lastNightNeedMin: cachedSimpleSleep?.need,
+                                                                       tonightNeedMin: tonight.needMinutes) {
+                                        Text("That gives you \(SimpleDayPlan.durationText(Double(tonight.needMinutes))) of sleep before your \(clock.string(from: tonight.wake)) wake. Your wind-down reminder comes at \(clock.string(from: tonight.windDown)).")
+                                    } else {
+                                        Text("Your wind-down reminder comes at \(clock.string(from: tonight.windDown)), ahead of your \(clock.string(from: tonight.wake)) wake.")
+                                    }
+                                }
+                                    .font(StrandFont.caption)
+                                    .foregroundStyle(StrandPalette.textSecondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
                     }
                     Spacer(minLength: 8)
                     Image(systemName: "chevron.right")
@@ -1600,6 +1625,37 @@ struct LiquidTodayView: View {
             .accessibilityElement(children: .combine)
             .accessibilityHint(Text("Open Sleep"))
         }
+    }
+
+    /// One row of the Simple sleep card: an icon, a small overline and the row's own lines.
+    private func simpleSleepRow<Content: View>(icon: String, title: String,
+                                               @ViewBuilder content: () -> Content) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(StrandPalette.restColor)
+                .frame(width: 24)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                content()
+            }
+        }
+    }
+
+    /// Tonight's plan from the wind-down reminder's own settings, read at render with one clock. The four
+    /// reminder `@AppStorage` mirrors below exist so a change made on the Alarms screen re-renders Today at
+    /// once (otherwise a reminder just switched off could still be promised here until the next sync); the
+    /// values themselves are read through `WindDownNudge`, which owns their clamping.
+    private var simpleTonightPlan: SimpleDayPlan.TonightPlan? {
+        _ = (windDownEnabledMirror, windDownWakeMirror, windDownNeedMirror, windDownPerDayMirror)
+        guard simpleMode, selectedDayOffset == 0 else { return nil }
+        return SimpleDayPlan.tonightPlan(now: Date(), calendar: .current, reminderOn: WindDownNudge.isEnabled,
+                                         needMinutes: WindDownNudge.sleepNeedMinutes,
+                                         leadMinutes: WindDownNudge.leadMinutes,
+                                         wakeMinutesForWeekday: { WindDownNudge.wakeMinutes(forWeekday: $0) })
     }
 
     /// Why today's Charge is what it is. Once the baseline is learned, each driver row shows last night's
