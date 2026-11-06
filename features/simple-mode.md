@@ -8,14 +8,16 @@ Simple mode off (or More → All features) shows everything. Utku hands over all
 verify, ship; never ask him routine questions (Rules, 6 Nov). He tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just
 update"). 6 Nov: "I hate that the original looks like AI slop" — design carefully what to show, hide and emphasize.
 
-**Where things are (6 Nov 2026, end of chat 2):**
+**Where things are (6 Nov 2026, end of chat 3):**
 - `feat/simple-mode` (worktree `~/Developer/noop-simple`): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`, v4
-  `6f073301` `a00000db` `74182550`. iOS + shared Mac code; no Android twin yet. Rounds 1–4 below.
-- Phone: `testing-latest` = `testing-build` `5f63e6fa` (stack `af4a35d2` + template), NOOP 12.1.0 (439),
-  verified 6 Nov. Just update.
+  `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`. iOS + shared Mac code; no Android twin yet.
+  Rounds 1–5 below.
+- Stack: `testing-stack` = `af4a35d2` + v5 as `9d7ad9d8` `c72fad03` (fast-forward; upstream unchanged at
+  `2a1de760`). Phone: `testing-latest` = `testing-build` `fc57000f` (stack `c72fad03` + template), NOOP 12.1.0
+  (439), verified 6 Nov evening (run 42242460602). Just update.
 - Upstream PRs (ours): #2896 tab swipe, #2897 translations, #2898 Info.plist, #2899 skin temp once, #2900 one
   sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source.
-  CI: #2901 and #2903 fully green; #2904/#2905 running with Auto-fix on. **#2896–#2900 show a red X only
+  No maintainer comments as of 6 Nov evening. CI: #2901 #2903 #2904 #2905 fully green. **#2896–#2900 show a red X only
   because GitHub had no macOS runner** (annotation: "The job was not acquired by Runner of type hosted even
   after multiple attempts"): on these exact heads the NOOPiOS leg passed on 6 Nov and the Strand leg (with
   StrandTests) passed on 5 Nov; each attempt lost the other leg. `gh run rerun` needs admin; close + reopen
@@ -51,26 +53,29 @@ update"). 6 Nov: "I hate that the original looks like AI slop" — design carefu
 
 **First 20 minutes of the next chat (carryover, in order):**
 1. Start procedure (`checkpoint.sh status --net`, `upstream-check.sh`). If upstream moved, check our PR branches
-   still merge; rebuild the stack only if needed.
+   still merge; rebuild the stack only if needed. The phone build `fc57000f` is verified (State "Now").
 2. PR care: read new comments on all nine PRs and answer each once. If #2896–#2900 are still red, close + reopen
-   them ONCE at a quieter hour (one at a time, a few minutes apart); verify every job, not the run's conclusion.
-3. Then start the plan below. Commit each step on `feat/simple-mode` (fork) unless it says UPSTREAM.
+   them ONCE at a quiet hour (one at a time, a few minutes apart); verify every job, not the run's conclusion.
+3. Then continue the plan below at step 2 (the F9 nudge-need fix upstream, then the "Tonight" line), or F12.
+   Commit each step on `feat/simple-mode` (fork) unless it says UPSTREAM.
 
 **The plan: Calm NOOP v5** (design reasoning in "Design v5" below; open findings F1–F12 there):
-1. **Today v5** (Apple): the top of Today answers three questions without scrolling (check at 430 pt width):
-   *How ready am I?* (rings + one-sentence why), *What should I do today?* (readiness word + suggested Effort
-   range + progress so far), *How did I sleep / what about tonight?* (one sleep line, tap → Sleep). Then the
-   Charge drivers (top 3 by points, "Show all"), activity, heart rate, last workout, opt-ins, guide link.
-   Fix F8 (two names for breathing). Efficiency: skip loading what only hidden sections use (measure, Rule 1).
-2. **Sleep v5:** a "Tonight" line from the wind-down resolver (`WindDownNudge`: wake − need − lead). First
-   verify F9 (which sleep need it uses); show nothing when no wake time is set.
+1. ✓ **Today v5** (Apple, `5050c8f3`, Round 5): "Your day" with the suggested Effort range and progress, one
+   "Last night" line, top-3 Charge readings, F8, and F14 (`9060515b`). Still open from this step: **F12
+   efficiency** (skip loading what only hidden sections use; measure before/after, Rule 1).
+2. **Sleep v5, "Tonight" line.** F9 is verified: the wind-down nudge uses a fixed stored 8 h need, the ledger the
+   personal one. First an UPSTREAM fix (both platforms): the nudge and its Alarms copy use the one need
+   (`SleepModel.debtNeedMin` / imported need, Kotlin twin) instead of `windDown.sleepNeedMinutes`, tests on both
+   sides, oracle for any shared helper. Then the Simple line ("Tonight: in bed by 22:45 for 8h 10m of sleep")
+   from that one resolver; nothing when no wake time is set.
 3. **Workouts (Simple):** lead with recent sessions and this week's summary; heart-rate-recovery trend, 13-week
    calories and the activity breakdown stay in the full view; zones explained in words.
 4. **Settings (Simple):** inspect first (3,497 lines). Top: Simple mode, Profile, Units, Strap & devices,
    Notifications, Backup; everything else in one "Advanced" group. Remove nothing.
 5. **Alarms:** copy check only. **Live:** leave as is (connect/re-pair lives there; its log is the evidence).
 6. **First run / What's new:** plain wording in Simple mode; check F10.
-7. **UPSTREAM small fixes**, both platforms where the code exists: F1, F2, F3, F5, F6 (one concern per PR).
+7. **UPSTREAM small fixes**, both platforms where the code exists: F1 together with F13 (one PR: the honest
+   "not in yet" line plus Apple reading today's key, Android already does), F2, F3, F5, F6 (one concern per PR).
 8. **Android twin of Simple mode** (after iOS v5 settles) + `noop.simpleMode` in the `.noopbak` whitelist on both
    platforms (byte-identical contract); then propose Simple mode upstream, default OFF (#2463).
 9. **Measurement audit:** F11 (finding 16 across other one-decimal figures, by twin oracle); then the Backlog
@@ -131,11 +136,12 @@ the guide. Before surfacing it, read the band's history (task #43 comments on bo
 - **F5** (UPSTREAM): the Sleep ring's "of 100" is faint white on the light ring face (both modes).
 - **F6** (UPSTREAM): Stress tiles truncate their comparison chips ("+2 vs…") at phone width.
 - **F7** (done as #2904): Charge breakdown skin temperature ignored °F.
-- **F8** (fork): Simple Today calls breathing "Breaths per minute" (calibrating rows) and "Breathing rate"
-  (drivers, guide). Use one name.
-- **F9** (must verify before step 2): which sleep need `WindDownNudge` uses versus the ledger's
-  `SleepModel.normativeNeedMin`. If they differ, a bedtime line and the debt card would disagree: fix the
-  resolver to the one need first (UPSTREAM if Android has the twin).
+- **F8** (fork, done in v5): one name, "Breathing rate".
+- **F9** (verified 6 Nov, they differ; Round 5): the nudge's need is a stored default 8 h nobody sets on iOS;
+  fix it to the one need upstream on both platforms before the "Tonight" line (plan step 2).
+- **F13** (UPSTREAM candidate): with no row for today the readiness verdict reads the newest row (an older night)
+  beside an "Earlier score" Charge (Round 5).
+- **F14** (fork, done `9060515b`): a carried Rest ring now names its day (Round 5).
 - **F10** (check): the 12.0.0 "What's new" says "WHOOP 4.0 is the supported path… deeper metrics for 5/MG are
   still being figured out", while NOOP scores Utku's 5.0 nightly. Verify against current upstream docs before
   reporting.
@@ -587,3 +593,61 @@ zero and rounds a shortest-representation tie half-to-even (0.25 → 0.2, -0.05 
 differ from Android at a tie. Breathing is already guarded by `RecoveryScorer.displayRounded`; skin temperature
 now is. Other one-decimal read-outs formatted with a locale are a candidate audit (measure before claiming).
 
+
+## Round 5 (6 Nov 2026, evening): Today v5, the top answers three questions
+
+`feat/simple-mode` commit `5050c8f3` (plan step 1). Presentation only; the full view is unchanged (checked in the
+simulator with `-noop.simpleMode NO`).
+- **"Your day"** replaces the greeting row + "In short" card: greeting with the Charge-state pill, then one card with
+  the readiness pill (tap → guide entry "Your day and suggested Effort") and its sentence, then **Suggested Effort**:
+  the range on the reader's scale, "An easy / a moderate / a hard day, based on your Charge", a bar (thin track,
+  Effort fill in the Effort colour, the range as a taller outline in the Charge colour, `SimpleEffortBar`, drawn
+  still) and one progress line ("So far 23. The range starts at 48." / "You're in the range." / "past the range.
+  Take the rest of the day easy." / "No effort measured yet today."). The "show" expander is gone in Simple mode
+  (it repeated the sentence). A plain zero-Effort note replaces the "50% of heart-rate reserve" one.
+- **The range** is `CoupledView.optimalStrainRange` (upstream's approved task #43 mapping, already behind the
+  Coupled view and the optimal-strain nudge), converted with `StrainScorer.effortValue(fromWhoopStrain:)` (14–18 →
+  67–86, 10–14 → 48–67, 4–10 → 19–48). Rules in `Strand/Data/SimpleDayPlan.swift`: only for TODAY's OWN Charge
+  (never a carried, calibrating or past-day score), and only beside a readiness verdict that says the same thing,
+  because ReadinessEngine also weighs training load and breathing: primed → hard only; balanced → moderate or hard;
+  strained/rundown → easy only; insufficient → any (no verdict to contradict). Progress is judged on the number as
+  the ring prints it (`effortText`, the ring's own two expressions). The guide states the bands in words, not
+  numbers, because a Charge of 66.6 prints "67" but maps to the moderate band (the mapping reads raw recovery).
+- **"Last night" line** (asleep · needed, tap → Sleep, today only, hidden until the night is in the day row). It and
+  the Simple Sleep tab's line share `SimpleDayPlan.sleepVersusNeed` + `durationText`: the day row's total (what the
+  Rest score and the Coupled view read; upstream precedent) and the imported need, else `SleepModel.debtNeedMin`.
+  Demo check: Today and Sleep both "6h 47m asleep · 7h 16m needed", stage card 6h 47m.
+- **Charge readings:** the three that moved the score most first (|points|, ties keep order), "Show all N" /
+  "Show fewer"; the bar scale stays the largest of all rows.
+- **F8 fixed:** the calibrating row says "Breathing rate".
+- **Honest sentence:** when readiness has no verdict but today's Charge is scored (Charge seeds at 4 nights,
+  readiness needs 7), Simple mode says NOOP needs about a week before it weighs all signals and that the
+  suggestion follows Charge alone; on a past day it no longer says "today's readings aren't in yet".
+- 18 new strings, all nine locales (one-line entries inserted after `"strings": {`, as in "How to work"; the guide's
+  readiness words use #2897's corrected pl/zh translations). The range figures go through `SimpleDayPlan.rangeText` because the
+  i18n gate flags an interpolated `Text(verbatim:)` literal as un-extracted copy.
+
+Verification (6 Nov): branch: NOOPiOS simulator build; StrandTests 2329 green (9 new in `SimpleDayPlanTests`, 2
+skipped as before); i18n gate exit 0; doc lint clean; Tools 338 OK; parity acceptance 50 OK; simulator in light
+and dark, full view unchanged, sleep line → Sleep tab, "Show all 5", pill → guide entry. Demo note: the first
+launch after an old seed showed Charge "From 4 Nov" with no range (correct: an old Charge gives no advice); reseed
+by uninstall + `--demo-seed` to get a day with today's own score.
+
+Findings this round:
+- **F9 verified, they differ:** `WindDownNudge.sleepNeedMinutes` is a stored `windDown.sleepNeedMinutes` (default
+  8 h, clamped 5–11 h) that nothing on iOS writes; the ledger uses `SleepModel.debtNeedMin` (or WHOOP's imported
+  need). Android `WindDownStore` has the same key. So a "Tonight" line from the nudge would contradict the debt
+  card, and the Alarms copy "A calm nudge 8h 30m before your usual wake time" already states a different need from
+  Sleep. Fix the nudge to the one need first (UPSTREAM, both platforms, it moves when the reminder fires: explain
+  in the PR), then build Sleep v5's line on it.
+- **F13 (UPSTREAM candidate, Apple only, a parity bug):** when today has no row, `LiquidTodayView.load()` calls
+  `ReadinessEngine.evaluate(days:today: day?.day)` with `nil`, and the engine then reads the NEWEST row, so the
+  verdict ("Maintain") can describe an older night while Charge shows "Earlier score · From 4 Nov". Android always
+  passes a key (`TodayScreen.kt` `today = logicalDayKeyNow()` / `anchorKey`), so it says "insufficient" there.
+  Fix: pass the selected day's key on Apple; test both platforms agree. It must ship WITH the F1 fix (or after it):
+  on its own it makes the full view print F1's false "Still learning your baseline" every morning before the
+  night syncs, where it currently prints an older night's verdict.
+- **F14 (fork, fixed in `9060515b`):** the Rest ring carried a still-fresh earlier night (`TodayView.freshRestScore`
+  tail fallback) with no date under it, unlike Charge's "From 4 Nov". Simple mode now prints "From 4 Nov" under it
+  (`SimpleDayPlan.carriedRestDay`, unit-tested; the fresh demo seed could not show a carried Rest on 6 Nov, so the
+  carried case is proven by the test only, and today's own score was checked to show no date).

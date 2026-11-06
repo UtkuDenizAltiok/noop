@@ -1,6 +1,28 @@
 # State
 
-Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **6 Nov 2026 (evening)**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+
+## Now — Simple Today v5, 6 Nov (evening)
+
+- [x] **Today v5 built and verified on the branch:** `feat/simple-mode` `5050c8f3` ("Your day" with the suggested
+  Effort range and progress, one "Last night" line shared with Simple Sleep, top-3 Charge readings, F8) and
+  `9060515b` (F14: date under a carried Rest ring). Details and verification in
+  [Simple mode, Round 5](features/simple-mode.md#round-5-6-nov-2026-evening-today-v5-the-top-answers-three-questions).
+- [x] **Phone build verified, 6 Nov evening:** `testing-stack` = `c72fad03` (fast-forward from `af4a35d2`: v5 as
+  `9d7ad9d8` + F14 as `c72fad03`; catalogue merged by key with `xcmerge.py`, 18 keys added, none lost). Stack checks
+  before pushing: iPhone Release build green, StrandTests 2353 green (2 skipped as before), i18n exit 0, doc lint
+  clean, parity acceptance 50 OK. `testing-build` = `fc57000f` (merge commit over `5f63e6fa` with the tree of stack +
+  `fork/ships-template`, pushed as a fast-forward, tree checked equal). Run
+  [42242460602](https://github.com/UtkuDenizAltiok/noop/actions/runs/42242460602): meta, ios, macos, android all
+  success. Release `testing-latest` (id 436657179) targets `fc57000f`, five assets, IPA HTTP 200, NOOP 12.1.0 (439),
+  `com.noopapp.noop`; the IPA's en/de catalogues contain the v5 strings ("Your day" / "Dein Tag"). **Just update.**
+  Not yet seen on Utku's phone.
+- [ ] **PR care 6 Nov evening:** no maintainer comments on any of our nine PRs; #2901 #2903 #2904 #2905 fully
+  green; #2896–#2900 still red only because the Strand leg was CANCELLED with no runner (10:40 UTC). Not retried
+  this afternoon: they were closed and reopened twice already on 6 Nov and a third round in US hours would only add
+  maintainer notifications. Retry ONCE at a quiet hour (after ~20:00 UTC or a weekend morning), one PR at a time,
+  then verify every job on the head, not the run's conclusion.
+- Fork `main` fast-forwarded to `upstream/main` `2a1de760` (it was at `eae23433`).
 
 ## Now — Simple mode v4, two measurement fixes, 6 Nov
 
@@ -391,9 +413,10 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-The phone build `5f63e6fa` is verified. Follow "First 20 minutes" and then **The plan: Calm NOOP v5** in
-[Simple mode → Start here](features/simple-mode.md#start-here-next-chat): PR care (retry #2896–#2900 once if
-still red), then Today v5, Sleep "Tonight", Workouts, Settings, upstream fixes F1–F6, Android twin, audit F11/F12.
+Today v5 is on `feat/simple-mode`, in the stack and in the verified phone build `fc57000f` (just update). Next:
+PR care (retry #2896–#2900 once at a quiet hour if still red), then plan step 2: the wind-down nudge uses one sleep
+need (UPSTREAM, both platforms, F9) and then the Simple Sleep "Tonight" line; F12 (Simple mode skips loading what it
+hides, measured) and F1+F13 together upstream are next after that.
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
 WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;
