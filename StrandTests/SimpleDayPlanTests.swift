@@ -101,6 +101,16 @@ final class SimpleDayPlanTests: XCTestCase {
         XCTAssertEqual(SimpleDayPlan.durationText(-3), "0m")
     }
 
+    /// The Rest ring names its day only when it shows an earlier night's score.
+    func testCarriedRestRingNamesItsDayOnlyWhenCarried() {
+        XCTAssertEqual(SimpleDayPlan.carriedRestDay(selectedDayValue: nil, shownScore: 92, tailDay: "2026-11-04"),
+                       "2026-11-04")
+        XCTAssertNil(SimpleDayPlan.carriedRestDay(selectedDayValue: 88, shownScore: 88, tailDay: "2026-11-06"),
+                     "Today's own score needs no date.")
+        XCTAssertNil(SimpleDayPlan.carriedRestDay(selectedDayValue: nil, shownScore: nil, tailDay: "2026-10-20"),
+                     "A stale tail the ring does not show gets no date either.")
+    }
+
     // MARK: - Charge readings
 
     func testChargeReadingsLeadWithTheBiggestMovers() {
