@@ -111,6 +111,12 @@ struct LiquidTodayView: View {
     @State private var cachedChargeSkinDevC: Double?
     /// The day an earlier Charge score comes from (the carried row), for Simple mode's "From 4 Nov" line.
     @State private var carriedChargeDayKey: String?
+    /// Simple mode's sleep line: the selected day's asleep total against the night's need, from the same
+    /// resolver as the Simple Sleep tab's line (`SimpleDayPlan.sleepVersusNeed`). Resolved in `load()`, only
+    /// while Simple mode is on.
+    @State private var cachedSimpleSleep: (asleep: Double, need: Double)?
+    /// Whether Simple mode's Charge card lists every driver rather than the three that moved it most.
+    @State private var simpleDriversExpanded = false
 
     /// Live Sessions (silent guardian) beta gate — the SAME key the Settings toggle writes. Default ON
     /// (the entry is BETA-labelled in-UI); off removes the Start-session control entirely.
@@ -1379,7 +1385,9 @@ struct LiquidTodayView: View {
             heroCard
             if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
         case .summary:
-            synthesisSection
+            simpleDaySection
+        case .sleepLine:
+            simpleSleepLine
         case .behindCharge:
             simpleBehindChargeSection
         case .activity:
@@ -1398,6 +1406,195 @@ struct LiquidTodayView: View {
             if selectedDayOffset == 0 { hostedCardsSection }
         case .guide:
             simpleGuideCard
+        }
+    }
+
+    /// Simple mode's answer to "what should I do today?". It replaces the full view's greeting row and
+    /// synthesis card: the greeting with the Charge-state pill, then one card with the readiness verdict
+    /// in a sentence and, for today only and only beside a verdict it agrees with, the suggested Effort
+    /// range with how far the day has got (`SimpleDayPlan`). Every line reads the same values the full
+    /// view's card does; the full card's "show" detail is left out because it repeats the sentence.
+    private var simpleDaySection: some View {
+        let band21 = SimpleDayPlan.suggestedBand(todaysCharge: simpleTodaysOwnCharge, readiness: readiness.level)
+        return VStack(spacing: 8) {
+            HStack {
+                Text(greeting).font(StrandFont.rounded(19)).foregroundStyle(StrandPalette.textPrimary)
+                    .lineLimit(1).minimumScaleFactor(0.6)
+                Spacer(minLength: 8)
+                Button { plainGuideTerm = .confidence } label: {
+                    HStack(spacing: 5) {
+                        Circle().fill(StrandPalette.chargeColor).frame(width: 6, height: 6)
+                        Text(chargeStateWord)
+                            .font(StrandFont.caption.weight(.bold))
+                            .foregroundStyle(StrandPalette.chargeColor)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1))
+                    .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .fixedSize()
+            }
+            .padding(.horizontal, 2)
+            .padding(.top, 4)
+
+            card {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .center) {
+                        Text("Your day")
+                            .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
+                            .foregroundStyle(StrandPalette.textSecondary)
+                        Spacer(minLength: 8)
+                        // The verdict word explains itself on tap: the guide's entry says what it weighs.
+                        if let word = readinessWord {
+                            Button { plainGuideTerm = .dayPlan } label: {
+                                Text(word)
+                                    .font(StrandFont.caption.weight(.bold))
+                                    .foregroundStyle(StrandPalette.chargeColor)
+                                    .padding(.horizontal, 13)
+                                    .padding(.vertical, 6)
+                                    .background(Capsule().fill(StrandPalette.chargeColor.opacity(0.14))
+                                        .overlay(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1)))
+                            }
+                            .buttonStyle(.plain)
+                            .fixedSize()
+                        }
+                    }
+                    Text(simpleDayHeadline)
+                        .font(StrandFont.body).foregroundStyle(StrandPalette.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let why = chargeDisplay.calibrationReason(
+                        dayKeys: repo.days.map(\.day), nightlyHrv: repo.days.map(\.avgHrv),
+                        today: Repository.logicalDayKey(Date())) {
+                        Text(why).font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    if let band21 {
+                        simpleEffortPlan(band21)
+                    }
+                    if EffortDisplay.showsZeroNote(strain: effortStrain(displayDay), isToday: selectedDayOffset == 0) {
+                        HStack(alignment: .top, spacing: 6) {
+                            Image(systemName: "info.circle")
+                                .font(StrandFont.footnote)
+                                .foregroundStyle(StrandPalette.effortColor)
+                                .accessibilityHidden(true)
+                            Text("No effort counted yet. Effort starts once your heart rate climbs about halfway from your resting rate to your maximum, so a calm day honestly reads near zero.")
+                                .font(StrandFont.footnote)
+                                .foregroundStyle(StrandPalette.textTertiary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Today's OWN Charge, or nil for a carried, calibrating or empty score and for any other day: the
+    /// suggested range is advice for today, and an older night's Charge cannot give it.
+    private var simpleTodaysOwnCharge: Double? {
+        guard selectedDayOffset == 0, case .scored(let pct) = chargeDisplay else { return nil }
+        return pct
+    }
+
+    /// The sentence under "Your day". The full view's readiness line, except where that line is wrong for
+    /// the Simple card: the calibration night count while the baseline forms, and an honest line for a
+    /// readiness read that has no verdict although Charge is scored (Charge needs 4 nights of baseline,
+    /// readiness 7) or that is about a past day.
+    private var simpleDayHeadline: String {
+        if let calibrating = simpleCalibrationDetail { return calibrating }
+        guard readiness.level == .insufficient, strapStaleDays == nil else { return synthLine }
+        if case .scored = chargeDisplay {
+            return selectedDayOffset == 0
+                ? String(localized: "NOOP needs about a week of nights before it can weigh all your signals together. Until then, the suggestion below follows your Charge alone.")
+                : String(localized: "Not enough nights before this day to weigh all your signals together.")
+        }
+        return selectedDayOffset == 0 ? synthLine : String(localized: "Not enough readings from this day for a full read.")
+    }
+
+    /// The suggested Effort range on the reader's scale, a bar showing it with today's Effort so far, and
+    /// one line saying where today stands. Today's Effort is the ring's own value (`effortStrain`), printed
+    /// the ring's way (`SimpleDayPlan.effortText`).
+    private func simpleEffortPlan(_ band21: ClosedRange<Int>) -> some View {
+        let band = SimpleDayPlan.band(band21, on: effortScale)
+        let stored = effortStrain(displayDay)
+        let progress = SimpleDayPlan.progress(stored: stored, scale: effortScale, band: band)
+        let soFar = stored.map { SimpleDayPlan.effortText(stored: $0, scale: effortScale) } ?? ""
+        let intensityLine: String
+        switch SimpleDayPlan.intensity(of: band21) {
+        case .hard: intensityLine = String(localized: "A hard day, based on your Charge")
+        case .moderate: intensityLine = String(localized: "A moderate day, based on your Charge")
+        case .easy: intensityLine = String(localized: "An easy day, based on your Charge")
+        }
+        let progressLine: String
+        switch progress {
+        case .notStarted: progressLine = String(localized: "No effort measured yet today.")
+        case .below: progressLine = String(localized: "So far \(soFar). The range starts at \(band.lowerBound).")
+        case .within: progressLine = String(localized: "So far \(soFar). You're in the range.")
+        case .above: progressLine = String(localized: "So far \(soFar), past the range. Take the rest of the day easy.")
+        }
+        return VStack(alignment: .leading, spacing: 8) {
+            Rectangle().fill(StrandPalette.hairline).frame(height: NoopMetrics.hairlineWidth)
+                .padding(.vertical, 2)
+            HStack(alignment: .firstTextBaseline) {
+                Text("Suggested Effort")
+                    .font(StrandFont.subhead.weight(.semibold))
+                    .foregroundStyle(StrandPalette.textPrimary)
+                Spacer(minLength: 8)
+                // Charge colour, like the range's outline on the bar: the range comes from Charge.
+                Text(verbatim: SimpleDayPlan.rangeText(band))
+                    .font(StrandFont.number(17))
+                    .foregroundStyle(StrandPalette.chargeColor)
+            }
+            Text(intensityLine)
+                .font(StrandFont.caption)
+                .foregroundStyle(StrandPalette.textSecondary)
+            SimpleEffortBar(value: stored.map { UnitFormatter.effortValue($0, scale: effortScale) },
+                            band: band, maxValue: effortScale == .whoop ? 21 : 100)
+            Text(progressLine)
+                .font(StrandFont.caption)
+                .foregroundStyle(StrandPalette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    /// Simple mode's one line about last night: asleep against the need, tapping through to Sleep. Today
+    /// only (the Sleep tab opens on the newest night, so a past day's line would land on another night),
+    /// and only when the day row recorded sleep: a night that has not synced yet shows no line rather
+    /// than a claim that no sleep was tracked.
+    @ViewBuilder
+    private var simpleSleepLine: some View {
+        if selectedDayOffset == 0, let sleep = cachedSimpleSleep {
+            NavigationLink(value: TabRoute.sleep) {
+                HStack(spacing: 12) {
+                    Image(systemName: "moon.stars.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundStyle(StrandPalette.restColor)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Last night")
+                            .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                        Text("\(SimpleDayPlan.durationText(sleep.asleep)) asleep · \(SimpleDayPlan.durationText(sleep.need)) needed")
+                            .font(StrandFont.subhead.weight(.semibold))
+                            .foregroundStyle(StrandPalette.textPrimary)
+                    }
+                    Spacer(minLength: 8)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .accessibilityHidden(true)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(NoopPanelSurface(cornerRadius: 22, surfaceOpacity: cardOpacity))
+            }
+            .buttonStyle(LiquidPressStyle())
+            .accessibilityElement(children: .combine)
+            .accessibilityHint(Text("Open Sleep"))
         }
     }
 
@@ -1440,7 +1637,9 @@ struct LiquidTodayView: View {
                     vitalRow(String(localized: "Resting heart rate"), unitText(rhr, "bpm"),
                              StrandPalette.metricRose, fracOver(rhr, 100), route: .metric("rhr"),
                              hint: String(localized: "lower is usually better"))
-                    vitalRow(String(localized: "Breaths per minute"),
+                    // "Breathing rate": the name the driver rows and the guide use, so one reading has one
+                    // name on this screen.
+                    vitalRow(String(localized: "Breathing rate"),
                              unitText(resp, String(localized: "breaths/min"), decimals: 1),
                              StrandPalette.accent, fracOver(resp, 24), route: .metric("resp_rate"),
                              hint: String(localized: "steady is normal"))
@@ -1449,9 +1648,27 @@ struct LiquidTodayView: View {
                         .font(StrandFont.caption)
                         .foregroundStyle(StrandPalette.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
+                    // The readings that moved the score most come first; the rest are one tap away. The bar
+                    // scale stays the largest of ALL rows, so expanding never re-scales the rows already shown.
                     let maxMagnitude = drivers.map { abs($0.deltaPoints) }.max() ?? 1
-                    ForEach(Array(drivers.enumerated()), id: \.offset) { _, driver in
+                    let ordered = SimpleDayPlan.driversByImpact(drivers)
+                    let shown = simpleDriversExpanded ? ordered : Array(ordered.prefix(SimpleDayPlan.leadingDriverCount))
+                    ForEach(Array(shown.enumerated()), id: \.offset) { _, driver in
                         ChargeDriverRow(driver: driver, maxMagnitude: maxMagnitude)
+                    }
+                    if ordered.count > SimpleDayPlan.leadingDriverCount {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) { simpleDriversExpanded.toggle() }
+                        } label: {
+                            Text(simpleDriversExpanded
+                                 ? String(localized: "Show fewer")
+                                 : String(localized: "Show all \(ordered.count)"))
+                                .font(StrandFont.subhead.weight(.semibold))
+                                .foregroundStyle(StrandPalette.accent)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
@@ -1957,6 +2174,16 @@ struct LiquidTodayView: View {
             cachedChargeDrivers = []
             cachedChargeSkinDevC = nil
         }
+        // Simple mode's sleep line: the selected day's own row (never a carried one: the line names the
+        // night it describes), so it reads the night the Rest ring scores.
+        if simpleMode, let day {
+            cachedSimpleSleep = SimpleDayPlan.sleepVersusNeed(
+                asleepMin: day.totalSleepMin,
+                importedNeedMin: repo.importedSleep[day.day]?.needMin,
+                normativeNeedMin: SleepModel.debtNeedMin(days: repo.days))
+        } else {
+            cachedSimpleSleep = nil
+        }
         // StressModel loops the full history to build its baseline — run it OFF the main actor so a big
         // history doesn't stutter the UI. Snapshot the inputs (value types) into the detached task.
         let storedStress = await stressA
@@ -2189,15 +2416,22 @@ struct LiquidTodayView: View {
         }
     }
 
+    /// #612: the number of days since the strap last delivered a usable night, when that is more than
+    /// `Baselines.staleDays` while readiness has no verdict; nil otherwise. Always > 14, so always plural.
+    private var strapStaleDays: Int? {
+        guard readiness.level == .insufficient,
+              let stale = Baselines.nightsSinceNewestValidNight(dayKeys: repo.days.map(\.day),
+                                                                nightlyHrv: repo.days.map(\.avgHrv),
+                                                                today: Repository.logicalDayKey(Date())),
+              stale > Baselines.staleDays else { return nil }
+        return stale
+    }
+
     private var synthLine: String {
         // #612: when still calibrating BECAUSE the strap stopped delivering nights (connected, but no new
         // night for > staleDays), say so directly instead of "still learning your baseline" — the honest
-        // calibrating state with its reason attached. `stale` is always > staleDays (14), so always plural.
-        if readiness.level == .insufficient,
-           let stale = Baselines.nightsSinceNewestValidNight(dayKeys: repo.days.map(\.day),
-                                                             nightlyHrv: repo.days.map(\.avgHrv),
-                                                             today: Repository.logicalDayKey(Date())),
-           stale > Baselines.staleDays {
+        // calibrating state with its reason attached.
+        if let stale = strapStaleDays {
             return String(localized: "No new nights from your strap for \(stale) days. Check it's connected and saving data.")
         }
         switch readiness.level {

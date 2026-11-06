@@ -64,8 +64,8 @@ final class SimpleModeTests: XCTestCase {
         let order = SimpleTodaySection.allCases
         XCTAssertEqual(order.first, .scores)
         XCTAssertEqual(order.last, .guide)
-        XCTAssertEqual(order.prefix(3), [.scores, .summary, .behindCharge],
-                       "The scores, what they mean today, then why: the order a wearer reads them in.")
+        XCTAssertEqual(order.prefix(4), [.scores, .summary, .sleepLine, .behindCharge],
+                       "How ready, what to do today, how the night went, then why: the order a wearer asks.")
         XCTAssertEqual(Set(order).count, order.count)
     }
 
