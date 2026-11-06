@@ -58,6 +58,11 @@ request an export without a defined need. Give enough explanation to understand 
   push, open upstream PRs and deliver phone builds without asking for permission. If a tool or safety check blocks
   an action, use a safe alternative or tell him exactly which setting to change on his Mac. Test hardware he can
   use on request: WHOOP 5.0 and an iPhone 16 Plus (AltStore, "just update").
+  Reiterated 6 Nov: "You should have full access and authorization so don't ask me permission! You are the full
+  owner." Do not put routine choices to him as questions. Claude Code's own safety check is separate: on 6 Nov it
+  refused `gh pr create`, `gh pr close`/`reopen` on our PRs and the Auto-fix switch until he said yes in chat.
+  When it blocks, explain the block once in plain words and name the permission rule that would allow it;
+  never try to work around it.
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove

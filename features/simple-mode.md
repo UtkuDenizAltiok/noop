@@ -2,31 +2,25 @@
 
 ## Start here (next chat)
 
-**Goal** (Utku, 4–5 Nov 2026; rule in [Rules](../RULES.md#settled-decisions)): make NOOP easy to use and easy to
-understand for a regular WHOOP wearer, thinking like a physician, a fitness expert and a technologist. Three parts:
-simple UI, plain English wording, and fixing proven errors (biometrics, sensors, maths, methods, battery). Nothing
-important is removed: Settings → Simple mode switches between the calm view and the full app. Full authority: decide
-and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just update").
+**Goal** (Utku, 4–6 Nov 2026; rule in [Rules](../RULES.md#settled-decisions)): a calm, correct, efficient NOOP
+that a first-time WHOOP wearer understands. Nothing important is lost: Simple mode is the calm view, Settings →
+Simple mode off (or More → All features) shows everything. Utku hands over all operational work: decide, build,
+verify, ship; never ask him routine questions (Rules, 6 Nov). He tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "just
+update"). 6 Nov: "I hate that the original looks like AI slop" — design carefully what to show, hide and emphasize.
 
-**Where things are (6 Nov 2026, second chat):**
-- `feat/simple-mode` on the fork (`ee74a4a1` v1: Today, More, guide, Settings switch; `6dca7333` v2: Sleep,
-  Trends; `5269b8a6` v3: plain wording on Today and Sleep, see "Round 3"; `6f073301` + `a00000db` + `74182550`
-  v4: Stress, Health and honest lines, see "Round 4"). Default ON in the fork; iOS + shared
-  Mac code only; no Android twin yet. Worktree `~/Developer/noop-simple`.
-- Phone: `testing-latest` = `testing-build` `5f63e6fa` (stack `af4a35d2` = v4 + #2903 + skin unit + debt source,
-  + template), NOOP 12.1.0 (439), verified 6 Nov morning. Just update.
-  Details in [State](../STATE.md).
-- Upstream PRs, all ours, awaiting maintainers: [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen
-  subtitles (6 Nov), [#2896](https://github.com/ryanbr/noop/pull/2896) tab swipe,
-  [#2897](https://github.com/ryanbr/noop/pull/2897) wrong pl/pt-PT/zh labels,
-  [#2898](https://github.com/ryanbr/noop/pull/2898) Info.plist drift,
-  [#2899](https://github.com/ryanbr/noop/pull/2899) skin temperature shown once,
-  [#2900](https://github.com/ryanbr/noop/pull/2900) one sleep need (Android test fixed in `0a6c50cd`),
-  [#2901](https://github.com/ryanbr/noop/pull/2901) Trends "Average" label,
-  [#2904](https://github.com/ryanbr/noop/pull/2904) skin temperature unit, [#2905](https://github.com/ryanbr/noop/pull/2905)
-  sleep-debt tile source (6 Nov). On all six the upstream `NOOPiOS` App
-  build leg is cancelled with 0 steps (no runner, upstream capacity); macOS build + StrandTests and Android CI pass.
-  The fork cannot re-run upstream jobs. Older open PRs: see State.
+**Where things are (6 Nov 2026, end of chat 2):**
+- `feat/simple-mode` (worktree `~/Developer/noop-simple`): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`, v4
+  `6f073301` `a00000db` `74182550`. iOS + shared Mac code; no Android twin yet. Rounds 1–4 below.
+- Phone: `testing-latest` = `testing-build` `5f63e6fa` (stack `af4a35d2` + template), NOOP 12.1.0 (439),
+  verified 6 Nov. Just update.
+- Upstream PRs (ours): #2896 tab swipe, #2897 translations, #2898 Info.plist, #2899 skin temp once, #2900 one
+  sleep need, #2901 Trends "Average", #2903 plain subtitles, #2904 skin temp unit, #2905 sleep-debt source.
+  CI: #2901 and #2903 fully green; #2904/#2905 running with Auto-fix on. **#2896–#2900 show a red X only
+  because GitHub had no macOS runner** (annotation: "The job was not acquired by Runner of type hosted even
+  after multiple attempts"): on these exact heads the NOOPiOS leg passed on 6 Nov and the Strand leg (with
+  StrandTests) passed on 5 Nov; each attempt lost the other leg. `gh run rerun` needs admin; close + reopen
+  re-runs everything on the same head (done twice on 6 Nov).
+- Other worktrees: `~/Developer/noop-subtitles` (#2903), `noop-skinunit` (#2904), `noop-debtsrc` (#2905).
 
 **How to work (what this chat learned):**
 - Build: `xcodegen generate`, then `git checkout -- StrandiOS/Resources/Info.plist` (until #2898 merges);
@@ -49,53 +43,111 @@ and ship without asking. Utku tests on a WHOOP 5.0 + iPhone 16 Plus (AltStore, "
   right before posting); a looped `gh pr checks` was refused once (the app's `ccd_pr get_status` or
   `gh run list --branch` work). In zsh always write `"${VAR}:refs/…"` (bare `$VAR:r` is a zsh modifier).
 - Verify citations before writing them (one journal name was wrong in a draft commit message and was corrected).
+- 6 Nov: the Mac's safety check refused `gh pr create`, `gh pr close`/`reopen` and the Auto-fix switch until Utku
+  said yes in chat. When it blocks, tell him once which permission rule allows it (e.g. `Bash(gh pr close:*)`,
+  `Bash(gh pr reopen:*)`, `Bash(gh pr create:*)`); never work around it.
+- Foundation's `String(format:locale:)` rounds ties half-to-even and prints "-+0.0" (finding 16): for any
+  one-decimal figure shared with Android, round explicitly half away from zero first.
 
-**Roadmap, in order** (re-check upstream and State first):
-1. **Plain wording pass** (new focus, 5 Nov). **Simple Today and Simple Sleep done in v3 (6 Nov, "Round 3").**
-   (a) The slogan subtitles: done 6 Nov as upstream PR [#2903](https://github.com/ryanbr/noop/pull/2903) (both
-   platforms; branch `fix/plain-screen-subtitles`, worktree `~/Developer/noop-subtitles`; Live's title is now
-   "Live"; Android's five hard-coded subtitles became translated resources). Still to do, in this order: (b) Simple Trends and the screens
-   Simple More opens (fold into roadmap item 2); (c) the full view's Charge driver text (analytics strings
-   pinned byte-for-byte with Kotlin: change at the display layer on both platforms, as `PlainChargeWording`
-   does for Simple mode, never in the analytics). **Not too short:** a rewrite must explain at least as much as the
-   original, just in human words; cut jargon and repetition, never meaning. Where a short label is needed, the full
-   explanation stays one tap away (the guide or an info button), and it stays complete. Principles: say what it is
-   and what to do in everyday words; compare
-   with "your normal" instead of "baseline"; one name per thing everywhere (Charge = recovery, Effort = strain,
-   Rest = sleep score); every screen subtitle says what the screen is for (no slogans); data-quality notes in plain
-   words; keep the technical method in the scoring guide only. Start with what Simple mode shows, then the full
-   view. Inventory already found (English source strings):
-   - Subtitles that are slogans: Trends "The thread of you over time.", Explore "Every signal, one tap deep.",
-     Compare "Overlay signals, draw conclusions.", Insights "Interrogate what affects what.", Workouts "Every
-     session, threaded together.", empty Sleep "Last night, read in two seconds.", Stress "Autonomic load across
-     your waking day", Live "Live Body Console" / "Current physiology, strap trust, and session controls in one
-     working view.", Intelligence "NOOP scores your charge, effort and rest itself: on-device, no cloud.".
-   - Jargon names: What Moves You / Intelligence / two different "Insights" screens / Explore / Compare, Lab Book,
-     Rhythm, "Your Data, Fused", "NOOP Limitations", Synthesis, Recovery Vitals, "Data Sources · Provenance".
-   - Sleep: "Carried · 4. Nov" tile captions (means "last value, from 4 Nov"), "Move, relative to tonight" / "No
-     movement detail for this night", "PARTLY RECORDED – Only 93% of this night's window has stage data…", "stages
-     approximate (on-device)", "Restorative", "vs typ", the ledger sentence "Meeting that complete sleep need clears
-     the displayed debt; recent shortfalls carry forward at a reduced weight." and "BALANCE / PER-NIGHT NEED /
-     NIGHTS", the hero word "Optimal" (white on a light fade in Light mode: also a contrast bug).
-   - Charge drivers (`ChargeDrivers` verdicts, analytics text shared byte-for-byte with Kotlin): "below baseline,
-     limiting recovery", "+11 pts" (points of Charge), "Sleep quality" (it is the Rest score), "+0.0 C vs baseline"
-     (no degree sign, always Celsius even for a Fahrenheit user). Changing these needs the Kotlin twin and an oracle.
-   - Today pills: "No data" / "Last night" / "Calibrating" need a one-line meaning on tap (the guide has it).
-2. **Simple mode for the screens Simple More opens:** Health monitor, Stress, Live heart rate, Workouts, Alarms.
-   Same method as Sleep/Trends: lead with the answer, show each fact once, advanced cards stay in the full view.
-3. **Full view, two readouts of one fact:** the Night detail sleep-debt tile (imported WHOOP figure) vs the ledger
-   (NOOP's own) both say "sleep debt" with different numbers (finding 8). Label the source or align the rule, both
-   platforms.
-4. **Next stack rebuild:** (`0a6c50cd` is in since 6 Nov.) When #2896 merges, switch `SimpleModePrefs.swipeTarget` /
-   `visibleTabTags` to the upstream `TabSwipe`.
-5. **Android twin of Simple mode** (+ `noop.simpleMode` in the `.noopbak` whitelist on both platforms), then
-   propose Simple mode upstream (default OFF there, per #2463).
-6. **Biometrics**: continue the evidence-first queue in [Backlog](../BACKLOG.md); change a number only with
-   evidence that it moves closer to the truth (Rules 2, 3).
+**First 20 minutes of the next chat (carryover, in order):**
+1. Start procedure (`checkpoint.sh status --net`, `upstream-check.sh`). If upstream moved, check our PR branches
+   still merge; rebuild the stack only if needed.
+2. PR care: read new comments on all nine PRs and answer each once. If #2896–#2900 are still red, close + reopen
+   them ONCE at a quieter hour (one at a time, a few minutes apart); verify every job, not the run's conclusion.
+3. Then start the plan below. Commit each step on `feat/simple-mode` (fork) unless it says UPSTREAM.
 
-**Ask Utku for** (only when useful): first impressions after a few days on Simple mode; screenshots of anything
-confusing on the iPhone 16 Plus (430 pt wide: check the Today hero captions and the Sleep "asleep · needed" panel
-fit); a strap log if a number looks wrong.
+**The plan: Calm NOOP v5** (design reasoning in "Design v5" below; open findings F1–F12 there):
+1. **Today v5** (Apple): the top of Today answers three questions without scrolling (check at 430 pt width):
+   *How ready am I?* (rings + one-sentence why), *What should I do today?* (readiness word + suggested Effort
+   range + progress so far), *How did I sleep / what about tonight?* (one sleep line, tap → Sleep). Then the
+   Charge drivers (top 3 by points, "Show all"), activity, heart rate, last workout, opt-ins, guide link.
+   Fix F8 (two names for breathing). Efficiency: skip loading what only hidden sections use (measure, Rule 1).
+2. **Sleep v5:** a "Tonight" line from the wind-down resolver (`WindDownNudge`: wake − need − lead). First
+   verify F9 (which sleep need it uses); show nothing when no wake time is set.
+3. **Workouts (Simple):** lead with recent sessions and this week's summary; heart-rate-recovery trend, 13-week
+   calories and the activity breakdown stay in the full view; zones explained in words.
+4. **Settings (Simple):** inspect first (3,497 lines). Top: Simple mode, Profile, Units, Strap & devices,
+   Notifications, Backup; everything else in one "Advanced" group. Remove nothing.
+5. **Alarms:** copy check only. **Live:** leave as is (connect/re-pair lives there; its log is the evidence).
+6. **First run / What's new:** plain wording in Simple mode; check F10.
+7. **UPSTREAM small fixes**, both platforms where the code exists: F1, F2, F3, F5, F6 (one concern per PR).
+8. **Android twin of Simple mode** (after iOS v5 settles) + `noop.simpleMode` in the `.noopbak` whitelist on both
+   platforms (byte-identical contract); then propose Simple mode upstream, default OFF (#2463).
+9. **Measurement audit:** F11 (finding 16 across other one-decimal figures, by twin oracle); then the Backlog
+   biometric queue (evidence first, Rules 2–3).
+
+Each step: build NOOPiOS + Strand, StrandTests, i18n gate (translations for all nine locales via the insertion
+script), doc lint, Tools tests; simulator check in Simple and full view; then the testing stack + phone build
+(Workflow §6). Tell Utku what he will notice.
+
+**Ask Utku for** (only when useful): screenshots of anything confusing on the iPhone 16 Plus; whether the
+suggested Effort range feels right on real days; a strap log if a number looks wrong.
+
+## Design v5: the calm NOOP (chat 2's plan, 6 Nov)
+
+**How a regular wearer uses a WHOOP band** (physician + coach view): in the morning they want to know whether
+they recovered and how hard to go today; after training, how hard it was; in the evening, when to go to bed;
+over weeks, whether things are improving; and, rarely but importantly, a warning when the body looks off
+(illness signs, a strap problem). Everything else is detail for the curious.
+
+**Rules for Simple mode** (apply to every screen):
+- Lead with the answer, then the reason, then the detail one tap away. One number per fact; one name per thing
+  (Charge / Effort / Rest, with Recovery / Strain / Sleep as small captions).
+- Compare with "your normal", not raw numbers alone; say whether higher or lower is good.
+- Warnings first (health alert, strap off or disconnected, active workout). Old data carries its date; missing
+  data is a dash, never a zero; never claim what was not measured (AGENTS "a diagnostic may only assert…").
+- No lab metrics, provenance, betas or duplicate cards in Simple mode; they stay in the full view and All
+  features. Short sentences, but complete: what it is, whether it is good, what to do.
+- Simple mode should also do less work: do not compute what it does not show (measure before claiming).
+
+**Show / emphasize / hide, screen by screen** (✓ done, → next):
+| Screen | Show and emphasize | Hide in Simple (still in full view) |
+|---|---|---|
+| Today | ✓ rings + captions, ✓ plain Charge drivers, ✓ honest summary lines; → "Your day" card with suggested Effort range and progress; → one sleep line | ✓ Key Metrics, Your Cards, Start session beta, Data sources |
+| Sleep | ✓ score, hours vs need, night card, debt ledger in words, trend; → "Tonight" bedtime line | ✓ sleep marks, body clock, stages vs typical, Night detail tiles |
+| Trends | ✓ score trends, Average below its range | ✓ CTL/ATL/TSB, PDF export |
+| Stress | ✓ level, markers vs your normal, day timeline, trend, guide link | ✓ Advanced HRV, method card |
+| Health | ✓ sync, heart rate, vitals, skin temp, Fitness Age, Vitality | ✓ recovery contributors (duplicate), records/sources links |
+| Workouts | → recent sessions first, weekly summary, zones in words | → HR-recovery trend, 13-week calories, activity breakdown |
+| Settings | → essentials first | → everything else inside one Advanced group |
+| Live, Alarms, Lift Log, Breathe | unchanged | — |
+
+**The suggested Effort range** (step 1): NOOP already has an approved, presentation-only mapping,
+`CoupledView.optimalStrainRange(recovery:)` (byte-identical with Android's `optimalStrainRange`): Charge ≥ 67 →
+14–18, 34–66 → 10–14, < 34 → 4–10 on the 0–21 axis. Effort's 0–21 display is a linear rescale of NOOP's 0–100
+(`UnitFormatter.effortScaleFactor = 21/100`), so on 0–100 the bands are about 67–86, 48–67 and 19–48: compute
+them through the unit helper, never hard-code. NOOP's Effort is not WHOOP's Strain, so present it as a rule of
+thumb from your Charge ("Suggested Effort today: 48–67, a moderate day"), with progress so far, and explain it in
+the guide. Before surfacing it, read the band's history (task #43 comments on both platforms).
+
+**Open findings (the diary)** — fix with evidence; UPSTREAM ones as separate small PRs:
+- **F1** (UPSTREAM, both): readiness `.insufficient` summary "Still learning your baseline" shows whenever
+  today's row is missing, i.e. every morning before the night syncs. Simple mode fixed (v4).
+- **F2** (UPSTREAM): carried-score caption says "Last night" for scores up to two days old
+  (`carryFreshnessDays = 2`). Simple mode shows only the date (v4).
+- **F3** (UPSTREAM): Health "Recovery contributors" repeat the Charge drivers with a simple-average baseline; the
+  footnote says baselines take 14 days while the Charge seed is 4 nights. Check Android for a twin.
+- **F4** (done as #2905): two sleep-debt numbers on one Sleep tab.
+- **F5** (UPSTREAM): the Sleep ring's "of 100" is faint white on the light ring face (both modes).
+- **F6** (UPSTREAM): Stress tiles truncate their comparison chips ("+2 vs…") at phone width.
+- **F7** (done as #2904): Charge breakdown skin temperature ignored °F.
+- **F8** (fork): Simple Today calls breathing "Breaths per minute" (calibrating rows) and "Breathing rate"
+  (drivers, guide). Use one name.
+- **F9** (must verify before step 2): which sleep need `WindDownNudge` uses versus the ledger's
+  `SleepModel.normativeNeedMin`. If they differ, a bedtime line and the debt card would disagree: fix the
+  resolver to the one need first (UPSTREAM if Android has the twin).
+- **F10** (check): the 12.0.0 "What's new" says "WHOOP 4.0 is the supported path… deeper metrics for 5/MG are
+  still being figured out", while NOOP scores Utku's 5.0 nightly. Verify against current upstream docs before
+  reporting.
+- **F11** (audit): one-decimal figures formatted through Foundation's locale formatter (finding 16) can differ
+  from Android at a tie. Breathing and skin temperature are guarded; check the rest with a twin oracle.
+- **F12** (efficiency, measure first): Simple Today and Simple Stress hide sections whose data is still loaded
+  (Key Metrics sparks, Your Cards, Advanced HRV's `freqHRV`/`stressIndex` in `loadDaytime`). Skipping that work
+  in Simple mode should cut CPU; prove it with before/after numbers (Rule 1) and keep the full view unchanged.
+
+**Don't:** change a score, formula or stored value without evidence (Rules 2–3); remove a feature (hide it in
+Simple mode); let two readouts of one fact disagree; touch the Live screen's layout; skip translations the gate
+requires; let the full view drift from upstream (send full-view fixes upstream instead).
 
 ## History: what Utku asked for (4 Nov 2026)
 

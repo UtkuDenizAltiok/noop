@@ -29,8 +29,11 @@ Updated **6 Nov 2026**. ChatGPT/Codex owns project execution under [Rules](RULES
   compile success; Strand macOS build + StrandTests success). MERGEABLE, no comments yet.
 - [ ] **Upstream PRs opened 5 Nov, awaiting review (no comments as of 6 Nov):** #2896 (tab swipe), #2897
   (translations), #2898 (Info.plist), #2899 (Charge skin temperature once), #2900 (one sleep need for
-  hours-vs-needed), #2901 (Trends average label). On all six the upstream NOOPiOS leg was cancelled with no
-  runner (upstream capacity). Upstream main unchanged since 2a1de760 (25 Oct). Older open PRs: #2747 and #2724
+  hours-vs-needed), #2901 (Trends average label). The red X was never our code: GitHub could not get a macOS
+  runner ("The job was not acquired by Runner of type hosted even after multiple attempts"). Re-run by close +
+  reopen on 6 Nov (same heads): every NOOPiOS leg passed; #2901 fully green; on #2896–#2900 the Strand leg was
+  then cancelled the same way (it had passed on 5 Nov). Retry those five once at a quieter hour (next chat).
+  Upstream main unchanged since 2a1de760 (25 Oct). Older open PRs: #2747 and #2724
   CONFLICTING with upstream main (their content still applied cleanly in the stack); #2722, #2717, #2661,
   #2660, #2613 mergeable.
 
@@ -388,9 +391,9 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-The phone build `5f63e6fa` is verified. First reconcile our open PRs (#2896–#2901, #2903, #2904, #2905):
-CI results on #2904/#2905 (opened 6 Nov morning) and any maintainer feedback (answer each once). Then roadmap item 2: Simple Workouts and Alarms (Live stays as it is), and
-the full-view candidates in Backlog ("Full view, wrong or doubled claims").
+The phone build `5f63e6fa` is verified. Follow "First 20 minutes" and then **The plan: Calm NOOP v5** in
+[Simple mode → Start here](features/simple-mode.md#start-here-next-chat): PR care (retry #2896–#2900 once if
+still red), then Today v5, Sleep "Tonight", Workouts, Settings, upstream fixes F1–F6, Android twin, audit F11/F12.
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
 WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;
