@@ -115,6 +115,9 @@ struct LiquidTodayView: View {
     /// resolver as the Simple Sleep tab's line (`SimpleDayPlan.sleepVersusNeed`). Resolved in `load()`, only
     /// while Simple mode is on.
     @State private var cachedSimpleSleep: (asleep: Double, need: Double)?
+    /// The day an earlier Rest score comes from (the ring's fresh-tail carry), for Simple mode's "From 4 Nov"
+    /// line under the Rest ring. Nil for the selected day's own score and while Simple mode is off.
+    @State private var carriedRestDayKey: String?
     /// Whether Simple mode's Charge card lists every driver rather than the three that moved it most.
     @State private var simpleDriversExpanded = false
 
@@ -761,7 +764,8 @@ struct LiquidTodayView: View {
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .rest } else { guideSection = .rest } },
                           detailRoute: .metric(HeroRingMetric.rest),
-                          caption: simpleMode ? String(localized: "Sleep") : nil)
+                          caption: simpleMode ? String(localized: "Sleep") : nil,
+                          subcaption: simpleMode ? carriedRestDayKey.map { String(localized: "From \(TodayView.lastChargeDateFmt($0))") } : nil)
                 .overlay(alignment: .top) {
                     if let sourceLabel = heroSourceLabel {
                         SourceBadge("\(sourceLabel)", tint: StrandPalette.textSecondary)
@@ -2163,6 +2167,10 @@ struct LiquidTodayView: View {
             todayValue: restByDay[selectedDayKey], lastDay: restSeries.last?.day,
             lastValue: restSeries.last?.value, isTodaySelected: selectedDayOffset == 0,
             todayKey: selectedDayKey)
+        carriedRestDayKey = simpleMode
+            ? SimpleDayPlan.carriedRestDay(selectedDayValue: restByDay[selectedDayKey], shownScore: restScore,
+                                           tailDay: restSeries.last?.day)
+            : nil
         // Simple mode's Charge drivers, for the row the ring shows (the #543 carry, else the selected day)
         // with the same inputs the classic Today's Charge sheet passes, so the two can never describe
         // different nights. Not resolved while Simple mode is off: a view that shows none pays nothing.

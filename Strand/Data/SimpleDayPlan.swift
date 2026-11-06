@@ -109,6 +109,15 @@ enum SimpleDayPlan {
         return (asleepMin, normativeNeedMin)
     }
 
+    /// The day a Rest ring's score comes from when it is an earlier night's, or nil when it is the selected
+    /// day's own (or there is none). The Rest ring carries a still-fresh earlier night through
+    /// `TodayView.freshRestScore`'s tail fallback; Simple mode names that day under the ring, as it does for a
+    /// carried Charge, so an old night is never read as last night's.
+    static func carriedRestDay(selectedDayValue: Double?, shownScore: Double?, tailDay: String?) -> String? {
+        guard selectedDayValue == nil, shownScore != nil else { return nil }
+        return tailDay
+    }
+
     /// How many Charge readings the Simple Today lists before "Show all".
     static let leadingDriverCount = 3
 
