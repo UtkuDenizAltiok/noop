@@ -142,6 +142,11 @@ final class PlainChargeWordingTests: XCTestCase {
         // A difference converts by 9/5 with no +32 offset, from the unrounded deviation: 0.44 °C is 0.792 °F.
         XCTAssertEqual(PlainChargeWording.driver(skin, skinTempDevC: 0.44, temperatureUnit: .fahrenheit).valueText, "+0.8 °F")
         XCTAssertEqual(PlainChargeWording.skinTempDeviation(-0.3, unit: .fahrenheit), "-0.5 °F")
+        // Foundation's locale formatter printed "-+0.0" for a negative zero; anything rounding to zero is +0.0.
+        XCTAssertEqual(PlainChargeWording.skinTempDeviation(-0.0, unit: .celsius), "+0.0 °C")
+        XCTAssertEqual(PlainChargeWording.skinTempDeviation(-0.04, unit: .celsius), "+0.0 °C")
+        // A tie rounds away from zero, as on Android (Foundation alone printed 0.25 as +0.2).
+        XCTAssertEqual(PlainChargeWording.skinTempDeviation(0.25, unit: .celsius), "+0.3 °C")
         // Without the raw figure the analytics' own text is kept rather than guessed at.
         XCTAssertEqual(PlainChargeWording.driver(skin, skinTempDevC: nil, temperatureUnit: .fahrenheit).valueText,
                        "+0.4 C vs baseline")
