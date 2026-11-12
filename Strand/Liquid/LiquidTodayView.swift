@@ -448,6 +448,10 @@ struct LiquidTodayView: View {
                 }
                 .padding(.horizontal, NoopMetrics.screenHPadding)
                 .padding(.top, 30) // sit the title lower into the sky, not jammed under the status bar
+                // Lets content return Today to its top (`ScrollScreenToTopAction`); unused unless called.
+                .environment(\.scrollScreenToTop, ScrollScreenToTopAction {
+                    proxy.scrollTo(Self.topAnchorID, anchor: .top)
+                })
             }
             #if os(macOS)
             // Keep the phone-shaped column readable + centred on the wide mac detail pane. The sky is a
