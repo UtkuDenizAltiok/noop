@@ -55,7 +55,7 @@ final class LiveHeartRateReadabilityTests: XCTestCase {
         let live = LiveState()
         live.heartRateSilence = 0.3
         live.heartRate = 93
-        live.noteReadableHeartRate()
+        live.noteReadableHeartRate(bpm: 93)
         let cleared = expectation(description: "cleared")
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
             XCTAssertNil(live.heartRate)
@@ -70,7 +70,7 @@ final class LiveHeartRateReadabilityTests: XCTestCase {
         live.heartRateSilence = 0.5
         live.heartRate = 93
         for i in 0..<10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) { live.noteReadableHeartRate() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) { live.noteReadableHeartRate(bpm: 93) }
         }
         let held = expectation(description: "held")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
