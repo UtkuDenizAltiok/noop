@@ -80,7 +80,7 @@ final class HighHRAlertEngineTests: XCTestCase {
         XCTAssertEqual(hrWarnBuzzSeconds(d).last, 205)
     }
 
-    func testItReturnsAtOnceWhenTheHeartRateClimbsBack() {
+    func testItReturnsAtOnceWhenTheHeartRateClimbsBack() throws {
         var engine = HighHRAlertEngine()
         let d = hrWarnFeedEverySecond(&engine, 0...230, config: hrWarnLimit110For90) { second in
             second <= 200 || second >= 220 ? 120 : 95
@@ -90,7 +90,8 @@ final class HighHRAlertEngineTests: XCTestCase {
         XCTAssertEqual(d[224]!.phase, .alerting)
         XCTAssertTrue(d[224]!.buzz)
         let buzzes = hrWarnBuzzSeconds(d)
-        let previous = buzzes[buzzes.firstIndex(of: 224)! - 1]
+        let index = try XCTUnwrap(buzzes.firstIndex(of: 224))
+        let previous = buzzes[max(0, index - 1)]
         XCTAssertGreaterThanOrEqual(224 - previous, 5)   // at least 4.5 s; whole seconds here
     }
 
