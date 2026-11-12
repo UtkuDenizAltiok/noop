@@ -160,13 +160,16 @@ struct HighHRAlertTodayRow: View {
                 StrandHaptic.selection.play()
                 showingWarning = true
             } label: {
-                HStack(spacing: 14) {
+                // The same tokens as `SimpleModeShowAllRow`, the other panel row on Simple Today (at its foot), so
+                // the two rows share height and padding.
+                HStack(spacing: NoopMetrics.space3) {
                     Image(systemName: "bell.and.waves.left.and.right")
                         .font(StrandFont.headline)
                         .foregroundStyle(StrandPalette.accent)
+                        // A fixed icon column (no token fits), so the wide bell symbol keeps the title in line.
                         .frame(width: 26, alignment: .center)
                         .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: NoopMetrics.spaceHalf) {
                         Text("High heart rate warning is on")
                             .font(StrandFont.body)
                             .foregroundStyle(StrandPalette.textPrimary)
@@ -175,15 +178,15 @@ struct HighHRAlertTodayRow: View {
                             .font(StrandFont.caption)
                             .foregroundStyle(StrandPalette.textTertiary)
                     }
-                    Spacer(minLength: 8)
+                    Spacer(minLength: NoopMetrics.space2)
                     Image(systemName: "chevron.right")
                         .font(StrandFont.footnote.weight(.semibold))
                         .foregroundStyle(StrandPalette.textTertiary)
                         .accessibilityHidden(true)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .frame(minHeight: 44)
+                .padding(.horizontal, NoopMetrics.space4)
+                .padding(.vertical, NoopMetrics.space3)
+                .frame(minHeight: NoopMetrics.controlHeight)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(NoopPanelSurface(cornerRadius: NoopMetrics.cardRadius))
                 .contentShape(Rectangle())
@@ -276,10 +279,20 @@ private struct HighHRAlertBuzzButton: View {
     @EnvironmentObject private var live: LiveState
 
     var body: some View {
-        NoopButton("Feel the buzz", systemImage: "waveform.path", kind: .secondary, fullWidth: true) {
-            model.buzz(loops: HighHRAlertEngine.buzzLoops)
+        let canBuzz = model.canBuzz
+        VStack(alignment: .leading, spacing: NoopMetrics.space2) {
+            NoopButton("Feel the buzz", systemImage: "waveform.path", kind: .secondary, fullWidth: true) {
+                model.buzz(loops: HighHRAlertEngine.buzzLoops)
+            }
+            .disabled(!canBuzz)
+            // A greyed button says why; nothing while it works.
+            if !canBuzz {
+                Text("Available when your strap is connected and paired.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
-        .disabled(!model.canBuzz)
     }
 }
 
