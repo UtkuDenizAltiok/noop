@@ -2,8 +2,9 @@ import XCTest
 @testable import Strand
 
 /// Pins Simple mode's rules: the switch's key and default, which tabs exist, that a swipe can never land on
-/// a tab that is not there, that the Simple Today shows each full-view section once or leaves it out on
-/// purpose, and that every entry of the plain-language guide is complete.
+/// a tab that is not there, that "Show everything on this screen" brings back the full layout, that the
+/// Simple More list keeps the Lift Log, that the Simple Today shows each full-view section once or leaves it
+/// out on purpose, and that every entry of the plain-language guide is complete.
 final class SimpleModeTests: XCTestCase {
 
     // MARK: - The switch
@@ -56,6 +57,61 @@ final class SimpleModeTests: XCTestCase {
         }
         // A tag that is not visible (Coach just hidden while selected) recovers to the first tab.
         XCTAssertEqual(SimpleModePrefs.swipeTarget(from: 3, forward: true, visible: [0, 1, 2, 4]), 0)
+    }
+
+    // MARK: - Show everything on this screen
+
+    /// The one funnel every simplified screen reads: simple only while the switch is on and the wearer has
+    /// not asked for everything on that screen. With the switch off, the row is absent and the full view shows.
+    func testIsSimpleTruthTable() {
+        XCTAssertTrue(SimpleModePrefs.isSimple(stored: true, showingAll: false))
+        XCTAssertFalse(SimpleModePrefs.isSimple(stored: true, showingAll: true),
+                       "\"Show everything on this screen\" must bring back the full layout.")
+        XCTAssertFalse(SimpleModePrefs.isSimple(stored: false, showingAll: false),
+                       "Simple mode off is the full view.")
+        XCTAssertFalse(SimpleModePrefs.isSimple(stored: false, showingAll: true))
+    }
+
+    // MARK: - More
+
+    /// Utku's rule: Simple mode never hides the Lift Log. It is listed in Training whether or not Coach is.
+    func testSimpleMoreListKeepsTheLiftLogInTraining() {
+        for showsCoach in [false, true] {
+            let entries = SimpleModePrefs.moreEntries(showsCoachRow: showsCoach)
+            XCTAssertTrue(entries.contains(.liftLog), "The Lift Log must stay in Simple mode's More list.")
+        }
+        XCTAssertEqual(SimpleMoreEntry.liftLog.group, .training)
+    }
+
+    func testSimpleMoreListHasNoDuplicatesAndKeepsItsGroupsTogether() {
+        for showsCoach in [false, true] {
+            let entries = SimpleModePrefs.moreEntries(showsCoachRow: showsCoach)
+            XCTAssertEqual(Set(entries).count, entries.count, "A row is listed twice.")
+            // The groups render in `SimpleMoreGroup` order, each with its own rows, so the list must already
+            // be in that order or a row would move on screen.
+            let groupOrder = entries.map(\.group)
+            XCTAssertEqual(groupOrder, groupOrder.sorted { lhs, rhs in
+                SimpleMoreGroup.allCases.firstIndex(of: lhs)! < SimpleMoreGroup.allCases.firstIndex(of: rhs)!
+            })
+            for group in SimpleMoreGroup.allCases {
+                XCTAssertTrue(groupOrder.contains(group), "\(group) has no rows.")
+            }
+        }
+    }
+
+    /// Every entry reaches the screen: with Coach listed, the list is every case; without it, every case but
+    /// Coach. The exhaustive switch in `SimpleMoreIndex` gives each one its row.
+    func testEverySimpleMoreEntryIsListedAndCoachOnlyWithoutATab() {
+        XCTAssertEqual(SimpleModePrefs.moreEntries(showsCoachRow: true), SimpleMoreEntry.allCases)
+        XCTAssertEqual(SimpleModePrefs.moreEntries(showsCoachRow: false),
+                       SimpleMoreEntry.allCases.filter { $0 != .coach })
+    }
+
+    /// "Report a problem" (the Test Centre, where the strap log lives) sits in Help between the guide and
+    /// Settings.
+    func testReportAProblemSitsBetweenTheGuideAndSettings() {
+        let help = SimpleModePrefs.moreEntries(showsCoachRow: false).filter { $0.group == .help }
+        XCTAssertEqual(help, [.plainGuide, .reportProblem, .settings])
     }
 
     // MARK: - Today

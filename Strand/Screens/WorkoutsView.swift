@@ -49,7 +49,12 @@ struct WorkoutsView: View {
 
     /// Simple mode (`SimpleModePrefs`): the session list right after one summary card, and none of the
     /// controls or analyses a first-time wearer does not need (see `body`).
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the full Workouts screen, with the filters,
+    /// search, multi-select and every analysis, while Simple mode stays on. Never stored.
+    @State private var showAll = false
+    /// Whether Workouts draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
     /// The plain guide entry presented as a sheet from Simple mode's zones card (nil = closed).
     @State private var plainGuideTerm: PlainGuideTerm?
     // Effort display scale (#268) — drives the effort hero's read-out. Display-only.
@@ -219,7 +224,7 @@ struct WorkoutsView: View {
                     // themselves, then the zone split in words. The duplicate stat tiles (they repeat the
                     // card's sessions, time and top sport), the 13-week calorie map, the per-sport breakdown,
                     // the heart-rate-recovery trend, the Current/Archived split, the sport/source/search
-                    // filters and multi-select stay in the full view (Settings → Simple mode off).
+                    // filters and multi-select stay in the full view ("Show everything on this screen" below).
                     workoutActionRow
                     rangeBar(rows: windowRows, effectiveRange: resolved, showsFilters: false)
                     if let postLogNote { postLogBanner(postLogNote) }
@@ -244,6 +249,9 @@ struct WorkoutsView: View {
                     sessionsSection(rows: windowRows)
                 }
             }
+            // The last element while Simple mode is on, in both states, so what the calm Workouts screen leaves
+            // out is one tap away here. Absent in the full view.
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
         .task(id: "\(repo.refreshSeq)-\(simpleMode)") {
             guard !usesPreviewRows else { return }
@@ -280,6 +288,12 @@ struct WorkoutsView: View {
         // full read is needed to show the older sessions.
         .onChange(of: range) { newRange in
             Task { await expandWindowIfNeeded(for: newRange == .all ? .all : effectiveRange) }
+        }
+        // Multi-select is a full-view tool: the simple layout has no Select pill and no Done button. Leave
+        // selection when the simple layout returns ("Back to the simple view"), or the rows would keep their
+        // checkmarks and select on tap with no way out.
+        .onChangeCompat(of: simpleMode) { simple in
+            if simple { selectionMode = false; selected.removeAll() }
         }
         .task(id: simpleMode ? "simple" : recoveryTrendInputKey(rows: trendRows)) {
             // Simple mode does not show the recovery trend, so it skips the per-session heart-rate reads too.

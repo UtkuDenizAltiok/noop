@@ -4,7 +4,9 @@ import Foundation
 //
 // One switch between two presentations of the SAME data. Simple mode is a calm default: Today shows each
 // number once and says what it means, the More tab lists the everyday screens, and every other screen
-// stays one tap away under "All features". Turning it off returns the full app exactly as it was.
+// stays one tap away under "All features". Each simplified screen also ends in "Show everything on this
+// screen" (`isSimple`), so what it leaves out is one tap away on that screen. Turning it off returns the full
+// app exactly as it was.
 //
 // Presentation only. Nothing here computes, stores or changes a figure: every value Simple mode shows is
 // read through the same code the full view uses. Simple mode also never reads or writes the full view's
@@ -22,6 +24,21 @@ enum SimpleModePrefs {
 
     /// ON by default, so a first launch opens the calm view. Settings → Simple mode switches it off.
     static let defaultEnabled = true
+
+    /// Whether a screen draws its simple layout right now: the stored switch, unless the wearer tapped
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`). The one funnel every simplified screen
+    /// reads, so a hidden card or tool is always one tap away on its own screen, never only behind the
+    /// app-wide switch. `showingAll` is per-screen view state; it is never stored.
+    static func isSimple(stored: Bool, showingAll: Bool) -> Bool {
+        stored && !showingAll
+    }
+
+    /// The rows of Simple mode's More list, in render order. Coach is listed only while it is switched on
+    /// but has no tab of its own (`showsCoachTab`), so it is never unreachable. Every other entry is always
+    /// listed: the Lift Log included, which Simple mode never hides.
+    static func moreEntries(showsCoachRow: Bool) -> [SimpleMoreEntry] {
+        SimpleMoreEntry.allCases.filter { $0 != .coach || showsCoachRow }
+    }
 
     /// Whether the Coach tab is shown.
     ///
@@ -86,4 +103,36 @@ enum SimpleTodaySection: String, CaseIterable, Identifiable {
     /// The full-view sections Simple mode leaves out. Listed so a test can pin that the summary shows each
     /// figure once: Start session is a beta, Key Metrics and Your Cards repeat the rings and the vitals.
     static let omittedFullSections: [TodaySection] = [.liveSession, .keyMetrics, .yourCards]
+}
+
+/// One always-open group of Simple mode's More list, in render order.
+enum SimpleMoreGroup: String, CaseIterable {
+    case yourBody, training, dailyTools, yourData, help
+}
+
+/// One row of Simple mode's More list, in render order (`SimpleModePrefs.moreEntries`).
+///
+/// Data rather than view code so a test can pin what the list holds: the iOS tab shell renders each case
+/// through an exhaustive switch (`SimpleMoreIndex` in `RootTabView`), so a row cannot be added here without
+/// deciding where it leads, and cannot be dropped from the screen while it is still listed. Every row is
+/// also in the full More list; Simple mode chooses, it never removes.
+enum SimpleMoreEntry: String, CaseIterable, Identifiable {
+    case liveHeartRate, healthMonitor, stress
+    case workouts, liftLog
+    case alarms, breathe, coach
+    case appleHealth, backupSync
+    /// Help: the plain guide, then the Test Centre (where the strap log lives), then Settings.
+    case plainGuide, reportProblem, settings
+
+    var id: String { rawValue }
+
+    var group: SimpleMoreGroup {
+        switch self {
+        case .liveHeartRate, .healthMonitor, .stress: return .yourBody
+        case .workouts, .liftLog: return .training
+        case .alarms, .breathe, .coach: return .dailyTools
+        case .appleHealth, .backupSync: return .yourData
+        case .plainGuide, .reportProblem, .settings: return .help
+        }
+    }
 }
