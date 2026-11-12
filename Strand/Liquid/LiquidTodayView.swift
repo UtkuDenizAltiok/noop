@@ -393,6 +393,9 @@ struct LiquidTodayView: View {
                     // pinned above the reorderable block so an active manual workout is immediately visible
                     // and taps straight through to Live. Renders nothing when no workout is active.
                     ActiveWorkoutIndicatorSection()
+                    // While the high heart rate warning is on, a row says so (a forgotten warning buzzes through a
+                    // whole workout), one tap from its switch. Settings only, nothing live; nothing while it is off.
+                    HighHRAlertTodayRow()
                     // Simple mode: a fixed, calm order that shows each figure once and explains it. It reads
                     // none of the full view's layout prefs, so switching it off restores the wearer's own
                     // arrangement below untouched (see `SimpleModePrefs`).
