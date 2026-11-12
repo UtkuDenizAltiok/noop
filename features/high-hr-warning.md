@@ -1,8 +1,9 @@
 # High heart rate warning — design and worker brief
 
 Asked for by Utku on 12 Nov 2026. Designed by the architect chat the same day (research only, no app code
-written). **Status: designed, not built.** A worker implements this page exactly; the architect reviews the diff
-against it before it ships to the phone.
+written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`e20a03fc`),
+reviewed and accepted by the architect 12 Nov with five small corrections sent back (§11). Not yet on the
+phone; the buzz and the background behaviour are unproven until §9 is run on the strap.**
 
 ## 1. What Utku asked for
 
@@ -172,6 +173,8 @@ screen that observes the model).
 - `High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)` (once per
   episode)
 - `High HR warning: paused, no live heart rate`
+- `High HR warning: paused, too few readings to judge` (once per stretch; added at review, 12 Nov: it tells
+  "readings arrived too thinly" apart from "the app was not woken" if the background check fails)
 
 Check whether `BLEManager.send` writes a log line for every command. If it does, an hour of buzzing adds about
 720 lines to the 2 MB strap log; report the line count in the hand-back so the architect can decide.
@@ -198,7 +201,8 @@ Final English copy (every string needs all nine locales, see Simple mode → "Ho
   - "Above your limit: average %lld bpm. Your strap is buzzing."
   - "Above your limit, but NOOP can't reach your strap to buzz it right now."
 - Button: "Feel the buzz" (sends one double buzz; disabled unless connected and `canBuzz`, the same gate as
-  `sendBuzz`)
+  `sendBuzz`). While it is disabled, one caption under it: "Available when your strap is connected and
+  paired." (added at review, 12 Nov: a greyed-out button with no reason is confusing)
 - Notes: "Works while NOOP is open or running in the background with your strap connected. It can't warn you if
   you swipe NOOP away, turn Bluetooth off or leave the strap out of range." · "Each buzz uses a little strap
   battery, so switch the warning off when you don't need it." · "A training and pacing aid, not a medical alarm."
@@ -249,3 +253,33 @@ Then save a strap log (More → All features → App → Test Centre → Strap l
   platforms; cannot be strap-tested here, so say so.
 - Upstream: open an issue first describing the feature and the hardware evidence from §9; move the engine to
   `Packages/StrandAnalytics` with its Kotlin twin in the same PR.
+
+## 11. Review record (architect, 12 Nov)
+
+Read: the whole diff `a639d47a..e20a03fc` (19 files) against §4–§7. Rerun by the architect: the string catalogue
+(20 new strings, all nine locales present) and a test merge onto `feat/simple-mode` `258e0bf2` (clean).
+**Worker-reported, not rerun:** both builds, StrandTests 2,367 with 0 failures (24 new, each seen to fail), the
+`Tools/` suite, the simulator look. **Unproven:** the buzz and the background behaviour (§9, strap only); the Mac
+app was built but not opened.
+
+**Matches the page:** the engine rule for rule; the hook as the first line of `noteReadableHeartRate(bpm:)` with
+both call sites; wiring in `AppModel.init`; the monitor's statuses and log lines; the card, its own screen, the
+Automations mount, the Today row in both Today screens, both More lists (Simple More through `SimpleMoreEntry`,
+pinned by a test).
+
+**Decided at review:**
+- `AppModel.canBuzz` is now `live.connected && live.bonded && live.encryptedBond` and no longer private: the
+  stress check-in, the warning and "Feel the buzz" all read it. `BiofeedbackController` (Breathe) keeps its own
+  copy; left alone on purpose (upstream code).
+- The worker's three readings of the page are kept: a value change while on does not flash "Waiting"; an unsent
+  buzz logs only the "no buzz was sent" line; a stretch stays open while readings are too sparse to judge.
+- `BLEManager.send` writes one strap-log line per command, so continuous buzzing adds about 720 lines an hour.
+  Accepted for v1 (it only happens while the wearer stays over the limit). Revisit if a real log shows it crowding
+  out other evidence.
+- With live streaming on, readings arrive about three times a second, so the rhythm is 4.5–4.8 s, not 5.
+  Accepted: not noticeable on the wrist, and exact 5 s would need a second rule.
+
+**Sent back to worker 2 (small, same branch):** merge `258e0bf2` in (no rebase: this Mac refuses force-pushes);
+the "too few readings to judge" log line with a test; a true comment on `canBuzz`; the caption under a disabled
+"Feel the buzz"; the Today row on the same `NoopMetrics` tokens as `SimpleModeShowAllRow`. Done when
+`origin/feat/high-hr-warning` has commits after `e20a03fc` containing that log line.
