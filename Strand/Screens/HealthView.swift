@@ -58,8 +58,14 @@ struct HealthView: View {
 private struct HealthSectionsStack: View {
     /// Simple mode (`SimpleModePrefs`) leaves out two sections: the recovery contributors, which repeat
     /// Today's "What's behind your Charge" with their own simple-average baseline (so the two can disagree),
-    /// and the records/sources links, which stay one tap away under More → All features.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    /// and the records/sources links. Both are one tap away through the row at the foot of this stack.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the full Health stack while Simple mode
+    /// stays on. Never stored. Held here, where the stored switch is read, because this stack is the whole
+    /// screen whenever there is anything to show (the first-run empty state hides nothing).
+    @State private var showAll = false
+    /// Whether Health draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionGap) {
@@ -91,6 +97,9 @@ private struct HealthSectionsStack: View {
             // v5 deep-links: the records logbook + the multi-device fused record, reachable
             // from their honest Health home as drill-in rows (not their own destinations).
             if !simpleMode { HealthHubLinksSection() }
+            // The last element while Simple mode is on, in both states, so what the calm Health screen leaves
+            // out is one tap away here. Absent in the full view.
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
     }
 }

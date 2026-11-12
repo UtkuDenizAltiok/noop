@@ -99,7 +99,12 @@ struct LiquidTodayView: View {
     @State private var synthesisExpanded = false
     @State private var showLiveSession = false
     /// Simple mode (`SimpleModePrefs`): the calm, fixed Today that shows each figure once and explains it.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the wearer's own full Today, with
+    /// Customize, while Simple mode stays on. Never stored; lasts until tapped back or the app restarts.
+    @State private var showAll = false
+    /// Whether Today draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
     /// The plain guide entry presented as a sheet from a Simple-mode score label (nil = closed).
     @State private var plainGuideTerm: PlainGuideTerm?
     /// Simple mode's "What's behind your Charge" rows: the same breakdown the classic Today's Charge sheet
@@ -436,6 +441,9 @@ struct LiquidTodayView: View {
                         AutoWorkoutCard()
                         dataSourcesSection
                     }
+                    // The last element while Simple mode is on, in both states, so what the calm Today leaves
+                    // out is one tap away here. Absent in the full view.
+                    if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
                     Color.clear.frame(height: 90) // floating tab-bar clearance
                 }
                 .padding(.horizontal, NoopMetrics.screenHPadding)

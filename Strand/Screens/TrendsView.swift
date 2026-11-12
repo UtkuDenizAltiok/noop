@@ -46,7 +46,12 @@ struct TrendsView: View {
 
     @State private var range: Range = .quarter
     /// Simple mode (`SimpleModePrefs`): the week, the charts and the calendar, without the advanced cards.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the full Trends tab, with the training
+    /// load chart and the PDF export, while Simple mode stays on. Never stored.
+    @State private var showAll = false
+    /// Whether Trends draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
 
     // #436 — shareable offline trends report (PDF over a date range). The sheet owns its
     // own range picker; this just presents it with the loaded history.
@@ -345,6 +350,9 @@ struct TrendsView: View {
                     }
                 }
             }
+            // The last element while Simple mode is on, in both states, so what the calm Trends tab leaves out
+            // is one tap away here. Absent in the full view.
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
         // #436 — present the offline trends-report exporter (range picker + PDF export).
         .sheet(isPresented: $showingReport) {

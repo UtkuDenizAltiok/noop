@@ -58,7 +58,12 @@ struct StressView: View {
     /// Simple mode (`SimpleModePrefs`): the stress level, today's markers, the day's timeline and the trend,
     /// in plain words. The Advanced HRV readouts and the method card stay in the full view; the plain guide's
     /// Stress entry takes the method card's place.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the full Stress screen, with Advanced HRV
+    /// and the method card, while Simple mode stays on. Never stored.
+    @State private var showAll = false
+    /// Whether Stress draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
     @State private var showStressGuide = false
 
     /// ADDITIVE, on-demand advanced readouts, computed live from the SAME day's R-R the
@@ -94,6 +99,9 @@ struct StressView: View {
             } else {
                 emptyState
             }
+            // The last element while Simple mode is on, in both states, so what the calm Stress screen leaves
+            // out is one tap away here. Absent in the full view.
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
         .onAppear { rebuildModelIfNeeded() }
         .onChangeCompat(of: repo.days) { _ in rebuildModelIfNeeded() }
