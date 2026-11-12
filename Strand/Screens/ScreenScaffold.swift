@@ -45,6 +45,10 @@ struct ScreenScaffold<Content: View, Trailing: View>: View {
             // at-root tab re-tap can bring the screen back to the very top. Layout-neutral.
             Color.clear.frame(height: 0).id(screenScaffoldTopAnchorID)
             column
+            // Lets content return the screen to its top (`ScrollScreenToTopAction`); unused unless called.
+            .environment(\.scrollScreenToTop, ScrollScreenToTopAction {
+                proxy.scrollTo(screenScaffoldTopAnchorID, anchor: .top)
+            })
             #if os(iOS)
             // Unified side margins matching the floating navigation bar so every page's cards + header line up
             // to the same edges (2026-07-02); macOS keeps the classic 28 in the #else branch.
@@ -264,5 +268,29 @@ extension EnvironmentValues {
     var scrollToTopSignal: Int {
         get { self[ScrollToTopSignalKey.self] }
         set { self[ScrollToTopSignalKey.self] = newValue }
+    }
+}
+
+// MARK: - Scroll to top from inside the content
+
+/// Brings the enclosing screen back to its top, called from inside its content. `ScreenScaffold` and
+/// `LiquidTodayView` provide it through their own scroll reader; a reader placed inside a lazily built
+/// column cannot move the scroll view around it. Only `SimpleModeShowAllRow` calls it, before "Back to the
+/// simple view" shortens the page, so the wearer is not left looking at empty space below the content.
+/// Outside a screen it does nothing.
+struct ScrollScreenToTopAction {
+    private let run: () -> Void
+    init(_ run: @escaping () -> Void) { self.run = run }
+    func callAsFunction() { run() }
+}
+
+private struct ScrollScreenToTopKey: EnvironmentKey {
+    static let defaultValue = ScrollScreenToTopAction {}
+}
+
+extension EnvironmentValues {
+    var scrollScreenToTop: ScrollScreenToTopAction {
+        get { self[ScrollScreenToTopKey.self] }
+        set { self[ScrollScreenToTopKey.self] = newValue }
     }
 }
