@@ -114,6 +114,12 @@ final class SimpleModeTests: XCTestCase {
         XCTAssertEqual(help, [.plainGuide, .reportProblem, .settings])
     }
 
+    /// The high heart rate warning sits in Daily tools right after Alarms.
+    func testTheHeartRateWarningSitsRightAfterAlarms() {
+        let tools = SimpleModePrefs.moreEntries(showsCoachRow: true).filter { $0.group == .dailyTools }
+        XCTAssertEqual(tools, [.alarms, .heartRateWarning, .breathe, .coach])
+    }
+
     // MARK: - Today
 
     func testSimpleTodayLeadsWithTheScoresAndEndsWithTheGuide() {

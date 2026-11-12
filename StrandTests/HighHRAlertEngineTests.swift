@@ -242,12 +242,6 @@ final class HighHRAlertPrefsTests: XCTestCase {
         XCTAssertTrue(HighHRAlertPrefs.current(hrWarnDefaults).enabled)
     }
 
-    /// Simple mode's More lists the warning under Daily tools, right after Alarms.
-    func testSimpleMoreListsTheWarningAfterAlarms() {
-        let tools = SimpleModePrefs.moreEntries(showsCoachRow: true).filter { $0.group == .dailyTools }
-        XCTAssertEqual(tools, [.alarms, .heartRateWarning, .breathe, .coach])
-    }
-
     func testDurationsInWords() {
         XCTAssertEqual(HighHRAlertPrefs.durationText(45), "45 s")
         XCTAssertEqual(HighHRAlertPrefs.durationText(90), "1 min 30 s")
