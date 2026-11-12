@@ -108,12 +108,14 @@ diff against its brief.
 **Phase A — make what exists complete and put it on the phone**
 1. **Nothing lost, one tap away (F15)** — worker brief A1 below. On `feat/simple-mode`.
 2. **High heart rate warning** — [`high-hr-warning.md`](high-hr-warning.md), its own brief. On
-   `feat/high-hr-warning`, branched from `feat/simple-mode`. Independent of step 1 (can run at the same time in
-   its own worktree; both add catalogue strings, merge them by key with `dist/tools/xcmerge.py`).
+   `feat/high-hr-warning`, branched from `feat/simple-mode` **after step 1 is pushed**, so its Simple More row
+   is added as a `SimpleMoreEntry` case like the others. **One worker at a time:** two chats building and
+   running the tests on this Mac at once share the simulator and the test host app, and their results cannot
+   be trusted (Workflow §3).
 3. **Review, then stack + phone build** — the architect (or the next Start chat) reads both diffs against their
    briefs, then adds `0a6f3021`, step 1 and step 2 to `testing-stack` and ships `testing-build` ("How to work"
-   above, Workflow §6). Just update. When both are in, the warning's Simple More row becomes a
-   `SimpleMoreEntry` case like the others (step 1 turns that list into data).
+   above, Workflow §6). Just update. (If step 2 was built before step 1 after all, turn its Simple More row
+   into a `SimpleMoreEntry` case here and merge the catalogue by key with `dist/tools/xcmerge.py`.)
 4. **Utku on the phone:** the five checks in `high-hr-warning.md` §9, and what he notices in daily use.
    Ask him once, simply: what confused him, what he missed, what felt wrong.
 

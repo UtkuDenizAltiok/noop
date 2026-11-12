@@ -202,7 +202,9 @@ Final English copy (every string needs all nine locales, see Simple mode → "Ho
 
 **Where it appears:**
 - iOS More: `MoreDestination.heartRateWarning` → `HighHRAlertView()`. Rows: Simple list, "Daily tools", after
-  Alarms; full list, "App", after Alarms. Row title "Heart rate warning", icon `bell.and.waves.left.and.right`.
+  Alarms (as a `SimpleMoreEntry` case when Simple mode roadmap step 1 is already on the branch; a plain
+  `MoreRow` otherwise); full list, "App", after Alarms. Row title "Heart rate warning", icon
+  `bell.and.waves.left.and.right`.
 - `AutomationsView` (iOS and Mac): the same `HighHRAlertCard` after `coachingCard`. Same view, same keys, so the
   two places cannot disagree.
 - Today: `HighHRAlertTodayRow`, a self-hiding leaf placed right after `ActiveWorkoutIndicatorSection()` in
