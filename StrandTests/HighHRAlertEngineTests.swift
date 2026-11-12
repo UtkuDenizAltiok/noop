@@ -339,6 +339,26 @@ final class HighHRAlertMonitorTests: XCTestCase {
         XCTAssertEqual(hrWarnLog.filter { $0.contains("paused") }.count, 1)
     }
 
+    /// Readings too thin to judge mid-stretch are said once per stretch; the stretch itself stays open, so its
+    /// return and a second thin spell add no lines.
+    func testTooFewReadingsMidStretchIsLoggedOncePerStretch() {
+        let monitor = hrWarnMonitorFixture(enabled: true)
+        hrWarnFeedMonitor(monitor, 0...100, bpm: 120)
+        XCTAssertEqual(monitor.status, .alerting(average: 120, buzzDelivered: true))
+        // A 40-s gap: at 141 the readings cover 52 of the 90 s, under the 72 s needed.
+        hrWarnFeedMonitor(monitor, 141...150, bpm: 120)
+        XCTAssertEqual(monitor.status, .measuring)
+        // Coverage is back at 212; then a second gap, and thin again at 260.
+        hrWarnFeedMonitor(monitor, 151...212, bpm: 120)
+        XCTAssertEqual(monitor.status, .alerting(average: 120, buzzDelivered: true))
+        hrWarnFeedMonitor(monitor, 260...265, bpm: 120)
+        XCTAssertEqual(monitor.status, .measuring)
+        XCTAssertEqual(hrWarnLog, [
+            "High HR warning: over the limit (90-s average 120, now 120); buzzing every 5 s",
+            "High HR warning: paused, too few readings to judge",
+        ])
+    }
+
     func testTheSwitchAndValuesLogOnlyChanges() {
         let monitor = hrWarnMonitorFixture(enabled: false)
         hrWarnDefaults.set(true, forKey: HighHRAlertPrefs.enabledKey)
