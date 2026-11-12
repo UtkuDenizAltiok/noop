@@ -269,7 +269,8 @@ private struct HighHRAlertStatusText: View {
     }
 }
 
-/// "Feel the buzz": one double buzz, offered only when the warning itself could buzz the strap.
+/// "Feel the buzz": one double buzz, offered only when the warning itself could buzz the strap (`AppModel.canBuzz`,
+/// the same answer the warning's own buzz asks). Observes `live` so it follows the link coming and going.
 private struct HighHRAlertBuzzButton: View {
     @EnvironmentObject private var model: AppModel
     @EnvironmentObject private var live: LiveState
@@ -278,7 +279,7 @@ private struct HighHRAlertBuzzButton: View {
         NoopButton("Feel the buzz", systemImage: "waveform.path", kind: .secondary, fullWidth: true) {
             model.buzz(loops: HighHRAlertEngine.buzzLoops)
         }
-        .disabled(!HighHRAlertMonitor.strapCanBuzz(live))
+        .disabled(!model.canBuzz)
     }
 }
 
