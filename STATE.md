@@ -21,10 +21,19 @@ them (checked with `checkpoint.sh status --net` and `upstream-check.sh`).
 - [x] **Upstream checked:** no merge since 25 Oct (#2859), `upstream/main` still `2a1de760`, no maintainer reply
   on any of our 17 open PRs; #2747 and #2724 still CONFLICTING, the rest MERGEABLE. New rule: no new upstream PRs
   or CI retries until a maintainer answers ([Rules](RULES.md#settled-decisions)).
-- [ ] **Worker brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — not started. Branch
-  `feat/simple-mode`, worktree `~/Developer/noop-simple`.
-- [ ] **Worker brief: high heart rate warning** — not started. New branch `feat/high-hr-warning` from
-  `feat/simple-mode`, new worktree `~/Developer/noop-hrwarn`.
+- [ ] **Worker 1, brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — STARTED by Utku
+  12 Nov ~05:28 UTC as its own Opus 5.5 chat "1 of 2: Simple mode, show everything in one tap" (session
+  `local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`, worktree
+  `~/Developer/noop/.claude/worktrees/busy-wescoff-2f11bd`). Told to switch to a branch
+  `worker/simple-show-everything` cut from `origin/feat/simple-mode` and to deliver by fast-forward push to
+  `feat/simple-mode` (then `~/Developer/noop-simple` follows with `merge --ff-only`). Done when
+  `origin/feat/simple-mode` has a commit after `0a6f3021` containing `Strand/Screens/SimpleModeShowAllRow.swift`.
+- [ ] **Worker 2, high heart rate warning** — STARTED at the same time, chat "2 of 2: High heart rate warning
+  (after 1)" (session `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`, worktree
+  `~/Developer/noop/.claude/worktrees/dreamy-curran-4aa889`). Told (message delivered) to write only the
+  non-overlapping parts without compiling, wait until worker 1 has pushed, rebase onto it, then add the mounts
+  and strings, verify, and push `feat/high-hr-warning`. Done when that branch exists on the fork.
+  Neither hand-back has been read yet; a worker's report is not proof (read the diff, roadmap step 3).
 - [ ] **Review + stack + phone build** (roadmap step 3) — after both briefs are handed back. Also carries
   `0a6f3021` (Alarms wording), still not in the stack.
 - [ ] **Utku on the phone** — the build `281239ad` (Rounds 1–6) has still not been reported seen; after step 3,
