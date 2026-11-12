@@ -190,6 +190,20 @@ final class HighHRAlertEngineTests: XCTestCase {
     }
 }
 
+/// The warning needs EVERY readable reading, including the ones `noteReadableHeartRate` returns early on (its
+/// silence-timer throttle) and the steady ones `heartRate` never republishes.
+@MainActor
+final class HighHRAlertHookTests: XCTestCase {
+    func testEveryReadableReadingReachesTheHook() {
+        let live = LiveState()
+        var hrWarnSeen: [Int] = []
+        live.onReadableHeartRate = { hrWarnSeen.append($0) }
+        for _ in 0..<5 { live.noteReadableHeartRate(bpm: 72) }
+        live.noteReadableHeartRate(bpm: 73)
+        XCTAssertEqual(hrWarnSeen, [72, 72, 72, 72, 72, 73])
+    }
+}
+
 /// The settings are clamped before they reach the engine, and a duration is put into words in one place.
 final class HighHRAlertPrefsTests: XCTestCase {
     private var hrWarnSuiteName = ""
@@ -225,6 +239,12 @@ final class HighHRAlertPrefsTests: XCTestCase {
         hrWarnDefaults.set(92, forKey: HighHRAlertPrefs.windowKey)
         XCTAssertEqual(HighHRAlertPrefs.current(hrWarnDefaults).config.windowSec, 90)
         XCTAssertTrue(HighHRAlertPrefs.current(hrWarnDefaults).enabled)
+    }
+
+    /// Simple mode's More lists the warning under Daily tools, right after Alarms.
+    func testSimpleMoreListsTheWarningAfterAlarms() {
+        let tools = SimpleModePrefs.moreEntries(showsCoachRow: true).filter { $0.group == .dailyTools }
+        XCTAssertEqual(tools, [.alarms, .heartRateWarning, .breathe, .coach])
     }
 
     func testDurationsInWords() {

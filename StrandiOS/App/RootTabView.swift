@@ -573,6 +573,7 @@ private struct FullMoreIndex: View {
             // so it can't compile or apply on iPhone. iPhone's wrist-alert controls live on the
             // Automations screen instead. Its absence from the iPhone More list is correct.
             MoreRow("Alarms", "alarm.fill", .alarms)
+            MoreRow("Heart rate warning", "bell.and.waves.left.and.right", .heartRateWarning)
             MoreRow("Automations", "wand.and.stars", .automations)
             // The Test Centre (the diagnostics + bug-report hub) gets a first-class home here, not
             // just buried in Settings, so the feedback loop is one tap from the More tab.
@@ -675,6 +676,8 @@ private struct SimpleMoreIndex: View {
         case .workouts:      MoreRow("Workouts", "figure.run", .workouts)
         case .liftLog:       MoreRow("Lift Log", "dumbbell.fill", .liftLog)
         case .alarms:        MoreRow("Alarms", "alarm.fill", .alarms)
+        case .heartRateWarning:
+            MoreRow("Heart rate warning", "bell.and.waves.left.and.right", .heartRateWarning)
         case .breathe:       MoreRow("Breathe", "wind", .breathe)
         case .coach:         MoreRow("Coach", "sparkles", .coach)
         case .appleHealth:   MoreRow("Apple Health", "heart.fill", .appleHealth)
@@ -776,7 +779,7 @@ private enum MoreDestination: Hashable {
     case insightsHub, intelligence, coach, insights, explore, compare
     case live, workouts, liftLog, health, labBook, stress, breathe, intervals, rhythm
     case fusedRecord, appleHealth, miBand, dataSources, backupSync, shortcutsExport, noopLimitations
-    case alarms, automations, testCentre, siriShortcuts, powerSaving, settings
+    case alarms, heartRateWarning, automations, testCentre, siriShortcuts, powerSaving, settings
     /// Simple mode: the full grouped list, and the plain-language guide (also listed in the full view).
     case allFeatures, plainGuide
 
@@ -805,6 +808,7 @@ private enum MoreDestination: Hashable {
         case .backupSync:      BackupSyncView()
         case .shortcutsExport: ShortcutExportSettingsView()
         case .alarms:          SmartAlarmView()
+        case .heartRateWarning: HighHRAlertView()
         case .automations:     AutomationsView()
         case .testCentre:      TestCentreView()
         case .siriShortcuts:   SiriShortcutsSettingsView()

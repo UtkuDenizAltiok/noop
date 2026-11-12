@@ -119,7 +119,8 @@ enum SimpleMoreGroup: String, CaseIterable {
 enum SimpleMoreEntry: String, CaseIterable, Identifiable {
     case liveHeartRate, healthMonitor, stress
     case workouts, liftLog
-    case alarms, breathe, coach
+    /// Daily tools: Alarms, then the high heart rate warning (`HighHRAlertView`), Breathe and Coach.
+    case alarms, heartRateWarning, breathe, coach
     case appleHealth, backupSync
     /// Help: the plain guide, then the Test Centre (where the strap log lives), then Settings.
     case plainGuide, reportProblem, settings
@@ -130,7 +131,7 @@ enum SimpleMoreEntry: String, CaseIterable, Identifiable {
         switch self {
         case .liveHeartRate, .healthMonitor, .stress: return .yourBody
         case .workouts, .liftLog: return .training
-        case .alarms, .breathe, .coach: return .dailyTools
+        case .alarms, .heartRateWarning, .breathe, .coach: return .dailyTools
         case .appleHealth, .backupSync: return .yourData
         case .plainGuide, .reportProblem, .settings: return .help
         }
