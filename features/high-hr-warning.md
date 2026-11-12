@@ -2,8 +2,8 @@
 
 Asked for by Utku on 12 Nov 2026. Designed by the architect chat the same day (research only, no app code
 written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`f80aadc6`),
-reviewed and accepted by the architect 12 Nov (§11), in `testing-stack` `25aa5f38` and in the iPhone file
-on `testing-latest` since 12 Nov. The buzz and the background behaviour are unproven until §9 is run on
+reviewed and accepted by the architect 12 Nov (§11), in `testing-stack` `25aa5f38` and in the phone build
+`218aec72` on `testing-latest` since 12 Nov. The buzz and the background behaviour are unproven until §9 is run on
 the strap.**
 
 ## 1. What Utku asked for

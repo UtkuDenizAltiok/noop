@@ -8,8 +8,9 @@ Updated **12 Nov 2026 (end of chat 4: architect review, two worker chats, phone 
 Research, planning and review only by the architect, on Utku's instruction ("you should not implement"); the
 app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. At the end of chat 4:
 `feat/simple-mode` `258e0bf2`, `feat/high-hr-warning` `f80aadc6`, `testing-stack` `25aa5f38`, `testing-build`
-`218aec72`; the iPhone file on `testing-latest` is a Mac-built build of `218aec72` (see the shipped item below).
-**Open problem for Utku: GitHub refuses to start workflows on the fork** (below).
+`218aec72`, and `testing-latest` is GitHub's own build of `218aec72` (run 43264856702, all five files from
+12 Nov). Everything is committed, pushed and verified; nothing is running. **Waiting only for Utku's phone
+checks.**
 
 - [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
   23 files, read against the goal). Verdict and findings F15–F18 in
@@ -62,35 +63,33 @@ app code is written by two Opus 5.5 worker chats Utku started (below). Nothing w
   macOS tests **2395, 0 failures, 2 skips**, iOS simulator build). Also: the workflow's own iPhone build
   (Release, `generic/platform=iOS`) succeeded locally, and the whole `Tools/` suite passed on a clean checkout
   (341 tests). Logs: `~/Library/Caches/noop-handbook/verify/25aa5f38`.
-- [x] **Phone build shipped by the Mac-built route, 12 Nov** — `testing-build` `281239ad` → `218aec72` (merge
-  commit over the old tip; tree = stack + `fork/ships-template`). **"Testing build (fork)" could not be started:**
-  `gh workflow run` answered twice `HTTP 422: Actions has been disabled for this repository`, while
-  `repos/…/actions/permissions` says `enabled: true`, the workflow is `active`, GitHub status was all green and
-  the last run (6 Nov, 42280019994) had succeeded. The cause is not visible through the API. So the iPhone file
-  was made here: the verified Release build of `25aa5f38`, packaged with the workflow's own steps (Watch folder
-  removed, `Tools/prepare-ios-sideload-app.sh`, zip), and uploaded over the old file on `testing-latest`.
-  - Checked: same bundle id, App Group, entitlements, version 12.1.0 (439), 87 files and 10 languages as the
-    6 Nov file; the new German strings are inside; download HTTP 200 and sha256
-    `8542256d5c46430e616b1abf3418270bf5c8cee040a0a70c7ce5eb2add694755` equal to the local file.
-  - **The one difference:** built with Xcode 27.2 (iOS 27.2 SDK); every earlier phone build came from GitHub's
-    Xcode 26.6 (iOS 26.5 SDK). If something unrelated to today's changes looks or behaves differently on the
-    phone, suspect this first.
-  - **The release is mixed and its title and notes say so:** the tag and target are still `281239ad`, and the
-    Android, macOS and template files are the 6 Nov ones. `ship-build.sh`'s "target equals the build commit"
-    check does not hold until a normal workflow run recreates the release.
-  - Rollback: the 6 Nov iPhone file is kept at
-    `~/Library/Caches/noop-handbook/releases/2026-11-06-281239ad/` (sha256 `831fac8e…`); upload it with
-    `gh release upload testing-latest … --clobber`. The new file is beside it under `2026-11-12-218aec72-mac-built/`.
-- [ ] **Utku: GitHub Actions on the fork.** Open `https://github.com/UtkuDenizAltiok/noop/actions` and
-  `…/settings/actions` in a browser and read what GitHub says (a banner, a button to enable workflows, or a
-  notice on the account). Nothing here may change that setting for him. Until it works: no "Testing build
-  (fork)", no Android CI on the fork, and phone builds only by the Mac-built route above. Once it works: run
-  `bash dist/tools/ship-build.sh testing-stack` by the merge-commit route (Workflow §6) so the release is whole
-  again.
-- [ ] **Utku on the phone** — just update (AltStore, install over the existing app). Then the five checks in
+- [x] **Phone build shipped and verified, 12 Nov** — `testing-build` `281239ad` → `218aec72` (merge commit over
+  the old tip; tree = stack + `fork/ships-template`). "Testing build (fork)" run 43264856702: meta, ios, macos and
+  android all succeeded. Verified by the files, not the title: release target = `218aec72…`; five files, all
+  uploaded 12 Nov; the `.ipa` downloads (HTTP 200, sha256 `9ab8d1b3…`), is built with GitHub's usual Xcode 26.6
+  (iOS 26.5 SDK), has the same bundle id, App Group, entitlements, 87 files and version 12.1.0 (439) as the 6 Nov
+  one, and carries the new German strings ("Alles auf diesem Bildschirm zeigen", "Warnung bei hohem Puls").
+  **Just update.**
+  - What happened on the way: the first two attempts to start the workflow were refused (`HTTP 422: Actions has
+    been disabled for this repository`, while the API read `enabled: true`). For about an hour the release carried
+    a Mac-built `.ipa` (Xcode 27.2, sha256 `8542256d…`) uploaded by hand; Utku had not installed it. He then
+    clicked "re-enable" on the fork's Actions page and the normal run replaced the whole release. The Mac-built
+    route is written down in [Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone) for the next time. Both `.ipa`
+    files of that hour are kept under `~/Library/Caches/noop-handbook/releases/` and can be deleted.
+  - Usage-limit pauses (Utku's question, 12 Nov): both worker chats and this one were paused by the usage limit
+    and resumed with "try again". Checked afterwards: all three worktrees clean and equal to the fork, no
+    half-finished merge or rebase, no stray build or simulator, empty stash; and the final code was read and
+    fully tested after the last pause. No damage.
+- [ ] **Utku on the phone** — he was told on 12 Nov that the build is ready: just update (AltStore, install
+  over the existing app), then the five checks in
   [`high-hr-warning.md` §9](features/high-hr-warning.md#9-checks-on-utkus-phone-after-the-build-ships-about-10-minutes)
-  and a look at "Show everything on this screen" on Today, Sleep, Trends, Stress, Health and Workouts. Still
-  unanswered: whether he ever opened the 6 Nov build.
+  and a look at "Show everything on this screen" on Today, Sleep, Trends, Stress, Health and Workouts. He is not a
+  coder: never ask him about builds, Git or GitHub; ask only what he saw and felt, and for the strap log.
+- The two worker chats are idle and kept on purpose (they hold the context for follow-up fixes): "1 of 2: Simple
+  mode, show everything in one tap" (`local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`) and "2 of 2: High heart rate
+  warning (after 1)" (`local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`). Their worktrees under
+  `~/Developer/noop/.claude/worktrees/` (local branches `worker/…`) are clean and equal to the pushed branches;
+  archive the chats only when Utku says so.
 
 ## Earlier — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
 
@@ -538,13 +537,16 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
-- Everything built in chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone build page (see Now).
+- Everything built in chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone build (`218aec72`, see Now).
 - **First, read what Utku reports** from the phone: the five warning checks (`high-hr-warning.md` §9) and what he
-  noticed in Simple mode. A failed check is diagnosed from his strap log ("High HR warning:" lines) before any
-  code changes; the fix goes to a worker chat with a short brief, then review, stack, build.
-- **Second, GitHub Actions on the fork** (see Now): if he has fixed it, make the release whole with a normal
-  build; if not, ask what the Actions page says.
-- Then roadmap Phase B in [Simple mode](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue).
+  noticed in Simple mode. A failed check is diagnosed from his strap log ("High HR warning:" lines,
+  `tools/strap-log.py`) before any code changes. A fix is a short brief to the worker chat that has the context
+  (or a new Opus 5.5 worker), then architect review of the diff, stack, `verify.sh`, build. The architect chat
+  writes no app code (Rules, 12 Nov).
+- If all five checks pass: record the hardware evidence in `high-hr-warning.md`, then roadmap Phase B in
+  [Simple mode](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue)
+  (his daily-use reports, the first-run screen, F12, F17).
+- If a start of "Testing build (fork)" is refused again: Workflow §6, "When the workflow cannot be started".
 - PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
   while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 

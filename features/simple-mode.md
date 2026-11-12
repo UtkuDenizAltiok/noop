@@ -22,10 +22,8 @@ row no longer says "Lifting" there (one line to bring back if he wants it). The 
   `0a6f3021`, step 1 of the 12 Nov roadmap `a639d47a` `258e0bf2`. iOS + shared Mac code; no Android twin yet. Rounds 1–6
   below say what each did.
 - Stack (12 Nov): `testing-stack` `25aa5f38` (upstream `2a1de760` + our open PRs + Simple mode through `258e0bf2`
-  + #2906 + the high heart rate warning `f80aadc6`). `testing-build` `218aec72`. Phone: the iPhone file on
-  `testing-latest` is a **Mac-built** build of `218aec72`, NOOP 12.1.0 (439), uploaded and verified 12 Nov
-  because GitHub refused to start the workflow; the release's tag and its Android/macOS files are still the
-  6 Nov build `281239ad` ([State](../STATE.md) has the details and the rollback). Just update.
+  + #2906 + the high heart rate warning `f80aadc6`). Phone: `testing-latest` = `testing-build` `218aec72`, NOOP
+  12.1.0 (439), GitHub run 43264856702, verified 12 Nov by its files. Just update. Not yet seen on Utku's phone.
 - Upstream PRs (ours, all open, no maintainer comments as of 6 Nov night): #2896 tab swipe, #2897 translations,
   #2898 Info.plist, #2899 skin temp once, #2900 one sleep need, #2901 Trends "Average", #2903 plain subtitles,
   #2904 skin temp unit, #2905 sleep-debt source, #2906 wind-down uses the Sleep tab's need (Auto-fix ON, bound to
@@ -117,7 +115,7 @@ diff against its brief.
    is added as a `SimpleMoreEntry` case like the others. **One worker at a time:** two chats building and
    running the tests on this Mac at once share the simulator and the test host app, and their results cannot
    be trusted (Workflow §3).
-3. **Review, then stack + phone build** — ✓ done 12 Nov (stack `25aa5f38`, build `218aec72`, iPhone file Mac-built;
+3. **Review, then stack + phone build** — ✓ done 12 Nov (stack `25aa5f38`, build `218aec72`, run 43264856702;
    see [State](../STATE.md)). Was: the architect (or the next Start chat) reads both diffs against their
    briefs, then adds `0a6f3021`, step 1 and step 2 to `testing-stack` and ships `testing-build` ("How to work"
    above, Workflow §6). Just update. (If step 2 was built before step 1 after all, turn its Simple More row
