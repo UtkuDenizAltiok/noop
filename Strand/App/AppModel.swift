@@ -1183,9 +1183,10 @@ final class AppModel: ObservableObject {
     }
 
     /// Whether the encrypted channel is up so a confirming buzz can actually fire (the command
-    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz). The app's one answer to
-    /// "can a buzz be sent": the stress check-in, the high heart rate warning and its "Feel the buzz" button.
-    /// `connected` too, because a radio switched off sends no disconnect, so the bond flags can outlive the link.
+    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz). Read by the stress
+    /// check-in, the high heart rate warning and its "Feel the buzz" button. Breathe keeps its own copy
+    /// (`BiofeedbackController.canBuzz`, without `connected`). `connected` here because a radio switched off sends
+    /// no disconnect, so the bond flags can outlive the link.
     var canBuzz: Bool { live.connected && live.bonded && live.encryptedBond }
 
     /// Start scanning for the strap. When no model is given, use the one the user
