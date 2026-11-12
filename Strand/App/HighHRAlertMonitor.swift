@@ -45,6 +45,8 @@ final class HighHRAlertMonitor: ObservableObject {
     private var inEpisode = false
     private var episodeBuzzes = 0
     private var episodeUndeliveredLogged = false
+    /// Whether this stretch already logged that readings went too sparse to judge (once per stretch).
+    private var episodeSparseLogged = false
     /// Whether the last buzz asked for reached the strap. Read when an episode reopens inside the 4.5-s spacing.
     private var lastBuzzDelivered = false
     /// The settings the last on/off line described, so a line is written only when they change.
@@ -75,7 +77,12 @@ final class HighHRAlertMonitor: ObservableObject {
         switch decision.phase {
         case .measuring:
             // Readings thinned out mid-stretch: not over the limit, and not back under it either, so the stretch
-            // stays open and its closing line is written when the engine can judge again.
+            // stays open and its closing line is written when the engine can judge again. Said once per stretch:
+            // in the background check it tells readings that arrived too thinly apart from an app never woken.
+            if inEpisode, !episodeSparseLogged {
+                log("High HR warning: paused, too few readings to judge")
+                episodeSparseLogged = true
+            }
             setStatus(.measuring)
         case .below:
             if inEpisode {
@@ -151,6 +158,7 @@ final class HighHRAlertMonitor: ObservableObject {
         inEpisode = false
         episodeBuzzes = 0
         episodeUndeliveredLogged = false
+        episodeSparseLogged = false
     }
 
     private func setStatus(_ new: Status) {
