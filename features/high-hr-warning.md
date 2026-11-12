@@ -26,7 +26,7 @@ and costs nothing.
 | `LiveState.heartRate` is published **only when the value changes** | `BLEManager.parseStandardHR`: `if state.heartRate != m.hr { state.heartRate = m.hr }` | A `$heartRate` or `$bpm` sink does not fire on a steady heart rate, so it cannot keep an average or a 5-second rhythm. The warning needs a hook that runs on **every** readable reading. |
 | Every readable reading passes `state.noteReadableHeartRate()` (two call sites: `BLEManager.parseStandardHR`, `FrameRouter` realtime frames) | `Strand/BLE/LiveState.swift` | That function is the one funnel to hook. It has an early `return` (timer throttle): the hook call goes at its **top**. |
 | The buzz: `AppModel.buzz(loops:)` → `ble.send(.runHapticsPattern, payload: [2, loops, 0, 0, 0])`; on a 5/MG `send` remaps it to the maverick notify buzz, where `loops: N` gives N buzzes (hardware-confirmed, #926) | `AppModel.swift`, `HapticPayloads.swift` | "Two buzzes" is **one existing command with loops 2**. No new command, payload or opcode, so the BLE safety contract's issue-first rule for new commands does not apply. Only the schedule is new (as with the Haptic Clock). |
-| Commands need a bonded link; standard heart rate also flows unbonded | `AppModel.buzz` doc, `BLEManager` | Heart rate can be over the limit while no buzz can be sent. The screen and the log must say so instead of claiming a buzz. |
+| A buzz needs the **encrypted** link: `live.bonded && live.encryptedBond`. On a 5/MG `bonded` alone also goes true from the live-heart-rate shortcut while the strap is not really paired (#69), e.g. a strap still owned by the WHOOP app; heart rate flows either way | `LiveState.encryptedBond`, `AppModel.canBuzz`, `BiofeedbackController.canBuzz` | Heart rate can be over the limit while no buzz can be sent. Gate on the existing `canBuzz` rule (plus `connected`), never on `bonded` alone, and let the screen and the log say when no buzz went out. (Corrected 12 Nov: the first draft gated on `bonded` only; worker 2 caught it.) |
 | iOS suspends NOOP between Bluetooth events; each reading wakes it; timers do not fire while suspended | Rules 4, 5, 7 | No timer. The 5-second rhythm is decided **on reading arrival**. Wired at process start (`AppModel.init`), never from a screen. |
 | A swiped-away NOOP is not relaunched for Bluetooth | `features/live-hr-banner.md` §6.3 | The warning cannot work then. The screen says so. |
 | Off the wrist the strap sends WRIST_OFF then goes silent; back on, about 2–10 s of 0 bpm | same page | Unreadable readings never reach the hook. Silence means no buzz (nothing triggers one). |
@@ -161,14 +161,16 @@ screen that observes the model).
   self.highHRAlert.ingest(bpm: bpm) }`
 - In the existing `live.$heartRate` sink: `if hr == nil { self.highHRAlert.heartRateCleared() }` (use the value
   the sink is handed, Rule 6).
-- `sendBuzz = { [weak self] in guard let self, self.live.connected, self.live.bonded else { return false };
-  self.buzz(loops: HighHRAlertEngine.buzzLoops); return true }`
+- `sendBuzz = { [weak self] in guard let self, self.live.connected, self.canBuzz else { return false };
+  self.buzz(loops: HighHRAlertEngine.buzzLoops); return true }` — `canBuzz` is `AppModel`'s existing
+  `live.bonded && live.encryptedBond`; reuse it, do not write the condition a second time.
 
 **Strap-log lines (always on, changes only, never one per buzz), via `live.append(log: AppModel.stamped(…))`:**
 - `High HR warning: on (above 110 bpm for 90 s)` / `High HR warning: off`
 - `High HR warning: over the limit (90-s average 113, now 118); buzzing every 5 s`
 - `High HR warning: back under the limit (now 104, 90-s average 112) after 7 buzzes`
-- `High HR warning: over the limit but no buzz was sent (strap not connected or not bonded)` (once per episode)
+- `High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)` (once per
+  episode)
 - `High HR warning: paused, no live heart rate`
 
 Check whether `BLEManager.send` writes a log line for every command. If it does, an hour of buzzing adds about
@@ -195,7 +197,8 @@ Final English copy (every string needs all nine locales, see Simple mode → "Ho
   - "Watching. Your average over the last %@ is %lld bpm."
   - "Above your limit: average %lld bpm. Your strap is buzzing."
   - "Above your limit, but NOOP can't reach your strap to buzz it right now."
-- Button: "Feel the buzz" (sends one double buzz; disabled when not bonded)
+- Button: "Feel the buzz" (sends one double buzz; disabled unless connected and `canBuzz`, the same gate as
+  `sendBuzz`)
 - Notes: "Works while NOOP is open or running in the background with your strap connected. It can't warn you if
   you swipe NOOP away, turn Bluetooth off or leave the strap out of range." · "Each buzz uses a little strap
   battery, so switch the warning off when you don't need it." · "A training and pacing aid, not a medical alarm."
