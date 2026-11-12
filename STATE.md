@@ -3,11 +3,12 @@
 Updated **12 Nov 2026 (chat 4, architect review)**. The agent in the chat owns project execution under
 [Rules](RULES.md); since 12 Nov an architect chat plans and reviews and Opus 5.5 worker chats implement.
 
-## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (no app code changed)
+## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (app code by worker chats)
 
-Research and planning only, on Utku's instruction ("you should not implement"). Nothing was built, pushed to an
-app branch, or sent upstream; nothing is running. Every branch, the stack and the phone build are as chat 3 left
-them (checked with `checkpoint.sh status --net` and `upstream-check.sh`).
+Research, planning and review only by the architect, on Utku's instruction ("you should not implement"); the
+app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. The stack
+(`3548093b`) and the phone build (`281239ad`) are as chat 3 left them; `feat/simple-mode` moved from
+`0a6f3021` to `a639d47a` (worker 1).
 
 - [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
   23 files, read against the goal). Verdict and findings F15–F18 in
@@ -21,19 +22,36 @@ them (checked with `checkpoint.sh status --net` and `upstream-check.sh`).
 - [x] **Upstream checked:** no merge since 25 Oct (#2859), `upstream/main` still `2a1de760`, no maintainer reply
   on any of our 17 open PRs; #2747 and #2724 still CONFLICTING, the rest MERGEABLE. New rule: no new upstream PRs
   or CI retries until a maintainer answers ([Rules](RULES.md#settled-decisions)).
-- [ ] **Worker 1, brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — STARTED by Utku
-  12 Nov ~05:28 UTC as its own Opus 5.5 chat "1 of 2: Simple mode, show everything in one tap" (session
-  `local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`, worktree
-  `~/Developer/noop/.claude/worktrees/busy-wescoff-2f11bd`). Told to switch to a branch
-  `worker/simple-show-everything` cut from `origin/feat/simple-mode` and to deliver by fast-forward push to
-  `feat/simple-mode` (then `~/Developer/noop-simple` follows with `merge --ff-only`). Done when
-  `origin/feat/simple-mode` has a commit after `0a6f3021` containing `Strand/Screens/SimpleModeShowAllRow.swift`.
-- [ ] **Worker 2, high heart rate warning** — STARTED at the same time, chat "2 of 2: High heart rate warning
-  (after 1)" (session `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`, worktree
-  `~/Developer/noop/.claude/worktrees/dreamy-curran-4aa889`). Told (message delivered) to write only the
-  non-overlapping parts without compiling, wait until worker 1 has pushed, rebase onto it, then add the mounts
-  and strings, verify, and push `feat/high-hr-warning`. Done when that branch exists on the fork.
-  Neither hand-back has been read yet; a worker's report is not proof (read the diff, roadmap step 3).
+- [x] **Worker 1, brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — pushed as
+  `a639d47a` on `origin/feat/simple-mode`, directly on `0a6f3021` (Opus 5.5 chat "1 of 2", session
+  `local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`; it worked in `~/Developer/noop-simple`, which is at `a639d47a`).
+  **Architect review, 12 Nov: accepted.** The whole diff (11 files) was read against the Step 1 specification
+  and matches it on every point: one funnel (`SimpleModePrefs.isSimple`), the row as the last element of the six
+  screens in both states and absent with Simple mode off, never stored, the true caption (old key removed),
+  "Report a problem" between the guide and Settings, the More list as data with the Lift Log pinned in Training.
+  The only readers of the stored switch outside the six screens are the two tab shells, Settings and Alarms, as
+  designed. Rerun by the architect on `a639d47a`: `i18n_audit.py --ci upstream/main` OK, `doc_comment_lint.py`
+  OK. **Worker-reported, not rerun:** both builds and StrandTests (2343, 0 failures); they run again at the
+  stack step. **Still open:** the worker's simulator walk of Sleep, Trends, Stress, Health, Workouts and the
+  full view was in progress when this was written; read its hand-back for what it saw per screen.
+  - One deviation, kept (an improvement): Workouts leaves multi-select when the simple layout returns, so rows
+    cannot stay in select mode without a Done button. Filters and Current/Archived were already ignored by the
+    simple layout (`WorkoutFilter()`), so nothing hidden keeps filtering the list.
+  - One known edge, not fixed: a wearer who chose the classic Today (`noop.liquidTodayEnabled` off) gets the
+    Liquid Today whenever Simple mode is on (unchanged from Round 1), so "Show everything on this screen" shows
+    the full Liquid Today, not their classic one. Simple mode off still shows the classic Today.
+  - Watch on the phone: after "Show everything" the row moves to the foot of a much longer screen. If the way
+    back feels far, the next step is a second "Back to the simple view" row at the top while everything is shown.
+- [ ] **Worker 2, high heart rate warning** — running, chat "2 of 2: High heart rate warning (after 1)"
+  (session `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`, worktree
+  `~/Developer/noop/.claude/worktrees/dreamy-curran-4aa889`). Done when `feat/high-hr-warning` exists on the
+  fork (it did not at the time of writing). Messages sent to it, all queued, none confirmed read:
+  (1) rebase onto `a639d47a` now, but keep off the iPhone 18 Pro simulator until worker 1 says "simulator is
+  free" or the architect does; text gates, the macOS build + StrandTests and a compile-only iOS build are
+  allowed meanwhile; (2) add the warning as a new `SimpleMoreEntry` case (step 1 made that list data);
+  (3) the buzz gate is `live.connected && canBuzz` (the worker found the design's `live.bonded` too weak on a
+  5/MG; the design page §3, §6 and §7 were corrected in `6714df6e`).
+  Its hand-back has not arrived; a worker's report is not proof (read the diff, roadmap step 3).
 - [ ] **Review + stack + phone build** (roadmap step 3) — after both briefs are handed back. Also carries
   `0a6f3021` (Alarms wording), still not in the stack.
 - [ ] **Utku on the phone** — the build `281239ad` (Rounds 1–6) has still not been reported seen; after step 3,
@@ -485,12 +503,13 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
-- If the two worker branches are NOT there yet (`feat/high-hr-warning` missing on the fork, no new commit on
-  `feat/simple-mode` after `0a6f3021`): give Utku the two worker briefs again (Simple mode "Worker brief A1";
-  `high-hr-warning.md` §8). Do not implement them in an architect chat unless he says so.
-- If they are there: run the review prompt in [Sessions](SESSIONS.md#architect-and-worker-chats-since-12-nov-2026)
-  (roadmap step 3): read each diff against its brief, then stack + phone build with `0a6f3021` included, then
-  give Utku the phone checks.
+- Step 1 is done and reviewed (`a639d47a`, see Now). Only its simulator-walk hand-back is still to be read.
+- If `feat/high-hr-warning` is NOT on the fork yet: worker 2 is still running or stopped early. Open its chat
+  ("2 of 2: High heart rate warning (after 1)") and read where it is; if it is gone, give Utku the brief again
+  (`high-hr-warning.md` §8). Do not implement it in an architect chat unless he says so.
+- If it is there: run the review prompt in [Sessions](SESSIONS.md#architect-and-worker-chats-since-12-nov-2026)
+  (roadmap step 3) for that branch only: read its diff against `high-hr-warning.md`, then stack + phone build
+  with `0a6f3021`, `a639d47a` and the warning included, then give Utku the phone checks.
 - PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
   while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 
