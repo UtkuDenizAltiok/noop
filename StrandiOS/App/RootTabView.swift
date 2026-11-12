@@ -573,6 +573,7 @@ private struct FullMoreIndex: View {
             // so it can't compile or apply on iPhone. iPhone's wrist-alert controls live on the
             // Automations screen instead. Its absence from the iPhone More list is correct.
             MoreRow("Alarms", "alarm.fill", .alarms)
+            MoreRow("Heart rate warning", "bell.and.waves.left.and.right", .heartRateWarning)
             MoreRow("Automations", "wand.and.stars", .automations)
             // The Test Centre (the diagnostics + bug-report hub) gets a first-class home here, not
             // just buried in Settings, so the feedback loop is one tap from the More tab.
@@ -644,36 +645,59 @@ private struct FullMoreIndex: View {
 
 /// Simple mode's More index: the everyday screens in five short, always-open groups, then "All features"
 /// for everything else. Every row here is also in `FullMoreIndex`; Simple mode chooses, it never removes.
+///
+/// The rows are data (`SimpleMoreEntry`, `SimpleModePrefs.moreEntries`), pinned by `SimpleModeTests`: the
+/// Lift Log stays in Training. `row(_:)` and `title(_:)` are exhaustive switches, so a new entry or group
+/// cannot compile without a row on this screen.
 private struct SimpleMoreIndex: View {
     /// True while Coach is switched on but has no tab (no provider set up yet), so it stays reachable.
     let showsCoachRow: Bool
 
     var body: some View {
-        simpleSection("Your body") {
-            MoreRow("Live heart rate", "waveform.path.ecg", .live)
-            MoreRow("Health monitor", "heart.text.square.fill", .health)
-            MoreRow("Stress", "bolt.heart.fill", .stress)
-        }
-        simpleSection("Training") {
-            MoreRow("Workouts", "figure.run", .workouts)
-            MoreRow("Lift Log", "dumbbell.fill", .liftLog)
-        }
-        simpleSection("Daily tools") {
-            MoreRow("Alarms", "alarm.fill", .alarms)
-            MoreRow("Breathe", "wind", .breathe)
-            if showsCoachRow {
-                MoreRow("Coach", "sparkles", .coach)
+        let entries = SimpleModePrefs.moreEntries(showsCoachRow: showsCoachRow)
+        ForEach(SimpleMoreGroup.allCases, id: \.self) { group in
+            let groupEntries = entries.filter { $0.group == group }
+            if !groupEntries.isEmpty {
+                simpleSection(title(group)) {
+                    ForEach(groupEntries) { row($0) }
+                }
             }
         }
-        simpleSection("Your data") {
-            MoreRow("Apple Health", "heart.fill", .appleHealth)
-            MoreRow("Backup & Sync", "externaldrive.fill.badge.icloud", .backupSync)
-        }
-        simpleSection("Help") {
-            MoreRow("What the numbers mean", "questionmark.circle.fill", .plainGuide)
-            MoreRow("Settings", "gearshape.fill", .settings)
-        }
         allFeaturesRow
+    }
+
+    /// The row each entry renders as. Exhaustive: every `SimpleMoreEntry` leads somewhere.
+    @ViewBuilder
+    private func row(_ entry: SimpleMoreEntry) -> some View {
+        switch entry {
+        case .liveHeartRate: MoreRow("Live heart rate", "waveform.path.ecg", .live)
+        case .healthMonitor: MoreRow("Health monitor", "heart.text.square.fill", .health)
+        case .stress:        MoreRow("Stress", "bolt.heart.fill", .stress)
+        case .workouts:      MoreRow("Workouts", "figure.run", .workouts)
+        case .liftLog:       MoreRow("Lift Log", "dumbbell.fill", .liftLog)
+        case .alarms:        MoreRow("Alarms", "alarm.fill", .alarms)
+        case .heartRateWarning:
+            MoreRow("Heart rate warning", "bell.and.waves.left.and.right", .heartRateWarning)
+        case .breathe:       MoreRow("Breathe", "wind", .breathe)
+        case .coach:         MoreRow("Coach", "sparkles", .coach)
+        case .appleHealth:   MoreRow("Apple Health", "heart.fill", .appleHealth)
+        case .backupSync:    MoreRow("Backup & Sync", "externaldrive.fill.badge.icloud", .backupSync)
+        case .plainGuide:    MoreRow("What the numbers mean", "questionmark.circle.fill", .plainGuide)
+        // The Test Centre holds the strap log and the bug report; in the full list it sits under App.
+        case .reportProblem: MoreRow("Report a problem", "stethoscope", .testCentre)
+        case .settings:      MoreRow("Settings", "gearshape.fill", .settings)
+        }
+    }
+
+    /// Each group's overline. Exhaustive, like `row(_:)`.
+    private func title(_ group: SimpleMoreGroup) -> LocalizedStringKey {
+        switch group {
+        case .yourBody:   return "Your body"
+        case .training:   return "Training"
+        case .dailyTools: return "Daily tools"
+        case .yourData:   return "Your data"
+        case .help:       return "Help"
+        }
     }
 
     /// A titled group that is always open: with three rows or fewer each, collapsing would only add taps.
@@ -701,7 +725,7 @@ private struct SimpleMoreIndex: View {
                     Text("All features")
                         .font(StrandFont.body)
                         .foregroundStyle(StrandPalette.textPrimary)
-                    Text("Every screen and tool, exactly as before.")
+                    Text("Every screen and tool NOOP has.")
                         .font(StrandFont.caption)
                         .foregroundStyle(StrandPalette.textTertiary)
                 }
@@ -755,7 +779,7 @@ private enum MoreDestination: Hashable {
     case insightsHub, intelligence, coach, insights, explore, compare
     case live, workouts, liftLog, health, labBook, stress, breathe, intervals, rhythm
     case fusedRecord, appleHealth, miBand, dataSources, backupSync, shortcutsExport, noopLimitations
-    case alarms, automations, testCentre, siriShortcuts, powerSaving, settings
+    case alarms, heartRateWarning, automations, testCentre, siriShortcuts, powerSaving, settings
     /// Simple mode: the full grouped list, and the plain-language guide (also listed in the full view).
     case allFeatures, plainGuide
 
@@ -784,6 +808,7 @@ private enum MoreDestination: Hashable {
         case .backupSync:      BackupSyncView()
         case .shortcutsExport: ShortcutExportSettingsView()
         case .alarms:          SmartAlarmView()
+        case .heartRateWarning: HighHRAlertView()
         case .automations:     AutomationsView()
         case .testCentre:      TestCentreView()
         case .siriShortcuts:   SiriShortcutsSettingsView()

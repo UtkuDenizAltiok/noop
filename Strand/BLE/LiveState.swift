@@ -551,6 +551,10 @@ public final class LiveState: ObservableObject {
     /// Fired (live only) when the strap reports it executed its firmware alarm
     /// (STRAP_DRIVEN_ALARM_EXECUTED). Wired by AppModel to re-arm the next day's alarm.
     public var onSmartAlarmFired: (() -> Void)?
+    /// Fired for EVERY readable heart-rate reading, steady or not, from `noteReadableHeartRate(bpm:)`. `heartRate`
+    /// is published only when the value changes, so a sink on it misses a steady heart rate; a feature that keeps
+    /// an average or a rhythm (the high heart rate warning) needs every reading. Wired by AppModel.
+    public var onReadableHeartRate: ((Int) -> Void)?
 
     /// True when the stuck-strap watchdog finds the strap has newer records than us but our frontier
     /// won't advance (likely needs a manual reboot; ~never after high-freq-sync removal). Banner-only.
@@ -729,10 +733,13 @@ public final class LiveState: ObservableObject {
     private var heartRateSilenceTimer: DispatchSourceTimer?
     private var heartRateSilenceArmedAt: DispatchTime?
 
-    /// A readable heart-rate sample arrived (`BLEManager`'s standard profile, `FrameRouter`'s realtime frames): move the
-    /// silence deadline on. One timer, rescheduled at most every tenth of the wait (once a second in use), so it costs
-    /// nothing while samples flow and fires once when they stop.
-    public func noteReadableHeartRate() {
+    /// A readable heart-rate sample arrived (`BLEManager`'s standard profile, `FrameRouter`'s realtime frames): hand it
+    /// to `onReadableHeartRate`, then move the silence deadline on. One timer, rescheduled at most every tenth of the
+    /// wait (once a second in use), so it costs nothing while samples flow and fires once when they stop.
+    ///
+    /// The hook runs first because the throttle below returns early on most calls.
+    public func noteReadableHeartRate(bpm: Int) {
+        onReadableHeartRate?(bpm)
         let now = DispatchTime.now()
         let rearmNanos = UInt64(heartRateSilence / 10 * 1_000_000_000)
         if let armed = heartRateSilenceArmedAt, now.uptimeNanoseconds &- armed.uptimeNanoseconds < rearmNanos { return }

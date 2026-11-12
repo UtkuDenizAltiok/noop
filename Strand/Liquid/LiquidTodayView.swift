@@ -99,7 +99,12 @@ struct LiquidTodayView: View {
     @State private var synthesisExpanded = false
     @State private var showLiveSession = false
     /// Simple mode (`SimpleModePrefs`): the calm, fixed Today that shows each figure once and explains it.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the wearer's own full Today, with
+    /// Customize, while Simple mode stays on. Never stored; lasts until tapped back or the app restarts.
+    @State private var showAll = false
+    /// Whether Today draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
     /// The plain guide entry presented as a sheet from a Simple-mode score label (nil = closed).
     @State private var plainGuideTerm: PlainGuideTerm?
     /// Simple mode's "What's behind your Charge" rows: the same breakdown the classic Today's Charge sheet
@@ -388,6 +393,9 @@ struct LiquidTodayView: View {
                     // pinned above the reorderable block so an active manual workout is immediately visible
                     // and taps straight through to Live. Renders nothing when no workout is active.
                     ActiveWorkoutIndicatorSection()
+                    // While the high heart rate warning is on, a row says so (a forgotten warning buzzes through a
+                    // whole workout), one tap from its switch. Settings only, nothing live; nothing while it is off.
+                    HighHRAlertTodayRow()
                     // Simple mode: a fixed, calm order that shows each figure once and explains it. It reads
                     // none of the full view's layout prefs, so switching it off restores the wearer's own
                     // arrangement below untouched (see `SimpleModePrefs`).
@@ -436,10 +444,17 @@ struct LiquidTodayView: View {
                         AutoWorkoutCard()
                         dataSourcesSection
                     }
+                    // The last element while Simple mode is on, in both states, so what the calm Today leaves
+                    // out is one tap away here. Absent in the full view.
+                    if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
                     Color.clear.frame(height: 90) // floating tab-bar clearance
                 }
                 .padding(.horizontal, NoopMetrics.screenHPadding)
                 .padding(.top, 30) // sit the title lower into the sky, not jammed under the status bar
+                // Lets content return Today to its top (`ScrollScreenToTopAction`); unused unless called.
+                .environment(\.scrollScreenToTop, ScrollScreenToTopAction {
+                    proxy.scrollTo(Self.topAnchorID, anchor: .top)
+                })
             }
             #if os(macOS)
             // Keep the phone-shaped column readable + centred on the wide mac detail pane. The sky is a

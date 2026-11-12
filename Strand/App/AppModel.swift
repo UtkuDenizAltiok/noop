@@ -189,6 +189,11 @@ final class AppModel: ObservableObject {
     /// (and any host) surfaces the pending nudge. Owned here so the central hook can reach it. (v5 L3)
     let stressNudgeCenter = StressNudgeCenter()
 
+    /// The high heart rate warning: buzzes the strap while the average heart rate stays above the wearer's limit.
+    /// Fed every readable reading from `live.onReadableHeartRate` (wired in init, so it also runs with no screen
+    /// built). Its own observable, not a `@Published` here: only the card's status line watches it.
+    let highHRAlert = HighHRAlertMonitor()
+
     private var lastDoubleTapAt: Date = .distantPast
     private var lastCoachZone: Int = -1
     // L3 stress-onset detector state: a rolling R-R buffer + the replay-safe detector state (persisted
@@ -288,6 +293,8 @@ final class AppModel: ObservableObject {
         live.$heartRate.sink { [weak self] hr in
             guard let self else { return }
             self.ingestHR(heartRate: hr, rr: self.live.rr)
+            // The value being written, not `live.heartRate` (still the old one in willSet).
+            if hr == nil { self.highHRAlert.heartRateCleared() }
         }.store(in: &hrCancellables)
         live.$rr.sink { [weak self] rr in
             guard let self else { return }
@@ -307,6 +314,18 @@ final class AppModel: ObservableObject {
         // Physical-input + wear hooks (fired live by FrameRouter).
         live.onDoubleTap = { [weak self] in self?.handleDoubleTap() }
         live.onWristChange = { [weak self] worn in self?.handleWristChange(worn) }
+        // The high heart rate warning (wired here, at process start, so it runs in the background with no screen).
+        // Every readable reading from a worn strap, steady or not; the strap-log lines are its own, stamped here.
+        live.onReadableHeartRate = { [weak self] bpm in
+            guard let self, self.live.worn else { return }
+            self.highHRAlert.ingest(bpm: bpm)
+        }
+        highHRAlert.log = { [weak self] line in self?.live.append(log: AppModel.stamped(line)) }
+        highHRAlert.sendBuzz = { [weak self] in
+            guard let self, self.canBuzz else { return false }
+            self.buzz(loops: HighHRAlertEngine.buzzLoops)
+            return true
+        }
         // Re-arm the next day's firmware alarm the moment the strap reports it fired (if/when the
         // firmware pushes STRAP_DRIVEN_ALARM_EXECUTED). Gated on enabled inside applySmartAlarm.
         live.onSmartAlarmFired = { [weak self] in
@@ -1164,8 +1183,11 @@ final class AppModel: ObservableObject {
     }
 
     /// Whether the encrypted channel is up so a confirming buzz can actually fire (the command
-    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz).
-    private var canBuzz: Bool { live.bonded && live.encryptedBond }
+    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz). Read by the stress
+    /// check-in, the high heart rate warning and its "Feel the buzz" button. Breathe keeps its own copy
+    /// (`BiofeedbackController.canBuzz`, without `connected`). `connected` here because a radio switched off sends
+    /// no disconnect, so the bond flags can outlive the link.
+    var canBuzz: Bool { live.connected && live.bonded && live.encryptedBond }
 
     /// Start scanning for the strap. When no model is given, use the one the user
     /// picked (persisted under "selectedWhoopModel"), so every scan entry point ,

@@ -1492,6 +1492,9 @@ struct TodayView: View {
                 // #2467 wanted Today's Start to arrive WITH the recording-plus-coaching merge, and only the
                 // button was built, so Today held both of the entry points the report was about.
                 ActiveWorkoutIndicatorSection()
+                // While the high heart rate warning is on, a row says so, one tap from its switch (the same leaf as
+                // the liquid Home). Nothing while it is off.
+                HighHRAlertTodayRow()
                 // The "still building" and "new here?" prompts are about getting today's scores going,
                 // so they stay anchored to today rather than reappearing on every navigated past day.
                 if selectedDayOffset == 0 && repo.today?.recovery == nil {

@@ -61,6 +61,9 @@ struct AutomationsView: View {
             hapticsCard
             wearCard
             coachingCard
+            // The high heart rate warning: the same card as its own screen (More → Heart rate warning), bound to the
+            // same keys, so the two places cannot disagree.
+            HighHRAlertCard()
             // #766: the strap's silent wake-alarm card used to sit here, which let users conflate it with
             // the wind-down reminder. It's moved to the dedicated Alarms screen (SmartAlarmView) so every
             // wake/wind-down control lives in one place. Automations is just inputs-to-actions now.

@@ -153,7 +153,12 @@ struct SleepView: View {
     }
     /// Simple mode (`SimpleModePrefs`): a fixed, short Sleep tab that leads with the night. It never reads
     /// or writes the full view's Sleep layout, so switching it off restores the wearer's own arrangement.
-    @AppStorage(SimpleModePrefs.storageKey) private var simpleMode = SimpleModePrefs.defaultEnabled
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the wearer's own full Sleep tab, with
+    /// sleep marks, the body clock and Customize, while Simple mode stays on. Never stored.
+    @State private var showAll = false
+    /// Whether Sleep draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
 
     var body: some View {
         // Resolve the memoized model for THIS render. `dataKey` is O(1)-ish (counts + last-row
@@ -338,6 +343,9 @@ struct SleepView: View {
                     await repo.refresh()
                 }
             }
+            // The last element while Simple mode is on, in both states, so what the calm Sleep tab leaves out
+            // is one tap away here. Absent in the full view.
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
     }
 
