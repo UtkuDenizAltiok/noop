@@ -1,14 +1,15 @@
 # State
 
-Updated **12 Nov 2026 (chat 4, architect review)**. The agent in the chat owns project execution under
+Updated **12 Nov 2026 (end of chat 4: architect review, two worker chats, phone build)**. The agent in the chat owns project execution under
 [Rules](RULES.md); since 12 Nov an architect chat plans and reviews and Opus 5.5 worker chats implement.
 
 ## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (app code by worker chats)
 
 Research, planning and review only by the architect, on Utku's instruction ("you should not implement"); the
-app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. The stack
-(`3548093b`) and the phone build (`281239ad`) are as chat 3 left them; `feat/simple-mode` moved from
-`0a6f3021` to `258e0bf2` (worker 1, two commits).
+app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. At the end of chat 4:
+`feat/simple-mode` `258e0bf2`, `feat/high-hr-warning` `f80aadc6`, `testing-stack` `25aa5f38`, `testing-build`
+`218aec72`; the iPhone file on `testing-latest` is a Mac-built build of `218aec72` (see the shipped item below).
+**Open problem for Utku: GitHub refuses to start workflows on the fork** (below).
 
 - [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
   23 files, read against the goal). Verdict and findings F15–F18 in
@@ -47,18 +48,49 @@ app code is written by two Opus 5.5 worker chats Utku started (below). Nothing w
   - Watch on the phone: after "Show everything" the row moves to the foot of a much longer screen. If the way
     back feels far, the next step is a second "Back to the simple view" row at the top while everything is shown.
     (Going back now lands at the top of the simple view, `258e0bf2`.)
-- [ ] **Worker 2, high heart rate warning** — pushed `feat/high-hr-warning` (`a2f9547e`..`e20a03fc`, on
-  `a639d47a`); chat "2 of 2: High heart rate warning (after 1)" (session
-  `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`). **Architect review, 12 Nov: accepted, five small corrections
-  sent back** (first message delivered and its turn started; the "merge, do not rebase" follow-up queued):
-  merge `258e0bf2` in, a "too few readings to judge" log line with a test, a true comment on `canBuzz`, a
-  caption under a disabled "Feel the buzz", the Today row on design tokens. Full record in
-  [`high-hr-warning.md` §11](features/high-hr-warning.md#11-review-record-architect-12-nov). Done when
-  `origin/feat/high-hr-warning` has commits after `e20a03fc` containing that log line; then read that delta only.
-- [ ] **Review + stack + phone build** (roadmap step 3) — after both briefs are handed back. Also carries
-  `0a6f3021` (Alarms wording), still not in the stack.
-- [ ] **Utku on the phone** — the build `281239ad` (Rounds 1–6) has still not been reported seen; after step 3,
-  the five warning checks in `high-hr-warning.md` §9.
+- [x] **Worker 2, high heart rate warning** — `feat/high-hr-warning` `a2f9547e`..`f80aadc6` (it contains
+  `feat/simple-mode` `258e0bf2` by a merge commit). **Architect review: accepted.** The first hand-back
+  (`e20a03fc`) was read line by line against the design; five small corrections went back and all five were
+  checked in the second hand-back (`7d9df421`, `8e78fdb3`, `f80aadc6`): the "too few readings to judge" log line
+  with its test, a true comment on `canBuzz`, the caption under a disabled "Feel the buzz" (nine locales), the
+  Today row on design tokens. Record: [`high-hr-warning.md` §11](features/high-hr-warning.md#11-review-record-architect-12-nov).
+- [x] **Stack rebuilt and verified** — `testing-stack` `3548093b` → `25aa5f38` (fast-forward): `0a6f3021`,
+  `a639d47a`, `258e0bf2` and the eight warning commits cherry-picked, the string catalogue merged on keys
+  (`xcmerge.py`). Proven equal to the reviewed branches: the code changes are line-for-line `610c3505..f80aadc6`
+  and all 27 new catalogue keys are identical. `verify.sh` on `25aa5f38`: every step passed (WhoopStore 645,
+  StrandAnalytics 2160, StrandImport 327 with 1 skip, doc lint, i18n, parity ledger/ratchet/governance 127,
+  macOS tests **2395, 0 failures, 2 skips**, iOS simulator build). Also: the workflow's own iPhone build
+  (Release, `generic/platform=iOS`) succeeded locally, and the whole `Tools/` suite passed on a clean checkout
+  (341 tests). Logs: `~/Library/Caches/noop-handbook/verify/25aa5f38`.
+- [x] **Phone build shipped by the Mac-built route, 12 Nov** — `testing-build` `281239ad` → `218aec72` (merge
+  commit over the old tip; tree = stack + `fork/ships-template`). **"Testing build (fork)" could not be started:**
+  `gh workflow run` answered twice `HTTP 422: Actions has been disabled for this repository`, while
+  `repos/…/actions/permissions` says `enabled: true`, the workflow is `active`, GitHub status was all green and
+  the last run (6 Nov, 42280019994) had succeeded. The cause is not visible through the API. So the iPhone file
+  was made here: the verified Release build of `25aa5f38`, packaged with the workflow's own steps (Watch folder
+  removed, `Tools/prepare-ios-sideload-app.sh`, zip), and uploaded over the old file on `testing-latest`.
+  - Checked: same bundle id, App Group, entitlements, version 12.1.0 (439), 87 files and 10 languages as the
+    6 Nov file; the new German strings are inside; download HTTP 200 and sha256
+    `8542256d5c46430e616b1abf3418270bf5c8cee040a0a70c7ce5eb2add694755` equal to the local file.
+  - **The one difference:** built with Xcode 27.2 (iOS 27.2 SDK); every earlier phone build came from GitHub's
+    Xcode 26.6 (iOS 26.5 SDK). If something unrelated to today's changes looks or behaves differently on the
+    phone, suspect this first.
+  - **The release is mixed and its title and notes say so:** the tag and target are still `281239ad`, and the
+    Android, macOS and template files are the 6 Nov ones. `ship-build.sh`'s "target equals the build commit"
+    check does not hold until a normal workflow run recreates the release.
+  - Rollback: the 6 Nov iPhone file is kept at
+    `~/Library/Caches/noop-handbook/releases/2026-11-06-281239ad/` (sha256 `831fac8e…`); upload it with
+    `gh release upload testing-latest … --clobber`. The new file is beside it under `2026-11-12-218aec72-mac-built/`.
+- [ ] **Utku: GitHub Actions on the fork.** Open `https://github.com/UtkuDenizAltiok/noop/actions` and
+  `…/settings/actions` in a browser and read what GitHub says (a banner, a button to enable workflows, or a
+  notice on the account). Nothing here may change that setting for him. Until it works: no "Testing build
+  (fork)", no Android CI on the fork, and phone builds only by the Mac-built route above. Once it works: run
+  `bash dist/tools/ship-build.sh testing-stack` by the merge-commit route (Workflow §6) so the release is whole
+  again.
+- [ ] **Utku on the phone** — just update (AltStore, install over the existing app). Then the five checks in
+  [`high-hr-warning.md` §9](features/high-hr-warning.md#9-checks-on-utkus-phone-after-the-build-ships-about-10-minutes)
+  and a look at "Show everything on this screen" on Today, Sleep, Trends, Stress, Health and Workouts. Still
+  unanswered: whether he ever opened the 6 Nov build.
 
 ## Earlier — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
 
@@ -506,14 +538,13 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
-- Step 1 is done and reviewed (`a639d47a` + `258e0bf2`, see Now).
-- The warning is built and reviewed up to `e20a03fc`; five small corrections are with worker 2. If
-  `origin/feat/high-hr-warning` has no commit after `e20a03fc` yet, open its chat and read where it is. If it
-  has: read only that delta against `high-hr-warning.md` §11.
-- Then stack + phone build (roadmap step 3): `feat/high-hr-warning` contains `feat/simple-mode` once
-  `258e0bf2` is merged in, so one merge of it into `testing-stack` carries `0a6f3021`, step 1 and the warning.
-  Utku has not yet said who makes the build (the architect here or a worker); ask once. Then give him the
-  five phone checks (`high-hr-warning.md` §9).
+- Everything built in chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone build page (see Now).
+- **First, read what Utku reports** from the phone: the five warning checks (`high-hr-warning.md` §9) and what he
+  noticed in Simple mode. A failed check is diagnosed from his strap log ("High HR warning:" lines) before any
+  code changes; the fix goes to a worker chat with a short brief, then review, stack, build.
+- **Second, GitHub Actions on the fork** (see Now): if he has fixed it, make the release whole with a normal
+  build; if not, ask what the Actions page says.
+- Then roadmap Phase B in [Simple mode](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue).
 - PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
   while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 

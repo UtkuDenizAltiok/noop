@@ -166,6 +166,18 @@ check `git rev-parse "${M}^{tree}"` equals the rebuilt tree, `git push origin "$
 release checks by hand. In zsh always brace the variable: `"$M:refs/…"` applies zsh's `:r` modifier and mangles
 the refspec ("src refspec … does not match any").
 
+**When the workflow cannot be started** (12 Nov 2026: `gh workflow run` answered `HTTP 422: Actions has been
+disabled for this repository` although the repository's Actions permission read `enabled: true`): do not try
+to change the setting; tell Utku, who alone can see GitHub's notice. The iPhone file can still be made here:
+after `verify.sh`, build `NOOPiOS` in Release for `generic/platform=iOS` with the workflow's flags, copy the
+`.app`, remove its `Watch` folder, run `Tools/prepare-ios-sideload-app.sh` on it, zip it as
+`Payload/NOOP.app` into `NOOP-ios-unsigned-v<version>.ipa`, compare it with the release's current file
+(bundle id, App Group, entitlements, file count), keep the old file under
+`~/Library/Caches/noop-handbook/releases/`, then `gh release upload testing-latest … --clobber`, download it
+back and compare sha256, and say in the release title and notes which file is from which commit. Two limits:
+this Mac's Xcode is newer than the workflow's (27.2 against 26.6 on 12 Nov), and the Android and macOS files
+stay old, so the next normal run must recreate the release.
+
 **Just update or wipe and reinstall from zero:** state the installation choice explicitly in future sessions and
 release instructions. "Just update" means install over the existing app (AltStore), never delete it first —
 deleting NOOP erases everything it stored on the phone, history and strap log included. Just update for UI, logic,

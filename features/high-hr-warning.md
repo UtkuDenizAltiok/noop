@@ -1,9 +1,10 @@
 # High heart rate warning — design and worker brief
 
 Asked for by Utku on 12 Nov 2026. Designed by the architect chat the same day (research only, no app code
-written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`e20a03fc`),
-reviewed and accepted by the architect 12 Nov with five small corrections sent back (§11). Not yet on the
-phone; the buzz and the background behaviour are unproven until §9 is run on the strap.**
+written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`f80aadc6`),
+reviewed and accepted by the architect 12 Nov (§11), in `testing-stack` `25aa5f38` and in the iPhone file
+on `testing-latest` since 12 Nov. The buzz and the background behaviour are unproven until §9 is run on
+the strap.**
 
 ## 1. What Utku asked for
 
@@ -279,7 +280,8 @@ pinned by a test).
 - With live streaming on, readings arrive about three times a second, so the rhythm is 4.5–4.8 s, not 5.
   Accepted: not noticeable on the wrist, and exact 5 s would need a second rule.
 
-**Sent back to worker 2 (small, same branch):** merge `258e0bf2` in (no rebase: this Mac refuses force-pushes);
-the "too few readings to judge" log line with a test; a true comment on `canBuzz`; the caption under a disabled
-"Feel the buzz"; the Today row on the same `NoopMetrics` tokens as `SimpleModeShowAllRow`. Done when
-`origin/feat/high-hr-warning` has commits after `e20a03fc` containing that log line.
+**Sent back to worker 2 and done (checked in `7d9df421`, `8e78fdb3`, `f80aadc6`):** `258e0bf2` merged in (no
+rebase: this Mac refuses force-pushes); the "too few readings to judge" log line with a test (once per
+stretch); a true comment on `canBuzz`; the caption under a disabled "Feel the buzz" in nine locales; the
+Today row on the same `NoopMetrics` tokens as `SimpleModeShowAllRow`. Worker-reported after the
+corrections: 2,368 tests, 0 failures. On the stack the architect's own run: 2,395 tests, 0 failures.

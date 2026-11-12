@@ -21,9 +21,11 @@ row no longer says "Lifting" there (one line to bring back if he wants it). The 
   v4 `6f073301` `a00000db` `74182550`, v5 `5050c8f3` `9060515b`, Round 6 `256a2dc4` `c94f3260` `610c3505`
   `0a6f3021`, step 1 of the 12 Nov roadmap `a639d47a` `258e0bf2`. iOS + shared Mac code; no Android twin yet. Rounds 1–6
   below say what each did.
-- Stack: `testing-stack` `3548093b` (upstream `2a1de760` + our open PRs + Simple mode through `610c3505` + #2906).
-  **`0a6f3021` (Alarms wording) and `a639d47a` `258e0bf2` (show everything) are NOT in it yet.** Phone: `testing-latest` = `testing-build` `281239ad`, NOOP
-  12.1.0 (439), verified 6 Nov night (run 42280019994). Just update. Not yet seen on Utku's phone.
+- Stack (12 Nov): `testing-stack` `25aa5f38` (upstream `2a1de760` + our open PRs + Simple mode through `258e0bf2`
+  + #2906 + the high heart rate warning `f80aadc6`). `testing-build` `218aec72`. Phone: the iPhone file on
+  `testing-latest` is a **Mac-built** build of `218aec72`, NOOP 12.1.0 (439), uploaded and verified 12 Nov
+  because GitHub refused to start the workflow; the release's tag and its Android/macOS files are still the
+  6 Nov build `281239ad` ([State](../STATE.md) has the details and the rollback). Just update.
 - Upstream PRs (ours, all open, no maintainer comments as of 6 Nov night): #2896 tab swipe, #2897 translations,
   #2898 Info.plist, #2899 skin temp once, #2900 one sleep need, #2901 Trends "Average", #2903 plain subtitles,
   #2904 skin temp unit, #2905 sleep-debt source, #2906 wind-down uses the Sleep tab's need (Auto-fix ON, bound to
@@ -108,14 +110,15 @@ diff against its brief.
 
 **Phase A — make what exists complete and put it on the phone**
 1. **Nothing lost, one tap away (F15)** — ✓ done by worker 1 as `a639d47a` + `258e0bf2` on `feat/simple-mode`, reviewed and
-   accepted by the architect 12 Nov (review notes in [State](../STATE.md)). Not yet in the stack or on the phone.
-2. **High heart rate warning** — built by worker 2 (`e20a03fc`), reviewed and accepted 12 Nov with five small
-   corrections sent back ([review record](high-hr-warning.md#11-review-record-architect-12-nov)). [`high-hr-warning.md`](high-hr-warning.md), its own brief. On
+   accepted by the architect 12 Nov (review notes in [State](../STATE.md)). In the stack and the phone build since 12 Nov.
+2. **High heart rate warning** — ✓ built by worker 2 (`f80aadc6`), reviewed and accepted 12 Nov; the five small
+   corrections sent back are done ([review record](high-hr-warning.md#11-review-record-architect-12-nov)). [`high-hr-warning.md`](high-hr-warning.md), its own brief. On
    `feat/high-hr-warning`, branched from `feat/simple-mode` **after step 1 is pushed**, so its Simple More row
    is added as a `SimpleMoreEntry` case like the others. **One worker at a time:** two chats building and
    running the tests on this Mac at once share the simulator and the test host app, and their results cannot
    be trusted (Workflow §3).
-3. **Review, then stack + phone build** — the architect (or the next Start chat) reads both diffs against their
+3. **Review, then stack + phone build** — ✓ done 12 Nov (stack `25aa5f38`, build `218aec72`, iPhone file Mac-built;
+   see [State](../STATE.md)). Was: the architect (or the next Start chat) reads both diffs against their
    briefs, then adds `0a6f3021`, step 1 and step 2 to `testing-stack` and ships `testing-build` ("How to work"
    above, Workflow §6). Just update. (If step 2 was built before step 1 after all, turn its Simple More row
    into a `SimpleMoreEntry` case here and merge the catalogue by key with `dist/tools/xcmerge.py`.)
