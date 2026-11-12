@@ -8,7 +8,7 @@ Updated **12 Nov 2026 (chat 4, architect review)**. The agent in the chat owns p
 Research, planning and review only by the architect, on Utku's instruction ("you should not implement"); the
 app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. The stack
 (`3548093b`) and the phone build (`281239ad`) are as chat 3 left them; `feat/simple-mode` moved from
-`0a6f3021` to `a639d47a` (worker 1).
+`0a6f3021` to `258e0bf2` (worker 1, two commits).
 
 - [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
   23 files, read against the goal). Verdict and findings F15–F18 in
@@ -32,8 +32,12 @@ app code is written by two Opus 5.5 worker chats Utku started (below). Nothing w
   The only readers of the stored switch outside the six screens are the two tab shells, Settings and Alarms, as
   designed. Rerun by the architect on `a639d47a`: `i18n_audit.py --ci upstream/main` OK, `doc_comment_lint.py`
   OK. **Worker-reported, not rerun:** both builds and StrandTests (2343, 0 failures); they run again at the
-  stack step. **Still open:** the worker's simulator walk of Sleep, Trends, Stress, Health, Workouts and the
-  full view was in progress when this was written; read its hand-back for what it saw per screen.
+  stack step. **Follow-up `258e0bf2`, also reviewed and
+  accepted:** the worker's simulator walk found that "Back to the simple view" left a blank page on the
+  lazily built screens; the row now scrolls the screen to its top first (`ScrollScreenToTopAction` in
+  `ScreenScaffold` and `LiquidTodayView`). Its hand-back: all six screens walked (simple, full, back), Simple
+  More and Simple mode off checked, 2343 tests, 0 failures. Not checked by it: the Workouts multi-select
+  guard (the demo data has no selectable workouts).
   - One deviation, kept (an improvement): Workouts leaves multi-select when the simple layout returns, so rows
     cannot stay in select mode without a Done button. Filters and Current/Archived were already ignored by the
     simple layout (`WorkoutFilter()`), so nothing hidden keeps filtering the list.
@@ -42,16 +46,15 @@ app code is written by two Opus 5.5 worker chats Utku started (below). Nothing w
     the full Liquid Today, not their classic one. Simple mode off still shows the classic Today.
   - Watch on the phone: after "Show everything" the row moves to the foot of a much longer screen. If the way
     back feels far, the next step is a second "Back to the simple view" row at the top while everything is shown.
-- [ ] **Worker 2, high heart rate warning** — running, chat "2 of 2: High heart rate warning (after 1)"
-  (session `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`, worktree
-  `~/Developer/noop/.claude/worktrees/dreamy-curran-4aa889`). Done when `feat/high-hr-warning` exists on the
-  fork (it did not at the time of writing). Messages sent to it, all queued, none confirmed read:
-  (1) rebase onto `a639d47a` now, but keep off the iPhone 18 Pro simulator until worker 1 says "simulator is
-  free" or the architect does; text gates, the macOS build + StrandTests and a compile-only iOS build are
-  allowed meanwhile; (2) add the warning as a new `SimpleMoreEntry` case (step 1 made that list data);
-  (3) the buzz gate is `live.connected && canBuzz` (the worker found the design's `live.bonded` too weak on a
-  5/MG; the design page §3, §6 and §7 were corrected in `6714df6e`).
-  Its hand-back has not arrived; a worker's report is not proof (read the diff, roadmap step 3).
+    (Going back now lands at the top of the simple view, `258e0bf2`.)
+- [ ] **Worker 2, high heart rate warning** — pushed `feat/high-hr-warning` (`a2f9547e`..`e20a03fc`, on
+  `a639d47a`); chat "2 of 2: High heart rate warning (after 1)" (session
+  `local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`). **Architect review, 12 Nov: accepted, five small corrections
+  sent back** (first message delivered and its turn started; the "merge, do not rebase" follow-up queued):
+  merge `258e0bf2` in, a "too few readings to judge" log line with a test, a true comment on `canBuzz`, a
+  caption under a disabled "Feel the buzz", the Today row on design tokens. Full record in
+  [`high-hr-warning.md` §11](features/high-hr-warning.md#11-review-record-architect-12-nov). Done when
+  `origin/feat/high-hr-warning` has commits after `e20a03fc` containing that log line; then read that delta only.
 - [ ] **Review + stack + phone build** (roadmap step 3) — after both briefs are handed back. Also carries
   `0a6f3021` (Alarms wording), still not in the stack.
 - [ ] **Utku on the phone** — the build `281239ad` (Rounds 1–6) has still not been reported seen; after step 3,
@@ -503,13 +506,14 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
-- Step 1 is done and reviewed (`a639d47a`, see Now). Only its simulator-walk hand-back is still to be read.
-- If `feat/high-hr-warning` is NOT on the fork yet: worker 2 is still running or stopped early. Open its chat
-  ("2 of 2: High heart rate warning (after 1)") and read where it is; if it is gone, give Utku the brief again
-  (`high-hr-warning.md` §8). Do not implement it in an architect chat unless he says so.
-- If it is there: run the review prompt in [Sessions](SESSIONS.md#architect-and-worker-chats-since-12-nov-2026)
-  (roadmap step 3) for that branch only: read its diff against `high-hr-warning.md`, then stack + phone build
-  with `0a6f3021`, `a639d47a` and the warning included, then give Utku the phone checks.
+- Step 1 is done and reviewed (`a639d47a` + `258e0bf2`, see Now).
+- The warning is built and reviewed up to `e20a03fc`; five small corrections are with worker 2. If
+  `origin/feat/high-hr-warning` has no commit after `e20a03fc` yet, open its chat and read where it is. If it
+  has: read only that delta against `high-hr-warning.md` §11.
+- Then stack + phone build (roadmap step 3): `feat/high-hr-warning` contains `feat/simple-mode` once
+  `258e0bf2` is merged in, so one merge of it into `testing-stack` carries `0a6f3021`, step 1 and the warning.
+  Utku has not yet said who makes the build (the architect here or a worker); ask once. Then give him the
+  five phone checks (`high-hr-warning.md` §9).
 - PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
   while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 
