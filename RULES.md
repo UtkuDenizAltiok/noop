@@ -63,6 +63,26 @@ request an export without a defined need. Give enough explanation to understand 
   refused `gh pr create`, `gh pr close`/`reopen` on our PRs and the Auto-fix switch until he said yes in chat.
   When it blocks, explain the block once in plain words and name the permission rule that would allow it;
   never try to work around it.
+- **Architect and workers (Utku, 12 Nov 2026).** The most capable model in the chat (Claude Fable 5.2 on
+  12 Nov) is the architect: it researches, checks earlier work, decides the roadmap, writes the design and the
+  worker briefs, and reviews what comes back. It does not write app code. **Opus 5.5 worker chats implement**,
+  one brief each, on the branch the brief names, and hand back a pushed, verified branch with an honest list of
+  what could not be verified and where they left the brief. Nothing reaches the testing stack or the phone
+  before the diff has been read against its brief. Briefs live in the handbook next to their design
+  ([Simple mode](features/simple-mode.md), [High heart rate warning](features/high-hr-warning.md)); the
+  prompts are in [Sessions](SESSIONS.md). "Codex/ChatGPT" in older entries means whichever agent runs the chat.
+- **High heart rate warning (Utku, 12 Nov 2026).** The wearer sets a heart rate and a duration (his example:
+  110 bpm for 90 s); while the average over that time is above the limit the strap buzzes twice every 5 s. An
+  average, so a wrong reading neither starts nor stops it. A switch the wearer turns on and off, default off.
+  Design, decisions and the phone checks: [`features/high-hr-warning.md`](features/high-hr-warning.md).
+- **No new upstream PRs while upstream is quiet (architect, 12 Nov 2026).** Upstream's last merge was 25 Oct
+  and none of our 17 open PRs has a maintainer reply. More PRs, or more close-and-reopen CI retries, would only
+  add notifications. Work goes to the fork and the phone; ready upstream fixes wait in the Simple mode diary.
+  Lift this the first time a maintainer answers. "Upstream moves fast" below describes September–October.
+- **Hidden is not removed only when it is one tap away (architect, 12 Nov 2026).** A Simple-mode screen may hide
+  a card or a tool only if the same screen offers "Show everything on this screen". Sending the wearer to the
+  app-wide Simple mode switch to reach a working tool (PDF export, filters, merge, sleep marks) counts as
+  removing it (finding F15).
 - **The Lift Log stays fully available in Simple mode (Utku, 6 Nov 2026, night).** It is his own feature (gym
   sessions with records and taps, which he built and got merged upstream). Simple mode must never hide, shorten or
   restyle any part of it: the More → Training entry, the whole `LiftLogView`, the active-session bar, its Lock

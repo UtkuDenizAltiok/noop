@@ -14,7 +14,7 @@ in Simple mode. Checked 6 Nov: More → Training → Lift Log (Simple list, `Roo
 features; `LiftLogView` has no Simple-mode branch; the active-session bar (`LiftSessionBar`) sits at the app root in
 both modes; Settings keeps "Lift Log session" (Live notifications) and the lifting-friendly Effort switch (Banister,
 in Units) open in Simple mode. Only cosmetic difference: Simple Workouts hides every row's source badge, so a lifting
-row no longer says "Lifting" there (one line to bring back if he wants it). A guard test is queue item 2 below.
+row no longer says "Lifting" there (one line to bring back if he wants it). The guard test is part of roadmap step 1 below.
 
 **Where things are (6 Nov 2026, night, end of chat 3):**
 - `feat/simple-mode` (worktree `~/Developer/noop-simple`, pushed): v1 `ee74a4a1`, v2 `6dca7333`, v3 `5269b8a6`,
@@ -66,39 +66,120 @@ row no longer says "Lifting" there (one line to bring back if he wants it). A gu
 - Foundation's `String(format:locale:)` rounds ties half-to-even (finding 16): round half away from zero first for
   any one-decimal figure shared with Android. Verify citations before writing them.
 
-**First 20 minutes of the next chat (carryover, in order):**
-1. Start procedure (`bash dist/tools/checkpoint.sh status --net`, `bash dist/tools/upstream-check.sh`). If upstream
-   moved, check our PR branches still merge (#2906 vs #2900 and #2700 overlap by one line each) and fast-forward the
-   fork's `main`.
-2. PR care: comments on all ten PRs (#2896–#2906), answer each once. Retry the no-runner legs (#2896–#2900, #2906)
-   ONCE at a quiet hour (close + reopen, one at a time); verify every job on the head. #2906's Auto-fix watch is
-   bound to chat 3's session: in the new chat bind it again (`ccd_pr bind_pr` with its URL) and turn Auto-fix on
-   only with Utku's yes (the switch asks him).
-3. Ask Utku (once, simply) whether he updated and what he noticed on Today / Workouts / Settings / the Tonight row.
+**Checked again 12 Nov 2026 (chat 4, architect review):** every branch, the stack and the phone build are exactly
+as listed above; nothing is running. **Upstream has been quiet since 25 Oct** (last merge #2859; `upstream/main`
+still `2a1de760`); our 17 open PRs (#2896–#2906 and seven older ones) have no maintainer reply. So: **no new
+upstream PRs and no more close/reopen retries until a maintainer answers one of them** (Rules, 12 Nov). Ready
+upstream fixes wait in the diary below.
 
-**Keep going: the next improvements, in order** (one bounded step at a time, each verified and shipped):
-1. **Stack + phone build with `0a6f3021`** (Alarms wording), plus whatever the next steps add.
-2. **Lift Log guard test:** make the Simple More list data (e.g. `SimpleModePrefs.moreRows` read by
-   `RootTabView`) and pin in `SimpleModeTests` that it contains `.liftLog`, so no future Simple change can drop it.
-3. **F12 efficiency (Rule 1, measure first):** Simple Today still loads data only hidden sections use (Key Metrics
-   sparks, Your Cards) and Simple Stress still computes Advanced HRV (`freqHRV`, `stressIndex` in `loadDaytime`).
-   Skip them in Simple mode; CPU before/after with the simulator `ps` method (Workflow §11); full view unchanged.
-4. **UPSTREAM F1 + F13 in one PR:** the false "Still learning your baseline" readiness line (both platforms) and Apple
-   reading today's key in `ReadinessEngine.evaluate` like Android; tests on both sides.
-5. **First run / What's new in plain words** (plan step 6) for Simple mode.
-6. **UPSTREAM small fixes**, one per PR: F2 ("Last night" for a two-day-old score), F3 (Health "Recovery
-   contributors" duplicate + 14-day vs 4-night footnote), F5 (Sleep ring "of 100" contrast), F6 (Stress chips
-   truncate), plus the redundant "Settings" overline on every Settings card.
-7. **Android twin of Simple mode** + `noop.simpleMode` in the `.noopbak` whitelist on both platforms; then propose
-   Simple mode upstream, default OFF (#2463). The Tonight row needs #2906 merged first.
-8. **F11 audit** (one-decimal figures by twin oracle), then the Backlog biometric queue (evidence first).
+### Audit verdict (12 Nov, the whole Simple mode diff read against the goal)
 
-**Done so far (the plan, for reference):** Today v5 (Round 5); wind-down need fix #2906 + Tonight row, Simple
-Workouts, Simple Settings, Alarms wording (Round 6); Sleep, Trends, Stress, Health (Rounds 2–4). Live stays as is.
+The work is sound: presentation only, every number from the code the full view uses, one resolver per fact
+(sleep need, Effort range, Tonight times), tested, and the full view untouched. The Lift Log is whole. One real
+gap and three smaller ones:
 
-Each step: build NOOPiOS + Strand, StrandTests, i18n gate (translations for all nine locales via the insertion
-script), doc lint, Tools tests; simulator check in Simple and full view; then the testing stack + phone build
-(Workflow §6). Tell Utku what he will notice.
+- **F15 (the real gap, fork, fix first): hidden things are NOT one tap away.** Every simplified screen reads the
+  one global switch, so the parts it hides can only be seen by turning Simple mode off for the whole app. That
+  includes working tools, not just extra charts: Trends' PDF export and training-load chart, Workouts' filters,
+  search and multi-select (merge, bulk delete), Sleep's manual sleep marks and body clock, Stress's Advanced HRV,
+  Health's records and sources links, Today's Customize. Opening one of these screens from More → All features
+  shows the simplified screen again, so the caption there, "Every screen and tool, exactly as before.", is not
+  true. This breaks the project's own rule ("the detail one tap away") and Utku's ("nothing important lost").
+  Fix: step 1 below.
+- **F16 (UPSTREAM candidate, iOS):** the "Enable wrist alerts" help says "Off keeps the strap quiet no matter
+  what else is on", but HR-zone coaching (`AppModel.coachZone`) buzzes without reading that switch. Say what the
+  switch really covers, or make it cover everything. Read in code only; not checked on a strap.
+- **F17 (verify before acting):** when the Charge ring carries an earlier day, the "What's behind your Charge"
+  rows come from that earlier day but the "Rest" row is fed the Rest score now on screen
+  (`ChargeBreakdownWiring.breakdown(… row: priorScored ?? day, sleepPerfPercent: restScore)`), which can be a
+  different night. Check what the classic Charge sheet passes; if it is the same, it is an upstream candidate.
+- **F18 (upstream, low):** `LiveSessionRunner` says it ticks on every heart-rate reading in the background, but
+  the reading is published only when its value changes, so a steady heart rate gives it no tick. Found while
+  designing the high heart rate warning; relevant only to Live Sessions (beta).
+- **Not yet seen on a real phone.** All of Simple mode has been checked in the simulator only. Rule 12 says real
+  use finds what matters: Utku's first days with it outrank every list here.
+
+### The roadmap (architect's decision, 12 Nov; replaces the earlier queue)
+
+How the work is done now (Rules, 12 Nov): the architect chat plans, writes briefs and reviews; **Opus 5.5 worker
+chats implement** one brief each and hand back a pushed branch; nothing ships to the phone before a review of the
+diff against its brief.
+
+**Phase A — make what exists complete and put it on the phone**
+1. **Nothing lost, one tap away (F15)** — worker brief A1 below. On `feat/simple-mode`.
+2. **High heart rate warning** — [`high-hr-warning.md`](high-hr-warning.md), its own brief. On
+   `feat/high-hr-warning`, branched from `feat/simple-mode`. Independent of step 1 (can run at the same time in
+   its own worktree; both add catalogue strings, merge them by key with `dist/tools/xcmerge.py`).
+3. **Review, then stack + phone build** — the architect (or the next Start chat) reads both diffs against their
+   briefs, then adds `0a6f3021`, step 1 and step 2 to `testing-stack` and ships `testing-build` ("How to work"
+   above, Workflow §6). Just update. When both are in, the warning's Simple More row becomes a
+   `SimpleMoreEntry` case like the others (step 1 turns that list into data).
+4. **Utku on the phone:** the five checks in `high-hr-warning.md` §9, and what he notices in daily use.
+   Ask him once, simply: what confused him, what he missed, what felt wrong.
+
+**Phase B — from real use**
+5. **Whatever Utku reports** comes before everything below.
+6. **First run / What's new in plain words** for Simple mode (one screen: what the three scores are, where
+   everything else went, how to get the full app back).
+7. **F12 efficiency (Rule 1, measure first):** Simple Today still loads data only hidden sections use (Key
+   Metrics sparks, Your Cards) and Simple Stress still computes Advanced HRV (`freqHRV`, `stressIndex` in
+   `loadDaytime`). Skip them in Simple mode (and load them when "Show everything" is tapped); CPU before/after
+   with the simulator method (Workflow §11); full view unchanged.
+8. **F17** check, then fix where it belongs.
+
+**Phase C — upstream, when it is active again** (check at every Start; do nothing while it is quiet)
+9. Answer any maintainer comment once; rebase #2747/#2724 only when a maintainer engages.
+10. Then, one small PR each, a few at a time: F1 + F13 together (both platforms), F2, F3, F5, F6, F16, the
+    redundant "Settings" overline.
+11. The high heart rate warning: an issue first, with the phone evidence from step 4.
+
+**Phase D — Android and the proposal**
+12. Android twin of Simple mode + `noop.simpleMode` in the `.noopbak` whitelist on both platforms, then propose
+    Simple mode upstream, default OFF (#2463). Only after Phases A–B settle and upstream is active: nobody here
+    can test Android on a strap, so every Kotlin change runs in fork CI and says so.
+
+**Phase E — measurement quality**
+13. F11 audit (one-decimal figures by twin oracle), then the Backlog biometric queue (evidence first, Rules 2–3).
+
+**Done so far (for reference):** Today v5 (Round 5); wind-down need fix #2906 + Tonight row, Simple Workouts,
+Simple Settings, Alarms wording (Round 6); Sleep, Trends, Stress, Health (Rounds 2–4). Live stays as is.
+
+### Worker brief A1 — "Nothing lost, one tap away" (copy this to an Opus 5.5 chat)
+
+```text
+You are an implementation worker for NOOP in ~/Developer/noop. Read AGENTS.md, dist/AGENTS.md and dist/RULES.md, then "How to work" and "Step 1 specification" in dist/features/simple-mode.md, and implement that specification exactly on the existing branch feat/simple-mode in its worktree ~/Developer/noop-simple. Do not redesign it: if the code contradicts the page, stop and report instead of improvising. Never hide, shorten or restyle any part of the Lift Log. Verify before you finish: NOOPiOS simulator build, Strand macOS build, StrandTests (every new test seen to fail once), Tools/i18n_audit.py --ci upstream/main, Tools/doc_comment_lint.py, the Tools unittest suite, and a simulator walk through Today, Sleep, Trends, Stress, Health and Workouts in Simple mode: tap "Show everything on this screen" on each, confirm the full layout appears, tap "Back to the simple view", and confirm the full view (Simple mode off) is unchanged. Commit and push the branch. Do NOT touch testing-stack, testing-build or any upstream PR. Hand back: the commit ids, the exact test counts, anything you could not verify, and every place where you had to deviate from the page and why.
+```
+
+### Step 1 specification
+
+- **One funnel.** `SimpleModePrefs.isSimple(stored: Bool, showingAll: Bool) -> Bool` (`stored && !showingAll`),
+  unit-tested. In each of `LiquidTodayView`, `SleepView`, `TrendsView`, `StressView`, `HealthView`,
+  `WorkoutsView`: rename the stored `@AppStorage` property to `simpleModeStored`, add
+  `@State private var showAll = false` and `private var simpleMode: Bool { SimpleModePrefs.isSimple(stored:
+  simpleModeStored, showingAll: showAll) }`. Every existing `simpleMode` read then follows by itself, including
+  the `.task(id:)` strings that already carry it, so data the full layout needs is loaded when the row is tapped.
+  `SettingsView` and `SmartAlarmView` are not changed (Settings already has "More settings"; Alarms only rewords).
+- **One row.** New shared view `SimpleModeShowAllRow(showingAll: Binding<Bool>)` in
+  `Strand/Screens/SimpleModeShowAllRow.swift` (design tokens only, the look of the "All features" row). Collapsed:
+  title "Show everything on this screen", caption "The full version, with every card and tool." Expanded: title
+  "Back to the simple view", no caption. It is the LAST element of each of the six screens whenever
+  `simpleModeStored` is true (so it is there in both states), and absent when Simple mode is off.
+- **It stays until tapped back** (or the app restarts). No auto-reset on leaving the screen: a reset on
+  `onDisappear` would also fire when a detail screen is pushed, and the wearer would come back to a different
+  layout.
+- **Today:** with `showAll` the wearer's own full layout renders (their saved order, Key Metrics, Your Cards, Data
+  sources) and the Customize button returns.
+- **A true caption.** In `SimpleMoreIndex.allFeaturesRow` replace "Every screen and tool, exactly as before."
+  with the existing string "Every screen and tool NOOP has." (already translated; remove the old key if nothing
+  else uses it).
+- **Help when something is wrong.** Simple More → Help gains "Report a problem" (`stethoscope`) → the Test Centre,
+  between the guide and Settings: the strap log lives there and was three taps and a collapsed group away.
+- **Lift Log guard (Utku's rule).** Make the Simple More list data: in `SimpleModePrefs`, an enum
+  `SimpleMoreEntry` (one case per row, with its group) that `SimpleMoreIndex` renders through an exhaustive
+  `switch` to `MoreDestination`. `SimpleModeTests` pins that the entries contain `.liftLog` in the Training
+  group, and that every entry is rendered (the exhaustive switch makes a forgotten row a compile error).
+- **Tests:** `isSimple` truth table; the Lift Log pin; the entry list has no duplicates. New strings (4): all
+  nine locales.
 
 **Ask Utku for** (only when useful): screenshots of anything confusing on the iPhone 16 Plus; whether the
 suggested Effort range feels right on real days; a strap log if a number looks wrong.
@@ -119,6 +200,8 @@ over weeks, whether things are improving; and, rarely but importantly, a warning
 - No lab metrics, provenance, betas or duplicate cards in Simple mode; they stay in the full view and All
   features. Short sentences, but complete: what it is, whether it is good, what to do.
 - Simple mode should also do less work: do not compute what it does not show (measure before claiming).
+- **Whatever a screen hides is one tap away on that same screen** (12 Nov, F15): each simplified screen ends
+  with "Show everything on this screen". Hiding a working tool behind the app-wide switch counts as removing it.
 
 **Show / emphasize / hide, screen by screen** (✓ done, → next):
 | Screen | Show and emphasize | Hide in Simple (still in full view) |

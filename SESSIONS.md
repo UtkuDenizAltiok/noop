@@ -35,6 +35,19 @@ In this prepared NOOP chat, follow dist/SESSIONS.md's Deep search procedure. Thi
 Finish this NOOP session for a new chat with no previous conversation context. Follow dist/SESSIONS.md's end procedure. Do not stop immediately: finish the active task, its running jobs and essential existing follow-up, including required verification, PR responses and testing delivery where applicable. Do not open unrelated tasks or revive parked work. Park unfinished work only when safe completion is genuinely prevented, and preserve the exact reason and recovery action. Save code, evidence, decisions and job recovery details; mark completed, pending, deferred and blocked work honestly. Update and upload the handbook, verify the handover from saved files and current state, and leave one exact next safe action with its scope. Explain what is saved, what remains and whether a fresh chat is safe. End with simple numbered next steps for me.
 ```
 
+## Architect and worker chats (since 12 Nov 2026)
+
+[Rules](RULES.md#settled-decisions) set the split: an architect chat plans and reviews, Opus 5.5 worker chats
+implement. Each brief is a ready prompt kept beside its design, so there is one copy:
+[Simple mode → Worker brief A1](features/simple-mode.md#worker-brief-a1--nothing-lost-one-tap-away-copy-this-to-an-opus-55-chat)
+and [High heart rate warning → Worker brief](features/high-hr-warning.md#8-worker-brief-copy-this-to-an-opus-55-chat).
+A worker does one brief, on the branch it names, and never touches the testing stack, the phone build or an
+upstream PR. Review prompt for the architect chat (or the next Start chat):
+
+```text
+Review the worker branches named in dist/features/simple-mode.md "The roadmap" step 3. For each, read the whole diff against its brief and design page, run the verification the brief lists, and list every deviation, missing test and unverified claim. Fix nothing silently: send small corrections back as a short worker brief. When both pass, follow step 3 (stack, phone build), update and upload the handbook, and tell me what to check on my phone. End with simple numbered next steps for me.
+```
+
 ## Deep research requirements
 
 Use the chat already prepared by Start. Do not rerun the complete start procedure for each prompt. Refresh the

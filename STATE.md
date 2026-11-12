@@ -1,8 +1,36 @@
 # State
 
-Updated **6 Nov 2026 (night, end of chat 3)**. ChatGPT/Codex owns project execution under [Rules](RULES.md).
+Updated **12 Nov 2026 (chat 4, architect review)**. The agent in the chat owns project execution under
+[Rules](RULES.md); since 12 Nov an architect chat plans and reviews and Opus 5.5 worker chats implement.
 
-## Now — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
+## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (no app code changed)
+
+Research and planning only, on Utku's instruction ("you should not implement"). Nothing was built, pushed to an
+app branch, or sent upstream; nothing is running. Every branch, the stack and the phone build are as chat 3 left
+them (checked with `checkpoint.sh status --net` and `upstream-check.sh`).
+
+- [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
+  23 files, read against the goal). Verdict and findings F15–F18 in
+  [Simple mode → Audit verdict](features/simple-mode.md#audit-verdict-12-nov-the-whole-simple-mode-diff-read-against-the-goal).
+  The one real gap (F15): parts a simplified screen hides are reachable only by switching Simple mode off for
+  the whole app, and the "All features" caption claims otherwise.
+- [x] **Roadmap replaced** (Phases A–E) in [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue).
+- [x] **High heart rate warning designed** (Utku's request, 12 Nov): [`features/high-hr-warning.md`](features/high-hr-warning.md)
+  — behaviour, the facts it rests on, the exact averaging rule with test cases, files, final copy, worker brief
+  and five phone checks.
+- [x] **Upstream checked:** no merge since 25 Oct (#2859), `upstream/main` still `2a1de760`, no maintainer reply
+  on any of our 17 open PRs; #2747 and #2724 still CONFLICTING, the rest MERGEABLE. New rule: no new upstream PRs
+  or CI retries until a maintainer answers ([Rules](RULES.md#settled-decisions)).
+- [ ] **Worker brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — not started. Branch
+  `feat/simple-mode`, worktree `~/Developer/noop-simple`.
+- [ ] **Worker brief: high heart rate warning** — not started. New branch `feat/high-hr-warning` from
+  `feat/simple-mode`, new worktree `~/Developer/noop-hrwarn`.
+- [ ] **Review + stack + phone build** (roadmap step 3) — after both briefs are handed back. Also carries
+  `0a6f3021` (Alarms wording), still not in the stack.
+- [ ] **Utku on the phone** — the build `281239ad` (Rounds 1–6) has still not been reported seen; after step 3,
+  the five warning checks in `high-hr-warning.md` §9.
+
+## Earlier — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
 
 Parked on Utku's request (high context). Everything is committed, pushed and verified; nothing is running. The
 next chat starts from [Simple mode → Start here](features/simple-mode.md#start-here-next-chat) ("First 20
@@ -447,10 +475,15 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 
 ## Next safe action
 
-**Continue the human-friendly NOOP project from [Simple mode, "Start here"](features/simple-mode.md#start-here-next-chat).**
-First: check #2906's CI (every job on head `eb0391a0`) and new comments on all ten PRs. The phone build `281239ad` is verified (just update); add `0a6f3021` at the next stack rebuild. PR care (retry
-#2896–#2900 once at a quiet hour if still red). Then plan step 2b: the Simple Sleep "Tonight" line; then F12
-(Simple mode skips loading what it hides, measured) and F1+F13 together upstream.
+**Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
+- If the two worker branches are NOT there yet (`feat/high-hr-warning` missing on the fork, no new commit on
+  `feat/simple-mode` after `0a6f3021`): give Utku the two worker briefs again (Simple mode "Worker brief A1";
+  `high-hr-warning.md` §8). Do not implement them in an architect chat unless he says so.
+- If they are there: run the review prompt in [Sessions](SESSIONS.md#architect-and-worker-chats-since-12-nov-2026)
+  (roadmap step 3): read each diff against its brief, then stack + phone build with `0a6f3021` included, then
+  give Utku the phone checks.
+- PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
+  while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 
 Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
 WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;
