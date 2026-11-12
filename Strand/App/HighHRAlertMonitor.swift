@@ -33,7 +33,8 @@ final class HighHRAlertMonitor: ObservableObject {
 
     /// Writes one line to the strap log. `AppModel` stamps it with the time.
     var log: (String) -> Void
-    /// Sends the double buzz; false when it could not be sent (strap not connected or not paired).
+    /// Sends the double buzz; false when it could not be sent (strap not connected or not fully paired:
+    /// `AppModel.canBuzz`).
     var sendBuzz: () -> Bool
 
     private let defaults: UserDefaults
@@ -135,12 +136,6 @@ final class HighHRAlertMonitor: ObservableObject {
         loggedSettings = prefs
     }
 
-    /// Whether a buzz can reach the strap now. The ONE answer for both the warning's own buzz (`sendBuzz`) and the
-    /// card's "Feel the buzz" button, so the button can never be offered while the warning reports it cannot buzz.
-    static func strapCanBuzz(_ live: LiveState) -> Bool {
-        live.connected && live.bonded
-    }
-
     private func switchedOff() {
         engine.reset()
         endEpisode()
@@ -148,7 +143,7 @@ final class HighHRAlertMonitor: ObservableObject {
     }
 
     private func logUndelivered() {
-        log("High HR warning: over the limit but no buzz was sent (strap not connected or not bonded)")
+        log("High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)")
         episodeUndeliveredLogged = true
     }
 

@@ -306,7 +306,7 @@ final class HighHRAlertMonitorTests: XCTestCase {
         let monitor = hrWarnMonitorFixture(enabled: true)
         hrWarnFeedMonitor(monitor, 0...120, bpm: 120)
         XCTAssertEqual(monitor.status, .alerting(average: 120, buzzDelivered: false))
-        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit but no buzz was sent (strap not connected or not bonded)"])
+        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)"])
 
         hrWarnStrapReachable = true
         hrWarnFeedMonitor(monitor, 121...125, bpm: 120)

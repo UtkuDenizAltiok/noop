@@ -322,7 +322,7 @@ final class AppModel: ObservableObject {
         }
         highHRAlert.log = { [weak self] line in self?.live.append(log: AppModel.stamped(line)) }
         highHRAlert.sendBuzz = { [weak self] in
-            guard let self, HighHRAlertMonitor.strapCanBuzz(self.live) else { return false }
+            guard let self, self.canBuzz else { return false }
             self.buzz(loops: HighHRAlertEngine.buzzLoops)
             return true
         }
@@ -1183,8 +1183,10 @@ final class AppModel: ObservableObject {
     }
 
     /// Whether the encrypted channel is up so a confirming buzz can actually fire (the command
-    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz).
-    private var canBuzz: Bool { live.bonded && live.encryptedBond }
+    /// characteristic is gated on bond; an un-encrypted live-HR-only link can't buzz). The app's one answer to
+    /// "can a buzz be sent": the stress check-in, the high heart rate warning and its "Feel the buzz" button.
+    /// `connected` too, because a radio switched off sends no disconnect, so the bond flags can outlive the link.
+    var canBuzz: Bool { live.connected && live.bonded && live.encryptedBond }
 
     /// Start scanning for the strap. When no model is given, use the one the user
     /// picked (persisted under "selectedWhoopModel"), so every scan entry point ,
