@@ -63,6 +63,12 @@ request an export without a defined need. Give enough explanation to understand 
   refused `gh pr create`, `gh pr close`/`reopen` on our PRs and the Auto-fix switch until he said yes in chat.
   When it blocks, explain the block once in plain words and name the permission rule that would allow it;
   never try to work around it.
+- **Utku is not a coder (his words, 12 Nov 2026).** "I am not a coder and not a frequent GitHub user… it's your
+  job and decision to do what is needed." So: never give him a building, Git or GitHub choice, and never report
+  in those terms. Decide and do it. Ask him only for what he can see or feel (the phone, the strap, a strap
+  log) or for one plain click when only his account can do it ("open this page and tell me what it says"). He
+  starts testing only after being told plainly that the build is ready. The architect also reviews, stacks,
+  verifies and ships the phone build itself (he answered "Yes, build it"); only app code goes to workers.
 - **Architect and workers (Utku, 12 Nov 2026).** The most capable model in the chat (Claude Fable 5.2 on
   12 Nov) is the architect: it researches, checks earlier work, decides the roadmap, writes the design and the
   worker briefs, and reviews what comes back. It does not write app code. **Opus 5.5 worker chats implement**,
