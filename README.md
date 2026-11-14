@@ -3,7 +3,7 @@
 Project memory for [UtkuDenizAltiok/noop](https://github.com/UtkuDenizAltiok/noop), forked from
 [ryanbr/noop](https://github.com/ryanbr/noop). Local path: `~/Developer/noop/dist`; Git branch: `handbook`.
 
-**Start here: [session prompts and procedure](SESSIONS.md).** Start prepares a new chat and resolves carryover;
+**Start here: [session prompts and procedure](SESSIONS.md)** (the next chat uses "New architect chat" there). Start prepares a new chat and resolves carryover;
 then use a task prompt, Deep improvement or Deep search. Finish completes active work and prepares the handover.
 
 | Need | Read |
@@ -21,6 +21,8 @@ then use a task prompt, Deep improvement or Deep search. Finish completes active
 | REA suitability, WHOOP protocol research and outreach | [REA assessment](audits/rea-whoop-2026-10-09/README.md) |
 | Completed work and dated test results | [History](HISTORY.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md) |
+| How Simple mode got here (4 Nov request, Rounds 1–7, findings) | [Simple mode diary](features/simple-mode-diary.md) |
+| The long State page as it stood until 14 Nov (dated evidence of chats 1–4) | [State archive](archive/state-until-2026-11-14.md) |
 | On the phone, checked on the strap: the strap buzzes while the heart rate stays above a limit | [High heart rate warning](features/high-hr-warning.md) |
 | **Current focus:** Simple mode v6, the most user-friendly NOOP (Utku, 14 Nov) | [Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop) |
 | Agent entry | [AGENTS.md](AGENTS.md) |
@@ -31,7 +33,8 @@ then use a task prompt, Deep improvement or Deep search. Finish completes active
 - **App checkout:** upstream source and docs; `main` stays an exact upstream mirror. See the app's `AGENTS.md` and `docs/`.
 - **PR worktrees:** one per open PR, identified in State and `git worktree list`. Existing worktrees are siblings of the
   app checkout; Codex-managed worktrees may live under `~/.codex/worktrees/`. Install local entries after adding one.
-- **Handbook:** these public Markdown pages, `features/` contracts, `audits/` and `tools/`. Local and GitHub copies are the same
+- **Handbook:** these public Markdown pages, `features/` contracts, `audits/`, `archive/` (retired long pages, kept
+  unchanged) and `tools/`. Local and GitHub copies are the same
   branch. One subject has one authoritative home; use links instead of repeating instructions or active status.
 - **Private evidence:** ignored `dist/private/` for drafts, raw logs and local reports. Health data and datasets stay
   local. No separate agent-memory files.

@@ -1,0 +1,563 @@
+# State archive (until 14 Nov 2026)
+
+The full State page as it stood on 14 Nov 2026, moved here unchanged when State was rewritten as a short
+current-facts page. Dated record of chats 1–4 (phone installs, PR evidence, release checks, local evidence).
+Links inside it are relative to the handbook root, so a few may need `../` when followed from here.
+
+---
+
+# State
+
+Updated **14 Nov 2026 (end of chat 4: reviews, phone build, warning checked on the strap, Utku's new Simple mode direction)**. The agent in the chat owns project execution under
+[Rules](RULES.md); since 12 Nov an architect chat plans and reviews and Opus 5.5 worker chats implement.
+
+## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (app code by worker chats)
+
+Research, planning and review only by the architect, on Utku's instruction ("you should not implement"); the
+app code is written by two Opus 5.5 worker chats Utku started (below). Nothing was sent upstream. At the end of chat 4:
+`feat/simple-mode` `258e0bf2`, `feat/high-hr-warning` `f80aadc6`, `testing-stack` `25aa5f38`, `testing-build`
+`218aec72`, and `testing-latest` is GitHub's own build of `218aec72` (run 43264856702, all five files from
+12 Nov). Everything is committed, pushed and verified; nothing is running. **Waiting only for Utku's phone
+checks.**
+
+- [x] **Whole Simple mode diff audited** (`feat/simple-mode` `0a6f3021` against `upstream/main` `2a1de760`,
+  23 files, read against the goal). Verdict and findings F15–F18 in
+  [Simple mode → Audit verdict](features/simple-mode.md#audit-verdict-12-nov-the-whole-simple-mode-diff-read-against-the-goal).
+  The one real gap (F15): parts a simplified screen hides are reachable only by switching Simple mode off for
+  the whole app, and the "All features" caption claims otherwise.
+- [x] **Roadmap replaced** (Phases A–E) in [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue).
+- [x] **High heart rate warning designed** (Utku's request, 12 Nov): [`features/high-hr-warning.md`](features/high-hr-warning.md)
+  — behaviour, the facts it rests on, the exact averaging rule with test cases, files, final copy, worker brief
+  and five phone checks.
+- [x] **Upstream checked:** no merge since 25 Oct (#2859), `upstream/main` still `2a1de760`, no maintainer reply
+  on any of our 17 open PRs; #2747 and #2724 still CONFLICTING, the rest MERGEABLE. New rule: no new upstream PRs
+  or CI retries until a maintainer answers ([Rules](RULES.md#settled-decisions)).
+- [x] **Worker 1, brief A1 (F15 fix, Lift Log guard, true caption, "Report a problem")** — pushed as
+  `a639d47a` on `origin/feat/simple-mode`, directly on `0a6f3021` (Opus 5.5 chat "1 of 2", session
+  `local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`; it worked in `~/Developer/noop-simple`, which is at `a639d47a`).
+  **Architect review, 12 Nov: accepted.** The whole diff (11 files) was read against the Step 1 specification
+  and matches it on every point: one funnel (`SimpleModePrefs.isSimple`), the row as the last element of the six
+  screens in both states and absent with Simple mode off, never stored, the true caption (old key removed),
+  "Report a problem" between the guide and Settings, the More list as data with the Lift Log pinned in Training.
+  The only readers of the stored switch outside the six screens are the two tab shells, Settings and Alarms, as
+  designed. Rerun by the architect on `a639d47a`: `i18n_audit.py --ci upstream/main` OK, `doc_comment_lint.py`
+  OK. **Worker-reported, not rerun:** both builds and StrandTests (2343, 0 failures); they run again at the
+  stack step. **Follow-up `258e0bf2`, also reviewed and
+  accepted:** the worker's simulator walk found that "Back to the simple view" left a blank page on the
+  lazily built screens; the row now scrolls the screen to its top first (`ScrollScreenToTopAction` in
+  `ScreenScaffold` and `LiquidTodayView`). Its hand-back: all six screens walked (simple, full, back), Simple
+  More and Simple mode off checked, 2343 tests, 0 failures. Not checked by it: the Workouts multi-select
+  guard (the demo data has no selectable workouts).
+  - One deviation, kept (an improvement): Workouts leaves multi-select when the simple layout returns, so rows
+    cannot stay in select mode without a Done button. Filters and Current/Archived were already ignored by the
+    simple layout (`WorkoutFilter()`), so nothing hidden keeps filtering the list.
+  - One known edge, not fixed: a wearer who chose the classic Today (`noop.liquidTodayEnabled` off) gets the
+    Liquid Today whenever Simple mode is on (unchanged from Round 1), so "Show everything on this screen" shows
+    the full Liquid Today, not their classic one. Simple mode off still shows the classic Today.
+  - Watch on the phone: after "Show everything" the row moves to the foot of a much longer screen. If the way
+    back feels far, the next step is a second "Back to the simple view" row at the top while everything is shown.
+    (Going back now lands at the top of the simple view, `258e0bf2`.)
+- [x] **Worker 2, high heart rate warning** — `feat/high-hr-warning` `a2f9547e`..`f80aadc6` (it contains
+  `feat/simple-mode` `258e0bf2` by a merge commit). **Architect review: accepted.** The first hand-back
+  (`e20a03fc`) was read line by line against the design; five small corrections went back and all five were
+  checked in the second hand-back (`7d9df421`, `8e78fdb3`, `f80aadc6`): the "too few readings to judge" log line
+  with its test, a true comment on `canBuzz`, the caption under a disabled "Feel the buzz" (nine locales), the
+  Today row on design tokens. Record: [`high-hr-warning.md` §11](features/high-hr-warning.md#11-review-record-architect-12-nov).
+- [x] **Stack rebuilt and verified** — `testing-stack` `3548093b` → `25aa5f38` (fast-forward): `0a6f3021`,
+  `a639d47a`, `258e0bf2` and the eight warning commits cherry-picked, the string catalogue merged on keys
+  (`xcmerge.py`). Proven equal to the reviewed branches: the code changes are line-for-line `610c3505..f80aadc6`
+  and all 27 new catalogue keys are identical. `verify.sh` on `25aa5f38`: every step passed (WhoopStore 645,
+  StrandAnalytics 2160, StrandImport 327 with 1 skip, doc lint, i18n, parity ledger/ratchet/governance 127,
+  macOS tests **2395, 0 failures, 2 skips**, iOS simulator build). Also: the workflow's own iPhone build
+  (Release, `generic/platform=iOS`) succeeded locally, and the whole `Tools/` suite passed on a clean checkout
+  (341 tests). Logs: `~/Library/Caches/noop-handbook/verify/25aa5f38`.
+- [x] **Phone build shipped and verified, 12 Nov** — `testing-build` `281239ad` → `218aec72` (merge commit over
+  the old tip; tree = stack + `fork/ships-template`). "Testing build (fork)" run 43264856702: meta, ios, macos and
+  android all succeeded. Verified by the files, not the title: release target = `218aec72…`; five files, all
+  uploaded 12 Nov; the `.ipa` downloads (HTTP 200, sha256 `9ab8d1b3…`), is built with GitHub's usual Xcode 26.6
+  (iOS 26.5 SDK), has the same bundle id, App Group, entitlements, 87 files and version 12.1.0 (439) as the 6 Nov
+  one, and carries the new German strings ("Alles auf diesem Bildschirm zeigen", "Warnung bei hohem Puls").
+  **Just update.**
+  - What happened on the way: the first two attempts to start the workflow were refused (`HTTP 422: Actions has
+    been disabled for this repository`, while the API read `enabled: true`). For about an hour the release carried
+    a Mac-built `.ipa` (Xcode 27.2, sha256 `8542256d…`) uploaded by hand; Utku had not installed it. He then
+    clicked "re-enable" on the fork's Actions page and the normal run replaced the whole release. The Mac-built
+    route is written down in [Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone) for the next time. Both `.ipa`
+    files of that hour are kept under `~/Library/Caches/noop-handbook/releases/` and can be deleted.
+  - Usage-limit pauses (Utku's question, 12 Nov): both worker chats and this one were paused by the usage limit
+    and resumed with "try again". Checked afterwards: all three worktrees clean and equal to the fork, no
+    half-finished merge or rebase, no stray build or simulator, empty stash; and the final code was read and
+    fully tested after the last pause. No damage.
+- [x] **High heart rate warning checked on Utku's WHOOP 5.0** (12 and 14 Nov): all five checks pass on the
+  strap-log evidence; two small follow-ups W1 (settings lines flood the log) and W2 (on/off at the limit).
+  [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov).
+  His logs: `dist/private/strap-logs/` (local only).
+- [ ] **Simple mode v6, Utku's new direction (14 Nov):** Simple mode is only *simpler*; it must become the most
+  user-friendly NOOP, decided as coach, physiologist, doctor and developer, never by deleting information.
+  He asked that design and building wait for the next chat on Fable 5.2. Starts from
+  [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop);
+  rule in [Rules](RULES.md#settled-decisions). Not started: no design written, no code changed.
+- The two worker chats are idle and kept on purpose (they hold the context for follow-up fixes): "1 of 2: Simple
+  mode, show everything in one tap" (`local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`) and "2 of 2: High heart rate
+  warning (after 1)" (`local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`). Their worktrees under
+  `~/Developer/noop/.claude/worktrees/` (local branches `worker/…`) are clean and equal to the pushed branches;
+  archive the chats only when Utku says so.
+
+## Earlier — chat 3, 6 Nov: Simple mode Rounds 5–6 and #2906 (parked cleanly for a new chat)
+
+Parked on Utku's request (high context). Everything is committed, pushed and verified; nothing is running. The
+next chat starts from [Simple mode → Start here](features/simple-mode.md#start-here-next-chat) ("First 20
+minutes", then "Keep going: the next improvements"). New standing rule: the Lift Log stays fully available in
+Simple mode ([Rules](RULES.md#settled-decisions)).
+
+
+- [x] **Today v5 built and verified on the branch:** `feat/simple-mode` `5050c8f3` ("Your day" with the suggested
+  Effort range and progress, one "Last night" line shared with Simple Sleep, top-3 Charge readings, F8) and
+  `9060515b` (F14: date under a carried Rest ring). Details and verification in
+  [Simple mode, Round 5](features/simple-mode.md#round-5-6-nov-2026-evening-today-v5-the-top-answers-three-questions).
+- [x] **Phone build verified, 6 Nov evening:** `testing-stack` = `c72fad03` (fast-forward from `af4a35d2`: v5 as
+  `9d7ad9d8` + F14 as `c72fad03`; catalogue merged by key with `xcmerge.py`, 18 keys added, none lost). Stack checks
+  before pushing: iPhone Release build green, StrandTests 2353 green (2 skipped as before), i18n exit 0, doc lint
+  clean, parity acceptance 50 OK. `testing-build` = `fc57000f` (merge commit over `5f63e6fa` with the tree of stack +
+  `fork/ships-template`, pushed as a fast-forward, tree checked equal). Run
+  [42242460602](https://github.com/UtkuDenizAltiok/noop/actions/runs/42242460602): meta, ios, macos, android all
+  success. Release `testing-latest` (id 436657179) targets `fc57000f`, five assets, IPA HTTP 200, NOOP 12.1.0 (439),
+  `com.noopapp.noop`; the IPA's en/de catalogues contain the v5 strings ("Your day" / "Dein Tag"). **Just update.**
+  Not yet seen on Utku's phone.
+- [ ] **Upstream PR opened 6 Nov evening, on Utku's explicit yes:** [#2906](https://github.com/ryanbr/noop/pull/2906)
+  the wind-down nudge uses the Sleep tab's need (F9, plan step 2a), branch `fix/wind-down-sleep-need` head
+  `eb0391a0` (worktree `~/Developer/noop-winddown`, one commit on `upstream/main` `2a1de760`). Read back: OPEN,
+  MERGEABLE, right head, full body (4,363 chars, includes the fork Android CI link). Upstream CI started at once
+  (no approval gate); bound to this session, Auto-fix ON (Utku's yes, 6 Nov evening). Verified before opening: NOOPiOS build, StrandTests 2306 green (4 new
+  `WindDownSleepNeedTests`), i18n exit 0, doc lint, Tools 338, parity 50, oracle (28 inputs, Swift stdout pasted in
+  `WindDownSleepNeedTest.kt`), fork Android CI
+  [42258465615](https://github.com/UtkuDenizAltiok/noop/actions/runs/42258465615) green. The first `gh pr create`
+  was refused by the safety check ("Create Public Surface") until Utku said yes. Body source:
+  `dist/private/pr-drafts/wind-down-sleep-need.md`. The fork also has a superseded branch
+  `fix/wind-down-one-sleep-need` (`c16dd475` + a test fix; amending it was refused as destructive): same content,
+  never a PR; delete it when convenient. Overlaps: #2700 (one Apple Alarms copy line) and our #2900 (one line in
+  `SleepModelLogic.kt`, resolved in the stack); whoever lands second needs a one-line rebase. Upstream CI on
+  `eb0391a0`: NOOPiOS, Android, i18n, doc comments, Tools all success; the macOS `Strand` leg CANCELLED with no
+  runner (0 steps); comment posted and read back (issuecomment-6693087675).
+- [x] **Round 6 phone build verified, 6 Nov night (Tonight row, Simple Workouts, Simple Settings):** `feat/simple-mode`
+  `256a2dc4` + `c94f3260` + `610c3505`, each branch-verified (StrandTests 2338, i18n, doc lint, Tools 338, parity 50,
+  simulator). Stack `testing-stack` `3548093b` (= `487c88ba` + the three; iPhone Release build green, StrandTests 2365
+  green, i18n, doc lint, parity 50) → `testing-build` `281239ad` (merge route, tree checked). Run
+  [42280019994](https://github.com/UtkuDenizAltiok/noop/actions/runs/42280019994): all jobs success; release
+  `testing-latest` (id 436908022) targets `281239ad`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), the de catalogue
+  has the new strings. The earlier run 42277790616 (without Settings) was cancelled as superseded. **Just update.**
+  Not yet seen on Utku's phone. `feat/simple-mode` `0a6f3021` (Alarms wording) is NOT in this build: next rebuild.
+- [x] **Phone build with the wind-down fix, verified 6 Nov evening:** `testing-stack` `487c88ba` (= `c72fad03` + the
+  fix; iPhone Release build green, StrandTests 2357 green, i18n, doc lint, parity 50; fork Android CI on the stack
+  [42259720867](https://github.com/UtkuDenizAltiok/noop/actions/runs/42259720867) green) → `testing-build`
+  `a3937ccf` (merge route, tree checked). Run [42259715814](https://github.com/UtkuDenizAltiok/noop/actions/runs/42259715814)
+  all jobs success; release `testing-latest` (id 436778938) targets `a3937ccf`, five assets, IPA HTTP 200, NOOP
+  12.1.0 (439). Supersedes `fc57000f`. **Just update.** Not yet seen on Utku's phone.
+- [ ] **PR care 6 Nov evening:** no maintainer comments on any of our ten PRs (#2896–#2906, as of 6 Nov night); #2901 #2903 #2904 #2905 fully
+  green; #2896–#2900 still red only because the Strand leg was CANCELLED with no runner (10:40 UTC). Not retried
+  this afternoon: they were closed and reopened twice already on 6 Nov and a third round in US hours would only add
+  maintainer notifications. Retry ONCE at a quiet hour (after ~20:00 UTC or a weekend morning), one PR at a time,
+  then verify every job on the head, not the run's conclusion.
+- Fork `main` fast-forwarded to `upstream/main` `2a1de760` (it was at `eae23433`).
+
+## Now — Simple mode v4, two measurement fixes, 6 Nov
+
+- [x] **Simple mode v3 + v4 built and verified:** `feat/simple-mode` `5269b8a6`, then v4 `6f073301` `a00000db`
+  `74182550` (Stress, Health, honest lines; StrandTests 2320 green) (worktree `~/Developer/noop-simple`),
+  plain wording on Simple Today and Simple Sleep; details and verification in
+  [Simple mode, Round 3](features/simple-mode.md#round-3-6-nov-2026-plain-wording-on-simple-today-and-simple-sleep).
+- [x] **Testing build verified, 6 Nov morning:** `testing-build` `5f63e6fa` = merge over `1724a54e` with the tree
+  of `ee7a16d5` = stack `af4a35d2` + `fork/ships-template`. Stack `af4a35d2` (pushed, fast-forward) = `3f147a69`
+  + Simple v4 (Stress, honest lines) + #skin-unit `2d482919` (merged with #2899: both kept) + #debt-source
+  `a41d40d7` + Simple rounding `a00000db` + Simple Health `74182550`. Before shipping: iPhone Release build green,
+  StrandTests 2343 green, i18n exit 0, doc lint clean, parity acceptance OK, Tools 341 OK. Run
+  [42171643978](https://github.com/UtkuDenizAltiok/noop/actions/runs/42171643978) green; release `testing-latest`
+  (id 436150215) targets `5f63e6fa`, five assets, IPA HTTP 200, NOOP 12.1.0 (439), new strings present (de
+  checks). **Just update.**
+- [ ] **Upstream PRs opened 6 Nov (morning), on Utku's explicit yes:** [#2904](https://github.com/ryanbr/noop/pull/2904)
+  Charge skin temperature in the reader's unit (`fix/charge-skin-temp-unit` `2d482919`, worktree
+  `~/Developer/noop-skinunit`) and [#2905](https://github.com/ryanbr/noop/pull/2905) the sleep-debt tile names
+  WHOOP's figure (`fix/sleep-debt-tile-source` `a41d40d7`, worktree `~/Developer/noop-debtsrc`). Both read back:
+  right heads, MERGEABLE, full bodies. Upstream CI started at once (no approval gate); fork Android CI was green
+  on both heads before opening. Check upstream results next session; answer feedback once.
+- [ ] **Upstream PR opened 6 Nov:** [#2903](https://github.com/ryanbr/noop/pull/2903) plain screen subtitles (both
+  platforms), head `ea831f16`, branch `fix/plain-screen-subtitles` (worktree `~/Developer/noop-subtitles`).
+  Local: iOS build, StrandTests 2302, i18n, doc lint, Tools 338, parity 50. Upstream CI all green at `ea831f16`:
+  Android, i18n Coverage, Source Hygiene, Tools Python, and App build run 42120031911 with BOTH legs run (NOOPiOS
+  compile success; Strand macOS build + StrandTests success). MERGEABLE, no comments yet.
+- [ ] **Upstream PRs opened 5 Nov, awaiting review (no comments as of 6 Nov):** #2896 (tab swipe), #2897
+  (translations), #2898 (Info.plist), #2899 (Charge skin temperature once), #2900 (one sleep need for
+  hours-vs-needed), #2901 (Trends average label). The red X was never our code: GitHub could not get a macOS
+  runner ("The job was not acquired by Runner of type hosted even after multiple attempts"). Re-run by close +
+  reopen on 6 Nov (same heads): every NOOPiOS leg passed; #2901 fully green; on #2896–#2900 the Strand leg was
+  then cancelled the same way (it had passed on 5 Nov). Retry those five once at a quieter hour (next chat).
+  Upstream main unchanged since 2a1de760 (25 Oct). Older open PRs: #2747 and #2724
+  CONFLICTING with upstream main (their content still applied cleanly in the stack); #2722, #2717, #2661,
+  #2660, #2613 mergeable.
+
+## Now — community questions published and verified, 10 Oct
+
+**Current scope:** plain feasibility questions and an invitation for experienced community members to help
+NOOP. The posts say the owner does not know REA/coding much; no personal commitment to perform an analysis.
+Before planning any REA-related continuation, read ignored `private/rea-2026-10-09/posting-status.json` and
+`posting-2026-10-10/journal.json` for the latest execution boundary. Outreach is not implementation authority.
+
+- [x] **Both existing GitHub topics updated and verified.** [NOOP #2752](https://github.com/ryanbr/noop/issues/2752)
+  and [REA Q&A #1343](https://github.com/morluto/rea/discussions/1343) now use the requested simple newcomer
+  wording, ask whether REA could help and encourage experienced people to investigate. Both bodies/authors/
+  mutual links independently read back; no replies at the current check. No duplicate GitHub topic.
+- [x] **Reddit and Discord actually published by the agent, 10 Oct.** The prior assumption that the owner sent
+  messages is superseded by his correction and the agent's verified publication. One question in r/NoopBand,
+  one in NOOP `#dev-talk`, one in REA `#general`, all linking both GitHub topics. Rules read; REA membership
+  completed through the existing signed-in Discord session, English role only, optional research roles skipped.
+  Initial Reddit/NOOP messages were edited in place after owner wording/scope corrections; no duplicate post.
+  Outdated Discord link previews suppressed. Exact final text/author/URL and screenshots retained privately in
+  `private/rea-2026-10-09/posting-2026-10-10/`; `publication-verification.json` proves all five current texts.
+  [REA audit](audits/rea-whoop-2026-10-09/README.md#outreach-and-recovery) owns the community message links.
+  No personal strap log or measurements posted; no original-app inspection/tool execution/app code change.
+- [ ] **Deferred — original WHOOP app analysis.** No WHOOP APK/IPA acquired/inspected, REA not installed/run,
+  no score/efficiency improvement claimed from REA. Current work is asking the community what's possible and
+  inviting experienced help. Earlier capability/prerequisite notes are reference material, not a running task.
+  Check the private continuation boundary above before interpreting any later general improvement prompt.
+- [x] **Standard-HR field integrity implemented, verified and delivered.** Incomplete declared energy/R-R fields
+  are refused before effects in all three decoders; complete-field readings, WHOOP 5 raw-ms handling, cadence,
+  storage and formulas retained. Source `/Users/utk/.codex/worktrees/standard-hr-integrity/noop`, branch
+  `codex/standard-hr-integrity`, clean/pushed **d84f5a14e7b7896ce2fb177dfbb681e73bdf36b4**; eleven intended files.
+  [Audit owns assessment/contract/proof/limits](audits/standard-hr-integrity-2026-10-09/README.md).
+  [PR #2747](https://github.com/ryanbr/noop/pull/2747) published/attached: all eighteen expected checks/seven
+  actual workflows passed, source/body/scope read back. Original/mutation assertions and Android regression
+  **37920499670** proved the fault; final Android **37921713840** passed. Apple all steps passed, protocol 817,
+  156 core Tools with canonical temporary path; four default Mac alias failures also occur on unchanged main.
+  Direct 1,771,584 inputs preserved all 1,478,185 complete-field outputs and newly refused 254,325 malformed ones.
+  Testing-stack **f5d252c925bc0da335b01f482a2178ea96a1e3be** includes upstream eae23433/five open app PRs/repair:
+  local iOS, Android **37922207424**, all eleven Swift jobs/actual steps **37922210902** passed.
+  Delivered build/tag **f519e57b8aa71a9fee1fa7570a21178e7a008d03**, run **37924869961**, release **407854745**:
+  four build jobs passed/cleanup skipped, five assets/ref/target/tag verified; IPA HTTP200/CRC/GitHub SHA256/
+  identities/widget/background capabilities retained. NOOP **12.1.0 (436)**, just update. Details in Git below.
+- [x] **Basic phone acceptance passed from supplied 9 Oct log.** Header observes NOOP 12.1.0 (436),
+  consistent with delivered f519e57b; it does not identify a Git commit cryptographically. Latest app run shows
+  normal live HR/R-R collection and successful persistence/history offloads, with no logged current phone
+  disconnect/pause, insert retry/failure or timeout. Four app runs were separated; older events were not
+  attributed to this build. Source and exact raw log privately preserved byte-for-byte under
+  `private/phone-acceptance-2026-10-09/`; `assessment.json` / `README.md` own counters, limits and diagnostics.
+  No repeat installation/log/export/wipe/diary needed. Incomplete-packet rejection is proved by software tests;
+  its hardware frequency, UI rendering, physiological accuracy and battery effect remain unmeasured.
+- [ ] **Pending external review — seven own PRs:** #2747/#2724/#2722/#2717/#2661/#2660/#2613. Post-release
+  readbacks show unchanged exact heads/full green rosters, no new comments/reviews to answer. #2724 remains
+  CONFLICTING (also present in the earlier snapshot); other six are MERGEABLE. No speculative rebase opened. Existing owner
+  invitations stay posted once. Do not repeat replies/reviews/releases because context is missing.
+- [x] **Existing four-merge refresh completed:** #2742/#2738/#2737/#2729 exact merge-series proof, source retirement,
+  eae23433 main mirror and this verified combined delivery complete. No duplicate intermediate release.
+
+**9 Oct code/release checkpoint (retained):** ten clean code worktrees, nine branch heads equal current fork refs; detached
+local-only candidate ec329949 retained. Seven PR heads/full green rosters/comments/reviews unchanged, no unanswered
+feedback. #2724 has an unchanged upstream merge conflict; six others are mergeable. Current release 407854745/run 37924869961/ref/tag still f519e57b, five unchanged nonempty assets;
+cached IPA SHA-256 matches GitHub, ZIP CRC/plist 12.1.0 (436) valid, download HTTP200. No task job, stash or
+unfinished Git operation remains. Current upstream still 18de275e; later UI refresh remains unstarted.
+Private 9 Oct readbacks: `private/rea-2026-10-09/session-close-*.json`. Latest outreach/readbacks and 10 Oct
+source/status/upload proof are in `private/rea-2026-10-09/posting-2026-10-10/`.
+No source change/rebuild/release was opened during REA assessment or closure. A new chat on this Mac is safe;
+private logs/drafts/bundles and the parked local-only candidate remain here rather than in handbook uploads.
+
+**Recovery:** ten clean code worktrees: root plus eight pushed source branches and preserved local-only detached
+wording candidate ec329949. Managed delivery staging f5d252c9 archived/read back; temporary branch retired after
+fork retention proof. Probe source/workflow restored exactly and temporary branch retired; simulator smoke device
+retired, original simulator shut down/untouched. No stash/Git operation/task process/active fork job remains.
+Cache `/Users/utk/Library/Caches/noop-handbook/deep-2026-10-09/` holds logs/derived app/IPA/recovery bundles;
+ignored `private/deep-2026-10-09/` holds source, mutation, PR/run/release/restoration/closure reports and local PR
+body `private/pr-standard-hr-integrity-body.md`. These local records are not uploaded by handbook backup; source,
+audits, decision records and public CI/releases are on the fork. Pre-merge seven tips and feature/probe commits
+independently imported/full-fsck verified. All driver exit markers are final; no old tool-session dependency.
+Actions usage restriction resolved after owner re-enable; accepted/executed runs prove recovery. No agent
+permission toggle or restriction workaround. Do not repeat passed unchanged checks or shipped f519e57b.
+
+**Later upstream snapshot:** upstream/main **18de275efcca0f2e313aeebd4aed19814b11c7c0** arrived during shipping;
+one unrelated Today workout-Start UI cleanup in five files, no repair-source overlap, repair merges cleanly.
+Root/fork main and this delivered base remain **eae23433**. This later UI change is not included in f519e57b;
+no new rebase/implementation/release was started. An optional upstream refresh requires a later task/deep prompt.
+Parked wording and science candidates stay parked/queued; Start must recover and wait, not open those jobs.
+
+Session prompts/roles were completed/uploaded earlier; [Sessions](SESSIONS.md) is their sole home. Verification
+`private/session-prompts-2026-10-09/document-verification.json`; no new prompt revision needed.
+
+**Latest priority:** English is the only language Utku cares about; language/copy/translation improvements are
+his lowest priority. The settled instruction lives in [Rules](RULES.md#settled-decisions). The saved Stress wording
+work stays parked, not delivered or discarded. The selected functional improvement was completed and delivered above. Original WHOOP app analysis is
+unstarted/deferred; current REA scope is community questions. Start recovers existing obligations and waits.
+
+- [ ] **Parked, incomplete — Stress spectral explanations.** Source worktree
+  `/Users/utk/.codex/worktrees/stress-spectral-explanations/noop`, branch `codex/stress-spectral-explanations`,
+  clean and pushed at **`0285a675cd89cec8e5e1557ae14d35d352d4f7df`**. This changes five labels/explanations and
+  their resources across twelve files; it makes no numeric/algorithm/transport/storage change. Research,
+  preregistration, exact source proof, results and limitations are in the
+  [saved audit](audits/stress-spectral-explanations-2026-10-08/README.md).
+  Full local verification ended **all steps passed** at this head; fork Android **37816053441** completed
+  successfully with actual debug-build and unit-test steps checked. Both local job PIDs (5148 verify, 11107
+  combined iOS build) exited. No PR exists for this change; zero upstream check-runs means unpublished, not green.
+  Both changed spectral branches retained observed numbers (ratio 2.3, HF-only 0); the English footer was fully
+  visible. Original/fixed headline snapshots varied (1.1/1.2), with preferences not restored identically for every
+  original run. The exact cause and complete same-effective-input headline comparison are unresolved. Do not
+  claim complete runtime equivalence or spend more on locale QA. No new verification/publication/release was
+  started after Utku requested closure.
+  A clean, **local-only detached** combined candidate remains at **`ec329949618bcd43975100dc310306f146e4b4a0`**,
+  `~/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/staging-noop`. Its local iOS build passed;
+  it has not had combined Android/Swift CI or testing delivery. Relevant unchanged package/tool/test/build input
+  trees are recorded for possible future evidence reuse, not a claim that candidate CI ran. Keep this checkout.
+  At wording-session closure the testing refs remained `6c815151` / `c8eb1cd0`; later HRV delivery is recorded above and in Git below. The independently imported/fsck-verified
+  `pre-testing.bundle` and recovery repository are retained in the same cache.
+- [ ] **Queued, not started — spectral numeric correctness:** units/grid/missing-time reconstruction together,
+  including packed/coarse record timestamps. This remains a higher-value candidate than wording; reassess current
+  upstream and retained varying-signal evidence before choosing a bounded repair. Other priorities remain in Backlog.
+
+The prior wording-session closure and simulator restoration remain in History and its audit/private report;
+the latest HRV simulator restoration is `private/hrv-clean-buffer-2026-10-08/simulator-restoration.json`.
+This proves logical SQLite equality and preference-byte equality after shutdown, not byte-identical WAL layout.
+Completed cancellation delivery, installation confirmations and owner invitations are in [History](HISTORY.md).
+Fork Actions restriction resolved; implementation/required verification/delivery and basic phone acceptance are
+complete. The unfinished wording work remains parked by Utku's closure/priority instruction; scientific
+reference/data needs remain separate. No phone evidence request is active.
+
+## Phone
+
+**Newest delivered and observed running, 9 Oct — f519e57b, NOOP 12.1.0 (436):** packet-integrity repair
+plus proven merge refresh; production identity/data/widget/background capabilities retained. Supplied log
+observes this version/build and passes basic live HR/R-R persistence/history acceptance. Header alone does not
+identify a Git commit. No further update or short acceptance log is requested. This preventive change may look
+the same: it refuses incomplete declared measurement fields before publishing data. Malformed-packet frequency,
+score accuracy and current-build energy effects remain unmeasured. Personal log/analysis stay ignored/private.
+
+**Previous explicitly confirmed installed update, 8 Oct — `ef6216f8`:** HRV cleaner uses a per-call neighbour
+buffer; exact math, results, coverage, freshness and screens retained. Verified release/IPA details are in Git
+below. Utku explicitly said he updated at this session's close; the instruction was **just update** through
+AltStore, keeping the existing app/data. No repeat installation, Stress cancellation test, log/export or special
+hardware observation is requested. This is a small helper-efficiency improvement; phone battery impact is not
+measured, and the installation answer contains no new numeric or screen observation.
+
+**Hardware confirmed by Utku, 8 Oct:** WHOOP 5.0 and iPhone 16. He offers useful real-life tests with simple
+steps. Earlier on 8 Oct he explicitly confirmed installing the then-latest update **`c8eb1cd0`** through AltStore
+before checking Stress, and reported seeing nothing wrong. No repeat installation or check is requested.
+This repair preserves the layout and calculation formulas; it prevents a cancelled older load from replacing
+newer results. "Leave and return" meant using the back arrow to return to the More list, then tapping Stress
+again, within NOOP. It did not mean force-closing the app, reinstalling or removing the strap. Advanced readouts
+can legitimately be absent when their data gates are unmet. Installation is established by his explicit answer;
+the version header alone cannot identify `c8eb1cd0`. If a readout later unexpectedly clears or returns to older
+data, report what was seen and save a contemporaneous strap log
+(More → App → Test Centre → Strap log → Save…). No repeat wipe/reminder/diary.
+Normal-night observation and personal export stay deferred until useful; no new request for either.
+
+**8 Oct 19:30 supplied log review complete:** original privately preserved byte-for-byte (SHA256
+`8dff66467538c49717fb7a46816fd39d1b0e4669bd10a0d4981c55fd7d6275fa`); nine retained app sessions,
+oldest head clipped. Latest history completion at 19:28:12, successful link at 19:28:39, three successful live
+flushes through 19:29:50 and completed scoring. No recorded live-flush failure or expired scoring assertion.
+Earlier timeouts/reconnect pause and Bluetooth-off period precede successful resumed history downloads; do not
+claim an uninterrupted connection or infer why processes restarted. Details and personal timeline remain in
+`private/session-2026-10-08-phone-stress/analysis.json`. There are no Stress-specific screen-publication lines;
+the log cannot prove the race was triggered/prevented or what was drawn. A full `.noopbak` is not needed for this
+fix or this log review. No new code/CI/release action was started. Clearer change/test explanations are now in Rules.
+
+Fresh delete-first AltStore installation of **`6de9d6d`** was reported complete on 6 Oct. The 7 Oct phone log
+now confirms app **12.0.0 (435)**, WHOOP 5/MG link establishment, live HR, completed history offloads and continued
+background collection overnight. Mac awake/context setup was reported complete; no repeat setup is needed.
+The prior confirmed installed update **`c8eb1cd0`** was delivered and installation was confirmed by Utku. Its IPA is
+`com.noopapp.noop`, display name NOOP, 12.0.0 (435), widget retained; its delivery instruction was just update
+over the existing app through AltStore. No migration change/fresh start was required. Neither previous
+`e722e0c4`, `01b55ac2` nor `f60718a9` was separately confirmed installed. Same-version headers cannot identify
+testing commits; explicit user confirmations establish these installations, with the newer observed 12.1.0 (436) recorded above.
+
+**Sync-stopped reminder confirmed on the phone:** the log scheduled it for about 00:31; Utku reported seeing
+it around **00:32 on 7 Oct**. The log then shows an app launch at 00:35. Do not repeat the three-hour test.
+Whether opening cleared the delivered line has not been separately observed.
+
+A normal overnight log is now available in ignored `private/session-2026-10-07-backup/strap-log.txt`.
+No personal export was needed for either synthetic investigation. A full `.noopbak` may help a future sensor/
+biometric replay; export remains deferred until that work needs it. Its path is More → Settings → Advanced →
+Backup & restore → Export…. Keep it private; no export request is active.
+The new install has little history;
+this log alone is not a like-for-like battery or sleep-accuracy comparison with the older installation.
+
+Later: deleted-sleep list (delete a night, let undo expire, recompute clears the marker, Hide keeps suppression) and
+ended-banner check (after roughly 8 h, open NOOP and check one banner). Do these after fresh data exists.
+Utku's recent nights were atypical, sometimes strap-off/swiped away: infer gaps from logs rather than asking him to
+keep a diary. Compare staging changes on the same nights, never one night against another.
+
+## PRs — checked 10 Oct
+
+| Upstream PR | Branch / head | Evidence and next action |
+|---|---|---|
+| [#2747](https://github.com/ryanbr/noop/pull/2747) | `codex/standard-hr-integrity` / `d84f5a14` | Reject incomplete known measurement fields before effects. Full Apple/fork Android, original/mutation proofs and all 18 upstream checks/actual steps passed. Delivered f519e57b; basic phone acceptance passed. Await maintainer. |
+| [#2724](https://github.com/ryanbr/noop/pull/2724) | `codex/rhr-one-pass` / `14783994` | One-pass resting-HR floor/diagnostic; exact original oracle, measured CPU/memory reduction. All 18 upstream checks green. Feature Android/final source gates and combined CI passed; release `f60718a9` fully delivered/independently verified. Upstream merge conflict remains; no new feedback. Await maintainer. |
+| [#2722](https://github.com/ryanbr/noop/pull/2722) | `codex/hrv-sdnn-quality` / `b6e53f38` | Local full verify + fork Android passed; All 17 upstream checks green; no unanswered maintainer review. Included in verified `01b55ac2`. Await maintainer. |
+| [#2613](https://github.com/ryanbr/noop/pull/2613) | `dreamt-psg` / `ca008aba` | 17 checks green, clean merge; no unanswered maintainer review. Await maintainer. |
+| [#2660](https://github.com/ryanbr/noop/pull/2660) | `ios-deleted-sleep` / `e9ee598e` | 6 checks green; fresh delete unhides, recompute names the 21-day limit. [Review answered](https://github.com/ryanbr/noop/pull/2660#issuecomment-6016821944). Await maintainer. |
+| [#2661](https://github.com/ryanbr/noop/pull/2661) | `ios-sync-reminder` / `7f9fc7aa` | 6 checks green; unset default OFF, saved choices survive. [Review answered](https://github.com/ryanbr/noop/pull/2661#issuecomment-6017174678). Await maintainer. |
+| [#2717](https://github.com/ryanbr/noop/pull/2717) | `codex/docs-navigation` / `34c9eeac` | Guide index/current-history separation plus four completed execution recipes retired; designs/manual checks and 120 other pages preserved. All three exact-head checks passed; final title/body updated and read back. Documentation only; no app release needed. Await maintainer. |
+
+All seven PRs are open with unchanged heads/full green rosters/no new feedback at 10 Oct outreach readback. #2747
+merges cleanly with latest upstream; earlier six merge proofs were at eae23433. Do not rebase speculatively.
+#2742/#2738/#2737/#2729 merged on 9 Oct, exact source proof/source retirement/verified refresh complete.
+28 PRs merged, including these four; the dated record and validation are in [History](HISTORY.md).
+Before any PR action, recheck its current head, reviews and CI. Drafts/evidence stay in ignored `private/`.
+
+## Git and latest release
+
+- **Current delivered testing-build/local+remote testing-latest `f519e57b8aa71a9fee1fa7570a21178e7a008d03`.**
+  Release **407854745**, run **37924869961**: actual meta/Android/iOS/macOS build/package/upload passed,
+  conditional cleanup skipped; monitor exit 0/`shipped f519e57b`. Five nonempty assets, ref/tag/target and
+  HTTP200 verified. IPA **21,960,388 bytes**, SHA256
+  `9538ceb78d6cab0d13b40b9a5742d3a3797a2233df31795b76e65e5d21bbe894` equals GitHub; ZIP CRC valid.
+  `com.noopapp.noop`, display NOOP **12.1.0 (436)**; widget `com.noopapp.noop.widgets` retained, watch stripped,
+  same four background modes/five task identifiers as installed ef6216f8. Template bytes equal committed source.
+  Private `deep-2026-10-09/release-verified.json`; IPA cache `deep-2026-10-09/release-f519e57b/`.
+  Just update; installation/hardware unconfirmed. Tree equals verified stack plus only ten upload-workflow lines.
+
+- Current testing-stack **`f5d252c925bc0da335b01f482a2178ea96a1e3be`**, local/remote, tested upstream base eae23433 plus five
+  open app PRs and standard-HR repair. Local iOS passed; Android **37922207424** actual APK/full JVM and Swift
+  **37922210902** all eleven expected jobs/22 actual build/test steps passed. Previous c13e8873 independently retained.
+- Previous verified delivery/latest confirmed installation **`ef6216f8bc8076bb62277b700666ffb8c9c99531`**,
+  stack plus unchanged template-upload workflow only. Release **407179578**, run **37830619829**: actual
+  meta/Android/iOS/macOS build/package/upload jobs passed; conditional cleanup skipped. Monitor exited 0 with
+  `shipped ef6216f8`. All five nonempty assets, target/ref/tag agreement, IPA HTTP200/ZIP CRC/SHA256/identities
+  independently verified. IPA **21,955,171 bytes**, SHA256
+  `af24f640c967f542c19ac2c0477577e7b0491dafd9aa11b82f9e442fc487f091` matches GitHub.
+  NOOP `com.noopapp.noop`, 12.0.0 (435), widget retained/watch stripped; background modes/task identifiers retained.
+  Reports `private/hrv-clean-buffer-2026-10-08/release-*.json`; IPA cache `hrv-clean-buffer-2026-10-08/release-ef6216f8/`.
+  Installation confirmed by Utku at session close; just update was required, no wipe or new phone/data test.
+  Superseded as delivered build by f519e57b above, still the latest explicitly confirmed installation.
+
+- Root/fork `main`, `origin/main`: **`eae23433c2948d1df6e39e7607ec94fcf34a28b7`**,
+  fast-forwarded and mirrored 9 Oct. Includes four proven own merges, later ECG repairs and 12.1.0 beta.
+  Merged sources retired only after independent seven-tip bundle import/full fsck. Combined testing refresh
+  completed in f519e57b. Fetched upstream/main is now 18de275e; later unrelated UI refresh is optional future work.
+- Previous `testing-stack` before this delivery: **`6c81515138d5c3b573e2029609fcf6ff919ddfc4`** (local/remote), base `8e94d559` plus
+  #2613/#2660/#2661/#2722/#2724/#2729/#2738. Combined local iOS build passed, Android **37791822785** actual
+  build/unit steps passed and Swift **37791827346** all eleven jobs passed at that exact head.
+- Prior verified `testing-build` and then-local/remote `testing-latest`: **`c8eb1cd028701123517e8bb56fad5c093d99ba03`**,
+  stack plus template-upload workflow only. Successful run **37793338186**, release **406928323**. Meta,
+  Android, iOS and macOS actual build/package jobs passed; conditional cleanup skipped. Monitor exited 0 with
+  `shipped c8eb1cd0`. All five uploaded assets nonempty; target/tag/build refs agree. IPA HTTP200, **21,955,109
+  bytes**, ZIP CRC valid; SHA256 `6b4595e0dc98226e30d17d8e27395580e676f80d4f92ce5a3f13602e11794e42` matches GitHub.
+  `com.noopapp.noop`, NOOP 12.0.0 (435), widget `com.noopapp.noop.widgets` retained, watch stripped; background
+  modes/task capabilities retained. Reports `private/stress-load-cancellation-2026-10-08/release-*.json`,
+  IPA cache `stress-load-cancellation-2026-10-08/release-c8eb1cd0/NOOP-ios-unsigned-v12.0.0.ipa`.
+- Prior verified release/build (superseded): **`e722e0c4b6e8dd82c913d180e776fe4889be0b8e`**,
+  successful run **37743306160**, release **406540342**. Exact meta/Android/iOS/macOS jobs passed; conditional
+  cleanup skipped. Ship monitor exited 0 with `shipped e722e0c4`. All five uploaded assets nonempty; release target,
+  tag and refs agreed at its recorded verification. IPA HTTP 200, 21,953,533 bytes, all ZIP CRCs/plist identities passed;
+  SHA-256 `f1cb7aac015d5458b7f72ff9a148eb9b5a6712baa4a8bcded09e8f977685fa74` matches GitHub's digest.
+  `com.noopapp.noop`, NOOP 12.0.0 (435), widget `com.noopapp.noop.widgets` retained, watch stripped.
+  Reports: ignored `private/release-{run,metadata,assets,tag,ipa,ipa-prefetch,bundle-recovery,cleanup}-e722e0c4.json`;
+  IPA cache `charge-baseline-usability/release-e722e0c4/NOOP-ios-unsigned-v12.0.0.ipa`.
+- Prior verified `f60718a9` (superseded), successful run **37685742398**;
+  release **406156870**. Exact `meta`/`android`/`ios`/`macos` jobs passed; conditional cleanup skipped as expected.
+  All five uploaded assets are nonempty; release target, local/remote `testing-latest` tag and build refs agree.
+  IPA HTTP 200, 21,953,254 bytes, all ZIP CRCs passed; SHA-256
+  `41872d7c558ad1ebcdb31a6339ec78ea3795b1706b19f22063b8359f9ed18b1a` matches GitHub's digest.
+  App `com.noopapp.noop`, NOOP 12.0.0 (435); widget `com.noopapp.noop.widgets` retained, watch removed.
+  Evidence: ignored `private/release-{run,metadata,assets,tag,ipa,bundle-recovery,cleanup}-f60718a9.json`;
+  downloaded IPA: cache `rhr-one-pass/release-f60718a9/NOOP-ios-unsigned-v12.0.0.ipa`.
+- Prior verified release (superseded): **`01b55ac2`**, base
+  **12.0.0**, run **37597587148**, release **405571964**. Ship tool finished `shipped 01b55ac2`; four required jobs
+  passed (cleanup intentionally skipped). All five nonempty assets uploaded; release target and local/remote tag
+  exactly equal testing-build; IPA HTTP 200, downloaded ZIP/plist identity/size/SHA-256 verified against GitHub’s
+  asset digest. Metadata: `private/release-{metadata,assets,run,ipa}-01b55ac2.json`.
+- Earlier installed release: **`6de9d6d`**, 6 Oct; its prior metadata remains in `private/release-*-6de9d6d.*`.
+- **Current code worktrees (ten, verified at closure):** root `/Users/utk/Developer/noop` on main;
+  siblings `/Users/utk/Developer/noop-dreamt`, `noop-deleted-sleep`, `noop-sync-reminder`; managed
+  `/Users/utk/.codex/worktrees/docs-navigation/noop`, `hrv-spectral-power/noop` (SDNN branch),
+  `rhr-one-pass/noop`, `standard-hr-integrity/noop` and `stress-spectral-explanations/noop`.
+  All nine branch heads are clean/pushed. The tenth is the clean local-only detached ec329949 candidate
+  at `/Users/utk/Library/Caches/noop-handbook/stress-spectral-explanations-2026-10-08/staging-noop`, retained
+  as described in Now. Handbook is the separate dist worktree. Merged HRV/charge/network/Stress-cancellation
+  worktrees were retired earlier after recovery/source proofs; they are not active checkouts to recover again.
+- Fork refs are the intended main/handbook/one per open PR/testing-stack/build, template/testing tags and upstream
+  versions. No throwaway regression branch/stash or safety tag; the local-only scratch candidate in Now is retained. Old stack `858d8c99` and
+  build `e722e0c4` independently recovered from task-cache `pre-testing.bundle` into `pre-testing-recovered.git`,
+  both tips matched and full fsck passed before retirement.
+  The old stack `979a2baf` / build `f60718a9` are recoverable from cache
+  `charge-baseline-usability/pre-charge-staging.bundle`: independently imported into an empty Git repository and
+  full fsck passed before cleanup. `codex-setup.sh` re-run for all eight code worktrees.
+  The old stack `0768710f` / build `01b55ac2` remain recoverable from cache
+  `rhr-one-pass/pre-rhr-staging.bundle`: both tips imported into an empty Git repository and full `git fsck` passed
+  before cleanup. `codex-setup.sh` re-run successfully for all seven code worktrees.
+
+## Local evidence and resources
+
+HRV buffer #2742 `c71b48af`: two matched original-Swift output tests per platform, 20 oracle rows,
+137,267 direct exact-bit/adjacency cases, both Swift reset mutations and the announced Android probe seen to
+fail assertions/restored exactly. Full local verify: 632/2137/327 packages, source/i18n/parity gates, 127
+governance, 2267 Mac tests and iOS build (one import/two Mac existing skips); final Android **37828040856**
+actual APK/unit steps passed. All seventeen upstream checks and six workflow run job/step readbacks passed.
+Seven alternating final `swiftc -O` trials consume full returned values/flags; −30.0–30.7% helper CPU, no
+phone/whole-pass/energy/accuracy claim. [Audit](audits/hrv-clean-buffer-2026-10-08/README.md); private
+`hrv-clean-buffer-2026-10-08/`, cache same name plus `verify/c71b48af/`. Simulator launch/render smoke showed
+existing missing-data state, not a new numeric fixture; restoration report confirms logical DB/preferences
+match after shutdown. No new warning in changed source/test files. Source changes exactly four intended files.
+
+
+Network/privacy #2737 `a4f144428e6b7f4c74344a39c0b9c9f8aa51f945`: one canonical direct-HTTP inventory;
+Android permission, update default/payload, Custom keyless AI, consent/brief/chart and sandbox claims corrected.
+Platform-service traffic is separate. [Source-backed audit](audits/network-privacy-2026-10-08/README.md).
+Local source hygiene/i18n passed with Python 3.12. 126 Markdown pages have no new missing local targets;
+seven new fragment links resolve, three legacy anchors retained and all six changed pages rendered by GitHub.
+120 other Markdown files and source/tests/tools/workflows/config trees unchanged. All six remote document blobs
+and PR title/body matched the verified local files. Exact-head check-runs roster: all three complete/success;
+Source `37777649489`, i18n `37777649539`, Tools Python `37777649601` actual job/steps passed. Tools ran
+234 capture (one existing skip), 50 repository acceptance, two legacy R-R and 153 core tests. Open/mergeable,
+no unanswered maintainer review. No app build, release or phone action required. Private recovery/source hashes/inventories/
+validator/readbacks: `private/network-privacy-2026-10-08/`; HTML and CI logs: cache `network-privacy-2026-10-08/`.
+No packet-capture, third-party retention, hardware, energy or physiological-accuracy claim.
+
+Charge #2729 `3e59a667`: six new tests, 625 score cases, 25 compiled original-math raw-bit oracle rows on both
+platforms, four seen-to-fail/restored mutations and 70 targeted tests. Full verify: 632/2141/327 packages,
+127 governance, 2267 Mac tests and iOS build (one import/two Mac skips), all steps passed. Final Android
+`37740134786` passed actual build/unit steps; original `37739654819` failed exactly five expected new tests
+among 6643/six skips after successful compile. No new warnings in changed files. Source and numeric replay:
+[8 Oct audit](audits/charge-baseline-usability-2026-10-08/README.md); private `session-2026-10-08-charge-baselines/`;
+cache `verify/3e59a667/` and `charge-baseline-usability/`. Simulator launch rendered initial disclaimer, not a Today
+score walkthrough; screenshot retained, app terminated/simulator shut down. No strap claim from simulator.
+
+RHR #2724 `14783994` is fully verified; full local run at `035b6ab1` and final-head source/parity/governance +
+Android `37683254213` results are in [History](HISTORY.md) and the [RHR audit](audits/rhr-one-pass-2026-10-07/README.md).
+Final Swift/app/tool inputs are byte-identical to the local full run. Logs: cache `verify/035b6ab1/` and
+`rhr-one-pass/`. No phone CPU/battery or physiological accuracy claim.
+
+Full SDNN verification on 7 Oct at `b6e53f38`: 632/2139/327 package tests, all lint/i18n/parity gates,
+127 governance, 2267 Mac tests and iOS build passed (one import/two Mac skips). Fork Android full suite passed;
+regression-only discovery count 6641/six skips, unchanged test roster. Exact eight-case raw Double-bit oracle passed
+on both platforms. Logs: cache `verify/b6e53f38/` and the private biometric audit folder.
+
+Full verification on 6 Oct: #2660 packages 632/2135/327, 127 governance tests, 2272 Mac tests and iOS build;
+#2661 same packages/gates, 2271 Mac tests and iOS build. Two Mac skips, one import skip, zero failures. Both fresh
+simulator walkthroughs passed; reminder delivery is now confirmed on the phone, deleted-list checks remain pending. Logs: cache `verify/<head>/` and feature review
+folders. Older setup/test/measurement details: [verification archive](HISTORY.md#verification-archive--through-6-oct-2026).
+
+Simulator `DCAA8034-6801-4D1F-8FD9-B42B2F424B6F` (iPhone 17 Pro, iOS 27.0), no strap, shut down.
+The temporary spectral fixtures were removed by verified restoration of the original database/preferences; previous app reinstalled and content size restored. Synthetic UI evidence is described in the saved spectral audit.
+Xcode 27.0, XcodeGen, gh, Python 3.12 available; Android tests run in fork CI. The new phone log is retained privately;
+personal backups and sleep-accel / restricted DREAMT datasets remain absent on this Mac. Obtain raw data when an analysis needs it; never tune from old aggregates.
+Docs #2717: exact head `34c9eeac7649136ff79b1bd2e209abc90e2a85b3`, three required upstream checks passed
+(source `37750786309`, i18n `37750786251`, Tools Python `37750786331`). Actual CI test totals: 234 capture,
+50 repository acceptance, two legacy R-R, 153 core Tools. Local source hygiene/protocol arithmetic/163 source
+references/i18n passed. 123 remaining Markdown pages checked with no new broken local targets; GitHub rendering
+and four exact history blobs verified. Both original design bodies and 120 other pages retained; app source/tests/
+tools/workflows/config unchanged. Final PR title/body read back exactly; open/mergeable, no unanswered maintainer review.
+Private evidence: `private/organisation-audit/doc-simplification-2026-10-08.json`; HTML/CI log in cache
+`doc-simplification-2026-10-08/`. Earlier navigation verification remains in History and the same private audit.
+Handbook entry points to canonical procedures; start/end prompts and complete setup section preserved; handbook
+local-link/fence checks and all checkpoint/installer regression checks passed.
+
+## Next safe action
+
+**Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
+- **Next chat (Fable 5.2 as architect): Simple mode v6.** Read the new rule in [Rules](RULES.md#settled-decisions),
+  then start from [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop):
+  walk the Simple screens as a first-time wearer, write Design v6, split it into worker briefs.
+- Carry W1 (and W2 if wanted) from `high-hr-warning.md` §12 into the first v6 build.
+- Everything from chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone (`218aec72`); nothing is
+  running; all worktrees are clean and equal to the fork.
+- PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
+  while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
+
+Older parked items (unchanged): #2747/#2724 conflicts, the parked Stress wording candidate, the deferred original
+WHOOP app analysis and the REA outreach records (`private/rea-2026-10-09/`). Fresh chat is safe on this Mac;
+private evidence, logs and caches live on this Mac only.

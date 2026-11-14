@@ -115,7 +115,7 @@ request an export without a defined need. Give enough explanation to understand 
   sessions with records and taps, which he built and got merged upstream). Simple mode must never hide, shorten or
   restyle any part of it: the More → Training entry, the whole `LiftLogView`, the active-session bar, its Lock
   Screen session switch and the lifting-friendly Effort switch stay as they are in both modes. Checked 6 Nov; a
-  guard test is queued ([Simple mode → Start here](features/simple-mode.md#start-here-next-chat)).
+  guard test is queued ([Simple mode → Ground rules](features/simple-mode.md#ground-rules-and-how-to-work)).
 - **Keep the whole project simple without reducing quality (Utku, 8 Oct 2026).** This applies to code, files,
   documentation, workflows and instructions. One authoritative home per subject; link to it rather than ask Utku
   to save another copy. Preserve practical usage, setup and contribution guides. Consolidate duplication and remove

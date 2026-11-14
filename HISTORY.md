@@ -1,5 +1,24 @@
 # History
 
+- **14 Nov — chat 4 closed, project tidied for the next chat:** the high heart rate warning passed all five checks
+  on Utku's WHOOP 5.0 (strap logs of 12 and 14 Nov; [§12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)),
+  with two small follow-ups W1/W2. Utku set the next direction: Simple mode must become the most user-friendly
+  NOOP, not a shorter one (rule in [Rules](RULES.md#settled-decisions)), designed in the next chat on Fable 5.2.
+  Cleanup: about 98 GB of rebuildable build folders removed (handbook caches 61 GB → 1 GB, Xcode DerivedData,
+  package `.build` folders); 17 old recovery copies and the deleted branches (`tmp/stack-2026-11-05`, `…-05b`,
+  `fix/wind-down-one-sleep-need`, fork `testing-stack-next`) consolidated into one verified bundle
+  (`~/Library/Caches/noop-handbook/retired/noop-retired-refs-2026-11-14.bundle`, 99 refs); folder
+  `~/Developer/noop-hrwarn` added for `feat/high-hr-warning`; State rewritten short (old page in the
+  [archive](archive/state-until-2026-11-14.md)); Simple mode split into a current page and a
+  [diary](features/simple-mode-diary.md).
+- **12 Nov — chat 4: architect review, two workers, phone build:** Fable 5.2 audited the whole Simple mode diff
+  (F15–F18), set the roadmap, designed the [high heart rate warning](features/high-hr-warning.md); Opus 5.5 worker
+  chats built "Show everything on this screen" + "Report a problem" + the Lift Log guard (`a639d47a`, `258e0bf2`)
+  and the warning (`a2f9547e`..`f80aadc6`), each reviewed line by line (one buzz-gate error in the design caught
+  by worker 2; five small corrections sent back). Stack `25aa5f38` (verify.sh all green, 2395 Mac tests, 0
+  failures); `testing-build` `218aec72`, GitHub run 43264856702, verified by its files. GitHub first refused to
+  start the workflow ("Actions has been disabled"); a Mac-built iPhone file stood in for an hour until Utku
+  re-enabled Actions.
 - **6 Nov (morning) — Simple mode v4 and two measurement fixes delivered:** Simple Stress and Health, honest "not in yet" and "From <date>" lines; Charge skin temperature in the reader's unit (`2d482919`) and the sleep-debt tile's WHOOP source (`a41d40d7`), both platforms, fork Android CI green, upstream PRs not yet opened (safety check). `testing-build` `5f63e6fa` (stack `af4a35d2`), run [42171643978](https://github.com/UtkuDenizAltiok/noop/actions/runs/42171643978) green, release 436150215 verified.
 - **6 Nov (late evening) — plain screen subtitles:** upstream PR [#2903](https://github.com/ryanbr/noop/pull/2903) (`ea831f16`, both platforms; Android's hard-coded subtitles became translated resources; Live's title is now "Live"). Shipped in `testing-build` `1fe468c8` (stack `3f147a69`), run [42120942031](https://github.com/UtkuDenizAltiok/noop/actions/runs/42120942031) green, `testing-latest` id 435819177 verified.
 - **6 Nov — Simple mode v3 (plain wording) delivered:** `feat/simple-mode` `5269b8a6`; stack `a863d3c8`; `testing-build` `4d18cf00` (merge route), run [42115214139](https://github.com/UtkuDenizAltiok/noop/actions/runs/42115214139) green, `testing-latest` five assets, IPA HTTP 200, NOOP 12.1.0 (439), release id 435778305. Branch: StrandTests 2320, Tools 338, parity 50, i18n/doc lint clean; stack: Release iPhone build, StrandTests 2337.

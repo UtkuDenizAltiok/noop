@@ -1,6 +1,6 @@
 # NOOP sessions
 
-Use these prompts in a Codex chat for `~/Developer/noop`. A **session means one chat**; the next session is a
+Use these prompts in a new chat (Claude Code or Codex) for `~/Developer/noop`. A **session means one chat**; the next session is a
 **new chat with no previous conversation context**. It must recover from saved files and current evidence.
 Send **Start** first. Once the chat is ready, send a specific task, **Deep improvement** or **Deep search**.
 Send **Finish** when you want the active work completed and a handover prepared. This file is the single home
@@ -37,21 +37,25 @@ Finish this NOOP session for a new chat with no previous conversation context. F
 
 ## Architect and worker chats (since 12 Nov 2026)
 
-[Rules](RULES.md#settled-decisions) set the split: an architect chat plans and reviews, Opus 5.5 worker chats
-implement. Each brief is a ready prompt kept beside its design, so there is one copy:
-[Simple mode → Worker brief A1](features/simple-mode.md#worker-brief-a1--nothing-lost-one-tap-away-copy-this-to-an-opus-55-chat)
-and [High heart rate warning → Worker brief](features/high-hr-warning.md#8-worker-brief-copy-this-to-an-opus-55-chat).
-A worker does one brief, on the branch it names, and never touches the testing stack, the phone build or an
-upstream PR. Review prompt for the architect chat (or the next Start chat):
+[Rules](RULES.md#settled-decisions) set the split: the architect chat (Claude Fable 5.2) researches, designs,
+writes worker briefs, reviews each diff against its brief, stacks, verifies and ships the phone build; **Opus 5.5
+worker chats write the app code**, one brief each, on the branch the brief names, and never touch the testing
+stack, the phone build or an upstream PR. One worker builds and tests at a time on this Mac. A brief is a ready
+prompt kept beside its design; two worked examples:
+[Simple mode diary → Worker brief A1](features/simple-mode-diary.md#worker-brief-a1-done--nothing-lost-one-tap-away-copy-this-to-an-opus-55-chat)
+and [High heart rate warning → Worker brief](features/high-hr-warning.md#8-worker-brief-copy-this-to-an-opus-55-chat)
+(its §11 is a worked review record).
+
+**New architect chat — copy this** (14 Nov; Utku runs it on Fable 5.2; it replaces Start for this chat):
 
 ```text
-Review the worker branches named in dist/features/simple-mode.md "The roadmap" step 3. For each, read the whole diff against its brief and design page, run the verification the brief lists, and list every deviation, missing test and unverified claim. Fix nothing silently: send small corrections back as a short worker brief. When both pass, follow step 3 (stack, phone build), update and upload the handbook, and tell me what to check on my phone. End with simple numbered next steps for me.
+Prepare this new NOOP chat in ~/Developer/noop as the architect. Read the app's AGENTS.md, dist/AGENTS.md, dist/RULES.md and dist/STATE.md, and follow dist/SESSIONS.md's start procedure. Then begin Simple mode v6 from "Next chat begins here" in dist/features/simple-mode.md: Simple mode must become the most user-friendly NOOP, decided as a professional fitness coach, physiologist, doctor and software developer, without deleting information or features. Walk every Simple screen as a first-time wearer, write Design v6, then direct Opus 5.5 worker chats to build it, review their work and ship it to my phone. Explain everything to me in plain everyday words; I am not a coder.
 ```
 
-Prompt for the next architect chat (14 Nov; Utku runs it on Fable 5.2):
+**Review prompt** (for the architect, when a worker hands back):
 
 ```text
-Continue NOOP as the architect. Read AGENTS.md, dist/AGENTS.md, dist/RULES.md (especially "Simple mode must become the most user-friendly NOOP") and dist/STATE.md, then start from "Next chat begins here" in dist/features/simple-mode.md: walk every Simple screen as a first-time wearer, write Design v6 from the coach, physiologist, doctor and developer viewpoints without deleting information, and split it into Opus 5.5 worker briefs. Explain everything to Utku in plain everyday words.
+Review the worker branch <branch> against its brief and design page in dist/features/. Read the whole diff, run the verification the brief lists, and list every deviation, missing test and unverified claim. Send small corrections back to the worker; accept only when the diff matches. Then stack, verify.sh, ship and tell Utku plainly when the build is ready.
 ```
 
 ## Deep research requirements
