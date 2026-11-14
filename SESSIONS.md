@@ -48,6 +48,12 @@ upstream PR. Review prompt for the architect chat (or the next Start chat):
 Review the worker branches named in dist/features/simple-mode.md "The roadmap" step 3. For each, read the whole diff against its brief and design page, run the verification the brief lists, and list every deviation, missing test and unverified claim. Fix nothing silently: send small corrections back as a short worker brief. When both pass, follow step 3 (stack, phone build), update and upload the handbook, and tell me what to check on my phone. End with simple numbered next steps for me.
 ```
 
+Prompt for the next architect chat (14 Nov; Utku runs it on Fable 5.2):
+
+```text
+Continue NOOP as the architect. Read AGENTS.md, dist/AGENTS.md, dist/RULES.md (especially "Simple mode must become the most user-friendly NOOP") and dist/STATE.md, then start from "Next chat begins here" in dist/features/simple-mode.md: walk every Simple screen as a first-time wearer, write Design v6 from the coach, physiologist, doctor and developer viewpoints without deleting information, and split it into Opus 5.5 worker briefs. Explain everything to Utku in plain everyday words.
+```
+
 ## Deep research requirements
 
 Use the chat already prepared by Start. Do not rerun the complete start procedure for each prompt. Refresh the

@@ -1,5 +1,42 @@
 # Simple mode and the human-friendly NOOP project
 
+## Next chat begins here: Simple mode v6, the most user-friendly NOOP
+
+**Utku's direction, 14 Nov 2026 (rule in [Rules](../RULES.md#settled-decisions)):** Simple mode is today only
+*simpler* than the full NOOP. It must become the most user-friendly mode, so a wearer understands and uses the app
+without confusion, decided from four viewpoints (fitness coach, physiologist, doctor, software developer), and never
+by deleting information or features. He is not the expert; the architect decides. He asked that design and
+building wait for this next chat, run on Claude Fable 5.2 as architect, with Opus 5.5 workers implementing.
+
+**What exists to build on** (all on the phone since 12 Nov, build `218aec72`): Simple mode v5 (Rounds 1–6 below),
+"Show everything on this screen" on six screens (`258e0bf2`), "Report a problem" in More, the Lift Log guard test,
+and the high heart rate warning ([its page](high-hr-warning.md), hardware-checked 14 Nov). Everything is reviewed,
+committed, pushed and on the testing stack `25aa5f38`; nothing is running.
+
+**Suggested first moves** (suggestions only; the next architect decides):
+1. **Walk every Simple screen as a first-time wearer** in the simulator (build and seed: "How to work" below) and
+   write down every moment of confusion: a word a newcomer does not know, a number with no meaning attached, two
+   names for one thing, a card whose point is unclear, a missing "so what do I do?", a screen whose title does not
+   say what question it answers. That list, not the full view, is v6's starting point.
+2. **Judge each screen from the four viewpoints** and the wearer's real day: morning (did I recover, how hard
+   today), after training (how hard was it), evening (when to sleep), over weeks (am I improving), and rarely a
+   warning (illness signs, strap problems). Also the first launch and first week, when there is no baseline yet.
+3. **Write "Design v6" into this page:** principles, then screen by screen (Today, Sleep, Trends, Stress, Health,
+   Workouts, Live, More, Settings, the first-run flow), the exact copy, what each number is compared with, and
+   what stays one tap away. Keep the presentation-only boundary and the parity rules.
+4. **Split it into small worker briefs**, one at a time on `feat/simple-mode`; review each diff; stack; build;
+   then ask Utku specific, plain questions on the phone ("on Today, could you tell what to do today?").
+
+**Known inputs to weigh** (not decisions): open findings F12, F16, F17, F18 (Audit verdict below); each score
+carries an invented name plus a WHOOP caption (Charge "Recovery", Effort "Strain", Rest "Sleep") — check whether
+that helps or confuses; numbers like HRV and resting heart rate need "compared with your normal" everywhere;
+Utku's 6 Nov remark that the original "looks like AI slop" (design carefully what to show and emphasise); the
+heart rate warning's two small follow-ups W1 and W2 ([§12](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)),
+best shipped with the first v6 build.
+
+**Working with Utku:** plain everyday words, no technical terms; never ask him about builds, Git or GitHub; end
+every answer with one to three simple numbered next steps; tell him plainly when a build is ready before he tests.
+
 ## Start here (next chat)
 
 **Goal** (Utku, 4–6 Nov 2026; rule in [Rules](../RULES.md#settled-decisions)): a calm, correct, efficient NOOP

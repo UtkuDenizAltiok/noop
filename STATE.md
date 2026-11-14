@@ -1,6 +1,6 @@
 # State
 
-Updated **12 Nov 2026 (end of chat 4: architect review, two worker chats, phone build)**. The agent in the chat owns project execution under
+Updated **14 Nov 2026 (end of chat 4: reviews, phone build, warning checked on the strap, Utku's new Simple mode direction)**. The agent in the chat owns project execution under
 [Rules](RULES.md); since 12 Nov an architect chat plans and reviews and Opus 5.5 worker chats implement.
 
 ## Now — chat 4, 12 Nov: architect review, new roadmap, high heart rate warning designed (app code by worker chats)
@@ -80,11 +80,15 @@ checks.**
     and resumed with "try again". Checked afterwards: all three worktrees clean and equal to the fork, no
     half-finished merge or rebase, no stray build or simulator, empty stash; and the final code was read and
     fully tested after the last pause. No damage.
-- [ ] **Utku on the phone** — he was told on 12 Nov that the build is ready: just update (AltStore, install
-  over the existing app), then the five checks in
-  [`high-hr-warning.md` §9](features/high-hr-warning.md#9-checks-on-utkus-phone-after-the-build-ships-about-10-minutes)
-  and a look at "Show everything on this screen" on Today, Sleep, Trends, Stress, Health and Workouts. He is not a
-  coder: never ask him about builds, Git or GitHub; ask only what he saw and felt, and for the strap log.
+- [x] **High heart rate warning checked on Utku's WHOOP 5.0** (12 and 14 Nov): all five checks pass on the
+  strap-log evidence; two small follow-ups W1 (settings lines flood the log) and W2 (on/off at the limit).
+  [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov).
+  His logs: `dist/private/strap-logs/` (local only).
+- [ ] **Simple mode v6, Utku's new direction (14 Nov):** Simple mode is only *simpler*; it must become the most
+  user-friendly NOOP, decided as coach, physiologist, doctor and developer, never by deleting information.
+  He asked that design and building wait for the next chat on Fable 5.2. Starts from
+  [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop);
+  rule in [Rules](RULES.md#settled-decisions). Not started: no design written, no code changed.
 - The two worker chats are idle and kept on purpose (they hold the context for follow-up fixes): "1 of 2: Simple
   mode, show everything in one tap" (`local_cc02f59e-1536-4d0f-97e8-2059b0fedd06`) and "2 of 2: High heart rate
   warning (after 1)" (`local_f93fc0f3-d728-48cd-a62d-07a1b568e36c`). Their worktrees under
@@ -537,16 +541,12 @@ local-link/fence checks and all checkpoint/installer regression checks passed.
 ## Next safe action
 
 **Continue from [Simple mode → The roadmap](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue), Phase A.**
-- Everything built in chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone build (`218aec72`, see Now).
-- **First, read what Utku reports** from the phone: the five warning checks (`high-hr-warning.md` §9) and what he
-  noticed in Simple mode. A failed check is diagnosed from his strap log ("High HR warning:" lines,
-  `tools/strap-log.py`) before any code changes. A fix is a short brief to the worker chat that has the context
-  (or a new Opus 5.5 worker), then architect review of the diff, stack, `verify.sh`, build. The architect chat
-  writes no app code (Rules, 12 Nov).
-- If all five checks pass: record the hardware evidence in `high-hr-warning.md`, then roadmap Phase B in
-  [Simple mode](features/simple-mode.md#the-roadmap-architects-decision-12-nov-replaces-the-earlier-queue)
-  (his daily-use reports, the first-run screen, F12, F17).
-- If a start of "Testing build (fork)" is refused again: Workflow §6, "When the workflow cannot be started".
+- **Next chat (Fable 5.2 as architect): Simple mode v6.** Read the new rule in [Rules](RULES.md#settled-decisions),
+  then start from [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop):
+  walk the Simple screens as a first-time wearer, write Design v6, split it into worker briefs.
+- Carry W1 (and W2 if wanted) from `high-hr-warning.md` §12 into the first v6 build.
+- Everything from chat 4 is reviewed, on the stack (`25aa5f38`) and on the phone (`218aec72`); nothing is
+  running; all worktrees are clean and equal to the fork.
 - PR care is only reading: answer a maintainer comment once if one appears; no retries, no new upstream PRs
   while upstream is quiet. (The "Tonight" line mentioned in older notes was built in Round 6.)
 

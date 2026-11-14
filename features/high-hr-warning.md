@@ -1,10 +1,9 @@
 # High heart rate warning — design and worker brief
 
 Asked for by Utku on 12 Nov 2026. Designed by the architect chat the same day (research only, no app code
-written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`f80aadc6`),
-reviewed and accepted by the architect 12 Nov (§11), in `testing-stack` `25aa5f38` and in the phone build
-`218aec72` on `testing-latest` since 12 Nov. The buzz and the background behaviour are unproven until §9 is run on
-the strap.**
+written by the architect). **Status: built by worker 2 on `feat/high-hr-warning` (`a2f9547e`..`f80aadc6`), reviewed and accepted (§11),
+in `testing-stack` `25aa5f38` and phone build `218aec72`. Hardware-checked on Utku's WHOOP 5.0 on 12 and 14 Nov:
+all five checks pass on the strap-log evidence (§12). Two small follow-ups (W1, W2) are open.**
 
 ## 1. What Utku asked for
 
@@ -285,3 +284,34 @@ rebase: this Mac refuses force-pushes); the "too few readings to judge" log line
 stretch); a true comment on `canBuzz`; the caption under a disabled "Feel the buzz" in nine locales; the
 Today row on the same `NoopMetrics` tokens as `SimpleModeShowAllRow`. Worker-reported after the
 corrections: 2,368 tests, 0 failures. On the stack the architect's own run: 2,395 tests, 0 failures.
+
+## 12. Hardware evidence (Utku's WHOOP 5.0, 12 and 14 Nov)
+
+Sources: two strap logs Utku saved from the phone (12 Nov 23:37 and 14 Nov 18:28), kept locally in
+`dist/private/strap-logs/` (health data; never uploaded). The phone ran build `218aec72` (the warning exists only
+there). Each buzz is visible as one `→ Run Haptics Pattern payload=012f98…01 (puffin cmd=0x13)` line from
+`BLEManager.send`; the last byte `01` is the 5/MG two-buzz setting (#926). Times are whole seconds.
+
+| Check | Evidence (14 Nov unless stated) | Result |
+|---|---|---|
+| 1. Two buzzes | "Feel the buzz" at 18:24:33 sent one two-buzz command | Pass on the command; Utku reported no problem with the feel |
+| 2. Starts on time | Switched on 18:24:52 (above 72 bpm for 30 s); first buzz 18:25:22, exactly 30 s; then 27, 32, 37, 42 | Pass |
+| 3. Stops | Limit raised past the heart rate (89): "back under the limit (now 89, 30-s average 89) after 5 buzzes" at 18:25:47; no buzz after 18:25:42 | Pass |
+| 4. Locked phone | Switched on 18:26:46; app to the background 18:26:56 (`flush reason=background`); over the limit 18:27:16; buzzes every 5 s in the background (16, 21, 26, 31, 36, 41, 46, 51); back to the foreground 18:27:54 | Pass (about one minute in the background, not two) |
+| 5. Honest reading | Heart-rate samples (every ~31 s) while buzzing 90, 97, 93 (12 Nov: 74, 75, 76); between buzzing 89, 96, 93, 90 (12 Nov: 73, 75, 78, 76) | Pass: same range, no sign the motor disturbs the reading (sparse sample) |
+
+No "no buzz was sent", "paused", disconnect or error line in either window. 12 Nov (60-s window) behaved the same:
+first episode at 23:35:14, eight buzzes to 23:35:52.
+
+**Follow-ups found in the logs (not fixed yet; small; best shipped with the first Simple mode v6 build):**
+- **W1, settings lines flood the strap log.** Every stepper step writes `on (above X bpm for Y s)`: 47 lines on
+  12 Nov and 60 on 14 Nov, up to five a second (holding a stepper repeats). The design said "changes only" but did
+  not foresee a held stepper. Fix: log switching on and off at once; log a changed value once it has stayed the
+  same for about 2 s, checked at the next reading (no timer); and name the limit in the over/back lines
+  (`over the limit of 72 bpm (30-s average 90, now 88)`) so each episode line stands on its own. Worker 2's chat has
+  the context.
+- **W2, on/off at the limit.** 12 Nov 23:34:57 over the limit, 23:34:58 back under after one buzz, 23:35:14 over
+  again, with the heart rate at 70–71 against a limit of 70. This is the designed fast stop (10-s median);
+  buzzes stay at least 4.5 s apart. Watch in real use; if it annoys, stop only at 2 bpm under the limit.
+- Seen and expected: one 7-s gap in a rhythm (12 Nov 23:35:28 → 35) while the stepper was being changed; the
+  buzz is decided when a reading arrives.

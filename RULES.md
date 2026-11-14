@@ -63,6 +63,28 @@ request an export without a defined need. Give enough explanation to understand 
   refused `gh pr create`, `gh pr close`/`reopen` on our PRs and the Auto-fix switch until he said yes in chat.
   When it blocks, explain the block once in plain words and name the permission rule that would allow it;
   never try to work around it.
+- **Simple mode must become the most user-friendly NOOP, not a shorter one (Utku, 14 Nov 2026).** His words:
+  "You must act like a professional fitness coach, professional physisist, professional doctor, and professional
+  software developer and decide what is the perfect UI for the user. Simple mode is not actually the simple mode
+  it is just simpler than the original noop Ui. It should the most user friendly perfect mode so user can
+  understand and easily use the app without getting confues its not just simple so that you remove and delete
+  some informations or some features you must carefully and intelligently think about the best perfect way. I
+  am not the expert in this area".
+  What this means (the 14 Nov chat's reading, labelled as interpretation; the next architect may refine it):
+  - The measure is **understanding**, not fewer cards: a first-time wearer opens any screen and, without help,
+    knows what it says, whether that is good for them, and what to do next.
+  - **Removing is not the method.** Information and features stay; they are ordered by what the wearer needs,
+    said in plain words, compared with the wearer's own normal, and explained one tap away. Today's Simple mode
+    (v5 + "Show everything on this screen") is judged by Utku as only *simpler*: the next design starts from
+    the wearer's questions, not from the full view minus cards.
+  - **Four viewpoints decide every screen:** fitness coach (what to do today and this week), physiologist
+    ("physisist" in his words; read as the exercise-physiology view: what each signal really measures and how
+    much it varies), doctor (what is a warning, what is normal variation; never alarm or reassure beyond the
+    evidence), software developer (one name per thing, consistent, fast, nothing broken or lost).
+  - **He is not the expert:** the architect decides and explains; he reports what confuses him on the phone.
+  - Still in force: hidden is not removed only when it is one tap away; the Lift Log is never hidden or
+    restyled; presentation only, no figure changes without the analytics rules.
+  - **Design and building start in the next chat (Fable 5.2)**, from [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
 - **Utku is not a coder (his words, 12 Nov 2026).** "I am not a coder and not a frequent GitHub user… it's your
   job and decision to do what is needed." So: never give him a building, Git or GitHub choice, and never report
   in those terms. Decide and do it. Ask him only for what he can see or feel (the phone, the strap, a strap
