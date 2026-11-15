@@ -7,24 +7,24 @@ also builds: Utku asked for no helper agents and no worker chats.
 
 ## Now
 
-**Simple mode v6: designed (15 Nov), step 1 of 7 built and on its way to the phone.**
-[Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) holds the rules, every screen's
-wording, the science changes and the seven-step build plan. Step 1, "Today answers", is `053ef4bd` on
-`feat/simple-mode` ([as built](features/simple-mode.md#step-1-as-built-15-nov-featsimple-mode-053ef4bd)); the
+**Simple mode v6: designed (15 Nov); step 1 of 7 is built and on the releases page, waiting for Utku to
+update and look.** [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) holds the rules,
+every screen's wording, the science changes and the seven-step build plan. Step 1, "Today answers", is `053ef4bd`
+on `feat/simple-mode` ([as built](features/simple-mode.md#step-1-as-built-15-nov-featsimple-mode-053ef4bd)); the
 heart rate warning's W1 is `4e7fd6f5` on `feat/high-hr-warning`. Both are on `testing-stack` `26f3bfe7`
-(`verify.sh` all steps passed, real-iPhone Release build ok) and in `testing-build` `ab72270c`.
+(`verify.sh` all steps passed, real-iPhone Release build ok) and shipped as `testing-build` `ab72270c` (GitHub
+run 43774881413, success, verified by its files on 16 Nov). Nothing is running.
 
-**Running job (started 16 Nov):** GitHub run **43774881413**, "Testing build (fork)" on `testing-build`
-`ab72270c`. It survives the chat. Check: `gh run view 43774881413 --repo UtkuDenizAltiok/noop`. Done means: run
-success, release `testing-latest` targets `ab72270c…`, five files, the `.ipa` downloads (HTTP 200) and its
-`de.lproj` holds a step 1 string ("Ein normaler Trainingstag"). Until that is checked, the phone build on the
-releases page may be mid-rebuild (the workflow recreates the release before building); on a failure, read the
-log, fix, re-dispatch, and tell Utku plainly. Do not dispatch a second run while this one is in progress.
+Utku was told on 16 Nov that the build is ready ("just update") and was asked step 1's three questions. His
+answers, and anything he reports from the phone, come before step 2.
 
 Open items, in order:
-- [ ] **Verify the phone build of step 1** (the running job above), then tell Utku it is ready ("just update") and
-  ask step 1's three questions ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)).
-- [ ] **Build step 2, "Tap a score, get an answer"** (the three score pages, Heart rate today). Not started.
+- [ ] **Utku: update the app and answer step 1's three questions** ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)):
+  could he tell in five seconds how hard to go today; did "Tonight" give a bedtime that suits him; anything on
+  Today he still does not understand. Also worth asking: does "Strap not connected" ever show while the strap is
+  in fact connected (it waits 8 seconds after Today appears).
+- [ ] **Build step 2, "Tap a score, get an answer"** (the three score pages, Heart rate today). Not started;
+  fix first whatever he reports about step 1.
 - [ ] Steps 3–7 of the build plan, one at a time, each shipped before the next.
 - [ ] **Heart rate warning W2** (on/off at the limit), optional — [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov).
 - [ ] **Utku: archive the two finished worker chats** in the app sidebar ("1 of 2: Simple mode, show everything
@@ -35,13 +35,13 @@ Open items, in order:
   appears.
 
 Done in chat 5 (15–16 Nov): start procedure; the walk; Design v6; two rules of 15 Nov; step 1 and W1 built,
-verified and stacked. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
+verified, stacked and shipped. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
 
 ## Where everything is
 
 **Phone:** `testing-latest` = `testing-build` `ab72270c` = stack `26f3bfe7` + `fork/ships-template`, NOOP 12.1.0
 (439), GitHub run 43774881413 (16 Nov). The `.ipa` was checked on 16 Nov: release target `ab72270c`, HTTP 200,
-sha256 `f41616e3…`, its `de.lproj` holds step 1's strings. Not yet installed by Utku: his iPhone 16 Plus still
+sha256 `f41616e3…`, its `de.lproj` holds step 1's strings; all five files present after the run ended. Not yet installed by Utku: his iPhone 16 Plus still
 runs `218aec72` (12 Nov) until he updates. Install = **just update** through AltStore, never delete first.
 Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest`.
 
@@ -107,12 +107,14 @@ and `testing-latest`; one release.
 
 ## Next safe action
 
-1. Read [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop)
-   and [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) (rules, names, "Today",
-   "Tonight").
-2. Build **step 1, "Today answers"**, in `~/Developer/noop-simple` (`feat/simple-mode`, tip `258e0bf2`); the
-   warning's W1 goes on `feat/high-hr-warning`. Verify as "How to work" says (tests seen to fail, NOOPiOS and
-   Strand builds, StrandTests, i18n gate, doc lint, Tools tests, a simulator walk in light and dark).
-3. Stack as a fast-forward onto `testing-stack`, `verify.sh`, ship by the merge-commit route
-   ([Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)), tell Utku plainly that the build is ready ("just
-   update"), and ask him step 1's three questions.
+1. Read Utku's answers about step 1 (above). A wrong or confusing thing on his phone is fixed first, on
+   `feat/simple-mode`, and shipped the same way.
+2. Otherwise build **step 2, "Tap a score, get an answer"** from
+   [Design v6 → Score pages and Heart rate today](features/simple-mode.md#screen-by-screen), in
+   `~/Developer/noop-simple` (`feat/simple-mode`, tip `053ef4bd`). Verify as "How to work" says (tests seen to
+   fail, NOOPiOS and Strand builds, StrandTests, i18n gate, doc lint, Tools tests, a simulator walk in light and
+   dark).
+3. Stack as a fast-forward onto `testing-stack` in a scratch worktree at `origin/testing-stack` (merge the
+   catalogue by key with `xcmerge.py`), `verify.sh`, a Release build for a real iPhone, then ship by the
+   merge-commit route ([Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)), check the files, tell Utku plainly
+   that the build is ready ("just update") and ask step 2's question.

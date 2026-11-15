@@ -1,5 +1,14 @@
 # History
 
+- **16 Nov — Simple mode v6 step 1, "Today answers", shipped (chat 5, built by the architect chat):**
+  `feat/simple-mode` `053ef4bd` (score words under the rings, the early-estimate line, a headline for Your day,
+  "Tonight" always with a goal that adds catch-up for sleep debt, two-way Charge bars, steps and active calories
+  against the wearer's usual day, "Strap not connected" with Connect; 12 new tests, each seen to fail) and the
+  warning's W1 `4e7fd6f5` (a changed setting logged once, the limit named in every line). Branch: 2355 Mac tests,
+  0 failures. Stack `26f3bfe7`: `verify.sh` all steps passed (2408 Mac tests, 0 failures), real-iPhone Release
+  build ok. `testing-build` `ab72270c`, run [43774881413](https://github.com/UtkuDenizAltiok/noop/actions/runs/43774881413)
+  success; release target, five files, `.ipa` HTTP 200 (sha256 `f41616e3…`) and its `de.lproj` strings checked.
+  Details: [diary, Round 9](features/simple-mode-diary.md#round-9-1516-nov-2026-v6-step-1-today-answers-built-by-the-architect-chat).
 - **15 Nov — chat 5: the first-time-wearer walk and Design v6.** Start procedure clean (18 worktrees clean and
   pushed, no job, upstream still `2a1de760`, no maintainer comment). The architect (Fable 5.2, no helper agents,
   Utku's instruction) built the phone's exact code (`testing-stack` `25aa5f38`) for the simulator and walked

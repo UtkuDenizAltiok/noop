@@ -7,10 +7,11 @@ than the full NOOP. It must become the most user-friendly mode, so a wearer unde
 confusion, decided from four viewpoints (fitness coach, physiologist, doctor, software developer), and never by
 deleting information or features. He is not the expert; the architect decides.
 
-**Where it stands (15 Nov 2026, chat 5):** the walk is done and **Design v6 is written** (the next section).
-**Nothing of v6 is built yet.** The next action is **build step 1, "Today answers"** from
-[the build plan](#the-build-plan-one-step-at-a-time), on `feat/simple-mode`, then stack, verify and ship it to
-Utku's phone, then ask him the three plain questions listed there.
+**Where it stands (16 Nov 2026, chat 5):** Design v6 is written (the next section) and **step 1 of 7, "Today
+answers", is built and shipped**: `053ef4bd` on `feat/simple-mode`, on `testing-stack` `26f3bfe7`, phone build
+`ab72270c` on the releases page since 16 Nov ([as built](#step-1-as-built-15-nov-featsimple-mode-053ef4bd)).
+Utku has been asked its three questions. The next action is **step 2, "Tap a score, get an answer"** from
+[the build plan](#the-build-plan-one-step-at-a-time), after whatever he reports about step 1.
 
 **Who builds (Utku, 15 Nov):** his words were "no subagents you do the work only!". Read as: the architect chat
 does the walk, the design and the building itself, one step at a time, without helper agents or worker chats
@@ -20,8 +21,7 @@ walk) before it reaches the stack.
 
 **What exists to build on** (on the phone since 12 Nov, build `218aec72`): Simple mode v5 (Rounds 1–6), "Show
 everything on this screen" on six screens, "Report a problem", the Lift Log guard test, the high heart rate
-warning ([its page](high-hr-warning.md)). The walk's scratch build of the phone's exact code is
-`~/Developer/noop-v6walk` (detached at `testing-stack` `25aa5f38`; delete it when step 1 has its own build).
+warning ([its page](high-hr-warning.md)), and v6 step 1 (since 16 Nov, build `ab72270c`).
 
 **Working with Utku:** plain everyday words, no technical terms; never ask him about builds, Git or GitHub; end
 every answer with one to three simple numbered next steps; tell him plainly when a build is ready before he tests.
