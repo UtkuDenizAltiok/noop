@@ -1,5 +1,15 @@
 # History
 
+- **15 Nov — chat 5: the first-time-wearer walk and Design v6.** Start procedure clean (18 worktrees clean and
+  pushed, no job, upstream still `2a1de760`, no maintainer comment). The architect (Fable 5.2, no helper agents,
+  Utku's instruction) built the phone's exact code (`testing-stack` `25aa5f38`) for the simulator and walked
+  the first launch and every Simple screen: 47 points of confusion and seven science findings
+  ([diary, Round 8](features/simple-mode-diary.md#round-8-15-nov-2026-the-first-time-wearer-walk-behind-design-v6)).
+  [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) written: ten rules, one name per
+  thing, each screen's wording, the science changes, a seven-step build plan. Utku's sleep-need question
+  answered (S1: a flat 8 h for nearly everyone; sources read: NSF 2015, AASM/SRS 2015, Kitamura 2016, WHOOP's
+  help pages). Two rules recorded (the architect builds itself; unscientific things are fixed with evidence).
+  No app code changed; the phone build stays `218aec72`.
 - **14 Nov — chat 4 closed, project tidied for the next chat:** the high heart rate warning passed all five checks
   on Utku's WHOOP 5.0 (strap logs of 12 and 14 Nov; [§12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)),
   with two small follow-ups W1/W2. Utku set the next direction: Simple mode must become the most user-friendly

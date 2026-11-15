@@ -84,14 +84,15 @@ request an export without a defined need. Give enough explanation to understand 
   - **He is not the expert:** the architect decides and explains; he reports what confuses him on the phone.
   - Still in force: hidden is not removed only when it is one tap away; the Lift Log is never hidden or
     restyled; presentation only, no figure changes without the analytics rules.
-  - **Design and building start in the next chat (Fable 5.2)**, from [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
+  - **Designed on 15 Nov** ([Simple mode → Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop));
+    building starts from [Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
 - **Utku is not a coder (his words, 12 Nov 2026).** "I am not a coder and not a frequent GitHub user… it's your
   job and decision to do what is needed." So: never give him a building, Git or GitHub choice, and never report
   in those terms. Decide and do it. Ask him only for what he can see or feel (the phone, the strap, a strap
   log) or for one plain click when only his account can do it ("open this page and tell me what it says"). He
   starts testing only after being told plainly that the build is ready. The architect also reviews, stacks,
   verifies and ships the phone build itself (he answered "Yes, build it"); only app code goes to workers.
-- **Architect and workers (Utku, 12 Nov 2026).** The most capable model in the chat (Claude Fable 5.2 on
+- **Architect and workers (Utku, 12 Nov 2026; changed in part on 15 Nov, see the entry after this one).** The most capable model in the chat (Claude Fable 5.2 on
   12 Nov) is the architect: it researches, checks earlier work, decides the roadmap, writes the design and the
   worker briefs, and reviews what comes back. It does not write app code. **Opus 5.5 worker chats implement**,
   one brief each, on the branch the brief names, and hand back a pushed, verified branch with an honest list of
@@ -99,6 +100,19 @@ request an export without a defined need. Give enough explanation to understand 
   before the diff has been read against its brief. Briefs live in the handbook next to their design
   ([Simple mode](features/simple-mode.md), [High heart rate warning](features/high-hr-warning.md)); the
   prompts are in [Sessions](SESSIONS.md). "Codex/ChatGPT" in older entries means whichever agent runs the chat.
+- **The architect does the work itself (Utku, 15 Nov 2026).** His words, starting chat 5: "Walk every Simple
+  screen as a first-time wearer, write Design v6, no subagents you do the work only!" He also removed "then
+  direct Opus 5.5 worker chats to build it" from the prompt he was given. Reading (the 15 Nov chat's, labelled
+  as interpretation): no helper agents and no worker chats; the architect chat researches, designs **and builds**
+  v6 itself, one step at a time, keeping every check a worker's change had to pass (tests seen to fail, both app
+  targets built, the gates, a simulator walk) before anything reaches the stack or the phone. This replaces the
+  "does not write app code" half of the 12 Nov rule above until he says otherwise.
+- **Unscientific or half-thought things are fixed too (Utku, 15 Nov 2026).** His words: "if you find somethin
+  not very well thought or implemented and not very scientific you should also make them better and scientific
+  as well try to make this Noop whoop 5.0 thing perfect and best". It widens part (3) of the 4–5 Nov rule; it
+  does not loosen Engineering rules 2–3: a figure still changes only with a cited method and a test, on both
+  platforms. His first question under it (is a sleep need of 8 hours every day realistic, and does WHOOP do
+  that?) is answered in [Simple mode → Science changes](features/simple-mode.md#science-changes-each-its-own-change-evidence-first), S1.
 - **High heart rate warning (Utku, 12 Nov 2026).** The wearer sets a heart rate and a duration (his example:
   110 bpm for 90 s); while the average over that time is above the limit the strap buzzes twice every 5 s. An
   average, so a wrong reading neither starts nor stops it. A switch the wearer turns on and off, default off.
@@ -224,3 +238,10 @@ request an export without a defined need. Give enough explanation to understand 
 - Resistance-training dose–response meta-regression (Sports Medicine, 2025) and the hypertrophy umbrella review
   (Frontiers, 2022) — behind the Lift Log's counting (`features/lift-log.md`).
 - Research for new physiology is cited in the PR that uses it, and added here once merged.
+- Behind Design v6 (read 15 Nov 2026; nothing merged yet): sleep need: Hirshkowitz et al., National Sleep
+  Foundation, Sleep Health 2015 (7–9 h for adults, 7–8 h from 65); Watson et al., AASM and Sleep Research Society
+  consensus, 2015 (7 or more hours, ages 18–60); Kitamura et al., Sci Rep 2016;6:35812 (optimal sleep 8.41 h,
+  7.29–9.26 h between people, 15 young men; one hour of debt took four nights). Steps: Paluch et al., Lancet
+  Public Health 2022 (benefit levels off near 6,000–8,000 a day from 60, 8,000–10,000 below). Activity: WHO 2020
+  guidelines (150–300 min moderate or 75–150 min vigorous a week). WHOOP's own sleep need (baseline + strain +
+  debt − naps) is described on its help pages; its formula is not published.

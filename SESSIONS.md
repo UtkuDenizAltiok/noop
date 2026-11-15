@@ -52,7 +52,14 @@ and [High heart rate warning → Worker brief](features/high-hr-warning.md#8-wor
 Prepare this new NOOP chat in ~/Developer/noop as the architect. Read the app's AGENTS.md, dist/AGENTS.md, dist/RULES.md and dist/STATE.md, and follow dist/SESSIONS.md's start procedure. Then begin Simple mode v6 from "Next chat begins here" in dist/features/simple-mode.md: Simple mode must become the most user-friendly NOOP, decided as a professional fitness coach, physiologist, doctor and software developer, without deleting information or features. Walk every Simple screen as a first-time wearer, write Design v6, then direct Opus 5.5 worker chats to build it, review their work and ship it to my phone. Explain everything to me in plain everyday words; I am not a coder.
 ```
 
-**Review prompt** (for the architect, when a worker hands back):
+**Continue building v6 — copy this** (15 Nov; since Utku asked for no helper agents and no worker chats, the
+architect chat builds; it replaces Start for that chat):
+
+```text
+Prepare this new NOOP chat in ~/Developer/noop as the architect. Read the app's AGENTS.md, dist/AGENTS.md, dist/RULES.md and dist/STATE.md, and follow dist/SESSIONS.md's start procedure. Then continue Simple mode v6 from "Next chat begins here" in dist/features/simple-mode.md: build the next unfinished step of Design v6's build plan yourself (no subagents, no worker chats), verify it, add it to the testing stack and ship it to my phone, then ask me that step's plain questions. Explain everything to me in plain everyday words; I am not a coder.
+```
+
+**Review prompt** (for the architect, when a worker hands back; unused while the architect builds itself):
 
 ```text
 Review the worker branch <branch> against its brief and design page in dist/features/. Read the whole diff, run the verification the brief lists, and list every deviation, missing test and unverified claim. Send small corrections back to the worker; accept only when the diff matches. Then stack, verify.sh, ship and tell Utku plainly when the build is ready.

@@ -2,40 +2,318 @@
 
 ## Next chat begins here: Simple mode v6, the most user-friendly NOOP
 
-**Utku's direction, 14 Nov 2026 (rule in [Rules](../RULES.md#settled-decisions)):** Simple mode is today only
-*simpler* than the full NOOP. It must become the most user-friendly mode, so a wearer understands and uses the app
-without confusion, decided from four viewpoints (fitness coach, physiologist, doctor, software developer), and never
-by deleting information or features. He is not the expert; the architect decides. He asked that design and
-building wait for this next chat, run on Claude Fable 5.2 as architect, with Opus 5.5 workers implementing.
+**Utku's direction, 14 Nov 2026 (rule in [Rules](../RULES.md#settled-decisions)):** Simple mode was only *simpler*
+than the full NOOP. It must become the most user-friendly mode, so a wearer understands and uses the app without
+confusion, decided from four viewpoints (fitness coach, physiologist, doctor, software developer), and never by
+deleting information or features. He is not the expert; the architect decides.
 
-**What exists to build on** (all on the phone since 12 Nov, build `218aec72`): Simple mode v5 (Rounds 1–6 below),
-"Show everything on this screen" on six screens (`258e0bf2`), "Report a problem" in More, the Lift Log guard test,
-and the high heart rate warning ([its page](high-hr-warning.md), hardware-checked 14 Nov). Everything is reviewed,
-committed, pushed and on the testing stack `25aa5f38`; nothing is running.
+**Where it stands (15 Nov 2026, chat 5):** the walk is done and **Design v6 is written** (the next section).
+**Nothing of v6 is built yet.** The next action is **build step 1, "Today answers"** from
+[the build plan](#the-build-plan-one-step-at-a-time), on `feat/simple-mode`, then stack, verify and ship it to
+Utku's phone, then ask him the three plain questions listed there.
 
-**Suggested first moves** (suggestions only; the next architect decides):
-1. **Walk every Simple screen as a first-time wearer** in the simulator (build and seed: "How to work" below) and
-   write down every moment of confusion: a word a newcomer does not know, a number with no meaning attached, two
-   names for one thing, a card whose point is unclear, a missing "so what do I do?", a screen whose title does not
-   say what question it answers. That list, not the full view, is v6's starting point.
-2. **Judge each screen from the four viewpoints** and the wearer's real day: morning (did I recover, how hard
-   today), after training (how hard was it), evening (when to sleep), over weeks (am I improving), and rarely a
-   warning (illness signs, strap problems). Also the first launch and first week, when there is no baseline yet.
-3. **Write "Design v6" into this page:** principles, then screen by screen (Today, Sleep, Trends, Stress, Health,
-   Workouts, Live, More, Settings, the first-run flow), the exact copy, what each number is compared with, and
-   what stays one tap away. Keep the presentation-only boundary and the parity rules.
-4. **Split it into small worker briefs**, one at a time on `feat/simple-mode`; review each diff; stack; build;
-   then ask Utku specific, plain questions on the phone ("on Today, could you tell what to do today?").
+**Who builds (Utku, 15 Nov):** his words were "no subagents you do the work only!". Read as: the architect chat
+does the walk, the design and the building itself, one step at a time, without helper agents or worker chats
+(recorded in [Rules](../RULES.md#settled-decisions) with that reading labelled). The review discipline stays:
+every step is verified as a worker's would be (tests seen to fail, both app targets built, the gates, a simulator
+walk) before it reaches the stack.
 
-**Known inputs to weigh** (not decisions): open findings F12, F16, F17, F18 (Audit verdict below); each score
-carries an invented name plus a WHOOP caption (Charge "Recovery", Effort "Strain", Rest "Sleep") — check whether
-that helps or confuses; numbers like HRV and resting heart rate need "compared with your normal" everywhere;
-Utku's 6 Nov remark that the original "looks like AI slop" (design carefully what to show and emphasise); the
-heart rate warning's two small follow-ups W1 and W2 ([§12](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)),
-best shipped with the first v6 build.
+**What exists to build on** (on the phone since 12 Nov, build `218aec72`): Simple mode v5 (Rounds 1–6), "Show
+everything on this screen" on six screens, "Report a problem", the Lift Log guard test, the high heart rate
+warning ([its page](high-hr-warning.md)). The walk's scratch build of the phone's exact code is
+`~/Developer/noop-v6walk` (detached at `testing-stack` `25aa5f38`; delete it when step 1 has its own build).
 
 **Working with Utku:** plain everyday words, no technical terms; never ask him about builds, Git or GitHub; end
 every answer with one to three simple numbered next steps; tell him plainly when a build is ready before he tests.
+
+## Design v6: the most user-friendly NOOP
+
+Written 15 Nov 2026 from a walk of every Simple screen as a first-time wearer: 47 points of confusion (W1–W51; a few
+numbers are unused) and seven science findings (S1–S10, likewise), all listed with their evidence in the
+[diary, Round 8](simple-mode-diary.md#round-8-15-nov-2026-the-first-time-wearer-walk-behind-design-v6). Numbers in
+brackets below point there.
+
+### What was wrong with v5, in one paragraph
+
+v5 made the app calmer by showing less. It did not make it explain itself. A newcomer still meets six words for
+three scores, numbers with no "is that good?", bars with hidden meanings, advice from three different places, a
+big score that opens a statistics page when tapped, no word about tonight unless a switch elsewhere is on, and a
+"Health monitor" that never says whether anything is wrong. v6 keeps everything v5 shows and hides nothing more;
+it changes what each screen says first, what every number is compared with, and where a tap leads.
+
+### The six questions, and the one place each is answered
+
+| When | The wearer's question | Answered by |
+|---|---|---|
+| Morning | How am I today, and how hard should I go? | Today: scores, then "Your day" |
+| Day | How hard has today been? That workout? | Today: Effort and its range; Workouts |
+| Evening | When should I sleep, and how long? | Today: "Tonight" (always there, W16); Sleep |
+| Weeks | Am I getting fitter, sleeping better? | Trends, one verdict a chart (W23) |
+| Rarely | Is something off with my body? With the strap? | Health monitor's verdict (W36); the strap line on Today (W3) |
+| First two weeks | What is this telling me, and why the dashes? | "How to read NOOP" and "Getting to know you" (W1, W2) |
+
+### Ten rules for every Simple screen
+
+1. **The answer first, in words.** A screen opens with a sentence that answers its question. The number comes
+   second, the detail third.
+2. **Every number carries three things:** a plain name; for a score a word that says how good it is, for a body
+   reading its comparison with the wearer's own normal ("usually 57"); and its explanation one tap away, from the
+   number itself (W48).
+3. **One name per thing** (the table below). The WHOOP words appear once, in "How to read NOOP", and in the
+   guide's "also called" line (W6).
+4. **One adviser.** Only "Your day" on Today says how hard to train: it is the only place that weighs every
+   signal. Other screens describe what they see and point there (S9, W20, W34).
+5. **One shape per kind of number** (below; W24, W30, W43, W49, W50).
+6. **Colour means something.** Green: good for you. Amber: worth watching. Red: a warning. A reading's own colour
+   belongs to its icon and its chart line, never to its value (W35, W51).
+7. **Nothing is lost.** "Show everything on this screen" stays the last row; whatever a step moves or rewords
+   stays reachable there. The Lift Log is not touched. The full view (Simple mode off) stays identical to
+   upstream.
+8. **Honest about certainty.** An estimate is called an estimate. "Still learning" says how many nights are left.
+   A dash for what was not measured. No sentence claims more than the code that feeds it can know (S2).
+9. **Presentation only**, from the resolvers the full view uses, unless the change is listed under
+   [Science changes](#science-changes-each-its-own-change-evidence-first).
+10. **Readable.** No text on a picture (W26). Nothing cut off at phone width or at the largest text size (W35,
+    W42).
+
+### One name per thing
+
+| Thing | Its one name in Simple mode | Not used in Simple mode |
+|---|---|---|
+| The three scores | Charge, Effort, Rest | Recovery, Strain, Sleep score/performance (intro and guide only) |
+| How sure NOOP is | "Still learning you" / "Early estimate" / nothing when sure | Calibrating, Building, Solid as bare pills (W8) |
+| The wearer's usual value | "your normal", "usually 57" | baseline, typical, mean, vs 30-day |
+| A window of time | "last 90 days", "this week" | trailing, readings, "· M" |
+| Breathing | Breathing rate, "breaths a minute" | Resp rate, Respiratory, rpm (W38, W39) |
+| Oxygen | Blood oxygen | Blood O₂, raw SpO₂ (the raw tile moves to Show everything) |
+| Temperature | Skin temperature, "0.1° above your normal" | Skin temp Δ, Δ°C |
+| HRV | "Heart-rate variability (HRV)" first on a screen, then HRV | rMSSD |
+| Nightly target | Sleep need | — |
+| Tonight's target | Tonight's goal (the need plus catch-up) | a second "need" |
+| The wristband | strap | band, device, "WHOOP" for the strap |
+| Imported figures | "Imported from WHOOP" | a bare "WHOOP" badge (W5) |
+
+### One shape per kind of number
+
+- Scores from 0 to 100 are whole numbers on every Simple screen, workouts included. Effort on the 0–21 scale keeps
+  its one decimal (that scale's own convention).
+- A duration is always "7h 18m". Never decimal hours.
+- Heart rate and HRV are whole numbers. Breathing rate and temperature have one decimal.
+- A change is said in words with its unit and its comparison: "up 4 ms over these 3 months", "5 lower than usual",
+  "6% higher than last week". Never a bare "+6%". A change that rounds to nothing reads "no change".
+- One range picker everywhere: Week, Month, 3 months, 6 months, Year, All.
+
+### Score words (so a number is never alone, W7)
+
+Each word comes from one function per score, shared by every screen that prints it, and tested against the
+thresholds it reads so it cannot drift from them.
+
+- **Charge:** Low (under 34), Medium (34 to 66), High (67 and over): the thresholds the ring colour and the Effort
+  suggestion already use.
+- **Effort:** Easy, Moderate, Hard, Very hard, by where today's Effort sits on the 0–21 axis (under 10, 10 to 14,
+  14 to 18, over 18): the bands of `SimpleDayPlan.intensity`, so the word matches "a moderate day".
+- **Rest:** the Sleep tab's existing words (Poor, Fair, Good, Optimal, `sleepScoreWord`), now on Today as well.
+
+### Screen by screen
+
+**First run: "How to read NOOP"** (W1). A sheet shown once when Today first appears in Simple mode, and always
+available as the guide's first row, "Start here". The upstream wizard is not changed.
+- Three rows with the ring colours: "**Charge**: how ready your body is today, from 0 to 100. Worked out while you
+  sleep." · "**Effort**: how hard your heart has worked today. It climbs through the day." · "**Rest**: how well
+  you slept last night, from 0 to 100."
+- "Each morning, look at Charge; 'Your day' then tells you how hard to go. Each evening, 'Tonight' tells you when
+  to sleep."
+- "If you know the WHOOP app: Charge is Recovery, Effort is Strain, Rest is Sleep performance. NOOP works them
+  out itself, so they will not match exactly."
+- The first two weeks, as in the card below. Button: "Got it".
+
+**First two weeks: "Getting to know you"** (W2). A card on Today, under the scores, until the fourteenth night.
+Title "Getting to know you · night 3 of 14". Four lines, each ticked when reached: "Tonight: your first sleep and
+Rest score" · "After 4 nights: your Charge" · "After 7 nights: daily advice and your own sleep need" · "After 14
+nights: every reading compared with your own normal". Foot: "Wear the strap to bed. Until then NOOP shows a dash
+instead of guessing." The night counts come from the code's own constants (`Baselines.minNightsSeed`,
+`minNightsTrust`, `Rest.minNeedNights`, the readiness minimum), never typed into the copy; a test fails if one
+moves. It replaces the sentence "Learning what's normal for you: 0 of 4 nights so far".
+
+**Today** (order fixed; it does not shuffle by time of day, so things stay where the wearer learned them)
+1. *Health alert, active workout:* unchanged, first.
+2. *Strap line* (W3), only when something needs doing: "Strap not connected" with a **Connect** button (the
+   Devices scan) · "Strap battery low: 12%" · "Not synced since 22:10 yesterday" with **Sync now**. Nothing when all
+   is well. The header's strap button shows the battery percentage beside its icon (W4).
+3. *Scores:* ring, name, and the score word in place of the Recovery/Strain/Sleep caption; the date line when a
+   score is an earlier day's. Under the card, only when NOOP is not yet sure: "Early estimate: 6 of 14 nights so
+   far." The "Solid" pill beside the greeting goes (W8). Tapping a ring opens its score page (below); tapping the
+   name opens its guide entry, as now.
+4. *Your day:* a headline in place of the pill (W9): "A good day to push" (primed) · "A normal training day"
+   (balanced) · "Take it easier today" (strained) · "Rest and recover today" (run down); then the reason sentence;
+   then Suggested Effort exactly as v5 built it. With no verdict yet, v5's honest sentences stay.
+5. *Sleep:* "Last night" as now, and **"Tonight" always** (rules below).
+6. *What's behind your Charge:* the dotted bar becomes a bar that grows right in green when a reading raised the
+   Charge and left in amber when it lowered it, as long as its points (W11). Caption: "How last night's readings
+   moved your Charge, compared with your own normal. Right raised it, left lowered it."
+7. *Activity:* "Steps 8,715 · usually 7,900" and "Active calories 612 kcal · usually 540", each bar full at the
+   wearer's own 30-day daily average (W12, S5). No hidden 10,000 or 800. Under 7 days of history: the number alone.
+8. *Heart rate:* the card opens "Heart rate today" (below), not the Deep Timeline (W13).
+9. *Workouts:* "Today's workouts" with the count alone; each row "Walking · 29 min · 256 kcal", right "Effort 40"
+   (W15).
+10. The wearer's own opt-ins, the guide card, "Show everything on this screen": unchanged.
+
+**"Tonight"** (W16, S1, S10). One resolver (`SimpleDayPlan`), used by Today and by the Sleep tab.
+- **Tonight's goal** = the sleep need + catch-up. Catch-up = the sleep debt the Sleep tab's ledger shows, at most
+  60 minutes, rounded to 5; nothing when there is no debt. (The cap is a coach's rule: in the laboratory one hour
+  of built-up debt took four nights to clear, Kitamura 2016, so a big debt is repaid over several nights.)
+- **Wake time:** the wind-down reminder's when it is on; otherwise the wearer's usual wake time, the median of the
+  last 14 main sleeps (at least 5), said as "your usual 07:10 wake".
+- Reminder off, wake known: "**Be asleep by 22:35**" / "That gives you 8h 35m before your usual 07:10 wake: your
+  8h need plus 35m to catch up." Without debt: "That gives you your 8h before your usual 07:10 wake."
+- Reminder on: v5's row unchanged (the reminder's own times), plus, with debt: "You're about 35m behind on sleep,
+  so a little earlier is better." No second duration, so the row never states two needs.
+- No wake time known: "**Aim for 8h 35m of sleep tonight**" / "Your 8h need plus 35m to catch up."
+- As now: only for today, and gone once the asleep-by time has passed.
+
+**Score pages** (W14). In Simple mode a ring opens a plain page; the statistics page it opens today is its last
+link. One layout for all three:
+- The name, the number, the score word, the day if it is an earlier one, and the guide's one-line meaning.
+- *Compared with you:* the last 7 days as bars with the 30-day average marked, and one sentence: "Higher than
+  your usual 46."
+- *What moved it:* Charge: every reading (Today lists the top three). Rest: its four parts in words and points
+  (hours against your need; time asleep while in bed; deep + REM sleep; regular bed and wake times), from
+  `RestSubScoreTrace`. Effort: today's workouts, and the suggested range with where the day stands.
+- *What to do:* two sentences from the guide entry.
+- Two links: "How NOOP calculates it" (the scoring guide) and "All readings and statistics" (the present page).
+
+**Heart rate today** (W13). The Deep Timeline in Simple mode opens on heart rate alone: title "Heart rate today",
+"Your heart rate through the day. Pinch to zoom, hold to read a moment.", lowest, average and highest, and when
+empty "No heart rate recorded for this part of the day yet. It appears once your strap has synced." Its "Show
+everything on this screen" row brings back the other signals and the Owned/All switch (a seventh screen with the
+row).
+
+**Sleep**
+- The ring says "REST" and its word; "of 100" is made readable (W25, F5).
+- Every line of text sits on a panel, none on the night picture (W26).
+- Stages (W28): "Deep + REM 2h 36m, 38m less than your usual." Under the strips: "For most adults deep sleep is
+  roughly an eighth to a quarter of the night and REM about a fifth to a quarter; deep sleep gets shorter with
+  age. Your strap estimates stages, so one night outside this means little." (Confirm the ranges against the
+  primary source, Ohayon 2004, before this copy ships.)
+- A **Sleep need** card above the debt (W29, S1): "Your sleep need: 8h 0m", and where it comes from: "The usual
+  target for adults: experts recommend 7 to 9 hours. NOOP raises yours if you regularly sleep longer when you
+  can." or "Raised from 8h because you regularly sleep longer when you can." or, once the setting exists, "You
+  chose this yourself." with **Change**.
+- Debt (S10): "About 37m behind on sleep" or "You're caught up on sleep". Under an hour: "Sleep about 37m longer
+  tonight to clear it." An hour or more: "That is more than one night can repay. Go to bed about an hour earlier
+  for the next few nights." The row under it: "Sleep need 8h 0m · 14 nights counted" (the duplicate "Balance"
+  figure stays in Show everything, W30).
+- The same "Tonight" row as Today.
+- Trend: "Hours asleep · last 30 nights · average 7h 18m"; lowest and highest in hours and minutes; the change in
+  words (W30).
+- Imported nights say "Imported from WHOOP", and when WHOOP's need for that night differs from NOOP's, the top
+  line keeps WHOOP's (it belongs to WHOOP's score for that night) and says so: "8h 50m needed (WHOOP's figure)".
+
+**Trends** (W18–W24)
+- "This week" (the stepper stays): each chip reads "6% higher than last week". The week's sentence goes through
+  a plain-words layer like `PlainChargeWording` (an unknown sentence falls back to the original). First entry:
+  "You trained harder this week than your Charge supported. Expect a lower Charge for a day or two, and plan an
+  easier day."
+- "Over time", under its own heading, holds the range picker and the charts. Each chart: its name, "average 77
+  ms" with the word, one verdict line ("Up 4 ms over these 3 months. Higher is better." / "Down 2 bpm over these
+  3 months. Lower is better." / "Steady over these 3 months."), and the row Average · Lowest · Highest · Change.
+- "Share recap" moves to the foot of the screen, still visible.
+
+**Stress** (S2, W33–W35)
+- Subtitle: "How strained your body looks, from your heart rate and heart-rate variability (HRV)."
+- First card, "This morning": the 0–3 number and Low / Medium / High, with "From last night's resting heart rate
+  and HRV, compared with your last 30 days. These are the readings behind your Charge too, so a high Charge
+  usually comes with low stress."
+- Its sentence describes and never advises training (a plain-words layer keyed on the same band and the same two
+  deltas as the full view's sentence): low, both good: "Your resting heart rate is lower and your HRV higher than
+  your normal. Your body looks calm and recovered." · low, HRV up: "Your HRV is higher than your normal, a sign of
+  a relaxed body." · low, otherwise: "Your resting heart rate and HRV are at or better than your normal." ·
+  medium: "About your normal: an ordinary day for your body." / "Your resting heart rate is a little higher than
+  your normal. Nothing alarming." / "Your HRV is a little lower than your normal. Nothing alarming." · high, both:
+  "Your resting heart rate is up and your HRV is down, the two classic signs of a body under strain. Sleep,
+  fluids and an easy day help." · high, HRV down: "Your HRV is well below your normal. That often follows stress,
+  poor sleep, alcohol or the start of an illness." · high, heart rate up: "Your resting heart rate is well above
+  your normal: your body is working harder than usual." · high, otherwise: "Your readings lean toward strain
+  today." Then one line: "How hard to train today is on Today, under Your day."
+- Tiles: "Resting heart rate 51 bpm" / "5 lower than usual" and "HRV 82 ms" / "1 higher than usual" on two lines
+  each, the value in the normal text colour and the comparison in green or amber; "Calm days: 7 of the last 30".
+  The second copy of the stress number moves to Show everything.
+- Second card, "Through the day": the existing timeline, the only part measured while awake.
+- Trend: "Stress · last month", the common range picker.
+
+**Health monitor** (W36–W40). Subtitle: "Whether your body's readings look normal for you."
+1. **A verdict first**, from the states `BodyVitalSigns.readings` already computes: "All clear: your 5 readings
+   are in your normal range." · "2 of 5 readings are outside your normal range: breathing rate (higher), skin
+   temperature (higher)." with "One reading off for a night is common. Several off together, or for a few nights,
+   can be an early sign of illness or strain: take it easy and notice how you feel. NOOP is not a medical
+   device." · while learning: "NOOP is still learning your normal (night 6 of 14), so for now these are compared
+   with typical adult ranges." · "No overnight readings yet." When the existing health alert is active, the
+   verdict is the alert's own text: one source, so the two cannot disagree.
+2. **The readings as rows:** resting heart rate, HRV, breathing rate, blood oxygen, skin temperature: the value,
+   "usually 54–60", one word (Normal / Higher than usual / Lower than usual), the day if it is an earlier one,
+   and its guide entry.
+3. Live heart rate: unchanged.
+4. **"Long-term estimates"**, opened by "Two different estimates. Neither is your biological age." Fitness age:
+   "Compares your resting heart rate and activity with people of your age. Right to within about 5 years." ·
+   Vitality: "A weekly score of your sleep, activity and heart readings." with its age inside the card as
+   "Expressed as an age: 30" (W37).
+5. Skin temperature: unchanged. The strap sync card moves to the foot.
+
+**Workouts** (W41–W44)
+- The summary in words: "This week: 5 sessions, 3h 24m active." · "1 more session than last week." · "Health
+  guidelines suggest at least 150 minutes of moderate activity a week, or 75 of hard activity. Your recorded
+  workouts come to 204." (WHO 2020) · "Average session Effort: 47 (moderate)."
+- Rows: "Sun 15 Nov · 29 min · 256 kcal", right "Effort 40"; the clock times stay in the session's detail.
+- Zones: "Zones 1 and 2 are easy, zone 3 is steady, zones 4 and 5 are hard. This week 46% of your time was easy."
+  The honest note about imported sessions stays until S7 is done.
+
+**More, Alarms, the guide** (W46–W48)
+- A first row, **"My strap"** (the Devices screen), whose caption is its state: "Connected · 82%" or "Not
+  connected". One caption under each group heading, so no row changes and the Lift Log row stays exactly as it
+  is: Your body: "How your body is doing right now" · Training: "Your workouts and gym sessions" · Daily tools:
+  "Alarms, warnings, breathing and the coach" · Your data: "Bring data in, keep it safe" · Help: "What things
+  mean, and what to do when something is wrong".
+- Alarms: "Turn on the wind-down reminder below and NOOP will tell you when to start getting ready for bed."
+- Guide: new entries "Start here", "Tonight's goal", "Steps and active calories", "Normal, higher or lower than
+  usual"; "Sleep need and sleep debt" rewritten with S1; "Stress" corrected with S2. Every card title on a Simple
+  screen opens its entry.
+
+### Science changes (each its own change, evidence-first)
+
+| | What | Kind | Evidence, and what it moves |
+|---|---|---|---|
+| S1a | Say where the 8h sleep need comes from; "Tonight's goal" adds catch-up | wording, presentation | NSF 2015 (7–9 h; 7–8 h from 65); AASM/SRS 2015 (7 or more); Kitamura 2016 (8.41 h, 7.29–9.26 h; 1 h of debt, 4 nights). No score moves. |
+| S1b | **Choose your own sleep need**: Settings and the Sleep need card, "Automatic" (today's rule) or 7h 0m to 9h 30m in 15-minute steps | new setting, both platforms, backup key | Needs differ by about two hours between healthy adults and cannot be measured from ordinary nights; the wearer is the only source. Default Automatic, so nothing moves until the wearer chooses. Floor 7 h (AASM). One resolver feeds the Rest score, the debt and the reminder. |
+| S1c | Age in the automatic need: 9 h under 18, 8 h from 18 to 64, **7.5 h from 65**; the Sleep tab passes the age as the engine does | analytics, both platforms, upstream candidate | NSF 2015. Moves Rest and debt for wearers of 65 and over only; oracle on both sides. |
+| S2 | Stress says what it measures; no training advice there | wording | The code (`StressView`). No score moves. |
+| S3 | Rest's 50 % deep + REM target against laboratory norms of 35–45 % | research only | Needs the stage estimate's own REM over-reading settled first (History: DREAMT, sleep-accel). Not changed. |
+| S5 | Steps and active calories against the wearer's own usual | presentation | Paluch 2022 for steps (said in the guide); no source for 800 kcal. |
+| S7 | Zone minutes for NOOP's own recorded sessions | analytics, both platforms, later | NOOP has the heart rate; today only imported sessions carry zones. |
+| S9, S10 | One adviser; debt advice by size | presentation | The walk; Kitamura 2016. |
+
+Not copied and not possible: WHOOP's own sleep need (a personal baseline plus strain plus debt minus naps). Its
+formula is private. v6 gets the same behaviour, a goal that moves with debt and naps, from published work; it
+adds nothing for a hard day because no published figure says how much.
+
+Carried over, unchanged: F11, F12 (measure first), F16, F17, F18, and the warning's W1/W2
+([its §12](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)).
+
+### The build plan, one step at a time
+
+Each step is one reviewed change on `feat/simple-mode`, verified, added to the stack and shipped, with two or
+three plain questions for Utku afterwards. New English strings need all nine locales (How to work, below).
+
+| Step | Name | Contains | Ask Utku afterwards |
+|---|---|---|---|
+| 1 | Today answers | strap line; score words and the "early estimate" line; Your day headline; Tonight always, with its goal; the two-way Charge bars; activity against your usual; workouts row; the warning's W1 | Could you tell in five seconds how hard to go today? Did "Tonight" give a bedtime that suits you? Anything on Today you still do not understand? |
+| 2 | Tap a score, get an answer | the three score pages; Heart rate today | When you tap Charge, does the page explain it? |
+| 3 | Sleep | all of Sleep above, S1a, S10, the readable text | Is it clear how much sleep you need and why? |
+| 4 | Is my body all right? | Health monitor's verdict and rows; Stress, honest | Does Health tell you plainly whether anything is off? |
+| 5 | Am I improving? | Trends and Workouts in words | Can you tell from Trends whether you are improving? |
+| 6 | Welcome | How to read NOOP; Getting to know you; More; the guide; Alarms | (first-run screens: shown to him once) |
+| 7 | Your own sleep need | S1b and S1c, both platforms, Android in fork CI | Does your own figure feel right after a week? |
+
+Later, each on its own: S7; S3 as research; the Android twin (Phase D); upstream (Phase C), only when it is active.
 
 ## Ground rules and how to work
 
@@ -117,21 +395,23 @@ gap and three smaller ones:
 - **Not yet seen on a real phone.** All of Simple mode has been checked in the simulator only. Rule 12 says real
   use finds what matters: Utku's first days with it outrank every list here.
 
-### The roadmap (architect, 12 Nov; updated 14 Nov)
+### The roadmap (architect, 12 Nov; updated 15 Nov)
 
-How the work is done (Rules, 12 Nov): the architect chat plans, writes briefs, reviews, stacks and ships the phone
-build; **Opus 5.5 worker chats write the app code**, one brief each, and hand back a pushed branch. Nothing reaches
-the phone before its diff has been read against its brief. One worker builds and tests at a time on this Mac.
+How the work is done: until 14 Nov the architect chat planned and reviewed while Opus 5.5 worker chats wrote the
+app code (Rules, 12 Nov). **Since 15 Nov the architect chat builds v6 itself** (Utku: "no subagents you do the
+work only!"). Nothing reaches the phone before it is verified as a worker's change would be. One build and test
+run at a time on this Mac.
 
 **Phase A — done 12–14 Nov:** "Show everything on this screen" (F15, `a639d47a` `258e0bf2`), the high heart rate
 warning (`f80aadc6`, [checked on the strap](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)),
 both reviewed, on stack `25aa5f38` and phone build `218aec72`. The brief and specification are in the
 [diary](simple-mode-diary.md#round-7-12-nov-2026-show-everything-on-this-screen-report-a-problem-lift-log-guard).
 
-**Phase B — Simple mode v6, the most user-friendly NOOP (next chat)**, from "Next chat begins here" above. It
-takes in what was queued here: a first-run screen that explains the three scores and where everything is; F12
-(do not load what Simple mode does not show, measured first, Workflow §11); F17; the warning's W1 (and W2 if
-wanted). Whatever Utku reports from the phone comes first.
+**Phase B — Simple mode v6, the most user-friendly NOOP:** designed 15 Nov ([Design v6](#design-v6-the-most-user-friendly-noop));
+built in the seven steps of [its build plan](#the-build-plan-one-step-at-a-time), by the architect chat itself
+(Utku, 15 Nov). It takes in what was queued here: the first-run screen (step 6), F17, the warning's W1 (step 1;
+W2 if wanted), and F12 (do not load what Simple mode does not show, measured first, Workflow §11) whenever a step
+touches that loading. Whatever Utku reports from the phone comes first.
 
 **Phase C — upstream, only when it is active again** (check at every Start; do nothing while it is quiet)
 - Answer any maintainer comment once; rebase #2747/#2724 only when a maintainer engages.
@@ -147,6 +427,9 @@ upstream is active; nobody here can test Android on a strap, so every Kotlin cha
 queue (evidence first, Rules 2–3).
 
 ## Design v5: the calm NOOP (chat 2's plan, 6 Nov)
+
+What is on the phone today, and the base v6 builds on. Where [Design v6](#design-v6-the-most-user-friendly-noop)
+says otherwise (names, captions, where a tap leads, what a screen says first), v6 wins.
 
 **How a regular wearer uses a WHOOP band** (physician + coach view): in the morning they want to know whether
 they recovered and how hard to go today; after training, how hard it was; in the evening, when to go to bed;

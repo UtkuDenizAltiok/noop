@@ -1,34 +1,40 @@
 # State
 
-Updated **14 Nov 2026, end of chat 4**. Current facts and unfinished work only; the dated record is in
+Updated **15 Nov 2026, chat 5 (design day)**. Current facts and unfinished work only; the dated record is in
 [History](HISTORY.md) and, for everything before 14 Nov, the [State archive](archive/state-until-2026-11-14.md).
-The agent in the chat owns execution under [Rules](RULES.md): an architect chat (Claude Fable 5.2) plans,
-reviews, stacks and ships; Opus 5.5 worker chats write the app code.
+The agent in the chat owns execution under [Rules](RULES.md). Since 15 Nov the architect chat (Claude Fable 5.2)
+also builds: Utku asked for no helper agents and no worker chats.
 
 ## Now
 
-**Next chat (Fable 5.2 as architect): Simple mode v6, the most user-friendly NOOP.** Utku's direction of 14 Nov
-is a rule ([Rules](RULES.md#settled-decisions)): Simple mode is only *simpler* today; it must become the mode a
-wearer understands and uses without confusion, decided as fitness coach, physiologist, doctor and developer,
-never by deleting information or features. Start from
-[Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
-Nothing of v6 is designed or built yet.
+**Simple mode v6 is designed and not yet built.** On 15 Nov the architect walked every Simple screen as a
+first-time wearer in the simulator (the phone's exact code, `testing-stack` `25aa5f38`), recorded 47 points of
+confusion and seven science findings ([diary, Round 8](features/simple-mode-diary.md#round-8-15-nov-2026-the-first-time-wearer-walk-behind-design-v6)),
+and wrote [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop): ten rules, one name per
+thing, every screen with its exact wording, the science changes and a seven-step build plan. No app code changed;
+the phone build is still `218aec72`.
+
+Utku's question of 15 Nov (is a sleep need of 8 hours every day realistic and scientific, and does WHOOP do
+that?) is answered in the design (S1): 8 h is a sound starting target for a young adult but NOOP applies it to
+almost everyone and can never go below it; WHOOP uses a personal figure that moves with strain, debt and naps.
+v6 explains the figure, makes "Tonight's goal" move with sleep debt (step 1 and 3), then lets the wearer choose
+their own need and corrects the age handling (step 7, both platforms).
 
 Open items, in order:
-- [ ] **Simple mode v6** — walk, design, worker briefs, review, build (next chat).
-- [ ] **Heart rate warning W1** (settings lines flood the strap log; small) and optionally **W2** (on/off at
-  the limit) — [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov);
-  ship with the first v6 build.
+- [ ] **Build step 1, "Today answers"** ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)) on
+  `feat/simple-mode`, with the heart rate warning's W1; verify, stack, ship; then ask Utku its three questions.
+  Not started. Utku has been told the design is ready and that building is next.
+- [ ] Steps 2–7 of the build plan, one at a time, each shipped before the next.
+- [ ] **Heart rate warning W2** (on/off at the limit), optional — [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov).
 - [ ] **Utku: archive the two finished worker chats** in the app sidebar ("1 of 2: Simple mode, show everything
   in one tap" and "2 of 2: High heart rate warning (after 1)"); the app's safety check stopped the agent doing
   it. Their folders under `~/Developer/noop/.claude/worktrees/` go with them; nothing in them is unsaved.
-- [ ] **Upstream is quiet** (no merge since 25 Oct, `upstream/main` `2a1de760`): no new upstream PRs, no
-  close/reopen retries; answer a maintainer comment once if one appears.
+- [ ] **Upstream is quiet** (no merge since 25 Oct, `upstream/main` `2a1de760`, checked 15 Nov; no maintainer
+  comment on our 17 PRs): no new upstream PRs, no close/reopen retries; answer a maintainer comment once if one
+  appears.
 
-Done in chat 4 (12–14 Nov; details in [History](HISTORY.md)): audit of the whole Simple mode diff and a new
-roadmap; "Show everything on this screen" + "Report a problem" + Lift Log guard (worker 1); the high heart rate
-warning (worker 2), checked on Utku's WHOOP 5.0 with all five checks passing; stack and phone build; a cleanup
-of branches, folders and caches (14 Nov).
+Done in chat 5 (15 Nov): start procedure (all worktrees clean and pushed, no job running, upstream unchanged);
+the walk; Design v6; the two new rules of 15 Nov. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
 
 ## Where everything is
 
@@ -40,6 +46,10 @@ Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-late
 **Testing pipeline:** `testing-stack` `25aa5f38` (upstream `2a1de760` + our open PRs + Simple mode + #2906 + the
 warning); `testing-build` `218aec72`. How to rebuild and ship: [Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)
 and Simple mode → "How to work".
+
+**Scratch folder (delete after step 1 has its own build):** `~/Developer/noop-v6walk`, detached at
+`testing-stack` `25aa5f38`, clean; its simulator build is in `~/Library/Caches/noop-handbook/build/v6walk`
+and the walk's screenshots in `~/Library/Caches/noop-handbook/v6-walk/shots/`.
 
 **Feature branches (fork only, not PRs):**
 | Branch | Tip | Folder | What |
@@ -93,8 +103,12 @@ and `testing-latest`; one release.
 
 ## Next safe action
 
-1. Read the 14 Nov rule in [Rules](RULES.md#settled-decisions), then
-   [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
-2. Walk every Simple screen in the simulator as a first-time wearer; write Design v6 into the Simple mode page.
-3. Split it into Opus 5.5 worker briefs (one worker at a time), with W1 in the first one; review, stack,
-   `verify.sh`, ship; then ask Utku plain questions about what he sees.
+1. Read [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop)
+   and [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) (rules, names, "Today",
+   "Tonight").
+2. Build **step 1, "Today answers"**, in `~/Developer/noop-simple` (`feat/simple-mode`, tip `258e0bf2`); the
+   warning's W1 goes on `feat/high-hr-warning`. Verify as "How to work" says (tests seen to fail, NOOPiOS and
+   Strand builds, StrandTests, i18n gate, doc lint, Tools tests, a simulator walk in light and dark).
+3. Stack as a fast-forward onto `testing-stack`, `verify.sh`, ship by the merge-commit route
+   ([Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)), tell Utku plainly that the build is ready ("just
+   update"), and ask him step 1's three questions.

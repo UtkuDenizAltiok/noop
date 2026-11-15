@@ -597,3 +597,136 @@ You are an implementation worker for NOOP in ~/Developer/noop. Read AGENTS.md, d
 **Ask Utku for** (only when useful): screenshots of anything confusing on the iPhone 16 Plus; whether the
 suggested Effort range feels right on real days; a strap log if a number looks wrong.
 
+## Round 8 (15 Nov 2026): the first-time-wearer walk behind Design v6
+
+Chat 5, architect (Fable 5.2), no helper agents (Utku's instruction). The phone's exact code (`testing-stack`
+`25aa5f38`) was built for the simulator in a scratch folder (`~/Developer/noop-v6walk`, detached), installed
+fresh, and walked twice: once with no data (first launch) and once with the 120-day demo seed. Screenshots are in
+`~/Library/Caches/noop-handbook/v6-walk/shots/` (this Mac only). Every screen was read as a person who has never
+used a WHOOP. The demo carries WHOOP-imported figures, so where a finding could be a demo artefact it says so.
+The design that answers these is [Simple mode → Design v6](simple-mode.md#design-v6-the-most-user-friendly-noop).
+
+**First launch and first week**
+- **W1.** The 12-step first-run wizard talks about "recovery, sleep and strain" and in slogans ("Three quiet
+  promises", "Your thread starts here"). It never says Charge, Effort or Rest, the three words the app then uses,
+  and never says what the first days will look like.
+- **W2.** After setup Today shows three dashes and "Calibrating". Nothing says what comes when. The code has five
+  different waiting times: Charge 4 nights (`Baselines.minNightsSeed`), full trust 14 (`minNightsTrust`), the
+  day's advice about a week, a personal sleep need 7 nights (`Rest.minNeedNights`), stress against 30 days.
+- **W3.** With the strap not connected, Today says "Strap not connected. Connect your strap to see live heart
+  rate" and offers no button. Connecting lives in More → Live heart rate. The header shows only an unlabelled icon.
+
+**Today**
+- **W4.** Three round icon buttons in the header with no words (profile, add, strap).
+- **W5.** A "WHOOP" badge on the score card (and twice on Sleep) that nothing explains. It marks imported figures.
+- **W6.** Six words for three things: CHARGE/Recovery, EFFORT/Strain, REST/Sleep under the rings; the Sleep tab
+  shows the Rest score with no name; the wizard says recovery/strain/sleep.
+- **W7.** The score numbers carry no word. Is a Charge of 51 good? Only the ring colour hints. Effort "67" of what?
+- **W8.** "Good afternoon" with a "Solid" pill beside it reads as a judgement of the person. It is how sure NOOP
+  is of the score.
+- **W9.** The "Maintain" pill is coach jargon; the sentence under it is clear.
+- **W10.** "Suggested Effort 48–67" is good, but Effort has not been explained by that point.
+- **W11.** In "What's behind your Charge" the dotted bar under each reading shows how much it moved the score, not
+  the reading. "Rest 87" sits above an almost empty bar and looks like a low score.
+- **W12.** The Steps and Calories bars fill toward hidden goals (10,000 steps and 800 kcal in
+  `LiquidTodayView.ktileFor`). "Calories" are active calories only; the tile does not say so.
+- **W13.** The heart-rate card opens "Deep Timeline": tabs "Windowed rMSSD", "SpO₂", a switch "Owned / All", and
+  "Nothing offloaded for this window yet".
+- **W14.** Tapping a score ring opens the statistics page (`MetricDetailView`): a table of readings with their
+  source, "What correlates · Pearson r over the visible window · |r| ≥ 0.30, n ≥ 10", "sparse, widened to…". The
+  biggest thing on the screen leads to the least plain screen in the app. (The simulator's tap tool did not open it;
+  read in code: `detailRoute: .metric(HeroRingMetric.charge)`.)
+- **W15.** "LAST WORKOUTS · 1 total" counts today only. A workout's Effort prints one decimal (39.7), the ring none.
+- **W16.** The evening question (when should I go to bed?) is answered only if the wind-down reminder was switched
+  on in Alarms. By default Today says nothing about tonight.
+
+**Trends**
+- **W18.** Two time controls on one screen (a week stepper on top, a range picker below) with nothing saying which
+  part each one moves.
+- **W19.** "+6%" chips with no "compared with what".
+- **W20.** The week's sentence is jargon: "you leaned into the red. Watch for a recovery dip."
+- **W21.** "Share recap" is the first button, before anything is explained.
+- **W22.** "TRAILING 90 DAYS", "MEAN", "90 readings"; the number in each chart's corner has no label (it is the
+  average).
+- **W23.** No chart says in words whether it is going the right way.
+- **W24.** Effort shows a decimal here (59.2) and none on Today.
+
+**Sleep**
+- **W25.** The score is "Rest" on Today and unnamed on the Sleep tab; the word under it is "Optimal".
+- **W26.** Text drawn straight on the night picture is hard or impossible to read: the heading "Asleep duration",
+  the movement note, the "partly recorded" note.
+- **W28.** "Deep + REM sleep 2h 36m, typically 3h 14m" and the stage percentages carry no verdict and no normal
+  range.
+- **W29.** The sleep need is 8h 0m for nearly everyone (science finding S1). In the demo the top line says "8h 50m
+  needed" (WHOOP's imported figure for that night) while the debt card below says "Sleep need 8h 0m".
+- **W30.** Durations come in three shapes: "7h 39m", "7.3 h avg", a trend chip "−0.0 h"; "Balance −37m" beside
+  "≈37m sleep debt".
+
+**Stress**
+- **W33.** The big number is not what the subtitle says (science finding S2).
+- **W34.** Its sentence gives training advice ("A great day to push if you want to") while Today said "Maintain,
+  a moderate day" for the same morning.
+- **W35.** The number appears twice (ring and tile); comparison chips are cut off ("−5 vs…"); a good resting heart
+  rate is printed in warning orange; "Calm time 23%" counts days, not time; the chart title is "STRESS · M"; eight
+  range buttons here against six on Trends.
+
+**Health monitor**
+- **W36.** It opens with a sync card and never says in words whether the vital signs look normal.
+- **W37.** Two ages on one screen: "Fitness Age 34" and "Body Age 30".
+- **W38.** Jargon: "RESP RATE 14.2 rpm", "RAW SPO₂ · No raw SpO₂ decode…", "SKIN TEMP Δ +0.1 Δ°C", "State: Idle",
+  "in-range", "baseline", "On-device · Unknown".
+- **W39.** "Resp rate" here, "Breathing rate" on Today; "Blood O₂" here, "Blood oxygen" in the guide.
+- **W40.** Check on the phone: the demo shows VO₂max 52 (very fit for a man of 30) beside "4 years older than your
+  age". Probably the demo's stored values; the engine derives both from one model.
+
+**Workouts**
+- **W41.** "TYPICAL EFFORT 47.2 of 100 · Effort this week": what the number is, and whether the week was enough,
+  is not said.
+- **W42.** Session lines are cut off ("256…"); the blue number has no label.
+- **W43.** "3.4h" in decimal hours.
+- **W44.** The zone split has no meaning attached, and "Only sessions imported from WHOOP carry zones".
+
+**Live, Alarms, More, the guide**
+- **W45.** Live: "Start a live stream" (kept as it is; it is where the strap is connected).
+- **W46.** Alarms: "to land at your usual wake time rested"; "Confirmed on WHOOP 4.0" for a 5.0 wearer (honest).
+- **W47.** More has no row for the strap itself, and no row says what it is for ("Health monitor", "Breathe",
+  "Coach").
+- **W48.** The guide is good but it is a separate place; the explanation is rarely next to the number.
+
+**Across screens**
+- **W49.** Number shapes differ (decimals on scores, decimal hours).
+- **W50.** Range pickers differ (7D/30D/90D/1Y/All; W/M/3M/6M/1Y/ALL; W/2W/3W/M/3M/6M/1Y/ALL).
+- **W51.** Colour: a metric's own colour (orange for resting heart rate) is used for its value even when the
+  value is good, so orange does not reliably mean "watch this".
+
+**Science findings (checked in code, sources read on 15 Nov)**
+- **S1. Sleep need is a flat 8 hours for almost every adult.** `AnalyticsEngine.Rest.personalizedNeedHours`: 8 h
+  until 7 nights exist, then the wearer's upper-quartile night, never below 8 h (`populationNeedFloorHours`) and
+  never above 9.5 h. So it can only go up, and only for people who often sleep more than 8 h. Age is passed only by
+  the scoring engine (`IntelligenceEngine`), not by the Sleep tab, and every adult age gets 8 h, although the
+  National Sleep Foundation recommends 7–8 h from 65 (Hirshkowitz 2015; the code comment says "65+: NSF 7–9").
+  Is 8 h defensible? Yes as a starting target for a young adult: the recommended range is 7–9 h (NSF 2015; AASM and
+  the Sleep Research Society: 7 or more), and the one laboratory study that measured it (Kitamura 2016, Sci Rep
+  6:35812, PMC5075948, 15 healthy young men, nine nights of extended sleep) found an optimal sleep time of 8.41 h
+  on average, between 7.29 and 9.26 h from person to person, about an hour more than they slept at home; one hour
+  of such debt took four days to recover. Not defensible as a fixed truth for one person: needs differ by about two
+  hours, fall with age, and NOOP can never learn that somebody needs less than 8 h. WHOOP does not use a flat
+  figure: its help pages describe a personal baseline learned over the first weeks, plus extra for the day's strain
+  and for sleep debt, minus naps, and a goal of 100, 85 or 70 % of that (its formula is not published).
+- **S2. The daily "Stress" number is last night's resting heart rate and HRV against the 30-day normal**
+  (`StressView`: two z-scores summed and squashed onto 0–3, 1.5 = your normal). It is the same information as
+  Charge, turned upside down. The subtitle (ours, from #2903) says "while you were awake", which is true only of
+  the "Stress through the day" line (`DaytimeStress`).
+- **S3. Rest gives full marks for deep + REM at 50 % of sleep** (`Rest.restorativeTarget`), while sleep-laboratory
+  norms for adults are roughly 13–23 % deep and 20–25 % REM, about 35–45 % together. NOOP's own stage estimate
+  reads more REM than a laboratory does (History: DREAMT 19.9 % against 10.5 % of the night; Utku's six nights 53 %
+  deep + REM), so the high target roughly cancels the over-reading. Changing one without the other would make
+  the score worse. A research item, not a v6 change.
+- **S5. Hidden goals:** 10,000 steps (a round number from marketing, though close to where the benefit levels off
+  for adults under 60: Paluch 2022, Lancet Public Health, 8,000–10,000) and 800 active kcal (no source).
+- **S7. Zones only for imported sessions**, although NOOP has the heart rate of its own recorded sessions.
+- **S9. Advice from several places:** Today's verdict (`ReadinessEngine`), the Stress sentence, the Trends
+  sentence. Only one of them weighs everything.
+- **S10. Sleep debt advice** ("sleep about 37m longer than your sleep need tonight") is right for a small debt;
+  for a large one the laboratory evidence (Kitamura 2016) says recovery takes several nights.
+
