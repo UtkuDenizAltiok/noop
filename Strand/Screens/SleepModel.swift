@@ -538,6 +538,42 @@ extension SleepModel {
             needHours: debtNeedMin(days: days) / 60.0)
     }
 
+    /// The same ledger from the raw session lists, for a screen that has no built `SleepModel` (the Simple
+    /// Today's "Tonight" row): the nap credit is derived exactly as `build` derives it (the fuller block list
+    /// when it has loaded, else the one-per-night list; grouped by `navDays`; credited by
+    /// `napSleepMinutesByDay`), then handed to the ledger above. One debt, whichever screen asks.
+    static func debtLedger(days: [DailyMetric], sleeps: [CachedSleepSession], allSessions: [CachedSleepSession],
+                           habitualMidsleepSec: Int?) -> SleepDebtLedger {
+        let navSessions = allSessions.isEmpty ? sleeps : allSessions
+        let napByDay = napSleepMinutesByDay(navDays: navDays(navSessions: navSessions),
+                                            habitualMidsleepSec: habitualMidsleepSec)
+        return debtLedger(days: days, napSleepMinByDay: napByDay)
+    }
+
+    /// How many days back from `todayKey` the ledger can reach: to the oldest of the
+    /// `SleepDebt.defaultWindowNights` most recent nights with sleep, plus a margin for a block that ends on
+    /// the neighbouring calendar day. A caller that reads sleep blocks only for the ledger reads this many
+    /// days rather than the whole history; a day's nap credit depends on that day's blocks alone, so the
+    /// shorter read gives the ledger the same figures. Never less than the margin.
+    static func debtLedgerLookbackDays(days: [DailyMetric], todayKey: String) -> Int {
+        let margin = 3
+        let usable = days.filter { ($0.totalSleepMin ?? 0) > 0 }.map(\.day).sorted()
+        guard let oldest = usable.suffix(SleepDebt.defaultWindowNights).first,
+              let from = civilDay(oldest), let to = civilDay(todayKey) else { return margin }
+        let span = Calendar(identifier: .gregorian).dateComponents([.day], from: from, to: to).day ?? 0
+        return max(0, span) + margin
+    }
+
+    /// A `yyyy-MM-dd` day key as a date at noon UTC, for whole-day differences only (noon keeps a
+    /// daylight-saving shift from moving a day). Nil for a key that is not three whole numbers.
+    private static func civilDay(_ key: String) -> Date? {
+        let parts = key.split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3 else { return nil }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .current
+        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2], hour: 12))
+    }
+
     // MARK: - Build
 
     /// Build every expensive derivation exactly once, as a pure function of `inputs`. Returns nil when

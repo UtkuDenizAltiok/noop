@@ -565,14 +565,14 @@ struct SleepView: View {
                         numberColor: Color.white.opacity(0.98),
                         captionColor: Color.white.opacity(0.52)
                     )
-                    Text(sleepScoreWord(score))
+                    Text(Self.sleepScoreWord(score))
                         .font(StrandFont.subhead.weight(.semibold))
                         .foregroundStyle(Color.white.opacity(0.90))
                         .shadow(color: .black.opacity(0.30), radius: 2, y: 1)
                 }
                 .padding(.top, 8)
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(String(localized: "Sleep performance \(Int(score.rounded())) of 100, \(sleepScoreWord(score))"))
+                .accessibilityLabel(String(localized: "Sleep performance \(Int(score.rounded())) of 100, \(Self.sleepScoreWord(score))"))
             } else {
                 VStack(spacing: NoopMetrics.space1) {
                     CountUpText(
@@ -643,7 +643,7 @@ struct SleepView: View {
     }
 
     /// A short Rest state word for the hero gauge — same banding the synthesis hero uses.
-    private func sleepScoreWord(_ score: Double) -> String {
+    static func sleepScoreWord(_ score: Double) -> String {
         switch score {
         case ..<50:  return String(localized: "Poor")
         case ..<70:  return String(localized: "Fair")

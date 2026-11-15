@@ -331,6 +331,9 @@ struct ChargeDriverRow: View {
     /// The largest |deltaPoints| in the same breakdown, so each bar reads as a share of the day's
     /// biggest mover. Defaults to this row's own magnitude (full bar) when not supplied.
     var maxMagnitude: Int? = nil
+    /// Draw the bar from the middle: right for a term that raised the Charge, left for one that lowered it,
+    /// as long as its points. Simple mode's form; false keeps the one-way magnitude bar byte-identical.
+    var twoSided: Bool = false
 
     private var chipText: String { ChargeBreakdownFormat.chipLabel(deltaPoints: driver.deltaPoints) }
     private var chipHue: Color { ChargeBreakdownFormat.chipColor(deltaPoints: driver.deltaPoints) }
@@ -365,8 +368,13 @@ struct ChargeDriverRow: View {
                 Spacer(minLength: 0)
             }
             // A thin magnitude bar tinted to the chip hue, reading the term's share of the biggest mover.
-            PipBar(value: magnitude, range: 0...barMax, segments: 16, tint: chipHue, height: 6)
-                .accessibilityHidden(true)
+            if twoSided {
+                ChargeDriverDirectionBar(deltaPoints: driver.deltaPoints, maxMagnitude: barMax, tint: chipHue)
+                    .accessibilityHidden(true)
+            } else {
+                PipBar(value: magnitude, range: 0...barMax, segments: 16, tint: chipHue, height: 6)
+                    .accessibilityHidden(true)
+            }
             Text(LocalizedStringKey(driver.verdict))
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
@@ -374,6 +382,41 @@ struct ChargeDriverRow: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(ChargeBreakdownFormat.driverAccessibilityLabel(driver))
+    }
+}
+
+/// A bar that grows from a centre mark: to the right for a term that added points, to the left for one that
+/// took points away, its length the term's share of the day's biggest mover. Drawn still (no animation), so a
+/// row reads at a glance as "pushed up" or "pushed down" rather than as a level.
+struct ChargeDriverDirectionBar: View {
+    let deltaPoints: Int
+    /// The largest |points| among the rows drawn together; a full half-bar.
+    let maxMagnitude: Double
+    let tint: Color
+
+    /// The filled share of one half of the bar, 0...1.
+    static func halfFraction(deltaPoints: Int, maxMagnitude: Double) -> Double {
+        guard maxMagnitude > 0 else { return 0 }
+        return min(1, Double(abs(deltaPoints)) / maxMagnitude)
+    }
+
+    var body: some View {
+        GeometryReader { geo in
+            let half = geo.size.width / 2
+            let length = half * Self.halfFraction(deltaPoints: deltaPoints, maxMagnitude: maxMagnitude)
+            ZStack(alignment: .leading) {
+                Capsule(style: .continuous).fill(StrandPalette.surfaceInset)
+                if length > 0 {
+                    Capsule(style: .continuous).fill(tint)
+                        .frame(width: max(length, geo.size.height))
+                        .offset(x: deltaPoints >= 0 ? half : half - max(length, geo.size.height))
+                }
+                Rectangle().fill(StrandPalette.textTertiary)
+                    .frame(width: NoopMetrics.hairlineWidth * 2)
+                    .offset(x: half - NoopMetrics.hairlineWidth)
+            }
+        }
+        .frame(height: 6)
     }
 }
 

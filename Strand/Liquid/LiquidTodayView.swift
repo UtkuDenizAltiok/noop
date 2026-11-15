@@ -132,6 +132,19 @@ struct LiquidTodayView: View {
     @AppStorage(SimpleDayPlan.ReminderKeys.perDayWake) private var windDownPerDayMirror = Data()
     /// Whether Simple mode's Charge card lists every driver rather than the three that moved it most.
     @State private var simpleDriversExpanded = false
+    /// Nights the Charge baseline has learned from (the HRV fold's valid-night count, the figure the engine
+    /// trusts a baseline on), for Simple mode's "Early estimate" line. Resolved in `load()`, today only.
+    @State private var cachedBaselineNights: Int?
+    /// Simple mode's inputs for tonight's goal, resolved in `load()` for today only: the sleep debt the Sleep
+    /// tab's ledger shows (minutes; the same sessions, nap credit and need), the Sleep tab's need in whole
+    /// minutes, and the wearer's usual wake time as a minute of the day (nil until enough nights exist).
+    @State private var cachedSleepDebtMin: Double?
+    @State private var cachedTonightNeedMin: Int?
+    @State private var cachedUsualWakeMinute: Int?
+    /// The last 30 days' step counts, each day by the Steps tile's own precedence (the strap's count, else
+    /// the imported one, else the motion estimate), for Simple mode's "usually" line. Empty while Simple mode
+    /// is off.
+    @State private var simpleStepsHistory: [(day: String, value: Double)] = []
 
     /// Live Sessions (silent guardian) beta gate — the SAME key the Settings toggle writes. Default ON
     /// (the entry is BETA-labelled in-UI); off removes the Start-session control entirely.
@@ -757,15 +770,16 @@ struct LiquidTodayView: View {
             // the state pill) rather than an empty vessel, matching the classic Today, the widget/watch/Live
             // Activity (`Repository.widgetAnchor`) and Android. Effort deliberately does NOT carry — it is
             // today's own accumulation, so yesterday's number would be a false statement, not a stale one.
-            // Simple mode names each score's familiar other name under its label (Recovery / Strain / Sleep,
-            // the words the Key Metrics tiles already use) and sends the label to the plain guide rather than
-            // the technical scoring guide, which stays one tap further inside it.
+            // Simple mode puts a word under each score that says how good it is (v6: a number is never alone;
+            // `SimpleDayPlan.chargeLevel` / `effortLevel`, and the Sleep tab's own Rest word) and sends the
+            // label to the plain guide rather than the technical scoring guide, which stays one tap further
+            // inside it. The familiar other names (Recovery, Strain, Sleep) live in the guide's "also called".
             HeroScoreCell(label: String(localized: "Charge"), score: chargeDisplay.pct,
                           tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .charge } else { guideSection = .charge } },
                           detailRoute: .metric(HeroRingMetric.charge),
-                          caption: simpleMode ? String(localized: "Recovery") : nil,
+                          caption: simpleMode ? simpleChargeWord : nil,
                           subcaption: simpleMode ? simpleChargeCarriedDay : nil)
             // #45: the hero Effort must honour the user's Effort scale like every other Effort read-out.
             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
@@ -778,12 +792,12 @@ struct LiquidTodayView: View {
                           maxValue: effortScale == .whoop ? 21 : 100,
                           decimals: effortScale == .whoop ? 1 : 0,
                           detailRoute: .metric(HeroRingMetric.effort),
-                          caption: simpleMode ? String(localized: "Strain") : nil)
+                          caption: simpleMode ? simpleEffortWord : nil)
             HeroScoreCell(label: String(localized: "Rest"), score: restScore, tint: StrandPalette.restColor,
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .rest } else { guideSection = .rest } },
                           detailRoute: .metric(HeroRingMetric.rest),
-                          caption: simpleMode ? String(localized: "Sleep") : nil,
+                          caption: simpleMode ? restScore.map { SleepView.sleepScoreWord($0) } : nil,
                           subcaption: simpleMode ? carriedRestDayKey.map { String(localized: "From \(TodayView.lastChargeDateFmt($0))") } : nil)
                 .overlay(alignment: .top) {
                     if let sourceLabel = heroSourceLabel {
@@ -1242,17 +1256,13 @@ struct LiquidTodayView: View {
                     }
                     HStack(spacing: 5) {
                         Circle().fill(StrandPalette.chargeColor).frame(width: 6, height: 6)
-                        Text(chargeStateWord)
+                        Text(chargeDisplay.stateLabel)
                             .font(StrandFont.caption.weight(.bold))
                             .foregroundStyle(StrandPalette.chargeColor)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
                     .background(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1))
-                    // Simple mode: the word explains itself on tap (the guide's entry on these labels).
-                    .contentShape(Capsule())
-                    .onTapGesture { if simpleMode { plainGuideTerm = .confidence } }
-                    .accessibilityAddTraits(simpleMode ? .isButton : [])
                 }
                 .fixedSize(horizontal: true, vertical: false)   // pills keep their natural width — no "Calibrating" wrap
             }
@@ -1263,16 +1273,8 @@ struct LiquidTodayView: View {
                 card {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            // Simple mode says what the card is in plain words; the full view keeps its label.
-                            Group {
-                                if simpleMode {
-                                    Text("In short").textCase(.uppercase)
-                                } else {
-                                    Text("SYNTHESIS")
-                                }
-                            }
-                            .font(StrandFont.overline).tracking(1.6)
-                            .foregroundStyle(StrandPalette.textSecondary)
+                            Text("SYNTHESIS").font(StrandFont.overline).tracking(1.6)
+                                .foregroundStyle(StrandPalette.textSecondary)
                             Spacer()
                             Text(synthesisExpanded
                                  ? String(localized: "hide")
@@ -1284,7 +1286,7 @@ struct LiquidTodayView: View {
                         // readiness one-liner here — the same swap classic makes (`calibrationDetail ??
                         // synthesisCardDetail`), so the count the short greeting pill can't carry lands in
                         // the card and both Today screens read identically.
-                        Text((simpleMode ? simpleCalibrationDetail : chargeDisplay.calibrationDetail) ?? synthLine)
+                        Text(chargeDisplay.calibrationDetail ?? synthLine)
                             .font(StrandFont.body).foregroundStyle(StrandPalette.textPrimary)
                             .fixedSize(horizontal: false, vertical: true)
                         // The reason the count is not moving, when nights are arriving empty. Sits under
@@ -1405,7 +1407,14 @@ struct LiquidTodayView: View {
     private func simpleSection(_ section: SimpleTodaySection) -> some View {
         switch section {
         case .scores:
-            heroCard
+            // v6: when the strap is not connected, say so where the day starts, with the way to connect it.
+            // A leaf of its own, so the live state re-renders that line alone. It sits in a zero-spacing stack
+            // with the scores and carries its own gap, so it takes no room at all while it has nothing to say.
+            VStack(spacing: 0) {
+                if selectedDayOffset == 0 { SimpleStrapLine() }
+                heroCard
+            }
+            simpleEarlyEstimateLine
             if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
         case .summary:
             simpleDaySection
@@ -1440,24 +1449,12 @@ struct LiquidTodayView: View {
     private var simpleDaySection: some View {
         let band21 = SimpleDayPlan.suggestedBand(todaysCharge: simpleTodaysOwnCharge, readiness: readiness.level)
         return VStack(spacing: 8) {
+            // The greeting stands alone. The Charge-state pill that sat beside it ("Solid") read as a verdict
+            // on the wearer; how sure NOOP is now sits under the scores, in words (`simpleEarlyEstimateLine`).
             HStack {
                 Text(greeting).font(StrandFont.rounded(19)).foregroundStyle(StrandPalette.textPrimary)
                     .lineLimit(1).minimumScaleFactor(0.6)
                 Spacer(minLength: 8)
-                Button { plainGuideTerm = .confidence } label: {
-                    HStack(spacing: 5) {
-                        Circle().fill(StrandPalette.chargeColor).frame(width: 6, height: 6)
-                        Text(chargeStateWord)
-                            .font(StrandFont.caption.weight(.bold))
-                            .foregroundStyle(StrandPalette.chargeColor)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1))
-                    .contentShape(Capsule())
-                }
-                .buttonStyle(.plain)
-                .fixedSize()
             }
             .padding(.horizontal, 2)
             .padding(.top, 4)
@@ -1469,24 +1466,29 @@ struct LiquidTodayView: View {
                             .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
                             .foregroundStyle(StrandPalette.textSecondary)
                         Spacer(minLength: 8)
-                        // The verdict word explains itself on tap: the guide's entry says what it weighs.
-                        if let word = readinessWord {
-                            Button { plainGuideTerm = .dayPlan } label: {
-                                Text(word)
-                                    .font(StrandFont.caption.weight(.bold))
-                                    .foregroundStyle(StrandPalette.chargeColor)
-                                    .padding(.horizontal, 13)
-                                    .padding(.vertical, 6)
-                                    .background(Capsule().fill(StrandPalette.chargeColor.opacity(0.14))
-                                        .overlay(Capsule().strokeBorder(StrandPalette.chargeColor.opacity(0.3), lineWidth: 1)))
-                            }
-                            .buttonStyle(.plain)
-                            .fixedSize()
+                        // The card explains itself on tap: the guide's entry says what the verdict weighs.
+                        Button { plainGuideTerm = .dayPlan } label: {
+                            Image(systemName: "info.circle")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(StrandPalette.textTertiary)
                         }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("What the numbers mean")
                     }
-                    Text(simpleDayHeadline)
-                        .font(StrandFont.body).foregroundStyle(StrandPalette.textPrimary)
-                        .fixedSize(horizontal: false, vertical: true)
+                    // The verdict as a headline a newcomer can act on, then the reason in a sentence. With no
+                    // verdict yet the sentence stands alone, at the headline's weight.
+                    if let headline = simpleDayVerdictHeadline {
+                        Text(headline)
+                            .font(StrandFont.rounded(19)).foregroundStyle(StrandPalette.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(simpleDayHeadline)
+                            .font(StrandFont.subhead).foregroundStyle(StrandPalette.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    } else {
+                        Text(simpleDayHeadline)
+                            .font(StrandFont.body).foregroundStyle(StrandPalette.textPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                     if let why = chargeDisplay.calibrationReason(
                         dayKeys: repo.days.map(\.day), nightlyHrv: repo.days.map(\.avgHrv),
                         today: Repository.logicalDayKey(Date())) {
@@ -1511,6 +1513,67 @@ struct LiquidTodayView: View {
                     }
                 }
             }
+        }
+    }
+
+    /// The verdict as a headline, or nil while readiness has none (the sentence then stands alone). Shown
+    /// only when the sentence under it is the readiness line itself, so a calibrating or stale-strap card
+    /// never carries a verdict above a sentence about something else.
+    private var simpleDayVerdictHeadline: String? {
+        guard simpleCalibrationDetail == nil, strapStaleDays == nil else { return nil }
+        switch readiness.level {
+        case .primed: return String(localized: "A good day to push")
+        case .balanced: return String(localized: "A normal training day")
+        case .strained: return String(localized: "Take it easier today")
+        case .rundown: return String(localized: "Rest and recover today")
+        case .insufficient: return nil
+        }
+    }
+
+    /// The word under the Charge ring (Low / Medium / High), for whichever Charge the ring shows.
+    private var simpleChargeWord: String? {
+        guard let pct = chargeDisplay.pct else { return nil }
+        switch SimpleDayPlan.chargeLevel(pct) {
+        case .low: return String(localized: "Low")
+        case .medium: return String(localized: "Medium")
+        case .high: return String(localized: "High")
+        }
+    }
+
+    /// The word under the Effort ring (Easy / Moderate / Hard / Very hard), for the Effort the ring shows.
+    private var simpleEffortWord: String? {
+        guard let stored = effortStrain(displayDay) else { return nil }
+        switch SimpleDayPlan.effortLevel(stored: stored, scale: effortScale) {
+        case .easy: return String(localized: "Easy")
+        case .moderate: return String(localized: "Moderate")
+        case .hard: return String(localized: "Hard")
+        case .veryHard: return String(localized: "Very hard")
+        }
+    }
+
+    /// Under the scores, only while today's own Charge rests on a baseline NOOP does not fully trust yet: how
+    /// many nights it has learned from. Taps through to the guide's entry on how sure NOOP is. Nothing once
+    /// the baseline is trusted: a sure score needs no label.
+    @ViewBuilder
+    private var simpleEarlyEstimateLine: some View {
+        if let nights = SimpleDayPlan.earlyEstimateNights(validNights: cachedBaselineNights,
+                                                          chargeIsTodaysOwn: simpleTodaysOwnCharge != nil) {
+            Button { plainGuideTerm = .confidence } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "info.circle")
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .accessibilityHidden(true)
+                    Text("Early estimate: \(nights) of \(Baselines.minNightsTrust) nights so far.")
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 4)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -1591,7 +1654,11 @@ struct LiquidTodayView: View {
     @ViewBuilder
     private var simpleSleepLine: some View {
         let tonight = simpleTonightPlan
-        if selectedDayOffset == 0, cachedSimpleSleep != nil || tonight != nil {
+        // v6: tonight is answered whether or not the reminder is on. With the reminder on, its own plan (above)
+        // is the row; otherwise the goal from the wearer's need, catch-up and usual wake time.
+        let goal = tonight == nil ? simpleTonightGoal : nil
+        let catchUp = SimpleDayPlan.catchUpMinutes(debtMinutes: cachedSleepDebtMin ?? 0)
+        if selectedDayOffset == 0, cachedSimpleSleep != nil || tonight != nil || goal != nil {
             NavigationLink(value: TabRoute.sleep) {
                 HStack(spacing: 12) {
                     VStack(alignment: .leading, spacing: 12) {
@@ -1619,6 +1686,19 @@ struct LiquidTodayView: View {
                                     .font(StrandFont.caption)
                                     .foregroundStyle(StrandPalette.textSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
+                                // The reminder's times are its own; being behind on sleep is said in words
+                                // rather than as a second duration, so the row never states two needs.
+                                if catchUp > 0 {
+                                    Text("You're about \(SimpleDayPlan.durationText(Double(catchUp))) behind on sleep, so a little earlier is better.")
+                                        .font(StrandFont.caption)
+                                        .foregroundStyle(StrandPalette.textSecondary)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                            }
+                        }
+                        if let goal {
+                            simpleSleepRow(icon: "bed.double.fill", title: String(localized: "Tonight")) {
+                                simpleTonightGoalLines(goal)
                             }
                         }
                     }
@@ -1636,6 +1716,54 @@ struct LiquidTodayView: View {
             .buttonStyle(LiquidPressStyle())
             .accessibilityElement(children: .combine)
             .accessibilityHint(Text("Open Sleep"))
+        }
+    }
+
+    /// Tonight's goal while the wind-down reminder is off (v6), from the Sleep tab's need, the catch-up for
+    /// the debt its ledger shows and the wearer's usual wake time (`SimpleDayPlan.tonightGoal`). Nil while
+    /// the last-night line above states a different need (WHOOP's imported figure for that night): a goal
+    /// built on NOOP's need under it would put two needs on one card, the rule `tonightStatesNeed` keeps.
+    private var simpleTonightGoal: SimpleDayPlan.TonightGoal? {
+        guard simpleMode, selectedDayOffset == 0, let need = cachedTonightNeedMin,
+              SimpleDayPlan.tonightStatesNeed(lastNightNeedMin: cachedSimpleSleep?.need, tonightNeedMin: need)
+        else { return nil }
+        return SimpleDayPlan.tonightGoal(
+            now: Date(), calendar: .current, needMinutes: need,
+            catchUpMinutes: SimpleDayPlan.catchUpMinutes(debtMinutes: cachedSleepDebtMin ?? 0),
+            usualWakeMinute: cachedUsualWakeMinute)
+    }
+
+    /// The lines of the reminder-off "Tonight" row: a fall-asleep time when a usual wake time is known,
+    /// otherwise the goal alone; the catch-up is named whenever it is part of the goal.
+    @ViewBuilder
+    private func simpleTonightGoalLines(_ goal: SimpleDayPlan.TonightGoal) -> some View {
+        let total = SimpleDayPlan.durationText(Double(goal.goalMinutes))
+        let extra = SimpleDayPlan.durationText(Double(goal.catchUpMinutes))
+        if let asleepBy = goal.asleepBy, let wake = goal.wake {
+            let clock = AppClock.hourMinuteFormatter()
+            Text("Aim to be asleep by \(clock.string(from: asleepBy))")
+                .font(StrandFont.subhead.weight(.semibold))
+                .foregroundStyle(StrandPalette.textPrimary)
+            Group {
+                if goal.catchUpMinutes > 0 {
+                    Text("That gives you \(total) of sleep before your usual \(clock.string(from: wake)) wake, including \(extra) to catch up.")
+                } else {
+                    Text("That gives you \(total) of sleep before your usual \(clock.string(from: wake)) wake.")
+                }
+            }
+            .font(StrandFont.caption)
+            .foregroundStyle(StrandPalette.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+        } else {
+            Text("Aim for \(total) of sleep tonight")
+                .font(StrandFont.subhead.weight(.semibold))
+                .foregroundStyle(StrandPalette.textPrimary)
+            if goal.catchUpMinutes > 0 {
+                Text("That includes \(extra) to catch up on sleep you've missed.")
+                    .font(StrandFont.caption)
+                    .foregroundStyle(StrandPalette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
@@ -1716,7 +1844,7 @@ struct LiquidTodayView: View {
                              StrandPalette.accent, fracOver(resp, 24), route: .metric("resp_rate"),
                              hint: String(localized: "steady is normal"))
                 } else {
-                    Text("How last night's readings moved your Charge, compared with your own normal. The number on the right is how many points each one added or took away.")
+                    Text("How last night's readings moved your Charge, compared with your own normal. A bar to the right raised it, a bar to the left lowered it.")
                         .font(StrandFont.caption)
                         .foregroundStyle(StrandPalette.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -1726,7 +1854,10 @@ struct LiquidTodayView: View {
                     let ordered = SimpleDayPlan.driversByImpact(drivers)
                     let shown = simpleDriversExpanded ? ordered : Array(ordered.prefix(SimpleDayPlan.leadingDriverCount))
                     ForEach(Array(shown.enumerated()), id: \.offset) { _, driver in
-                        ChargeDriverRow(driver: driver, maxMagnitude: maxMagnitude)
+                        // v6: a bar that grows from the middle, right for a reading that raised the Charge
+                        // and left for one that lowered it. The one-way bar read as the reading's own level
+                        // ("Rest 87" over an almost empty bar).
+                        ChargeDriverRow(driver: driver, maxMagnitude: maxMagnitude, twoSided: true)
                     }
                     if ordered.count > SimpleDayPlan.leadingDriverCount {
                         Button {
@@ -1753,10 +1884,40 @@ struct LiquidTodayView: View {
         VStack(spacing: 8) {
             sectionHead("ACTIVITY")
             HStack(alignment: .top, spacing: NoopMetrics.gap) {
-                ktileFor(.steps, hrv: nil, rhr: nil)
-                ktileFor(.calories, hrv: nil, rhr: nil)
+                // v6: each number against the wearer's own usual day, and a bar that is full at that usual.
+                // The full view's tiles fill toward fixed goals nobody chose (10,000 steps, 800 kcal); here a
+                // tile with no usual yet (under a week of history) shows its number alone.
+                let stepsUsual = SimpleDayPlan.usualDailyValue(series: simpleStepsHistory, before: selectedDayKey)
+                let kcalUsual = SimpleDayPlan.usualDailyValue(
+                    series: (kSparks["energy_kcal"] ?? []).map { (day: $0.0, value: $0.1) }, before: selectedDayKey)
+                ktile(String(localized: "Steps"), icon: keyMetricIcon(.steps), stepsText, "", StrandPalette.chargeColor,
+                      SimpleDayPlan.usualFraction(value: stepCount, usual: stepsUsual),
+                      key: stepsDetailKey, detailMetric: stepsDetailMetric,
+                      caption: stepsUsual.map { usual in
+                          let text = Self.groupedCount((usual / 100).rounded() * 100)
+                          return String(localized: "usually \(text)")
+                      },
+                      showsBar: stepsUsual != nil)
+                // "Active calories": the figure is the energy burned by moving, not the day's total.
+                ktile(String(localized: "Active calories"), icon: keyMetricIcon(.calories), intText(caloriesCount), "kcal",
+                      StrandPalette.metricAmber,
+                      SimpleDayPlan.usualFraction(value: caloriesCount, usual: kcalUsual),
+                      key: "energy_kcal", detailMetric: caloriesDetailMetric,
+                      caption: kcalUsual.map { usual in
+                          let text = Self.groupedCount((usual / 10).rounded() * 10)
+                          return String(localized: "usually \(text)")
+                      },
+                      showsBar: kcalUsual != nil)
             }
         }
+    }
+
+    /// A whole count with the reader's digit grouping ("7,900" / "7.900"), as the Steps tile prints its own.
+    private static func groupedCount(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: Int(value))) ?? "\(Int(value))"
     }
 
     /// The way into the plain-language guide, at the foot of the Simple Today.
@@ -1949,7 +2110,8 @@ struct LiquidTodayView: View {
     private var showsDetailedTiles: Bool { keyMetricsDetailed && !simpleMode }
 
     private func ktile(_ label: String, icon: String, _ value: String, _ unit: String, _ tint: Color, _ frac: Double?,
-                       key: String? = nil, detailMetric: MetricDescriptor? = nil, caption: String? = nil) -> some View {
+                       key: String? = nil, detailMetric: MetricDescriptor? = nil, caption: String? = nil,
+                       showsBar: Bool = true) -> some View {
         let displayValue = Self.tileDisplayValue(value, unit: unit)
         let tile = VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 6) {
@@ -1979,8 +2141,12 @@ struct LiquidTodayView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
-            LiquidTube(frac: frac ?? 0, tint: tint, height: 9, animated: false,
-                       showsHighlight: false, usesCleanFill: true)
+            // `showsBar` is false only for a Simple-mode activity tile with no usual day to fill toward yet:
+            // an empty bar there would read as "none". Every other call site draws the bar as before.
+            if showsBar {
+                LiquidTube(frac: frac ?? 0, tint: tint, height: 9, animated: false,
+                           showsHighlight: false, usesCleanFill: true)
+            }
             // #430 parity: DETAILED tiles grow the trend graph under the bar, tinted to the metric and
             // windowed to the editor's 1-week / 2-week / 1-month choice (the Android twin). A metric with no
             // windowed series keeps a clear placeholder of the same height so every tile in a detailed row
@@ -2021,7 +2187,14 @@ struct LiquidTodayView: View {
 
     private var lastWorkoutsSection: some View {
         VStack(spacing: 8) {
-            sectionHead("LAST WORKOUTS", trailing: "\(workouts.count) total")
+            if simpleMode {
+                // v6: the list holds the selected day's workouts, so today it says so, and the count is the
+                // ones not shown rather than a "total" that read as all-time.
+                sectionHead(selectedDayOffset == 0 ? "TODAY'S WORKOUTS" : "LAST WORKOUTS",
+                            trailing: workouts.count > 1 ? String(localized: "+\(workouts.count - 1) more") : nil)
+            } else {
+                sectionHead("LAST WORKOUTS", trailing: "\(workouts.count) total")
+            }
             if let w = workouts.first {
                 NavigationLink(value: TabRoute.workouts) { workoutCard(w) }
                     .buttonStyle(LiquidPressStyle())
@@ -2046,7 +2219,10 @@ struct LiquidTodayView: View {
                         Text(workoutSub(w)).font(StrandFont.caption).foregroundStyle(StrandPalette.textTertiary)
                     }
                     Spacer()
-                    (Text(effortText(w.strain)).font(StrandFont.number(15))
+                    // Simple mode prints a workout's Effort the way the ring prints the day's (whole numbers
+                    // on 0–100), so one screen never shows "39.7" beside "67".
+                    (Text(simpleMode ? (w.strain.map { SimpleDayPlan.effortText(stored: $0, scale: effortScale) } ?? Self.noValueDash)
+                                     : effortText(w.strain)).font(StrandFont.number(15))
                         + Text(" EFFORT").font(StrandFont.overlineScaled(9)))
                         .foregroundStyle(StrandPalette.textPrimary)
                 }
@@ -2260,6 +2436,31 @@ struct LiquidTodayView: View {
         } else {
             cachedSimpleSleep = nil
         }
+        // Simple mode's "Early estimate" line and tonight's goal, for today only. The debt is the Sleep tab's
+        // own: the same ledger (`SleepModel.debtLedger`) over the same day rows, the same nap credit from the
+        // same session blocks and habitual midsleep, so Today and Sleep can never state two debts. The
+        // session read is windowed to the days the ledger can reach; a day's nap credit depends on that
+        // day's blocks alone, so the window changes nothing inside it.
+        if simpleMode, selectedDayOffset == 0 {
+            cachedBaselineNights = repo.chargeBaselines.map {
+                Baselines.foldHistory($0.hrvHistory.values, dayKeys: $0.hrvHistory.dayKeys,
+                                      cfg: Baselines.hrvCfg).nValid
+            }
+            cachedTonightNeedMin = Int(SleepModel.debtNeedMin(days: repo.days).rounded())
+            let ledgerDays = SleepModel.debtLedgerLookbackDays(days: repo.days, todayKey: tkey)
+            let blocks = await repo.allSleepSessions(days: ledgerDays)
+            let habitual = await repo.habitualMidsleepSec()
+            cachedSleepDebtMin = SleepModel.debtLedger(days: repo.days, sleeps: repo.sleeps, allSessions: blocks,
+                                                       habitualMidsleepSec: habitual).magnitudeMin
+            cachedUsualWakeMinute = SimpleDayPlan.usualWakeMinute(
+                wakeTimes: repo.sleeps.map { Date(timeIntervalSince1970: TimeInterval($0.endTs)) },
+                calendar: .current)
+        } else {
+            cachedBaselineNights = nil
+            cachedTonightNeedMin = nil
+            cachedSleepDebtMin = nil
+            cachedUsualWakeMinute = nil
+        }
         // StressModel loops the full history to build its baseline — run it OFF the main actor so a big
         // history doesn't stutter the UI. Snapshot the inputs (value types) into the detached task.
         let storedStress = await stressA
@@ -2290,6 +2491,26 @@ struct LiquidTodayView: View {
         for r in sparkRows { if let k = r.activeKcalEst { winOnDeviceKcal[r.day] = k } }
         let energyKcalSpark: [(String, Double)] = Set(winImportedKcal.keys).union(winOnDeviceKcal.keys).sorted()
             .compactMap { day in (winImportedKcal[day] ?? winOnDeviceKcal[day]).map { (day, $0) } }
+        // Simple mode's usual day of steps: the same window, each day resolved the way `stepCount` resolves
+        // the selected day, so "usually" compares like with like whichever source a day's count came from.
+        if simpleMode {
+            var importedSteps: [String: Double] = [:]
+            for r in appleRowsForSpark where r.day >= sparkCutoff && r.day <= selectedDayKey {
+                if let s = r.steps { importedSteps[r.day] = max(importedSteps[r.day] ?? 0, Double(s)) }
+            }
+            var measuredSteps: [String: Double] = [:]
+            for r in sparkRows { if let s = r.steps { measuredSteps[r.day] = Double(s) } }
+            var estimatedSteps: [String: Double] = [:]
+            for point in stepsSeries where point.day >= sparkCutoff && point.day <= selectedDayKey {
+                estimatedSteps[point.day] = point.value
+            }
+            simpleStepsHistory = Set(measuredSteps.keys).union(importedSteps.keys).union(estimatedSteps.keys).sorted()
+                .compactMap { day in
+                    (measuredSteps[day] ?? importedSteps[day] ?? estimatedSteps[day]).map { (day: day, value: $0) }
+                }
+        } else {
+            simpleStepsHistory = []
+        }
         kSparks = [
             "recovery": sparkRows.compactMap { r in r.recovery.map { (r.day, $0) } },
             "strain": sparkRows.compactMap { r in r.strain.map { (r.day, $0) } },
@@ -2473,21 +2694,11 @@ struct LiquidTodayView: View {
         return String(localized: "From \(date)")
     }
 
-    /// The Charge-state pill's word. Simple mode says "Earlier score" for a carried score, because the
-    /// carried row can be older than last night (its date is in the ring's caption); the full view keeps
-    /// its own short word.
-    private var chargeStateWord: String {
-        if simpleMode, case .carried = chargeDisplay { return String(localized: "Earlier score") }
-        return chargeDisplay.stateLabel
-    }
-
     private var readinessWord: String? {
         switch readiness.level {
         case .primed: return String(localized: "Push")
         case .balanced: return String(localized: "Maintain")
-        // Simple mode says "Go easy": "Rest" is also the name of the sleep score two inches above it, and
-        // the same word meaning two things is exactly the confusion Simple mode exists to remove.
-        case .strained, .rundown: return simpleMode ? String(localized: "Go easy") : String(localized: "Rest")
+        case .strained, .rundown: return String(localized: "Rest")
         case .insufficient: return nil
         }
     }
