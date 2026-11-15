@@ -39,24 +39,27 @@ verified and stacked. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
 
 ## Where everything is
 
-**Phone:** `testing-latest` = `testing-build` `218aec72` = stack `25aa5f38` + `fork/ships-template`, NOOP 12.1.0
-(439), GitHub run 43264856702, verified by its files on 12 Nov; installed on Utku's iPhone 16 Plus (his 14 Nov
-strap log shows the warning working). Install = **just update** through AltStore, never delete first.
+**Phone:** `testing-latest` = `testing-build` `ab72270c` = stack `26f3bfe7` + `fork/ships-template`, NOOP 12.1.0
+(439), GitHub run 43774881413 (16 Nov). The `.ipa` was checked on 16 Nov: release target `ab72270c`, HTTP 200,
+sha256 `f41616e3…`, its `de.lproj` holds step 1's strings. Not yet installed by Utku: his iPhone 16 Plus still
+runs `218aec72` (12 Nov) until he updates. Install = **just update** through AltStore, never delete first.
 Release page: `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest`.
 
-**Testing pipeline:** `testing-stack` `25aa5f38` (upstream `2a1de760` + our open PRs + Simple mode + #2906 + the
-warning); `testing-build` `218aec72`. How to rebuild and ship: [Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)
+**Testing pipeline:** `testing-stack` `26f3bfe7` (upstream `2a1de760` + our open PRs + Simple mode through v6
+step 1 + #2906 + the warning with W1); `testing-build` `ab72270c`. How to rebuild and ship: [Workflow §6](WORKFLOW.md#6-builds-for-utkus-phone)
 and Simple mode → "How to work".
 
-**Scratch folder (delete after step 1 has its own build):** `~/Developer/noop-v6walk`, detached at
-`testing-stack` `25aa5f38`, clean; its simulator build is in `~/Library/Caches/noop-handbook/build/v6walk`
-and the walk's screenshots in `~/Library/Caches/noop-handbook/v6-walk/shots/`.
+**Build caches kept for the next step (this Mac, rebuildable, a few GB each):**
+`~/Library/Caches/noop-handbook/build/simple` (simulator build of `feat/simple-mode`) and `verify/derived`
+(`verify.sh`). Step 1's logs and screenshots: `~/Library/Caches/noop-handbook/v6-step1/`; the walk's
+screenshots: `v6-walk/shots/`. To stack the next step, make a scratch worktree at `origin/testing-stack`
+(the 15 Nov one, `~/Developer/noop-v6walk`, was removed after step 1 shipped).
 
 **Feature branches (fork only, not PRs):**
 | Branch | Tip | Folder | What |
 |---|---|---|---|
-| `feat/simple-mode` | `258e0bf2` | `~/Developer/noop-simple` | Simple mode, Rounds 1–7 |
-| `feat/high-hr-warning` | `f80aadc6` | `~/Developer/noop-hrwarn` | the warning; contains `feat/simple-mode` |
+| `feat/simple-mode` | `053ef4bd` | `~/Developer/noop-simple` | Simple mode, Rounds 1–7 and v6 step 1 |
+| `feat/high-hr-warning` | `4e7fd6f5` | `~/Developer/noop-hrwarn` | the warning with W1; contains `feat/simple-mode` up to `258e0bf2` |
 
 **Our open upstream PRs (17), all waiting on the maintainer:**
 | PR | Branch | Folder |
