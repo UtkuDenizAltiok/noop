@@ -10,10 +10,11 @@ import StrandAnalytics
 // strain reached" nudge. Nothing is computed, stored or fed back into a score.
 //
 // One rule decides when the range is shown, because two readouts of one fact must not disagree
-// (AGENTS.md). The verdict word (Push / Maintain / Go easy) comes from `ReadinessEngine`, which also
-// weighs training load and breathing; the range comes from Charge alone. On a day where they point
-// different ways (a high Charge while training load jumped, say), printing "Go easy" above "a hard day"
-// would tell the wearer two things at once, so the range is left out and the verdict stands alone.
+// (AGENTS.md). The verdict (the card's headline, "A good day to push" … "Rest and recover today") comes from
+// `ReadinessEngine`, which also weighs training load and breathing; the range comes from Charge alone. On a
+// day where they point different ways (a high Charge while training load jumped, say), printing "Take it
+// easier today" above "a hard day" would tell the wearer two things at once, so the range is left out and
+// the verdict stands alone.
 
 /// Pure rules for the Simple-mode "Your day" card.
 enum SimpleDayPlan {
@@ -204,5 +205,143 @@ enum SimpleDayPlan {
         let m = max(0, Int(minutes.rounded()))
         if m < 60 { return String(localized: "\(m)m") }
         return String(localized: "\(m / 60)h \(m % 60)m")
+    }
+
+    // MARK: - Score words (v6: a number is never alone)
+
+    /// How good a Charge is, in one word.
+    enum ChargeLevel: Equatable {
+        case low, medium, high
+    }
+
+    /// The word for a Charge, read from the one Charge → Effort mapping (`CoupledView.optimalStrainRange`):
+    /// the Charge that earns a hard day is High, a moderate day Medium, an easy day Low. So the word under the
+    /// ring and the suggested range under it can never describe the same Charge two ways.
+    static func chargeLevel(_ charge: Double) -> ChargeLevel {
+        guard let band = CoupledView.optimalStrainRange(recovery: charge) else { return .low }
+        switch intensity(of: band) {
+        case .hard: return .high
+        case .moderate: return .medium
+        case .easy: return .low
+        }
+    }
+
+    /// How hard a day's Effort has been, in one word.
+    enum EffortLevel: Equatable {
+        case easy, moderate, hard, veryHard
+    }
+
+    /// The word for a day's Effort (stored 0–100): Easy up to the top of the easy day's suggested range, Moderate
+    /// up to the top of the moderate day's, Hard up to the top of the hard day's, beyond it Very hard. Judged
+    /// the way `progress` judges "in the range": on the number as the ring prints it, against the ranges on
+    /// the reader's scale, a range's top still belonging to it. So an Effort the card calls "in the range" of
+    /// a moderate day is never called Hard under the ring. The three tops are read from the mapping itself.
+    static func effortLevel(stored: Double, scale: EffortScale) -> EffortLevel {
+        guard let printed = Double(effortText(stored: stored, scale: scale)) else { return .easy }
+        let tops = [0.0, 50.0, 100.0].compactMap { CoupledView.optimalStrainRange(recovery: $0) }
+            .map { band($0, on: scale).upperBound }
+        guard tops.count == 3 else { return .easy }
+        if printed <= Double(tops[0]) { return .easy }
+        if printed <= Double(tops[1]) { return .moderate }
+        if printed <= Double(tops[2]) { return .hard }
+        return .veryHard
+    }
+
+    /// The nights NOOP has learned from so far, while today's own Charge is still an early estimate; nil once
+    /// the baseline is trusted (`Baselines.minNightsTrust`) and for any score that is not today's own (a
+    /// carried or calibrating ring says so in its own words).
+    static func earlyEstimateNights(validNights: Int?, chargeIsTodaysOwn: Bool,
+                                    trust: Int = Baselines.minNightsTrust) -> Int? {
+        guard chargeIsTodaysOwn, let validNights, validNights < trust else { return nil }
+        return max(0, validNights)
+    }
+
+    // MARK: - Tonight's goal (v6: the evening question is always answered)
+
+    /// The most catch-up sleep one night is asked to carry. A coach's cap: built-up sleep debt is repaid over
+    /// several nights, not in one (Kitamura 2016: one hour of debt took four nights of extended sleep).
+    static let catchUpCapMinutes = 60
+
+    /// Extra sleep to aim for tonight, from the sleep debt the Sleep tab's ledger shows: the debt itself up to
+    /// the cap, rounded to five minutes. Nothing for no debt, or for one too small to round to five minutes.
+    static func catchUpMinutes(debtMinutes: Double) -> Int {
+        guard debtMinutes.isFinite, debtMinutes > 0 else { return 0 }
+        let capped = min(debtMinutes, Double(catchUpCapMinutes))
+        return Int((capped / 5).rounded()) * 5
+    }
+
+    /// How many recent wake times make a usual wake time, and how many are read.
+    static let usualWakeMinNights = 5
+    static let usualWakeWindowNights = 14
+
+    /// The wearer's usual wake time as a minute of the day: the median wake minute of the most recent main
+    /// sleeps (`usualWakeWindowNights` at most), or nil with fewer than `usualWakeMinNights` of them. The
+    /// median, so one late Sunday does not move it.
+    static func usualWakeMinute(wakeTimes: [Date], calendar: Calendar) -> Int? {
+        let recent = wakeTimes.sorted().suffix(usualWakeWindowNights)
+        guard recent.count >= usualWakeMinNights else { return nil }
+        let minutes = recent.map { date -> Int in
+            let parts = calendar.dateComponents([.hour, .minute], from: date)
+            return (parts.hour ?? 0) * 60 + (parts.minute ?? 0)
+        }.sorted()
+        let mid = minutes.count / 2
+        return minutes.count % 2 == 1 ? minutes[mid] : (minutes[mid - 1] + minutes[mid]) / 2
+    }
+
+    /// Tonight's sleep goal while the wind-down reminder is off.
+    struct TonightGoal: Equatable {
+        /// The sleep need plus tonight's catch-up.
+        let goalMinutes: Int
+        /// The catch-up part of the goal (0 when the wearer is not behind).
+        let catchUpMinutes: Int
+        /// The latest time to fall asleep and still get the goal before the usual wake; nil when no usual
+        /// wake time is known yet.
+        let asleepBy: Date?
+        /// The usual wake time the plan is timed from; nil when none is known yet.
+        let wake: Date?
+    }
+
+    /// Tonight's goal from the Sleep tab's need, the catch-up and the wearer's usual wake time. With a usual
+    /// wake time it carries the fall-asleep time for the next such wake, and is nil once that time has passed
+    /// (a plan that can no longer be followed is not shown, the rule `tonightPlan` follows too). Without one
+    /// it is the goal alone.
+    static func tonightGoal(now: Date, calendar: Calendar, needMinutes: Int, catchUpMinutes: Int,
+                            usualWakeMinute: Int?) -> TonightGoal? {
+        let catchUp = max(0, catchUpMinutes)
+        let goal = max(0, needMinutes) + catchUp
+        guard goal > 0 else { return nil }
+        guard let usualWakeMinute else {
+            return TonightGoal(goalMinutes: goal, catchUpMinutes: catchUp, asleepBy: nil, wake: nil)
+        }
+        let today = calendar.startOfDay(for: now)
+        for offset in 0...1 {
+            guard let wakeDay = calendar.date(byAdding: .day, value: offset, to: today),
+                  let wake = wallClock(usualWakeMinute, from: wakeDay, calendar: calendar), wake > now else { continue }
+            guard let asleepBy = wallClock(usualWakeMinute - goal, from: wakeDay, calendar: calendar),
+                  asleepBy > now else { return nil }
+            return TonightGoal(goalMinutes: goal, catchUpMinutes: catchUp, asleepBy: asleepBy, wake: wake)
+        }
+        return nil
+    }
+
+    // MARK: - Activity against the wearer's own usual (v6: no hidden goals)
+
+    /// How many earlier days make a "usual" day.
+    static let usualDayMinDays = 7
+
+    /// The wearer's usual daily value of a day-keyed series (steps, active calories): the median of the days
+    /// before `dayKey` that recorded anything, or nil with fewer than `usualDayMinDays` of them. The selected
+    /// day itself is left out because it is still being lived.
+    static func usualDailyValue(series: [(day: String, value: Double)], before dayKey: String) -> Double? {
+        let values = series.filter { $0.day < dayKey && $0.value.isFinite && $0.value > 0 }.map(\.value).sorted()
+        guard values.count >= usualDayMinDays else { return nil }
+        let mid = values.count / 2
+        return values.count % 2 == 1 ? values[mid] : (values[mid - 1] + values[mid]) / 2
+    }
+
+    /// How full an activity bar is against the usual day: full at the usual value and beyond.
+    static func usualFraction(value: Double?, usual: Double?) -> Double? {
+        guard let value, let usual, usual > 0 else { return nil }
+        return max(0, min(1, value / usual))
     }
 }
