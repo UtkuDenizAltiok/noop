@@ -306,14 +306,14 @@ final class HighHRAlertMonitorTests: XCTestCase {
         hrWarnFeedMonitor(monitor, 51...120, bpm: 120)
         XCTAssertEqual(monitor.status, .alerting(average: 120, buzzDelivered: true))
         XCTAssertEqual(hrWarnBuzzAttempts, 7)   // 90, 95, …, 120
-        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit (90-s average 120, now 120); buzzing every 5 s"])
+        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit of 110 bpm (90-s average 120, now 120); buzzing every 5 s"])
 
         // The 10-s median turns at 126 (six readings of 95), after one more buzz at 125.
         hrWarnFeedMonitor(monitor, 121...140, bpm: 95)
         XCTAssertEqual(monitor.status, .below(average: 114))   // (70 × 120 + 20 × 95) / 90 at 140
         XCTAssertEqual(hrWarnBuzzAttempts, 8)
         XCTAssertEqual(hrWarnLog.count, 2)
-        XCTAssertEqual(hrWarnLog.last, "High HR warning: back under the limit (now 95, 90-s average 118) after 8 buzzes")
+        XCTAssertEqual(hrWarnLog.last, "High HR warning: back under the limit of 110 bpm (now 95, 90-s average 118) after 8 buzzes")
     }
 
     func testAStrapThatCannotBeReachedIsReportedNotClaimed() {
@@ -321,7 +321,7 @@ final class HighHRAlertMonitorTests: XCTestCase {
         let monitor = hrWarnMonitorFixture(enabled: true)
         hrWarnFeedMonitor(monitor, 0...120, bpm: 120)
         XCTAssertEqual(monitor.status, .alerting(average: 120, buzzDelivered: false))
-        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)"])
+        XCTAssertEqual(hrWarnLog, ["High HR warning: over the limit of 110 bpm but no buzz was sent (strap not connected or not fully paired)"])
 
         hrWarnStrapReachable = true
         hrWarnFeedMonitor(monitor, 121...125, bpm: 120)
@@ -354,26 +354,58 @@ final class HighHRAlertMonitorTests: XCTestCase {
         hrWarnFeedMonitor(monitor, 260...265, bpm: 120)
         XCTAssertEqual(monitor.status, .measuring)
         XCTAssertEqual(hrWarnLog, [
-            "High HR warning: over the limit (90-s average 120, now 120); buzzing every 5 s",
+            "High HR warning: over the limit of 110 bpm (90-s average 120, now 120); buzzing every 5 s",
             "High HR warning: paused, too few readings to judge",
         ])
     }
 
+    private func hrWarnSettingsInstant(_ second: Double) -> Date {
+        Date(timeIntervalSince1970: 1_000_000 + second)
+    }
+
+    /// Switching on and off is logged at once; a changed value is logged once, after it has settled, at the
+    /// next reading.
     func testTheSwitchAndValuesLogOnlyChanges() {
         let monitor = hrWarnMonitorFixture(enabled: false)
         hrWarnDefaults.set(true, forKey: HighHRAlertPrefs.enabledKey)
-        monitor.settingsChanged()
+        monitor.settingsChanged(now: hrWarnSettingsInstant(0))
         XCTAssertEqual(monitor.status, .waiting)
-        monitor.settingsChanged()
+        monitor.settingsChanged(now: hrWarnSettingsInstant(0.5))
         hrWarnDefaults.set(120, forKey: HighHRAlertPrefs.thresholdKey)
-        monitor.settingsChanged()
-        hrWarnFeedMonitor(monitor, 0...10, bpm: 130)
+        monitor.settingsChanged(now: hrWarnSettingsInstant(1))
+        XCTAssertEqual(hrWarnLog, ["High HR warning: on (above 110 bpm for 90 s)"], "a changed value waits to settle")
+        hrWarnFeedMonitor(monitor, 2...10, bpm: 130)
         hrWarnDefaults.set(false, forKey: HighHRAlertPrefs.enabledKey)
-        monitor.settingsChanged()
-        monitor.settingsChanged()
+        monitor.settingsChanged(now: hrWarnSettingsInstant(11))
+        monitor.settingsChanged(now: hrWarnSettingsInstant(12))
         XCTAssertEqual(monitor.status, .off)
         XCTAssertEqual(hrWarnLog, ["High HR warning: on (above 110 bpm for 90 s)",
-                                   "High HR warning: on (above 120 bpm for 90 s)",
+                                   "High HR warning: changed to above 120 bpm for 90 s",
                                    "High HR warning: off"])
+    }
+
+    /// W1: a held stepper changes the limit several times a second. The log gets one line, for the value it
+    /// came to rest on, and none for a value stepped back to what the log already says.
+    func testAHeldStepperWritesOneLine() {
+        let monitor = hrWarnMonitorFixture(enabled: true)
+        for (step, limit) in (111...125).enumerated() {
+            hrWarnDefaults.set(limit, forKey: HighHRAlertPrefs.thresholdKey)
+            monitor.settingsChanged(now: hrWarnSettingsInstant(Double(step) * 0.2))   // five steps a second
+            monitor.ingest(bpm: 80, now: hrWarnSettingsInstant(Double(step) * 0.2 + 0.1))
+        }
+        XCTAssertTrue(hrWarnLog.isEmpty, "nothing while the value is still moving")
+        // The last step was at 2.8 s; a reading one second later is too soon, one at 5 s is not.
+        monitor.ingest(bpm: 80, now: hrWarnSettingsInstant(3.8))
+        XCTAssertTrue(hrWarnLog.isEmpty)
+        monitor.ingest(bpm: 80, now: hrWarnSettingsInstant(5))
+        XCTAssertEqual(hrWarnLog, ["High HR warning: changed to above 125 bpm for 90 s"])
+
+        // Stepped away and back to the logged value before it settled: nothing to say.
+        hrWarnDefaults.set(126, forKey: HighHRAlertPrefs.thresholdKey)
+        monitor.settingsChanged(now: hrWarnSettingsInstant(10))
+        hrWarnDefaults.set(125, forKey: HighHRAlertPrefs.thresholdKey)
+        monitor.settingsChanged(now: hrWarnSettingsInstant(10.5))
+        monitor.ingest(bpm: 80, now: hrWarnSettingsInstant(20))
+        XCTAssertEqual(hrWarnLog.count, 1)
     }
 }
