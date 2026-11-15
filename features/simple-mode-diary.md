@@ -730,3 +730,39 @@ The design that answers these is [Simple mode → Design v6](simple-mode.md#desi
 - **S10. Sleep debt advice** ("sleep about 37m longer than your sleep need tonight") is right for a small debt;
   for a large one the laboratory evidence (Kitamura 2016) says recovery takes several nights.
 
+## Round 9 (15–16 Nov 2026): v6 step 1, "Today answers", built by the architect chat
+
+Utku answered "Yes, build it". Built on `feat/simple-mode` as `053ef4bd` (one commit) by the architect chat
+itself; the warning's W1 as `4e7fd6f5` on `feat/high-hr-warning`. What it contains and where it left the design
+is in [Simple mode → Step 1 as built](simple-mode.md#step-1-as-built-15-nov-featsimple-mode-053ef4bd).
+
+**How it was checked**
+- Branch (`~/Developer/noop-simple`): NOOPiOS simulator build; StrandTests on the Mac 2355, 0 failures, 2 skipped
+  as before (12 new in `SimpleTodayV6Tests`); `i18n_audit.py --ci upstream/main` exit 0; doc lint clean; Tools
+  338 OK.
+- **Seen to fail:** every one of the 12 new tests went red in one run with its rule broken on purpose (12
+  mutations, 158 assertion failures), then the four files were restored and compared by sha256. The warning's
+  tests were run against the old monitor: five failed, among them `testAHeldStepperWritesOneLine` (the old code
+  wrote 17 lines where the fix writes one).
+- Simulator, demo data, evening: the strap line with Connect; "51 Medium · 67 Moderate · 87 Optimal"; "A normal
+  training day"; with the reminder switched on by launch argument, "Aim to be asleep by 23:00 … You're about 35m
+  behind on sleep, so a little earlier is better."; the two-way Charge bars; "Steps 8.715 · usually 8.700" and
+  "Active calories 612 kcal · usually 520"; "Today's workouts … 40 EFFORT". With no data: "Aim for 8h 0m of sleep
+  tonight". Not seen on screen (the demo's imported sleep need hides it, by the card's own rule): the reminder-off
+  row with a time; its arithmetic is unit-tested.
+- Stack `26f3bfe7` (fast-forward from `25aa5f38`; the catalogue merged by key with `xcmerge.py`, one comment-line
+  conflict in `ChargeBreakdownFormat.swift` resolved by hand): `verify.sh` all steps passed (WhoopStore 645,
+  StrandAnalytics 2160, StrandImport 327, doc lint, i18n, ledger, ratchet, governance 127, Mac tests 2408 with 0
+  failures, iOS build), then a Release build for a real iPhone with the workflow's flags.
+
+**Found while building**
+- A `Group` with nothing inside has no view for `.task` to run on: the strap line's settle wait never started and
+  the line never appeared. A zero-spacing `VStack` fixed it. Seen only because the simulator screen was looked
+  at; no test would have caught it.
+- The suggested ranges share their end points (10 is the top of the easy range and the bottom of the moderate
+  one), so a word per range cannot agree with "in the range" at both ends. The word now takes the lower range at
+  a shared point, like the card.
+- The Steps tile's history has three sources (the strap's count, an imported one, the motion estimate). The usual
+  day resolves each past day the way the tile resolves today, or "usually" would compare unlike things.
+- The demo seed needs about 45 seconds on a busy Mac before the relaunch, not 15.
+

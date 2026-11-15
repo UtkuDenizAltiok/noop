@@ -304,7 +304,9 @@ No "no buzz was sent", "paused", disconnect or error line in either window. 12 N
 first episode at 23:35:14, eight buzzes to 23:35:52.
 
 **Follow-ups found in the logs (not fixed yet; small; best shipped with the first Simple mode v6 build):**
-- **W1, settings lines flood the strap log.** Every stepper step writes `on (above X bpm for Y s)`: 47 lines on
+- **W1, settings lines flood the strap log (fixed 15 Nov, `4e7fd6f5`: on/off at once, a changed value once
+  after 2 s at the next reading as "changed to above X bpm for Y s", the limit named in every over/back line;
+  `testAHeldStepperWritesOneLine`).** Every stepper step writes `on (above X bpm for Y s)`: 47 lines on
   12 Nov and 60 on 14 Nov, up to five a second (holding a stepper repeats). The design said "changes only" but did
   not foresee a held stepper. Fix: log switching on and off at once; log a changed value once it has stayed the
   same for about 2 s, checked at the next reading (no timer); and name the limit in the over/back lines

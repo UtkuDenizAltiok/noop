@@ -1,30 +1,31 @@
 # State
 
-Updated **15 Nov 2026, chat 5 (design day)**. Current facts and unfinished work only; the dated record is in
-[History](HISTORY.md) and, for everything before 14 Nov, the [State archive](archive/state-until-2026-11-14.md).
+Updated **16 Nov 2026, chat 5 (v6 step 1 shipping)**. Current facts and unfinished work only; the dated record
+is in [History](HISTORY.md) and, for everything before 14 Nov, the [State archive](archive/state-until-2026-11-14.md).
 The agent in the chat owns execution under [Rules](RULES.md). Since 15 Nov the architect chat (Claude Fable 5.2)
 also builds: Utku asked for no helper agents and no worker chats.
 
 ## Now
 
-**Simple mode v6 is designed and not yet built.** On 15 Nov the architect walked every Simple screen as a
-first-time wearer in the simulator (the phone's exact code, `testing-stack` `25aa5f38`), recorded 47 points of
-confusion and seven science findings ([diary, Round 8](features/simple-mode-diary.md#round-8-15-nov-2026-the-first-time-wearer-walk-behind-design-v6)),
-and wrote [Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop): ten rules, one name per
-thing, every screen with its exact wording, the science changes and a seven-step build plan. No app code changed;
-the phone build is still `218aec72`.
+**Simple mode v6: designed (15 Nov), step 1 of 7 built and on its way to the phone.**
+[Design v6](features/simple-mode.md#design-v6-the-most-user-friendly-noop) holds the rules, every screen's
+wording, the science changes and the seven-step build plan. Step 1, "Today answers", is `053ef4bd` on
+`feat/simple-mode` ([as built](features/simple-mode.md#step-1-as-built-15-nov-featsimple-mode-053ef4bd)); the
+heart rate warning's W1 is `4e7fd6f5` on `feat/high-hr-warning`. Both are on `testing-stack` `26f3bfe7`
+(`verify.sh` all steps passed, real-iPhone Release build ok) and in `testing-build` `ab72270c`.
 
-Utku's question of 15 Nov (is a sleep need of 8 hours every day realistic and scientific, and does WHOOP do
-that?) is answered in the design (S1): 8 h is a sound starting target for a young adult but NOOP applies it to
-almost everyone and can never go below it; WHOOP uses a personal figure that moves with strain, debt and naps.
-v6 explains the figure, makes "Tonight's goal" move with sleep debt (step 1 and 3), then lets the wearer choose
-their own need and corrects the age handling (step 7, both platforms).
+**Running job (started 16 Nov):** GitHub run **43774881413**, "Testing build (fork)" on `testing-build`
+`ab72270c`. It survives the chat. Check: `gh run view 43774881413 --repo UtkuDenizAltiok/noop`. Done means: run
+success, release `testing-latest` targets `ab72270c…`, five files, the `.ipa` downloads (HTTP 200) and its
+`de.lproj` holds a step 1 string ("Ein normaler Trainingstag"). Until that is checked, the phone build on the
+releases page may be mid-rebuild (the workflow recreates the release before building); on a failure, read the
+log, fix, re-dispatch, and tell Utku plainly. Do not dispatch a second run while this one is in progress.
 
 Open items, in order:
-- [ ] **Build step 1, "Today answers"** ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)) on
-  `feat/simple-mode`, with the heart rate warning's W1; verify, stack, ship; then ask Utku its three questions.
-  Not started. Utku has been told the design is ready and that building is next.
-- [ ] Steps 2–7 of the build plan, one at a time, each shipped before the next.
+- [ ] **Verify the phone build of step 1** (the running job above), then tell Utku it is ready ("just update") and
+  ask step 1's three questions ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)).
+- [ ] **Build step 2, "Tap a score, get an answer"** (the three score pages, Heart rate today). Not started.
+- [ ] Steps 3–7 of the build plan, one at a time, each shipped before the next.
 - [ ] **Heart rate warning W2** (on/off at the limit), optional — [`high-hr-warning.md` §12](features/high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov).
 - [ ] **Utku: archive the two finished worker chats** in the app sidebar ("1 of 2: Simple mode, show everything
   in one tap" and "2 of 2: High heart rate warning (after 1)"); the app's safety check stopped the agent doing
@@ -33,8 +34,8 @@ Open items, in order:
   comment on our 17 PRs): no new upstream PRs, no close/reopen retries; answer a maintainer comment once if one
   appears.
 
-Done in chat 5 (15 Nov): start procedure (all worktrees clean and pushed, no job running, upstream unchanged);
-the walk; Design v6; the two new rules of 15 Nov. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
+Done in chat 5 (15–16 Nov): start procedure; the walk; Design v6; two rules of 15 Nov; step 1 and W1 built,
+verified and stacked. Done in chat 4 (12–14 Nov): see [History](HISTORY.md).
 
 ## Where everything is
 

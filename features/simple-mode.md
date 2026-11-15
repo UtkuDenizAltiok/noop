@@ -315,6 +315,35 @@ three plain questions for Utku afterwards. New English strings need all nine loc
 
 Later, each on its own: S7; S3 as research; the Android twin (Phase D); upstream (Phase C), only when it is active.
 
+### Step 1 as built (15 Nov, `feat/simple-mode` `053ef4bd`)
+
+Built as designed, with these differences, each decided while building and recorded so the page stays true:
+- **Strap line:** only "Strap not connected" with **Connect** (it opens Devices), for a WHOOP strap, after an
+  8-second settle so a launch does not flash it. The battery-low and not-synced lines and the battery percentage
+  on the header button are **not built**; they move to step 6 with "My strap".
+- **Effort word:** judged on the printed number with a range's top still belonging to it (Easy up to 48, Moderate
+  up to 67, Hard up to 86 on the 0–100 scale), the way the card judges "in the range". The design's "under 10, 10
+  to 14" called an Effort of 67 Hard while the card said it was in a moderate day's range.
+- **Tonight, reminder off:** the title reuses "Aim to be asleep by 22:35"; the line reads "That gives you 8h 35m
+  of sleep before your usual 07:10 wake, including 35m to catch up." Without a usual wake time: "Aim for 8h 35m
+  of sleep tonight" / "That includes 35m to catch up on sleep you've missed." The row is left out while the
+  last-night line shows WHOOP's imported need for that night (the demo's case): a goal on NOOP's need under it
+  would put two needs on one card.
+- **Activity:** the usual day is the median of the earlier days in the 30-day window (at least 7), rounded to the
+  nearest 100 steps or 10 kcal; the bar is full at that usual and absent while there is none.
+- **Workouts:** "+1 more" in place of a count; a workout's Effort printed like the ring's.
+- **Also done:** the full view's greeting card went back to upstream's exact form (its Simple branches were
+  unreachable since v5), and three unused fork strings left the catalogue. The guide's "Your day" entry now says
+  "The headline of Your day" (the pill it described is gone).
+- **Left for step 6:** the guide's entry on "Calibrating, Building, Solid" still names "Earlier score", a label
+  that no longer appears on Today (the date under the ring says it).
+
+Rules live in `SimpleDayPlan` (score words, early estimate, catch-up, usual wake, tonight's goal, usual day),
+`SleepModel.debtLedger(days:sleeps:allSessions:habitualMidsleepSec:)` and `debtLedgerLookbackDays` (one debt for
+Today and Sleep), `ChargeDriverDirectionBar`, `SimpleStrapStatus`. Tests: `SimpleTodayV6Tests` (12), each seen to
+fail with its rule broken. The warning's W1 is `4e7fd6f5` on `feat/high-hr-warning`
+([its §12](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)).
+
 ## Ground rules and how to work
 
 **Goal** (Utku, 4–6 Nov 2026; rule in [Rules](../RULES.md#settled-decisions)): a calm, correct, efficient NOOP
