@@ -51,6 +51,13 @@ final class HighHRAlertMonitor: ObservableObject {
     private var lastBuzzDelivered = false
     /// The settings the last on/off line described, so a line is written only when they change.
     private var loggedSettings: (enabled: Bool, config: HighHRAlertEngine.Config)
+    /// A changed limit or duration that the strap log has not been told about yet. It is written once it has
+    /// stayed the same for `settingsSettleSeconds`, checked when the next reading arrives (no timer): a held
+    /// stepper changes the value several times a second, and a line for every step put 47 and 60 lines into
+    /// two evenings' logs. Switching on or off is still logged at once.
+    private var pendingConfig: (config: HighHRAlertEngine.Config, changedAt: Date)?
+    /// How long a changed limit or duration must stay the same before it is logged.
+    static let settingsSettleSeconds: TimeInterval = 2
 
     init(defaults: UserDefaults = .standard,
          log: @escaping (String) -> Void = { _ in },
@@ -70,10 +77,14 @@ final class HighHRAlertMonitor: ObservableObject {
             if status != .off { switchedOff() }
             return
         }
+        logSettledSettings(now: now)
         let decision = engine.ingest(bpm: bpm, at: now.timeIntervalSince1970, config: prefs.config)
         let average = Int((decision.averageBpm ?? 0).rounded())
         let recent = decision.recentBpm ?? 0
         let window = prefs.config.windowSec
+        // Every over/back line names the limit it was judged against, so each stands on its own in a log
+        // where the settings line may be hours earlier or not written yet.
+        let limit = prefs.config.thresholdBpm
         switch decision.phase {
         case .measuring:
             // Readings thinned out mid-stretch: not over the limit, and not back under it either, so the stretch
@@ -86,7 +97,7 @@ final class HighHRAlertMonitor: ObservableObject {
             setStatus(.measuring)
         case .below:
             if inEpisode {
-                log("High HR warning: back under the limit (now \(recent), \(window)-s average \(average)) "
+                log("High HR warning: back under the limit of \(limit) bpm (now \(recent), \(window)-s average \(average)) "
                     + "after \(Self.buzzCount(episodeBuzzes))")
                 endEpisode()
             }
@@ -99,13 +110,13 @@ final class HighHRAlertMonitor: ObservableObject {
             if !inEpisode {
                 inEpisode = true
                 if lastBuzzDelivered {
-                    log("High HR warning: over the limit (\(window)-s average \(average), now \(recent)); "
+                    log("High HR warning: over the limit of \(limit) bpm (\(window)-s average \(average), now \(recent)); "
                         + "buzzing every 5 s")
                 } else {
-                    logUndelivered()
+                    logUndelivered(limit: limit)
                 }
             } else if !lastBuzzDelivered, !episodeUndeliveredLogged {
-                logUndelivered()
+                logUndelivered(limit: limit)
             }
             setStatus(.alerting(average: average, buzzDelivered: lastBuzzDelivered))
         }
@@ -113,11 +124,12 @@ final class HighHRAlertMonitor: ObservableObject {
 
     /// The live heart rate was cleared (strap off the wrist, unreadable or silent, or the link dropped). The engine
     /// keeps its readings; they age out of the window by themselves.
-    func heartRateCleared() {
+    func heartRateCleared(now: Date = Date()) {
         guard HighHRAlertPrefs.current(defaults).enabled else {
             if status != .off { switchedOff() }
             return
         }
+        logSettledSettings(now: now)
         switch status {
         case .measuring, .below, .alerting:
             log("High HR warning: paused, no live heart rate")
@@ -128,19 +140,37 @@ final class HighHRAlertMonitor: ObservableObject {
         setStatus(.waiting)
     }
 
-    /// The card changed the switch, the limit or the duration.
-    func settingsChanged() {
+    /// The card changed the switch, the limit or the duration. Switching on or off is logged at once; a changed
+    /// limit or duration waits until it has settled (`pendingConfig`).
+    func settingsChanged(now: Date = Date()) {
         let prefs = HighHRAlertPrefs.current(defaults)
         if prefs.enabled {
-            if !loggedSettings.enabled || loggedSettings.config != prefs.config {
+            if !loggedSettings.enabled {
                 log("High HR warning: on (above \(prefs.config.thresholdBpm) bpm for \(prefs.config.windowSec) s)")
+                loggedSettings = prefs
+                pendingConfig = nil
+            } else if prefs.config == loggedSettings.config {
+                // Stepped back to what the log already says: nothing to tell it.
+                pendingConfig = nil
+            } else if pendingConfig?.config != prefs.config {
+                pendingConfig = (prefs.config, now)
             }
             if status == .off { setStatus(.waiting) }
         } else {
             if loggedSettings.enabled { log("High HR warning: off") }
+            pendingConfig = nil
+            loggedSettings = prefs
             switchedOff()
         }
-        loggedSettings = prefs
+    }
+
+    /// Writes the changed limit or duration once it has stayed the same for `settingsSettleSeconds`.
+    private func logSettledSettings(now: Date) {
+        guard let pending = pendingConfig,
+              now.timeIntervalSince(pending.changedAt) >= Self.settingsSettleSeconds else { return }
+        log("High HR warning: changed to above \(pending.config.thresholdBpm) bpm for \(pending.config.windowSec) s")
+        loggedSettings.config = pending.config
+        pendingConfig = nil
     }
 
     private func switchedOff() {
@@ -149,8 +179,8 @@ final class HighHRAlertMonitor: ObservableObject {
         setStatus(.off)
     }
 
-    private func logUndelivered() {
-        log("High HR warning: over the limit but no buzz was sent (strap not connected or not fully paired)")
+    private func logUndelivered(limit: Int) {
+        log("High HR warning: over the limit of \(limit) bpm but no buzz was sent (strap not connected or not fully paired)")
         episodeUndeliveredLogged = true
     }
 
