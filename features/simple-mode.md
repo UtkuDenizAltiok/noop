@@ -7,38 +7,41 @@ than the full NOOP. It must become the most user-friendly mode, so a wearer unde
 confusion, decided from four viewpoints (fitness coach, physiologist, doctor, software developer), and never by
 deleting information or features. He is not the expert; the architect decides.
 
-**Where it stands (16 Nov 2026, chat 5):** Design v6 is written (the next section) and **step 1 of 7, "Today
-answers", is built and shipped**: `053ef4bd` on `feat/simple-mode`, on `testing-stack` `26f3bfe7`, phone build
-`ab72270c` on the releases page since 16 Nov ([as built](#step-1-as-built-15-nov-featsimple-mode-053ef4bd)).
-Utku has been asked its three questions and will test later. **He asked on 16 Nov that building goes on without
-waiting for his test.** The next action is **step 2, "Tap a score, get an answer"** from
-[the build plan](#the-build-plan-one-step-at-a-time); whatever he reports from the phone is fixed first when it
-comes.
+**Where it stands (16 Nov 2026, end of chat 6):** Design v6 is written (the next section) and **steps 1, 2 and 3
+of 7 are built and shipped**: "Today answers" (`053ef4bd`), "Tap a score, get an answer" (`8b59779a`) and "Sleep"
+(`9aba63cf`), all on `feat/simple-mode`; what each became is in the three "as built" sections below. The phone
+build that holds them is named in [State](../STATE.md). Utku has not tested any of them yet; he asked on 16 Nov
+that building goes on without waiting, and later the same day that each chat hands over before it is full. **The
+next action is step 4, "Is my body all right?"** (Health monitor's verdict and rows; Stress, honest) from
+[the build plan](#the-build-plan-one-step-at-a-time); whatever he reports from the phone is fixed first.
 
-**Where step 2 starts in the code** (read on 15–16 Nov; check before relying on it):
-- A ring's tap: `HeroScoreCell(… detailRoute: .metric(HeroRingMetric.charge))` in `LiquidTodayView.heroCard`.
-  Routes are `TabRoute` (`Strand/App/TabRoute.swift`: `metric(String)`, `fullDayChart`, `plainGuide`), registered
-  once per navigation stack (`tabRouteDestinations()`; a second registration double-pushes, #38). Today's
-  destination is `MetricDetailView` in `Strand/Screens/MetricExplorerView.swift`; it becomes the score page's
-  last link, "All readings and statistics".
-- Charge's readings: `ChargeBreakdownWiring.breakdown(baselines:row:sleepPerfPercent:)`, worded by
-  `PlainChargeWording.driver`, drawn by `ChargeDriverRow(twoSided: true)`. Rest's four parts:
-  `RestSubScoreTrace` (StrandAnalytics). Effort: the day's workouts and `SimpleDayPlan.suggestedBand` /
-  `progress`. The words: `SimpleDayPlan.chargeLevel`, `effortLevel(stored:scale:)`, `SleepView.sleepScoreWord`.
-  The one-line meaning and "what to do": `PlainGuideTerm.summary` / `detail`; "How NOOP calculates it":
-  `ScoringGuideView` at the score's section.
-- The last 7 days and the 30-day average: Today's `kSparks` holds 30 days under "recovery", "strain" and
-  "sleep_performance"; a pushed page reads `repo.days` and the stored Rest series itself.
-- Heart rate today: `FullDayChartView` ("Deep Timeline"), pushed as `TabRoute.fullDayChart` from Today's
-  `heartRateSection`; give it the screen funnel (`SimpleModePrefs.isSimple(stored:showingAll:)`) and
-  `SimpleModeShowAllRow`, as the six screens have.
-- Shared files compile for the Mac app too; build `Strand` as well as `NOOPiOS`.
+**Where step 4 starts in the code** (named by the design and by grep, NOT read in chat 6; read before relying):
+- Health monitor: `Strand/Screens/HealthView.swift` (it already has the Simple funnel and the show-all row);
+  the five readings and their states come from `BodyVitalSigns.readings` (`VitalSignsSummary.swift` draws
+  them); the existing alert is `HealthAlertBanner.swift`. The verdict must be built from those states, and
+  when the alert is active the verdict is the alert's own text (one source).
+- Stress: `Strand/Screens/StressView.swift` (Simple branches at its `simpleMode` reads), `StressModel`
+  (two z-scores of last night's resting heart rate and HRV against 30 days, squashed onto 0–3) and
+  `DaytimeStress` (the only part measured while awake). Science finding S2 says what the number is.
+- Reuse what steps 2 and 3 built instead of writing it again: the usual RANGE
+  (`SimpleScoreRules.usualRange`, quartiles of the 30 days before; the design's "usually 54–60" for the Health
+  rows is this idea), `SimpleScoreRules.comparison` (judged on printed numbers), `SimpleScoreLevelBar`,
+  `SimpleDayPlan.versusUsual`, the plain-words layer pattern of `PlainChargeWording` (an unknown sentence falls
+  back to the original), and the canvas backing if a screen has text on a picture
+  (`SleepView.simpleCanvasBacking`).
+- Rule 4 (one adviser): a Stress or Health sentence describes and ends by pointing to "Your day"; it never
+  says how hard to train.
 
-**Carried, unverified:** W40 (fitness age against VO₂max, on the phone); and **F19**, seen once in the simulator's demo: between midnight and the 04:00 day rollover the
-readings behind the same night's Charge changed (resting heart rate +11 → +10 points, "usually 57" → "usually
-56"). The baseline window may follow the calendar day while the screen follows the logical day
-(`ChargeBaselines.history`'s `anchorDay` against `Repository.logicalDayKey`). Check on real data before calling
-it a bug; if real it is an upstream candidate.
+**Carried, unverified:** W40 (fitness age against VO₂max, on the phone); **F19** (seen once in the simulator's
+demo: between midnight and the 04:00 day rollover the readings behind the same night's Charge changed, resting
+heart rate +11 → +10 points, "usually 57" → "usually 56"; the baseline window may follow the calendar day while
+the screen follows the logical day, `ChargeBaselines.history`'s `anchorDay` against `Repository.logicalDayKey`;
+check on real data before calling it a bug); **F20** (demo only: for a night imported from WHOOP the stage card
+reads "7h 11m in bed, asleep for 100% of it" while the day row holds the export's efficiency of 95% and the
+clock times span 7h 33m; a first fix that took the row's figures made the card disagree with its own Awake row,
+so it was taken out again; look at a really imported night before touching it); **F21** (upstream candidate: the
+full view's sleep trend prints "7.2 h avg" under "trailing 30 days", but the figure is the mean of ALL nights,
+`AsleepDurationData.typicalTotalMin`; Simple mode now averages the nights shown).
 
 **Who builds (Utku, 15 Nov):** his words were "no subagents you do the work only!". Read as: the architect chat
 does the walk, the design and the building itself, one step at a time, without helper agents or worker chats
@@ -48,7 +51,8 @@ walk) before it reaches the stack.
 
 **What exists to build on** (on the phone since 12 Nov, build `218aec72`): Simple mode v5 (Rounds 1–6), "Show
 everything on this screen" on six screens, "Report a problem", the Lift Log guard test, the high heart rate
-warning ([its page](high-hr-warning.md)), and v6 step 1 (since 16 Nov, build `ab72270c`).
+warning ([its page](high-hr-warning.md)), and v6 steps 1 to 3 (16 Nov; the build that holds them is in
+[State](../STATE.md)).
 
 **Working with Utku:** plain everyday words, no technical terms; never ask him about builds, Git or GitHub; end
 every answer with one to three simple numbered next steps; tell him plainly when a build is ready before he tests.
@@ -333,9 +337,9 @@ three plain questions for Utku afterwards. New English strings need all nine loc
 
 | Step | Name | Contains | Ask Utku afterwards |
 |---|---|---|---|
-| 1 | Today answers | strap line; score words and the "early estimate" line; Your day headline; Tonight always, with its goal; the two-way Charge bars; activity against your usual; workouts row; the warning's W1 | Could you tell in five seconds how hard to go today? Did "Tonight" give a bedtime that suits you? Anything on Today you still do not understand? |
-| 2 | Tap a score, get an answer | the three score pages; Heart rate today | When you tap Charge, does the page explain it? |
-| 3 | Sleep | all of Sleep above, S1a, S10, the readable text | Is it clear how much sleep you need and why? |
+| 1 ✓ shipped 16 Nov | Today answers | strap line; score words and the "early estimate" line; Your day headline; Tonight always, with its goal; the two-way Charge bars; activity against your usual; workouts row; the warning's W1 | Could you tell in five seconds how hard to go today? Did "Tonight" give a bedtime that suits you? Anything on Today you still do not understand? |
+| 2 ✓ shipped 16 Nov | Tap a score, get an answer | the three score pages; Heart rate today | When you tap Charge, does the page explain it? |
+| 3 ✓ shipped 16 Nov | Sleep | all of Sleep above, S1a, S10, the readable text | Is it clear how much sleep you need and why? |
 | 4 | Is my body all right? | Health monitor's verdict and rows; Stress, honest | Does Health tell you plainly whether anything is off? |
 | 5 | Am I improving? | Trends and Workouts in words | Can you tell from Trends whether you are improving? |
 | 6 | Welcome | How to read NOOP; Getting to know you; More; the guide; Alarms | (first-run screens: shown to him once) |
@@ -408,8 +412,42 @@ Built as designed, with these differences, each decided while building:
   the page was opened with `--demo-open-score charge|effort|rest`, which hands over the ring's own snapshot).
   The Rest parts were seen through a throwaway edit, restored byte-identical.
 
-Tests: `SimpleScorePageTests` (14), each seen to fail with its rule broken (`break_step2.py` kept beside the
-logs). 41 new strings in nine locales, one reworded (the guide's Rest entry).
+Tests: `SimpleScorePageTests` (14), each seen to fail with its rule broken (the break script lived in the
+chat's scratch folder and was lost when that folder was cleared; step 3's is kept, see below). 41 new strings in
+nine locales, one reworded (the guide's Rest entry).
+
+### Step 3 as built (16 Nov, `feat/simple-mode` `9aba63cf`)
+
+Built as designed, with these differences:
+- **Readable (W26):** instead of putting each line on its own panel, everything under the hero sits on the
+  plain canvas (`SleepView.simpleCanvasBacking`). The night scene is a fixed backdrop behind the scroll, so any
+  heading or note scrolling through its band was dark text on a dark picture (seen: "Trend / Asleep duration",
+  the movement note). The ring uses the ring face's own text colours (the full view prints white on the pale
+  face, finding F5), carries the name "Rest", and **opens the Rest page** Today's ring opens.
+- **Provenance in words (W5):** "Imported from WHOOP" on the panel under the ring and on the night's times row;
+  a night the strap measured carries no badge. When the night's line states WHOOP's need and it reads
+  differently from NOOP's: "The need is WHOOP's figure for this night."
+- **"Your sleep need" card (S1a, W29)** above the debt, with its origin sentence
+  (`SimpleDayPlan.sleepNeedOrigin`, read from `Rest.populationNeedFloorHours`). The guide's entry was rewritten
+  to match (it was planned for step 6).
+- **Debt (S10, W30):** a sentence headline and advice by size (`SimpleDayPlan.debtAdvice`). The switch to
+  "more than one night can repay" is at `catchUpCapMinutes`, the hour tonight's goal is capped at, so the two
+  cannot disagree. The footer is "14 nights counted."; Balance and the need stay in the full view.
+- **Tonight on the Sleep tab:** `SimpleTonight.resolve` + `SimpleTonightLines` (new file
+  `SimpleTonightRow.swift`), which Today now draws through too. Same rule as Today, so it is also left out while
+  last night's line states WHOOP's need (the demo's case: the card was not seen in the simulator, its rules are
+  tested).
+- **Stages (W28): no laboratory percentages.** The design's sentence about textbook shares of deep and REM sleep
+  was dropped on purpose: the strap's estimate reads REM higher than a laboratory does (S3), so printing norms
+  beside it would call an ordinary night unusual. Instead: "5m less than your usual" under the two headline
+  figures, and "Tap a stage to compare it with your usual. Stages are estimated from heart rate and movement,
+  so one unusual night means little." Ohayon 2004 was therefore not needed and not read.
+- **Trend (W30):** hours and minutes everywhere, the average of the nights shown (finding F21), the change as a
+  sentence (`SimpleDayPlan.nightlyChange`, the same halves the full view's chip compares).
+- **Not done:** the stage card's "in bed / asleep %" line is unchanged (finding F20).
+
+Tests: `SimpleSleepV6Tests` (8), each seen to fail with its rule broken (`break_step3.py`, kept in
+`~/Library/Caches/noop-handbook/v6-step3/tools/`). 22 new strings in nine locales, one reworded, one removed.
 
 ## Ground rules and how to work
 
@@ -434,7 +472,8 @@ warning on `feat/high-hr-warning` (folder `~/Developer/noop-hrwarn`), which cont
 **How to work (what the chats learned):**
 - Build: `xcodegen generate`, then `git checkout -- StrandiOS/Resources/Info.plist` (until #2898 merges);
   `xcodebuild -scheme NOOPiOS -destination 'platform=iOS Simulator,name=iPhone 18 Pro' CODE_SIGNING_ALLOWED=NO build`;
-  full tests: `-scheme Strand -destination 'platform=macOS' test` (2338 on the branch, 2365 on the stack).
+  full tests: `-scheme Strand -destination 'platform=macOS' test` (2377 on the branch and 2430 on the stack
+  after step 3).
 - Python tools need `/opt/homebrew/bin/python3.12` and a canonical `TMPDIR` (`export TMPDIR=$(realpath "$TMPDIR")`).
   Gates before any commit: `Tools/i18n_audit.py --ci upstream/main`, `Tools/doc_comment_lint.py`,
   `python3.12 -m unittest discover -p "test_*.py"` in `Tools/` (includes `tests.test_parity_governance_acceptance`).
@@ -487,6 +526,23 @@ warning on `feat/high-hr-warning` (folder `~/Developer/noop-hrwarn`), which cont
     background (about 30 minutes, the Mac leg last; the `.ipa` is attached after about 15), the release checks,
     and a new string in the downloaded `.ipa`'s `de.lproj`. Remove the scratch worktree and its `tmp/` branch.
   - One build or test run at a time on this Mac. The Mac tests open "NOOP Staging" on Utku's screen.
+- **Learned in chat 6 (steps 2 and 3, 16 Nov):**
+  - Opening a score page in the simulator: `xcrun simctl launch "iPhone 18 Pro" com.noopapp.noop
+    --demo-open-score charge|effort|rest` (DEBUG; it hands over the ring's own snapshot once Today has a score).
+  - What the demo cannot show: its nights are imported from WHOOP (so the Rest page's four parts and the
+    "Tonight" goal are hidden by their own rules), it has no heart-rate stream and no workout today. See such a
+    state through a throwaway edit, with the file copied aside and restored by `shasum -c`, and say so.
+  - Keep helper scripts and string specs in `~/Library/Caches/noop-handbook/<step>/tools/`, never in the
+    chat's scratch folder under `/tmp`: a pause or restart clears it (step 2's break script was lost that way).
+  - `WindDownNudge` is `@MainActor`: a resolver that reads it, and its tests, need `@MainActor` too.
+  - `xcstrings-add.py` refuses a translation equal to the English key: French "Effort %@" had to become
+    "Effort : %@".
+  - After a long pause the simulator is shut down: `xcrun simctl boot "iPhone 18 Pro"` then
+    `xcrun simctl bootstatus "iPhone 18 Pro" -b`. `git rev-parse --short` takes one ref at a time.
+  - A phone build run takes about 25 minutes on GitHub (16 Nov: 10:31 → 10:55 UTC); the `.ipa` is attached
+    after about 14. Build the next step locally while it runs.
+  - Design rule added by use: compare a number with the wearer's usual RANGE, not one usual value, wherever
+    "is that normal for me?" is the question (step 2 as built).
 
 
 ### Audit verdict (12 Nov, the whole Simple mode diff read against the goal)

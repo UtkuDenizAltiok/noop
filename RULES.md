@@ -113,6 +113,14 @@ request an export without a defined need. Give enough explanation to understand 
   verified and shipped to the releases page before the next starts, without waiting for him to install or
   answer. Each step's plain questions are still put to him, and whatever he reports from the phone is fixed
   first when it comes (Engineering rule 12).
+- **Hand over before the chat is full (Utku, 16 Nov 2026, chat 6).** His words, while step 3 was being built:
+  "instead of starting next step, please park your work and project perfectly, because I think after you finish
+  your current step, we will be at high context window. So I want to start a new chat for the future steps."
+  Reading (chat 6's, labelled as interpretation): a chat builds one or two steps, finishes the one in hand
+  completely (verified, stacked, shipped), does not start another late in a long chat, and leaves the handbook
+  so that a new chat continues without guessing. He starts the next chat himself with the "Continue building
+  v6" prompt in [Sessions](SESSIONS.md). This sits beside "keep building; do not wait for his test" above: the
+  steps still follow one another, across chats.
 - **Unscientific or half-thought things are fixed too (Utku, 15 Nov 2026).** His words: "if you find somethin
   not very well thought or implemented and not very scientific you should also make them better and scientific
   as well try to make this Noop whoop 5.0 thing perfect and best". It widens part (3) of the 4–5 Nov rule; it

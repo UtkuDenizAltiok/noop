@@ -22,15 +22,17 @@ when they come, ahead of everything else. Chat 5 ended on 16 Nov at his request 
 was left half done.
 
 Open items, in order:
-- [ ] **Step 2, "Tap a score, get an answer": built, stacked, phone build RUNNING (chat 6, 16 Nov).**
-  `8b59779a` on `feat/simple-mode`; on `testing-stack` `d8ad0466` (`verify.sh` all steps passed, logs
-  `~/Library/Caches/noop-handbook/verify/d8ad0466`; real-iPhone Release build ok); `testing-build` `9b5af016`
-  (stack + `fork/ships-template`, pushed as a merge over `ab72270c`). **GitHub run 43849689116** ("Testing build
-  (fork)", dispatched 16 Nov 10:31 UTC, about 30 minutes). Check: `gh run view 43849689116 --repo
-  UtkuDenizAltiok/noop`. Done when it ends in success AND the release checks pass (target `9b5af016`, five
-  files dated 16 Nov, the `.ipa` answers HTTP 200, its `de.lproj` holds "Im Vergleich zu dir"). Do not
-  dispatch a second run. Until then the releases page may be empty or hold `ab72270c`. Scratch worktree
-  `~/Developer/noop-stack2` (branches `tmp/stack-step2`, `tmp/build-step2`) is removed after the checks.
+- [x] **Step 2, "Tap a score, get an answer": shipped** (`8b59779a`; stack `d8ad0466`; phone build `9b5af016`,
+  run 43849689116, verified on the releases page 16 Nov and since replaced by the build below).
+- [ ] **Step 3, "Sleep": built, stacked, phone build RUNNING (chat 6, 16 Nov).** `9aba63cf` on
+  `feat/simple-mode`; on `testing-stack` `67a24b17` (`verify.sh` all steps passed, logs
+  `~/Library/Caches/noop-handbook/verify/67a24b17`; real-iPhone Release build ok); `testing-build` `0e3454dd`
+  (stack + `fork/ships-template`, a merge over `9b5af016`). **GitHub run 43896083111** ("Testing build
+  (fork)", dispatched 16 Nov 15:25 UTC, about 25 minutes). Check: `gh run view 43896083111 --repo
+  UtkuDenizAltiok/noop`. Done when it ends in success AND the release checks pass (target `0e3454dd`, five
+  files, the `.ipa` answers HTTP 200, its `de.lproj` holds "Dein Schlafbedarf"). Do not dispatch a second run.
+  Scratch worktree `~/Developer/noop-stack2` (branches `tmp/stack-step2`, `tmp/build-step2`, `tmp/stack-step3`,
+  `tmp/build-step3`) is removed after the checks.
 - [ ] **Utku, whenever he tests (not a blocker):** step 1's three questions
   ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)): could he tell in five seconds how
   hard to go today; did "Tonight" give a bedtime that suits him; anything on Today he still does not
