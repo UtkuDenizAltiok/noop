@@ -1,5 +1,11 @@
 # History
 
+- **16 Nov — chat 5 closed at Utku's request (context full), handover for a new chat:** he will test step 1
+  later and asked that building goes on without waiting (rule recorded). Added for the next chat: the code map
+  for step 2 and a "how the architect builds" block in the Simple mode page, two helpers
+  (`tools/xcstrings-add.py`, `tools/sim-shot.sh`), the updated "Continue building v6" prompt in Sessions, and
+  one unverified observation (F19). Scratch worktree and two spare build caches removed; every worktree clean
+  and pushed; no job running.
 - **16 Nov — Simple mode v6 step 1, "Today answers", shipped (chat 5, built by the architect chat):**
   `feat/simple-mode` `053ef4bd` (score words under the rings, the early-estimate line, a headline for Your day,
   "Tonight" always with a goal that adds catch-up for sleep debt, two-way Charge bars, steps and active calories

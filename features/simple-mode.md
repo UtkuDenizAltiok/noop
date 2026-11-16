@@ -10,8 +10,36 @@ deleting information or features. He is not the expert; the architect decides.
 **Where it stands (16 Nov 2026, chat 5):** Design v6 is written (the next section) and **step 1 of 7, "Today
 answers", is built and shipped**: `053ef4bd` on `feat/simple-mode`, on `testing-stack` `26f3bfe7`, phone build
 `ab72270c` on the releases page since 16 Nov ([as built](#step-1-as-built-15-nov-featsimple-mode-053ef4bd)).
-Utku has been asked its three questions. The next action is **step 2, "Tap a score, get an answer"** from
-[the build plan](#the-build-plan-one-step-at-a-time), after whatever he reports about step 1.
+Utku has been asked its three questions and will test later. **He asked on 16 Nov that building goes on without
+waiting for his test.** The next action is **step 2, "Tap a score, get an answer"** from
+[the build plan](#the-build-plan-one-step-at-a-time); whatever he reports from the phone is fixed first when it
+comes.
+
+**Where step 2 starts in the code** (read on 15–16 Nov; check before relying on it):
+- A ring's tap: `HeroScoreCell(… detailRoute: .metric(HeroRingMetric.charge))` in `LiquidTodayView.heroCard`.
+  Routes are `TabRoute` (`Strand/App/TabRoute.swift`: `metric(String)`, `fullDayChart`, `plainGuide`), registered
+  once per navigation stack (`tabRouteDestinations()`; a second registration double-pushes, #38). Today's
+  destination is `MetricDetailView` in `Strand/Screens/MetricExplorerView.swift`; it becomes the score page's
+  last link, "All readings and statistics".
+- Charge's readings: `ChargeBreakdownWiring.breakdown(baselines:row:sleepPerfPercent:)`, worded by
+  `PlainChargeWording.driver`, drawn by `ChargeDriverRow(twoSided: true)`. Rest's four parts:
+  `RestSubScoreTrace` (StrandAnalytics). Effort: the day's workouts and `SimpleDayPlan.suggestedBand` /
+  `progress`. The words: `SimpleDayPlan.chargeLevel`, `effortLevel(stored:scale:)`, `SleepView.sleepScoreWord`.
+  The one-line meaning and "what to do": `PlainGuideTerm.summary` / `detail`; "How NOOP calculates it":
+  `ScoringGuideView` at the score's section.
+- The last 7 days and the 30-day average: Today's `kSparks` holds 30 days under "recovery", "strain" and
+  "sleep_performance"; a pushed page reads `repo.days` and the stored Rest series itself.
+- Heart rate today: `FullDayChartView` ("Deep Timeline"), pushed as `TabRoute.fullDayChart` from Today's
+  `heartRateSection`; give it the screen funnel (`SimpleModePrefs.isSimple(stored:showingAll:)`) and
+  `SimpleModeShowAllRow`, as the six screens have.
+- Shared files compile for the Mac app too; build `Strand` as well as `NOOPiOS`.
+
+**Carried into the next chat, unverified:** F17 (the Charge card's Rest row); W40 (fitness age against VO₂max, on
+the phone); and **F19**, seen once in the simulator's demo: between midnight and the 04:00 day rollover the
+readings behind the same night's Charge changed (resting heart rate +11 → +10 points, "usually 57" → "usually
+56"). The baseline window may follow the calendar day while the screen follows the logical day
+(`ChargeBaselines.history`'s `anchorDay` against `Repository.logicalDayKey`). Check on real data before calling
+it a bug; if real it is an upstream candidate.
 
 **Who builds (Utku, 15 Nov):** his words were "no subagents you do the work only!". Read as: the architect chat
 does the walk, the design and the building itself, one step at a time, without helper agents or worker chats
@@ -395,6 +423,31 @@ warning on `feat/high-hr-warning` (folder `~/Developer/noop-hrwarn`), which cont
   background job). In zsh write `"${VAR}:refs/…"`.
 - Foundation's `String(format:locale:)` rounds ties half-to-even (finding 16): round half away from zero first for
   any one-decimal figure shared with Android. Verify citations before writing them.
+- **Since the architect chat builds (v6, 16 Nov):**
+  - Strings: write a small spec and run `dist/tools/xcstrings-add.py` (adds one-line entries, rewords one in
+    place, drops one; it checks all nine locales, the placeholders and English echoes, and never reformats the
+    catalogue). A heading passed through a variable (`sectionHead("TODAY'S WORKOUTS")`) is not extracted by the
+    compiler and exists only because the catalogue holds it.
+  - Simulator: `dist/tools/sim-shot.sh <name> [wait]` gives a half-size screenshot (points = its pixels ×
+    0.6526). The demo seed needs about 45 s on a busy Mac before the relaunch. The tap tool opens tabs, rows and
+    buttons but not the score rings (a `NavigationLink` with `LiquidPressStyle`) or switches: use a launch
+    argument, `--demo-screen <name>` (DEBUG, `DemoScreens.requested` in `StrandiOSApp`), or read the route in
+    code and say that it was read, not seen.
+  - Seen to fail in one run: copy the changed files to a scratch folder with their sha256, break every new rule
+    at once with a script (one break per test), run `-only-testing:StrandTests/<Class>`, restore the copies,
+    `shasum -c`. For a changed behaviour, run the new tests against the old file (`git show <base>:<path>`,
+    plus any new parameter the tests call).
+  - A SwiftUI `Group` with nothing inside has no view for `.task` or `.onAppear` to run on; use a zero-spacing
+    `VStack` (the strap line never appeared until this was found on screen).
+  - Stacking a step: `git worktree add -b tmp/stack-<step> <folder> origin/testing-stack`, cherry-pick the
+    step's commits; for the catalogue conflict write `git show :1:` / `:2:` / `:3:` to three files and run
+    `xcmerge.py`; `NOOP_REPO=<folder> bash dist/tools/verify.sh` (commit first; about 25 minutes); a Release
+    build for `generic/platform=iOS` with the workflow's flags; `git push origin <tip>:refs/heads/testing-stack`
+    (a fast-forward) and `git branch -f testing-stack <tip>`; then `testing-build` by the merge-commit route
+    (Workflow §6), `gh workflow run "Testing build (fork)" --ref testing-build`, `gh run watch` in the
+    background (about 30 minutes, the Mac leg last; the `.ipa` is attached after about 15), the release checks,
+    and a new string in the downloaded `.ipa`'s `de.lproj`. Remove the scratch worktree and its `tmp/` branch.
+  - One build or test run at a time on this Mac. The Mac tests open "NOOP Staging" on Utku's screen.
 
 
 ### Audit verdict (12 Nov, the whole Simple mode diff read against the goal)

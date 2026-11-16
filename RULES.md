@@ -107,6 +107,12 @@ request an export without a defined need. Give enough explanation to understand 
   v6 itself, one step at a time, keeping every check a worker's change had to pass (tests seen to fail, both app
   targets built, the gates, a simulator walk) before anything reaches the stack or the phone. This replaces the
   "does not write app code" half of the 12 Nov rule above until he says otherwise.
+- **Keep building; do not wait for his test (Utku, 16 Nov 2026).** After step 1 shipped: "I will test later I want
+  you to continue build, improve and perfectize with the same mentality". So the steps of
+  [Design v6's build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time) follow one another, each
+  verified and shipped to the releases page before the next starts, without waiting for him to install or
+  answer. Each step's plain questions are still put to him, and whatever he reports from the phone is fixed
+  first when it comes (Engineering rule 12).
 - **Unscientific or half-thought things are fixed too (Utku, 15 Nov 2026).** His words: "if you find somethin
   not very well thought or implemented and not very scientific you should also make them better and scientific
   as well try to make this Noop whoop 5.0 thing perfect and best". It widens part (3) of the 4–5 Nov rule; it
