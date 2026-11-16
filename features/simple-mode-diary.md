@@ -766,3 +766,68 @@ is in [Simple mode → Step 1 as built](simple-mode.md#step-1-as-built-15-nov-fe
   day resolves each past day the way the tile resolves today, or "usually" would compare unlike things.
 - The demo seed needs about 45 seconds on a busy Mac before the relaunch, not 15.
 
+
+## Round 10 (16 Nov 2026): v6 step 2, "Tap a score, get an answer"
+
+Chat 6, built by the architect chat itself. `feat/simple-mode` `8b59779a` (one commit). What it contains and
+where it left the design: [Simple mode → Step 2 as built](simple-mode.md#step-2-as-built-16-nov-featsimple-mode-8b59779a).
+
+**How it was checked**
+- Branch: NOOPiOS simulator build; StrandTests on the Mac 2369, 0 failures, 2 skipped (14 new in
+  `SimpleScorePageTests`); `i18n_audit.py --ci upstream/main` exit 0; doc lint clean; Tools 338 OK.
+- **Seen to fail:** all 14 new tests went red in one run with their rules broken on purpose (14 mutations),
+  then the two files were restored and compared by sha256.
+- Simulator, demo data, light and dark: Charge "49 of 100 · Medium", the seven bars in the ring's own colours
+  over the usual band, "In your usual range, 37–50.", all five readings with two-way bars; Effort "So far today
+  34. Your usual full day is 46–69.", "No workouts recorded on this day."; Rest for an imported night ("This
+  night's score is WHOOP's own…" with the night's figures); the Rest parts through a throwaway edit ("45 of 50 ·
+  20 of 20 · 17 of 20 · 5 of 10 … the highest possible score is 95"); Heart rate with its plain empty state and
+  the show-all row. Not seen: see "as built".
+- Stack `d8ad0466`: `verify.sh` all steps passed (WhoopStore 645, StrandAnalytics 2160, StrandImport 327, doc
+  lint, i18n, ledger, ratchet, governance 127, Mac tests 2422 with 0 failures, iOS build), then a Release build
+  for a real iPhone. Phone build `9b5af016`, run 43849689116: success; release checked (target, five files,
+  `.ipa` HTTP 200, sha256 `202af57e…`, its `de.lproj` holds the new strings).
+
+**Found while building**
+- **S11:** the Rest score every screen shows counts a fixed 8 h night and gives every night the neutral half
+  of its regularity part, so no night can score above 95 (`Rest.composite(daily:)` with its defaults; the same
+  on Android, `RestScorer.restFromDaily`). Said honestly on the page; a fix is a science change.
+- "Higher than your usual 46" over-reads small differences: the first screenshot said a Rest of 93 was "lower
+  than your usual 94". Replaced by the usual range (quartiles).
+- A page that works a score out a second time can disagree with the ring. The ring hands over a snapshot
+  instead; the first demo shortcut opened the page before Today had loaded and showed "0 of 4 nights" beside a
+  Today that said 49, which is exactly the disagreement the snapshot prevents in real use (a wearer taps what
+  they see).
+- Numbers printed on top of the bars ran through the usual line; they sit under the bars now.
+- F17 checked: the classic Charge sheet also passes the on-screen Rest for a carried row. Fixed for Simple
+  mode, upstream candidate for the full view.
+
+## Round 11 (16 Nov 2026): v6 step 3, "Sleep"
+
+Chat 6. `feat/simple-mode` `9aba63cf` (one commit). What it contains:
+[Simple mode → Step 3 as built](simple-mode.md#step-3-as-built-16-nov-featsimple-mode-9aba63cf).
+
+**How it was checked**
+- Branch: NOOPiOS simulator build; StrandTests on the Mac 2377, 0 failures, 2 skipped (8 new in
+  `SimpleSleepV6Tests`); i18n gate exit 0; doc lint clean; Tools 338 OK.
+- **Seen to fail:** all 8 new tests went red in one run (7 mutations, 80 assertion failures), then the two
+  files were restored and compared by sha256.
+- Simulator, demo data, light and dark, before and after: the ring's number and "of 100" readable, "REST ·
+  Optimal", the panel "7h 11m asleep · 7h 44m needed / The need is WHOOP's figure for this night. / Imported
+  from WHOOP"; "5m less than your usual"; the movement note and both section headings readable on the canvas
+  (before: dark on the night picture); "Your sleep need 8h 0m" with its reason; "About 1h 12m behind on sleep …
+  more than one night can repay"; the trend "Last 30 nights · average 7h 16m … Lately you slept about 6m less
+  a night". Not seen: the Tonight card (the demo's imported need hides it, as on Today; its resolver is tested)
+  and the ring's tap (read in code; the same route as Today's Rest ring).
+- Stack `67a24b17`: `verify.sh` all steps passed (WhoopStore 645, StrandAnalytics 2160, StrandImport 327, doc
+  lint, i18n, ledger, ratchet, governance 127, Mac tests 2430 with 0 failures, iOS build), then a Release build
+  for a real iPhone. The phone build and its checks are in [State](../STATE.md) and [History](../HISTORY.md).
+
+**Found while building**
+- Laboratory stage percentages were left out on purpose (S3): the estimate over-reads REM, so norms beside it
+  would mislead.
+- **F20, F21** (both in the Simple mode page's "Carried" list).
+- A first attempt to make the stage card state the day row's efficiency was taken out again: it made the
+  card's first line disagree with the card's own Awake row. One fact, two readouts, inside one card is worse
+  than across two screens.
+- Today and the Sleep tab had no shared code for "Tonight"; they do now (`SimpleTonight.resolve`).

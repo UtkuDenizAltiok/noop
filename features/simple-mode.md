@@ -592,8 +592,10 @@ touches that loading. Whatever Utku reports from the phone comes first.
 
 **Phase C — upstream, only when it is active again** (check at every Start; do nothing while it is quiet)
 - Answer any maintainer comment once; rebase #2747/#2724 only when a maintainer engages.
-- Then, one small PR each, a few at a time: F1 + F13 together (both platforms), F2, F3, F5, F6, F16, the
-  redundant "Settings" overline.
+- Then, one small PR each, a few at a time: F1 + F13 together (both platforms), F2, F3, F5, F6, F16, F17 (the
+  classic Charge sheet's Rest row for a carried night), F21 (the sleep trend's average), the redundant "Settings"
+  overline. S11 (the Rest score's fixed night and unmeasured regularity) is an issue first: it moves every Rest
+  score.
 - The high heart rate warning: an issue first, with the phone evidence.
 
 **Phase D — Android and the proposal:** Android twin of Simple mode + `noop.simpleMode` in the `.noopbak`

@@ -1,5 +1,27 @@
 # History
 
+- **16 Nov — chat 6 closed at Utku's request before its context filled, handover for a new chat:** he asked
+  that the step in hand be finished and the project parked (rule recorded). Steps 2 and 3 are shipped (the two
+  entries below); nothing is half done. Added for the next chat: the code map for step 4 and what to reuse,
+  "learned in chat 6" in the Simple mode page, three findings (S11, F20, F21), the consolidated phone questions
+  in State. Scratch worktree, four `tmp/` branches and the Release build cache removed; every worktree clean and
+  pushed; no job running.
+- **16 Nov — Simple mode v6 step 3, "Sleep", shipped (chat 6):** `feat/simple-mode` `9aba63cf` (everything
+  under the hero on the plain canvas so no text sits on the night picture; a readable ring named "Rest" that
+  opens the Rest page; "Imported from WHOOP" in words; a "Your sleep need" card with where the need comes from;
+  debt in a sentence with advice by size; "Tonight" shared with Today through one resolver; stages against the
+  wearer's usual and no laboratory percentages; the trend in hours and minutes). StrandTests 2377, 0 failures;
+  8 new tests seen to fail. Stack `67a24b17`: `verify.sh` all steps passed (Mac tests 2430), real-iPhone Release
+  build ok. Phone build `0e3454dd`, run 43896083111, success; release checked (target, five files, `.ipa` HTTP
+  200 sha256 `ac3b470f…`, `de.lproj` holds the strings of steps 2 and 3).
+- **16 Nov — Simple mode v6 step 2, "Tap a score, get an answer", shipped (chat 6):** `feat/simple-mode`
+  `8b59779a` (in Simple mode a ring opens a plain page: the number and its word, the last seven days against
+  the wearer's usual range, what moved it, what to do, and the statistics page as the last link; the page shows
+  the ring's own snapshot; Rest's four parts add up to the ring's number and say what the score really counts;
+  the day timeline opens as "Heart rate" alone). Found: the shown Rest score counts a fixed 8 h night and gives
+  every night half of its regularity points, so it tops out at 95 (S11). StrandTests 2369, 0 failures; 14 new
+  tests seen to fail. Stack `d8ad0466`: `verify.sh` all steps passed (Mac tests 2422), real-iPhone Release build
+  ok. Phone build `9b5af016`, run 43849689116, success; release checked, then replaced by step 3's build.
 - **16 Nov — chat 5 closed at Utku's request (context full), handover for a new chat:** he will test step 1
   later and asked that building goes on without waiting (rule recorded). Added for the next chat: the code map
   for step 2 and a "how the architect builds" block in the Simple mode page, two helpers
