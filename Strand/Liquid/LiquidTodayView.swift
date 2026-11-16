@@ -132,6 +132,13 @@ struct LiquidTodayView: View {
     @AppStorage(SimpleDayPlan.ReminderKeys.perDayWake) private var windDownPerDayMirror = Data()
     /// Whether Simple mode's Charge card lists every driver rather than the three that moved it most.
     @State private var simpleDriversExpanded = false
+    #if DEBUG
+    /// DEBUG-only: `--demo-open-score charge|effort|rest` opens that score's page once Today has loaded, with
+    /// the snapshot its ring would hand over, so a simulator walk can read the page (the tap tool does not
+    /// reach the rings). Stripped from Release.
+    @State private var demoScorePage: SimpleScoreSnapshot?
+    @State private var demoScoreOpened = false
+    #endif
     /// Nights the Charge baseline has learned from (the HRV fold's valid-night count, the figure the engine
     /// trusts a baseline on), for Simple mode's "Early estimate" line. Resolved in `load()`, today only.
     @State private var cachedBaselineNights: Int?
@@ -540,6 +547,12 @@ struct LiquidTodayView: View {
         .sheet(item: $plainGuideTerm) { term in
             PlainGuideView(initialTerm: term, onClose: { plainGuideTerm = nil })
         }
+        #if DEBUG
+        .navigationDestination(isPresented: Binding(get: { demoScorePage != nil },
+                                                    set: { if !$0 { demoScorePage = nil } })) {
+            if let demoScorePage { SimpleScorePageView(snapshot: demoScorePage) }
+        }
+        #endif
         .sheet(item: $customizationDestination) { destination in
             TodayCustomizationSheet(
                 initialDestination: destination,
@@ -781,9 +794,10 @@ struct LiquidTodayView: View {
                           tint: chargeDisplay.pct.map { StrandPalette.recoveryColor($0) } ?? StrandPalette.chargeColor,
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .charge } else { guideSection = .charge } },
-                          detailRoute: .metric(HeroRingMetric.charge),
+                          detailRoute: simpleMode ? .scorePage(simpleScoreSnapshot(.charge)) : .metric(HeroRingMetric.charge),
                           caption: simpleMode ? simpleChargeWord : nil,
-                          subcaption: simpleMode ? simpleChargeCarriedDay : nil)
+                          subcaption: simpleMode ? simpleChargeCarriedDay : nil,
+                          explainsScore: simpleMode)
             // #45: the hero Effort must honour the user's Effort scale like every other Effort read-out.
             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
             // one decimal on the compressed 0–21 axis to match the app-wide `effortDisplay` convention
@@ -794,14 +808,16 @@ struct LiquidTodayView: View {
                           onGuide: { if simpleMode { plainGuideTerm = .effort } else { guideSection = .effort } },
                           maxValue: effortScale == .whoop ? 21 : 100,
                           decimals: effortScale == .whoop ? 1 : 0,
-                          detailRoute: .metric(HeroRingMetric.effort),
-                          caption: simpleMode ? simpleEffortWord : nil)
+                          detailRoute: simpleMode ? .scorePage(simpleScoreSnapshot(.effort)) : .metric(HeroRingMetric.effort),
+                          caption: simpleMode ? simpleEffortWord : nil,
+                          explainsScore: simpleMode)
             HeroScoreCell(label: String(localized: "Rest"), score: restScore, tint: StrandPalette.restColor,
                           animated: dataLoaded,
                           onGuide: { if simpleMode { plainGuideTerm = .rest } else { guideSection = .rest } },
-                          detailRoute: .metric(HeroRingMetric.rest),
-                          caption: simpleMode ? restScore.map { SleepView.sleepScoreWord($0) } : nil,
-                          subcaption: simpleMode ? carriedRestDayKey.map { String(localized: "From \(TodayView.lastChargeDateFmt($0))") } : nil)
+                          detailRoute: simpleMode ? .scorePage(simpleScoreSnapshot(.rest)) : .metric(HeroRingMetric.rest),
+                          caption: simpleMode ? restScore.map { SimpleScoreWords.rest($0) } : nil,
+                          subcaption: simpleMode ? carriedRestDayKey.map { String(localized: "From \(TodayView.lastChargeDateFmt($0))") } : nil,
+                          explainsScore: simpleMode)
                 .overlay(alignment: .top) {
                     if let sourceLabel = heroSourceLabel {
                         SourceBadge("\(sourceLabel)", tint: StrandPalette.textSecondary)
@@ -826,7 +842,7 @@ struct LiquidTodayView: View {
             sectionHead("HEART RATE", trailing: "Live")
             // #979: the whole-day HR trend (Deep Timeline) still exists but was buried behind Metrics →
             // Show all → Deep Timeline. The whole live HR card remains a one-tap route into it.
-            NavigationLink(value: TabRoute.fullDayChart) {
+            NavigationLink(value: heartRateRoute) {
                 card {
                     // Isolated leaf: it observes LiveState so the ~1 Hz HR notifies re-render ONLY
                     // this card, never the whole Today. Shows the current bpm live with a rolling
@@ -844,6 +860,13 @@ struct LiquidTodayView: View {
                 }
             }
         }
+    }
+
+    /// Where the heart-rate card leads. The full view opens the timeline on today, as it always has. Simple
+    /// mode opens it on the day the card is showing, so a card about last Tuesday does not open today.
+    private var heartRateRoute: TabRoute {
+        guard simpleMode, selectedDayOffset != 0 else { return .fullDayChart }
+        return .fullDayChartOn(Int(Calendar.current.startOfDay(for: selectedLogicalDay).timeIntervalSince1970))
     }
 
     // MARK: - Your cards
@@ -1535,23 +1558,12 @@ struct LiquidTodayView: View {
 
     /// The word under the Charge ring (Low / Medium / High), for whichever Charge the ring shows.
     private var simpleChargeWord: String? {
-        guard let pct = chargeDisplay.pct else { return nil }
-        switch SimpleDayPlan.chargeLevel(pct) {
-        case .low: return String(localized: "Low")
-        case .medium: return String(localized: "Medium")
-        case .high: return String(localized: "High")
-        }
+        chargeDisplay.pct.map { SimpleScoreWords.charge($0) }
     }
 
     /// The word under the Effort ring (Easy / Moderate / Hard / Very hard), for the Effort the ring shows.
     private var simpleEffortWord: String? {
-        guard let stored = effortStrain(displayDay) else { return nil }
-        switch SimpleDayPlan.effortLevel(stored: stored, scale: effortScale) {
-        case .easy: return String(localized: "Easy")
-        case .moderate: return String(localized: "Moderate")
-        case .hard: return String(localized: "Hard")
-        case .veryHard: return String(localized: "Very hard")
-        }
+        effortStrain(displayDay).map { SimpleScoreWords.effort(stored: $0, scale: effortScale) }
     }
 
     /// Under the scores, only while today's own Charge rests on a baseline NOOP does not fully trust yet: how
@@ -1602,51 +1614,53 @@ struct LiquidTodayView: View {
         return selectedDayOffset == 0 ? synthLine : String(localized: "Not enough readings from this day for a full read.")
     }
 
-    /// The suggested Effort range on the reader's scale, a bar showing it with today's Effort so far, and
-    /// one line saying where today stands. Today's Effort is the ring's own value (`effortStrain`), printed
-    /// the ring's way (`SimpleDayPlan.effortText`).
+    /// The suggested Effort range with today's Effort so far and where the day stands: the view the Effort
+    /// page shows too (`SimpleEffortPlanView`), fed the ring's own value (`effortStrain`).
     private func simpleEffortPlan(_ band21: ClosedRange<Int>) -> some View {
-        let band = SimpleDayPlan.band(band21, on: effortScale)
-        let stored = effortStrain(displayDay)
-        let progress = SimpleDayPlan.progress(stored: stored, scale: effortScale, band: band)
-        let soFar = stored.map { SimpleDayPlan.effortText(stored: $0, scale: effortScale) } ?? ""
-        let intensityLine: String
-        switch SimpleDayPlan.intensity(of: band21) {
-        case .hard: intensityLine = String(localized: "A hard day, based on your Charge")
-        case .moderate: intensityLine = String(localized: "A moderate day, based on your Charge")
-        case .easy: intensityLine = String(localized: "An easy day, based on your Charge")
+        SimpleEffortPlanView(band21: band21, stored: effortStrain(displayDay), scale: effortScale)
+    }
+
+    /// What Today shows for one score right now, for the page its ring opens (`SimpleScorePageView`): the
+    /// ring's own value and day, and the rows of the cards under it. Built from the same properties the
+    /// rings and cards read, so the page cannot state anything Today does not.
+    private func simpleScoreSnapshot(_ kind: SimpleScoreKind) -> SimpleScoreSnapshot {
+        let stored: Double?
+        var scoreDay = selectedDayKey
+        var calibrating: Int?
+        switch kind {
+        case .charge:
+            stored = chargeDisplay.pct
+            if case .carried = chargeDisplay, let key = carriedChargeDayKey { scoreDay = key }
+            if case .calibrating(let nights) = chargeDisplay { calibrating = nights }
+        case .effort:
+            stored = effortStrain(displayDay)
+        case .rest:
+            stored = restScore
+            if let key = carriedRestDayKey { scoreDay = key }
         }
-        let progressLine: String
-        switch progress {
-        case .notStarted: progressLine = String(localized: "No effort measured yet today.")
-        case .below: progressLine = String(localized: "So far \(soFar). The range starts at \(band.lowerBound).")
-        case .within: progressLine = String(localized: "So far \(soFar). You're in the range.")
-        case .above: progressLine = String(localized: "So far \(soFar), past the range. Take the rest of the day easy.")
+        let band = kind == .effort
+            ? SimpleDayPlan.suggestedBand(todaysCharge: simpleTodaysOwnCharge, readiness: readiness.level) : nil
+        return SimpleScoreSnapshot(
+            kind: kind, selectedDayKey: selectedDayKey, isToday: selectedDayOffset == 0,
+            stored: stored, scoreDayKey: scoreDay, calibratingNights: calibrating,
+            drivers: kind == .charge ? simplePlainDrivers.map {
+                .init(label: $0.label, deltaPoints: $0.deltaPoints, valueText: $0.valueText,
+                      baselineText: $0.baselineText, verdict: $0.verdict)
+            } : [],
+            bandLow: band?.lowerBound, bandHigh: band?.upperBound,
+            workouts: kind == .effort ? workouts.map { w in
+                .init(startTs: w.startTs, sport: w.sport,
+                      minutes: Int((w.durationS ?? Double(max(w.endTs - w.startTs, 0))) / 60),
+                      kcal: w.energyKcal.map { Int($0.rounded()) }, strain: w.strain)
+            } : [])
+    }
+
+    /// The Charge readings in everyday words (`PlainChargeWording`): the same rows, points and order as the
+    /// full view's Charge sheet. One list for Today's card and the Charge page.
+    private var simplePlainDrivers: [ChargeDriver] {
+        cachedChargeDrivers.map {
+            PlainChargeWording.driver($0, skinTempDevC: cachedChargeSkinDevC, temperatureUnit: temperatureUnit)
         }
-        return VStack(alignment: .leading, spacing: 8) {
-            Rectangle().fill(StrandPalette.hairline).frame(height: NoopMetrics.hairlineWidth)
-                .padding(.vertical, 2)
-            HStack(alignment: .firstTextBaseline) {
-                Text("Suggested Effort")
-                    .font(StrandFont.subhead.weight(.semibold))
-                    .foregroundStyle(StrandPalette.textPrimary)
-                Spacer(minLength: 8)
-                // Charge colour, like the range's outline on the bar: the range comes from Charge.
-                Text(verbatim: SimpleDayPlan.rangeText(band))
-                    .font(StrandFont.number(17))
-                    .foregroundStyle(StrandPalette.chargeColor)
-            }
-            Text(intensityLine)
-                .font(StrandFont.caption)
-                .foregroundStyle(StrandPalette.textSecondary)
-            SimpleEffortBar(value: stored.map { UnitFormatter.effortValue($0, scale: effortScale) },
-                            band: band, maxValue: effortScale == .whoop ? 21 : 100)
-            Text(progressLine)
-                .font(StrandFont.caption)
-                .foregroundStyle(StrandPalette.textSecondary)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .accessibilityElement(children: .combine)
     }
 
     /// Simple mode's sleep card: last night (asleep against the need) and, while the wind-down reminder is on,
@@ -1810,10 +1824,7 @@ struct LiquidTodayView: View {
         let hrv = displayDay?.avgHrv ?? hrvDay?.avgHrv
         let rhr = (displayDay?.restingHr ?? restingHrDay?.restingHr).map(Double.init)
         let resp = displayDay?.respRateBpm ?? vitalsDay?.respRateBpm
-        // Same rows, points and order as the full view's Charge sheet, in everyday words (PlainChargeWording).
-        let drivers = cachedChargeDrivers.map {
-            PlainChargeWording.driver($0, skinTempDevC: cachedChargeSkinDevC, temperatureUnit: temperatureUnit)
-        }
+        let drivers = simplePlainDrivers
         return card {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(alignment: .firstTextBaseline) {
@@ -1847,7 +1858,8 @@ struct LiquidTodayView: View {
                              StrandPalette.accent, fracOver(resp, 24), route: .metric("resp_rate"),
                              hint: String(localized: "steady is normal"))
                 } else {
-                    Text("How last night's readings moved your Charge, compared with your own normal. A bar to the right raised it, a bar to the left lowered it.")
+                    // A carried Charge names its night, so earlier readings are never called last night's.
+                    Text(SimpleScorePageView.chargeRowsIntro(carriedDayKey: simpleChargeRowsCarriedDay))
                         .font(StrandFont.caption)
                         .foregroundStyle(StrandPalette.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -1879,6 +1891,12 @@ struct LiquidTodayView: View {
                 }
             }
         }
+    }
+
+    /// The earlier day the Charge rows describe when the ring carries an earlier score, else nil.
+    private var simpleChargeRowsCarriedDay: String? {
+        guard case .carried = chargeDisplay else { return nil }
+        return carriedChargeDayKey
     }
 
     /// Steps and calories: the two everyday activity numbers, as the same tiles (and the same imported-first
@@ -2422,8 +2440,12 @@ struct LiquidTodayView: View {
         // with the same inputs the classic Today's Charge sheet passes, so the two can never describe
         // different nights. Not resolved while Simple mode is off: a view that shows none pays nothing.
         if simpleMode, let row = priorScored ?? day, let baselines = repo.chargeBaselines {
+            // The Rest row is about the same night as the other rows: the row's own Rest, not the Rest now
+            // on the ring, which can be another night's when either score is carried.
             cachedChargeDrivers = ChargeBreakdownWiring.breakdown(
-                baselines: baselines, row: row, sleepPerfPercent: restScore)?.drivers ?? []
+                baselines: baselines, row: row,
+                sleepPerfPercent: SimpleScoreRules.chargeRowRest(rowDayKey: row.day, restByDay: restByDay))?
+                .drivers ?? []
             cachedChargeSkinDevC = row.skinTempDevC
         } else {
             cachedChargeDrivers = []
@@ -2629,6 +2651,18 @@ struct LiquidTodayView: View {
 
         // First load done — bring the hero gauges + sky to life now the launch churn has settled.
         if !dataLoaded { withAnimation(.easeIn(duration: 0.4)) { dataLoaded = true } }
+        #if DEBUG
+        let launchArgs = CommandLine.arguments
+        if simpleMode, !demoScoreOpened, let flag = launchArgs.firstIndex(of: "--demo-open-score"),
+           flag + 1 < launchArgs.count, let kind = SimpleScoreKind(rawValue: launchArgs[flag + 1]) {
+            // Wait for a load that has a score: the first loads run before the history is in.
+            let snapshot = simpleScoreSnapshot(kind)
+            if snapshot.stored != nil {
+                demoScoreOpened = true
+                demoScorePage = snapshot
+            }
+        }
+        #endif
     }
 
     /// Re-read the indexed first-beat bounds on each load, so a new labelled sync clears the note.
@@ -3011,6 +3045,8 @@ private struct HeroScoreCell: View {
     var caption: String? = nil
     /// A second grey line under the caption (Simple mode: the day an earlier score comes from), or nil.
     var subcaption: String? = nil
+    /// Whether the gauge opens the plain page about the score (Simple mode) rather than the statistics page.
+    var explainsScore: Bool = false
 
     /// The gauge, linked when there is somewhere to go.
     ///
@@ -3034,7 +3070,7 @@ private struct HeroScoreCell: View {
                 // this a VoiceOver user hears only the metric name on the element displaying the value,
                 // while the label below it reads the score, which is backwards.
                 .accessibilityLabel(Text("\(label), \(spokenScore)"))
-                .accessibilityHint(Text("Opens the trend and readings"))
+                .accessibilityHint(explainsScore ? Text("Explains this score") : Text("Opens the trend and readings"))
         } else {
             gauge
         }

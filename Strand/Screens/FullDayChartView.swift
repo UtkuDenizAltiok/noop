@@ -37,6 +37,13 @@ struct FullDayChartView: View {
     }
 
     @State private var metric: Repository.TimelineMetric = .hr
+    /// Simple mode (`SimpleModePrefs`): this screen opens as the day's heart rate alone, in plain words.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+    /// "Show everything on this screen" (`SimpleModeShowAllRow`): the full timeline, with every signal and
+    /// the source switch, while Simple mode stays on. Never stored.
+    @State private var showAll = false
+    /// Whether the screen draws its simple layout right now. Every Simple-mode read below goes through this.
+    private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
     // Imperial/Metric temperature preference (#101) — mirrors MetricExplorerView so skin temp here
     // respects the same °C/°F override instead of always showing Celsius.
     @AppStorage(UnitPrefs.systemKey) private var unitSystemRaw = UnitSystem.metric.rawValue
@@ -84,13 +91,20 @@ struct FullDayChartView: View {
     private var visibleWindow: ClosedRange<Date> { zoomDomain ?? dayBounds }
 
     var body: some View {
-        ScreenScaffold(title: "Deep Timeline", subtitle: "Every second of your day, zoomable.") {
-            metricPills
+        ScreenScaffold(title: simpleMode ? "Heart rate" : "Deep Timeline",
+                       subtitle: simpleMode ? "Your heart rate through the day." : "Every second of your day, zoomable.") {
+            // Simple mode shows the one signal the wearer came for. The other signals and the source switch
+            // are one tap away, on the row at the foot.
+            if !simpleMode { metricPills }
             dayNav
-            sourcePill
+            if !simpleMode { sourcePill }
             chartCard
-            zoomHint
+            // The gestures are named only while there is a line to use them on (Simple mode).
+            if !simpleMode || !series.points.isEmpty { zoomHint }
+            if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
+        // Back in the simple view the screen is about heart rate again, whichever signal was last picked.
+        .onChangeCompat(of: simpleMode) { simple in if simple { metric = .hr } }
         .task(id: taskKey) { await reload() }
         .task(id: annotationKey) { await reloadAnnotations() }
         .task { await landOnLatestDayIfNeeded() }
@@ -213,8 +227,10 @@ struct FullDayChartView: View {
 
     @ViewBuilder private var chartCard: some View {
         ChartCard(
-            title: LocalizedStringKey(metric.title),
-            subtitle: resolutionSubtitle,
+            // Simple mode: the screen's title already says "Heart rate", so the card names the unit, and it
+            // shows no placeholder dash while there is nothing to describe.
+            title: simpleMode ? "Beats per minute" : LocalizedStringKey(metric.title),
+            subtitle: simpleMode && series.points.isEmpty ? nil : resolutionSubtitle,
             trailing: latestReadout,
             height: 280,
             tint: StrandPalette.metricRose
@@ -297,7 +313,8 @@ struct FullDayChartView: View {
             Text("No \(metric.title.lowercased()) here")
                 .font(StrandFont.body)
                 .foregroundStyle(StrandPalette.textSecondary)
-            Text(emptyReason)
+            Text(simpleMode ? String(localized: "No heart rate recorded for this part of the day yet. It appears once your strap has synced.")
+                            : emptyReason)
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
                 .multilineTextAlignment(.center)
@@ -349,11 +366,13 @@ struct FullDayChartView: View {
 
     private var statsFooter: some View {
         let v = displayPoints.map(\.value)
-        return ChartFooter([
-            ("Min", format(v.min() ?? 0)),
-            ("Avg", format(v.reduce(0, +) / Double(max(1, v.count)))),
-            ("Max", format(v.max() ?? 0)),
-        ])
+        let (low, mean, high) = (format(v.min() ?? 0), format(v.reduce(0, +) / Double(max(1, v.count))),
+                                 format(v.max() ?? 0))
+        // Simple mode spells the three figures out and gives each its unit.
+        let plain: [(LocalizedStringKey, String)] = [
+            ("Lowest", low + unitSuffix), ("Average", mean + unitSuffix), ("Highest", high + unitSuffix)]
+        let full: [(LocalizedStringKey, String)] = [("Min", low), ("Avg", mean), ("Max", high)]
+        return ChartFooter(simpleMode ? plain : full)
     }
 
     // MARK: Read
