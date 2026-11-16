@@ -38,6 +38,13 @@ enum TabRoute: Hashable {
     /// The plain-language guide to every score and reading ("What the numbers mean"), linked from the
     /// Simple-mode Today.
     case plainGuide
+    /// Simple mode's plain page about one score, opened from its ring on Today. Carries what the ring and
+    /// the cards under it showed when it was tapped, so the page can only repeat those figures.
+    case scorePage(SimpleScoreSnapshot)
+    /// The whole-day heart-rate timeline opened on one day (seconds since 1970 of that day's midnight):
+    /// the Simple Today's heart-rate card while an earlier day is selected, so the page shows the day the
+    /// card showed.
+    case fullDayChartOn(Int)
 }
 
 extension View {
@@ -75,6 +82,9 @@ extension View {
             case .hydration: HydrationView()
             case .coupled: CoupledView()
             case .plainGuide: PlainGuideView()
+            case .scorePage(let snapshot): SimpleScorePageView(snapshot: snapshot)
+            case .fullDayChartOn(let dayStart):
+                FullDayChartView(dayStart: Date(timeIntervalSince1970: TimeInterval(dayStart)))
             }
         }
     }
