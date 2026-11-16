@@ -159,6 +159,8 @@ struct SleepView: View {
     @State private var showAll = false
     /// Whether Sleep draws its simple layout right now. Every Simple-mode read below goes through this.
     private var simpleMode: Bool { SimpleModePrefs.isSimple(stored: simpleModeStored, showingAll: showAll) }
+    /// The plain guide entry presented as a sheet from a Simple-mode card's info button (nil = closed).
+    @State private var plainGuideTerm: PlainGuideTerm?
 
     var body: some View {
         // Resolve the memoized model for THIS render. `dataKey` is O(1)-ish (counts + last-row
@@ -202,15 +204,26 @@ struct SleepView: View {
                             .padding(.horizontal, -16)
                             .padding(.top, -24)
                             .staggeredAppear(index: 0)
-                        // Simple mode leads with the night and keeps Alarms at the foot; the full view keeps
-                        // its own order.
-                        if !simpleMode { alarmsEntry }
-                        // #sleep-layout: the analytical cards render in the user's saved order minus the
-                        // hidden set, below the pinned Rest hero. Reordered via the Arrange sheet.
-                        ForEach(Array(sleepVisibleSections.enumerated()), id: \.element) { idx, section in
-                            sleepSectionView(section, resolved).staggeredAppear(index: idx + 1)
+                        if simpleMode {
+                            // Simple mode leads with the night and keeps Alarms at the foot. Everything under
+                            // the hero sits on the plain canvas (`simpleCanvasBacking`): the night picture
+                            // stays fixed behind the scroll, and a heading or note that scrolled over it could
+                            // not be read (v6, W26).
+                            VStack(alignment: .leading, spacing: NoopMetrics.sectionSpacing) {
+                                ForEach(Array(sleepVisibleSections.enumerated()), id: \.element) { idx, section in
+                                    sleepSectionView(section, resolved).staggeredAppear(index: idx + 1)
+                                }
+                                alarmsEntry
+                            }
+                            .background(alignment: .top) { simpleCanvasBacking }
+                        } else {
+                            alarmsEntry
+                            // #sleep-layout: the analytical cards render in the user's saved order minus the
+                            // hidden set, below the pinned Rest hero. Reordered via the Arrange sheet.
+                            ForEach(Array(sleepVisibleSections.enumerated()), id: \.element) { idx, section in
+                                sleepSectionView(section, resolved).staggeredAppear(index: idx + 1)
+                            }
                         }
-                        if simpleMode { alarmsEntry }
                     }
                 } else {
                     // Deleting the only night recorded lands here, so the undo strip and the deleted list
@@ -326,6 +339,9 @@ struct SleepView: View {
             // Manually add a missed nap (#508): same picker, but the chosen window is staged from raw and
             // stored as its OWN separate session — never folded into main sleep (which would mislabel the
             // awake daytime gap as light sleep).
+            .sheet(item: $plainGuideTerm) { term in
+                PlainGuideView(initialTerm: term, onClose: { plainGuideTerm = nil })
+            }
             .sheet(isPresented: $showSleepCustomize) {
                 SleepCustomizationSheet(
                     sectionOrderRaw: $sleepSectionOrderRaw,
@@ -627,10 +643,93 @@ struct SleepView: View {
         case .stages:          hero(model)
         case .bodyClock:       bodyClockDial(model)
         case .nightDetail:     NightDetailCard(model: model)
-        case .sleepDebt:       SleepDebtLedgerCard(model: model, plain: simpleMode)
+        case .sleepDebt:
+            if simpleMode {
+                // v6: how much sleep the wearer needs and why, how far behind they are, and what to do
+                // tonight, in that order. One need (`model.normativeNeedMin`) feeds all three.
+                simpleSleepNeedCard(model)
+                SleepDebtLedgerCard(model: model, plain: true)
+                if nightOffset == 0 { simpleTonightCard(model) }
+            } else {
+                SleepDebtLedgerCard(model: model, plain: false)
+            }
         case .stagesVsTypical: StagesVsTypicalCard(model: model)
         case .asleepDuration:  durationTrend(model)
         }
+    }
+
+    /// The plain canvas behind everything under the hero in Simple mode. The night scene is a fixed backdrop,
+    /// so without this a section heading or a note scrolling through its band is dark text on a dark
+    /// picture. A short fade at the top, where the scene has already faded toward the canvas; it reaches past
+    /// the screen's side margins and far below, so the cards after it are covered too.
+    private var simpleCanvasBacking: some View {
+        VStack(spacing: 0) {
+            LinearGradient(colors: [StrandPalette.surfaceBase.opacity(0), StrandPalette.surfaceBase],
+                           startPoint: .top, endPoint: .bottom)
+                .frame(height: 28)
+            StrandPalette.surfaceBase
+        }
+        .padding(.horizontal, -40)
+        .padding(.top, -14)
+        .padding(.bottom, -3000)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+
+    /// Simple mode's "Your sleep need" card: the one need the debt below and tonight's goal are measured
+    /// against, and where it comes from (v6, S1a). The figure is the Sleep tab's own (`normativeNeedMin`);
+    /// the sentence follows `SimpleDayPlan.sleepNeedOrigin`, read from the same rule that sets the need.
+    private func simpleSleepNeedCard(_ model: SleepModel) -> some View {
+        let need = SimpleDayPlan.durationText(model.normativeNeedMin)
+        let standard = SimpleDayPlan.durationText(Double(SimpleDayPlan.standardSleepNeedMinutes))
+        return NoopCard(tint: StrandPalette.restColor) {
+            VStack(alignment: .leading, spacing: NoopMetrics.space2) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Your sleep need").strandOverline()
+                        .foregroundStyle(StrandPalette.textSecondary)
+                    Spacer(minLength: 8)
+                    Button { plainGuideTerm = .sleepNeed } label: {
+                        Image(systemName: "info.circle")
+                            .font(StrandFont.subhead.weight(.semibold))
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("What the numbers mean")
+                }
+                Text(verbatim: need)
+                    .font(StrandFont.number(26))
+                    .foregroundStyle(StrandPalette.textPrimary)
+                Group {
+                    switch SimpleDayPlan.sleepNeedOrigin(needMin: model.normativeNeedMin) {
+                    case .standard:
+                        Text("The usual target for adults: experts recommend 7 to 9 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
+                    case .raised:
+                        Text("Raised from \(standard) because you regularly sleep longer when you can. Experts recommend 7 to 9 hours a night for adults.")
+                    }
+                }
+                .font(StrandFont.subhead)
+                .foregroundStyle(StrandPalette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            .accessibilityElement(children: .combine)
+        }
+    }
+
+    /// The Sleep tab's "Tonight" card, from the inputs Today's sleep card resolves it from: this tab's need,
+    /// the debt its ledger shows, the usual wake time, and the need last night's line states for today's row.
+    private func simpleTonightCard(_ model: SleepModel) -> some View {
+        let todayKey = repo.today?.day ?? Repository.logicalDayKey(Date())
+        let lastNight = SimpleDayPlan.sleepVersusNeed(
+            asleepMin: repo.days.last(where: { $0.day == todayKey })?.totalSleepMin,
+            importedNeedMin: repo.importedSleep[todayKey]?.needMin,
+            normativeNeedMin: model.normativeNeedMin)
+        return SimpleTonightCard(
+            needMin: Int(model.normativeNeedMin.rounded()),
+            debtMin: model.sleepDebtLedger.magnitudeMin,
+            usualWakeMinute: SimpleDayPlan.usualWakeMinute(
+                wakeTimes: repo.sleeps.map { Date(timeIntervalSince1970: TimeInterval($0.endTs)) },
+                calendar: .current),
+            lastNightNeedMin: lastNight?.need)
     }
 
     /// The 24 h dial (#1680), or nothing at all.
@@ -685,7 +784,38 @@ struct SleepView: View {
                 .padding(.top, 6)
                 .accessibilityAddTraits(.isHeader)
 
-            if let score {
+            if let score, simpleMode {
+                // v6: the ring is the Rest ring from Today, so it reads like it (the number and "of 100" in
+                // the ring face's own text colours, not white on the pale face), carries the score's name,
+                // and opens the same page about the score.
+                VStack(spacing: 8) {
+                    NavigationLink(value: TabRoute.scorePage(simpleRestSnapshot(score: score, wakeDay: Repository.localDayKey(
+                        Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))))) {
+                        LiquidScoreGauge(
+                            score: score,
+                            tint: StrandPalette.restColor,
+                            diameter: 184,
+                            animated: true,
+                            captionText: String(localized: "of 100"),
+                            tapPassesThrough: true
+                        )
+                    }
+                    .buttonStyle(LiquidPressStyle())
+                    .accessibilityLabel(String(localized: "Rest \(Int(score.rounded())) of 100, \(Self.sleepScoreWord(score))"))
+                    .accessibilityHint(Text("Explains this score"))
+                    VStack(spacing: 2) {
+                        Text("Rest")
+                            .font(StrandFont.overline).tracking(1.6).textCase(.uppercase)
+                            .foregroundStyle(Color.white.opacity(0.72))
+                        Text(Self.sleepScoreWord(score))
+                            .font(StrandFont.subhead.weight(.semibold))
+                            .foregroundStyle(Color.white.opacity(0.90))
+                    }
+                    .shadow(color: .black.opacity(0.30), radius: 2, y: 1)
+                    .accessibilityHidden(true)
+                }
+                .padding(.top, 8)
+            } else if let score {
                 // Same LiquidVessel gauge as Home (`LiquidTodayView` / `HeroScoreCell`).
                 VStack(spacing: 8) {
                     LiquidScoreGauge(
@@ -734,21 +864,42 @@ struct SleepView: View {
                    importedNeedMin: repo.importedSleep[wakeDay]?.needMin,
                    normativeNeedMin: model.normativeNeedMin) {
                 // On its own panel: this line lands where the night scene fades into the canvas, so plain
-                // white text (like the state word above) washes out in Light mode.
-                Text("\(SimpleDayPlan.durationText(figures.asleep)) asleep · \(SimpleDayPlan.durationText(figures.need)) needed")
-                    .font(StrandFont.subhead.weight(.semibold))
-                    .foregroundStyle(StrandPalette.textPrimary)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 7)
-                    .background(NoopPanelSurface(cornerRadius: 16))
-                    .padding(.top, 8)
+                // white text (like the state word above) washes out in Light mode. The panel also carries
+                // where the figures come from, in words: a bare "WHOOP" badge on the picture could not be
+                // read and said nothing a newcomer understands (v6, W5).
+                let imported = repo.importedSleep[wakeDay]
+                VStack(spacing: 3) {
+                    Text("\(SimpleDayPlan.durationText(figures.asleep)) asleep · \(SimpleDayPlan.durationText(figures.need)) needed")
+                        .font(StrandFont.subhead.weight(.semibold))
+                        .foregroundStyle(StrandPalette.textPrimary)
+                    if SimpleDayPlan.needIsImported(importedNeedMin: imported?.needMin,
+                                                    normativeNeedMin: model.normativeNeedMin) {
+                        Text("The need is WHOOP's figure for this night.")
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textSecondary)
+                    }
+                    if imported?.performancePct != nil {
+                        Text("Imported from WHOOP")
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                    }
+                }
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 7)
+                .background(NoopPanelSurface(cornerRadius: 16))
+                .padding(.top, 8)
             }
 
-            SourceBadge(
-                score != nil ? heroSource(for: night) : (repo.activeDeviceIsOura ? "Oura" : "On-device"),
-                tint: StrandPalette.restColor
-            )
-            .padding(.top, 8)
+            // Simple mode says an import in words on the panel above; a night the strap measured needs no
+            // badge at all, and an Oura night keeps its own.
+            if !simpleMode || score == nil || repo.activeDeviceIsOura {
+                SourceBadge(
+                    score != nil ? heroSource(for: night) : (repo.activeDeviceIsOura ? "Oura" : "On-device"),
+                    tint: StrandPalette.restColor
+                )
+                .padding(.top, 8)
+            }
 
             // Subtle Customize at the hero foot — functional, not competing with the gauge. Simple mode has a
             // fixed layout, so it drops the control.
@@ -792,6 +943,11 @@ struct SleepView: View {
         let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
         if repo.importedSleep[wakeDay]?.performancePct != nil { return "Whoop" }
         return repo.activeDeviceIsOura ? "Oura" : "On-device"
+    }
+
+    /// Whether a WHOOP export covers the night's wake day (the rule `nightSource` names "Whoop" by).
+    private func nightIsImported(_ night: Night) -> Bool {
+        repo.importedSleep[Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))] != nil
     }
 
     // MARK: - Provenance for the displayed night (COMPONENT 4, spec 2026-06-20)
@@ -1413,7 +1569,13 @@ struct SleepView: View {
         HStack(spacing: 10) {
             // C4 — provenance. Dynamic String into the badge slot, so wrap in "\()" (the
             // String vs LocalizedStringKey SwiftUI footgun) to show it verbatim, not as a lookup key.
-            SourceBadge("\(nightSource(night))", tint: StrandPalette.restColor)
+            // Simple mode: an imported night says so in words; a night the strap measured needs no badge.
+            if !simpleMode {
+                SourceBadge("\(nightSource(night))", tint: StrandPalette.restColor)
+            } else if repo.activeDeviceIsOura || nightIsImported(night) {
+                SourceBadge("\(nightIsImported(night) ? String(localized: "Imported from WHOOP") : nightSource(night))",
+                            tint: StrandPalette.restColor)
+            }
             Spacer(minLength: 8)
             if mainSleepReasonText(night) != nil {
                 Button { showMainSleepWhy.toggle() } label: {
@@ -1715,7 +1877,8 @@ struct SleepView: View {
                     .tracking(StrandFont.overlineTracking)
                     .foregroundStyle(StrandPalette.textTertiary)
                 if let t = stageTypical(nil) {
-                    Text("typically \(durationText(t.mean))")
+                    Text(simpleMode ? simpleVersusUsual(s.asleep, t.mean)
+                                    : String(localized: "typically \(durationText(t.mean))"))
                         .font(StrandFont.footnote)
                         .foregroundStyle(StrandPalette.textTertiary)
                 }
@@ -1732,7 +1895,8 @@ struct SleepView: View {
                     .tracking(StrandFont.overlineTracking)
                     .foregroundStyle(StrandPalette.textTertiary)
                 if let t = restorativeTypical() {
-                    Text("typically \(durationText(t))")
+                    Text(simpleMode ? simpleVersusUsual(restorative, t)
+                                    : String(localized: "typically \(durationText(t))"))
                         .font(StrandFont.footnote)
                         .foregroundStyle(StrandPalette.textTertiary)
                 }
@@ -1740,6 +1904,25 @@ struct SleepView: View {
             Spacer()
         }
         .accessibilityElement(children: .combine)
+    }
+
+    /// "38m less than your usual": a night's duration against the wearer's usual one, as a difference in
+    /// words rather than a second figure to subtract (v6, W28).
+    private func simpleVersusUsual(_ valueMin: Double, _ usualMin: Double) -> String {
+        switch SimpleDayPlan.versusUsual(valueMin: valueMin, usualMin: usualMin) {
+        case .more(let minutes): return String(localized: "\(durationText(Double(minutes))) more than your usual")
+        case .less(let minutes): return String(localized: "\(durationText(Double(minutes))) less than your usual")
+        case .same: return String(localized: "the same as your usual")
+        }
+    }
+
+    /// What the Rest ring on this tab hands the score page: the night's score and the day it belongs to
+    /// (its wake day), the same snapshot Today's Rest ring hands over for that day.
+    private func simpleRestSnapshot(score: Double, wakeDay: String) -> SimpleScoreSnapshot {
+        SimpleScoreSnapshot(kind: .rest, selectedDayKey: wakeDay,
+                            isToday: wakeDay == (repo.today?.day ?? Repository.logicalDayKey(Date())),
+                            stored: score, scoreDayKey: wakeDay, calibratingNights: nil, drivers: [],
+                            bandLow: nil, bandHigh: nil, workouts: [])
     }
 
     /// The tonight-vs-typical line under the stage rows. Selected: "REM 2h 45m · typically
@@ -1764,9 +1947,19 @@ struct SleepView: View {
                     .lineLimit(2)
             }
         } else {
-            Text("Tap a stage to compare with your 30-day typical.")
+            Group {
+                if simpleMode {
+                    // v6 (W28): what to compare a night with, and how much weight a stage figure can bear.
+                    // No sleep-laboratory percentages: the strap's estimate reads REM higher than a
+                    // laboratory does, so textbook shares would call an ordinary night unusual.
+                    Text("Tap a stage to compare it with your usual. Stages are estimated from heart rate and movement, so one unusual night means little.")
+                } else {
+                    Text("Tap a stage to compare with your 30-day typical.")
+                }
+            }
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -1922,7 +2115,8 @@ struct SleepView: View {
         // The memoized model values keep the Sleep-tab perf (no per-render recompute); the Today host
         // builds AsleepDurationData itself from the same source, so the two render identical numbers.
         AsleepDurationCard(data: AsleepDurationData(points: model.trendPoints,
-                                                    typicalTotalMin: model.typicalTotalMin))
+                                                    typicalTotalMin: model.typicalTotalMin),
+                           plain: simpleMode)
     }
 
     /// Compare only after the screen has loaded the refreshed blocks and scoring has settled.

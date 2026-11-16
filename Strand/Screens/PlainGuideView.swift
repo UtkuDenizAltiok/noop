@@ -218,7 +218,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .bloodOxygen:
             return String(localized: "Most healthy people read 95 percent or higher. Not every strap can measure it. A reading marked “strap estimate (unverified)” is a rough guide only. This is not a medical test.")
         case .sleepNeed:
-            return String(localized: "Sleep need is the amount NOOP aims for you each night. Sleep debt is sleep you've missed recently compared with that need. Paying it back takes a few longer or earlier nights, not one huge sleep.")
+            return String(localized: "Sleep need is the sleep NOOP aims for each night. It starts at the usual target for adults (experts recommend 7 to 9 hours a night) and goes up if you regularly sleep longer when you can. Sleep debt is sleep you've missed recently compared with that need. Paying it back takes a few longer or earlier nights, not one huge sleep.")
         case .sleepStages:
             return String(localized: "Light sleep fills most of the night. Deep sleep is the most physically restoring and comes mostly early in the night. REM is dreaming sleep and comes more toward morning. Short wake-ups are normal. The strap estimates stages from heart rate and movement, so treat them as a guide, not a lab result.")
         case .dayPlan:

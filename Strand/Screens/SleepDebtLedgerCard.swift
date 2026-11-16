@@ -33,6 +33,9 @@ struct SleepDebtLedgerCard: View {
                         .foregroundStyle(StrandPalette.textTertiary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
+                    if plain {
+                        plainLedger(ledger)
+                    } else {
                     VStack(alignment: .leading, spacing: NoopMetrics.space4) {
                         // Headline: net balance (count-up on appear) + the short tag (DEBT / SURPLUS / ON
                         // TARGET). The number ticks from the accumulated magnitude via the same formatter.
@@ -58,21 +61,55 @@ struct SleepDebtLedgerCard: View {
                         // Raw per-night delta bars (above/below base need), intentionally separate
                         // from the recurrence's current debt estimate.
                         debtDeltaBars(ledger)
-                        if plain {
-                            Text("Each bar is one night: up when you slept more than you needed, down when you slept less.")
-                                .font(StrandFont.caption)
-                                .foregroundStyle(StrandPalette.textTertiary)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
                         Divider().overlay(StrandPalette.hairline)
                         ChartFooter([
                             ("Balance", debtSigned(ledger.balanceMin)),
-                            (plain ? "Sleep need" : "Per-night need", durationText(ledger.needMin)),
+                            ("Per-night need", durationText(ledger.needMin)),
                             ("Nights", "\(ledger.nightCount)"),
                         ])
                     }
+                    }
                 }
             }
+        }
+    }
+
+    /// Simple mode's ledger (v6, S10 and W30): the debt in a sentence, advice that fits its size, the
+    /// per-night bars with what they mean, and how many nights were counted. The signed "Balance" (the same
+    /// debt a second time) and the need (stated by the card above this one) are left to the full view.
+    private func plainLedger(_ ledger: SleepDebtLedger) -> some View {
+        let advice = SimpleDayPlan.debtAdvice(debtMinutes: ledger.magnitudeMin, isDebt: ledger.isDebt)
+        let headline: String
+        let detail: String
+        switch advice {
+        case .caughtUp:
+            headline = String(localized: "You're caught up on sleep")
+            detail = String(localized: "Over these nights you slept about as much as you needed.")
+        case .tonight(let minutes):
+            headline = String(localized: "About \(durationText(ledger.magnitudeMin)) behind on sleep")
+            detail = String(localized: "Sleep about \(durationText(Double(minutes))) longer tonight to clear it. Sleep you missed on recent nights still counts here, but each older night counts for less.")
+        case .severalNights:
+            headline = String(localized: "About \(durationText(ledger.magnitudeMin)) behind on sleep")
+            detail = String(localized: "That is more than one night can repay. Go to bed about an hour earlier for the next few nights. Sleep you missed on recent nights still counts here, but each older night counts for less.")
+        }
+        return VStack(alignment: .leading, spacing: NoopMetrics.space4) {
+            Text(headline)
+                .font(StrandFont.rounded(19))
+                .foregroundStyle(debtBalanceColor(ledger))
+                .fixedSize(horizontal: false, vertical: true)
+            Text(detail)
+                .font(StrandFont.subhead)
+                .foregroundStyle(StrandPalette.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+            debtDeltaBars(ledger)
+            Text("Each bar is one night: up when you slept more than you needed, down when you slept less.")
+                .font(StrandFont.caption)
+                .foregroundStyle(StrandPalette.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(ledger.nightCount == 1 ? String(localized: "1 night counted.")
+                                        : String(localized: "\(ledger.nightCount) nights counted."))
+                .font(StrandFont.caption)
+                .foregroundStyle(StrandPalette.textTertiary)
         }
     }
 
@@ -139,11 +176,6 @@ struct SleepDebtLedgerCard: View {
         }
         let mag = durationText(ledger.magnitudeMin)
         if ledger.isDebt {
-            // Same rule in plain words: tonight's need plus the debt clears it, and each older shortfall
-            // carries forward at 0.55 of its size (`SleepDebt.ledger`).
-            if plain {
-                return String(localized: "To clear it, sleep about \(mag) longer than your sleep need tonight. Sleep you missed on recent nights still counts here, but each older night counts for less.")
-            }
             return String(localized: "Add about \(mag) to your base sleep target tonight. Meeting that complete sleep need clears the displayed debt; recent shortfalls carry forward at a reduced weight.")
         }
         return String(localized: "You've effectively met your current sleep need across \(span).")
