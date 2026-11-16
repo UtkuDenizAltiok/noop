@@ -47,11 +47,78 @@ struct AsleepDurationData {
 /// The "Asleep duration" trend card. Renders [AsleepDurationData] with the shared chart components.
 struct AsleepDurationCard: View {
     let data: AsleepDurationData
+    /// Simple mode: the same nights, said in hours and minutes, with the average of the nights shown and
+    /// the change across them in a sentence. The full view (Today and Sleep) keeps its own figures.
+    var plain = false
 
     var body: some View {
+        if plain { plainBody } else { fullBody }
+    }
+
+    /// Simple mode's card (v6, W30): every duration as "7h 18m", never decimal hours; the average is the
+    /// mean of the nights the chart shows, so the figure describes the window its label names; and the
+    /// change is a sentence with its unit and its comparison, not a signed chip.
+    private var plainBody: some View {
+        let pts = data.points
+        let hours = pts.map(\.value)
+        let average = SimpleDayPlan.averageMinutes(hours: hours)
+        func text(_ minutes: Double?) -> String { minutes.map { SimpleDayPlan.durationText($0) } ?? "—" }
+        let change: String?
+        switch SimpleDayPlan.nightlyChange(hours: hours) {
+        case .more(let minutes)?:
+            change = String(localized: "Lately you slept about \(SimpleDayPlan.durationText(Double(minutes))) more a night than earlier in these nights.")
+        case .less(let minutes)?:
+            change = String(localized: "Lately you slept about \(SimpleDayPlan.durationText(Double(minutes))) less a night than earlier in these nights.")
+        case SimpleDayPlan.NightlyChange.none?:
+            change = String(localized: "No change between the earlier and the later of these nights.")
+        case nil:
+            change = nil
+        }
+        return VStack(alignment: .leading, spacing: NoopMetrics.gap) {
+            SectionHeader("Asleep duration", overline: "Trend")
+            ChartCard(
+                title: "Hours asleep",
+                subtitle: pts.count == 1 ? String(localized: "Last night")
+                                         : String(localized: "Last \(pts.count) nights"),
+                trailing: average.map { String(localized: "average \(SimpleDayPlan.durationText($0))") },
+                height: NoopMetrics.chartHeight,
+                tint: StrandPalette.restColor,
+                chart: {
+                    if pts.count >= 2 {
+                        TrendChart(points: pts,
+                                   gradient: StrandPalette.restGradient,
+                                   valueRange: Self.trendRange(pts),
+                                   showsBars: true,
+                                   height: NoopMetrics.chartHeight,
+                                   valueFormat: { SimpleDayPlan.durationText($0 * 60) },
+                                   accessibilityLabel: String(localized: "Hours asleep trend"))
+                    } else {
+                        Self.sparsePlaceholder
+                    }
+                },
+                footer: {
+                    VStack(alignment: .leading, spacing: NoopMetrics.space2) {
+                        ChartFooter([
+                            ("Average", text(average)),
+                            ("Lowest", text(hours.min().map { $0 * 60 })),
+                            ("Highest", text(hours.max().map { $0 * 60 })),
+                        ])
+                        if let change {
+                            Text(change)
+                                .font(StrandFont.footnote)
+                                .foregroundStyle(StrandPalette.textSecondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    private var fullBody: some View {
         let pts = data.points
         let avg = data.typicalTotalMin.map { $0 / 60.0 }
-        VStack(alignment: .leading, spacing: NoopMetrics.gap) {
+        return VStack(alignment: .leading, spacing: NoopMetrics.gap) {
             SectionHeader("Asleep duration", overline: "Trend")
             ChartCard(
                 title: "Hours asleep",

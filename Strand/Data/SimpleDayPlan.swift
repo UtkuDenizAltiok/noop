@@ -344,4 +344,96 @@ enum SimpleDayPlan {
         guard let value, let usual, usual > 0 else { return nil }
         return max(0, min(1, value / usual))
     }
+
+    // MARK: - Sleep in plain words (v6: how much sleep, and why)
+
+    /// Where the sleep need the Sleep tab states comes from.
+    enum SleepNeedOrigin: Equatable {
+        /// The usual target for the wearer's age (`Rest.populationNeedFloorHours`).
+        case standard
+        /// Raised above that target because the wearer regularly sleeps longer (`Rest.personalizedNeedHours`).
+        case raised
+    }
+
+    /// The usual target the need starts from, in whole minutes: the floor `Rest.personalizedNeedHours`
+    /// applies for the age the Sleep tab passes (none).
+    static var standardSleepNeedMinutes: Int {
+        Int((AnalyticsEngine.Rest.populationNeedFloorHours(age: nil) * 60).rounded())
+    }
+
+    /// Whether a need is the usual target or was raised above it, judged in whole minutes as both print.
+    static func sleepNeedOrigin(needMin: Double) -> SleepNeedOrigin {
+        Int(needMin.rounded()) > standardSleepNeedMinutes ? .raised : .standard
+    }
+
+    /// Whether the need a night's line states is WHOOP's imported figure rather than NOOP's own: there is
+    /// one, and it reads differently from NOOP's need in whole minutes. The line then says whose figure it
+    /// is, because the "Your sleep need" card under it states NOOP's.
+    static func needIsImported(importedNeedMin: Double?, normativeNeedMin: Double) -> Bool {
+        guard let importedNeedMin, importedNeedMin > 0 else { return false }
+        return Int(importedNeedMin.rounded()) != Int(normativeNeedMin.rounded())
+    }
+
+    /// How a night's duration stands against the wearer's usual one.
+    enum VersusUsual: Equatable {
+        case more(minutes: Int)
+        case less(minutes: Int)
+        case same
+    }
+
+    /// The difference between a night's figure and the usual one, in whole minutes as both are printed, so
+    /// the line never says "1m more" beside two durations that read alike.
+    static func versusUsual(valueMin: Double, usualMin: Double) -> VersusUsual {
+        let diff = Int(valueMin.rounded()) - Int(usualMin.rounded())
+        if diff > 0 { return .more(minutes: diff) }
+        if diff < 0 { return .less(minutes: -diff) }
+        return .same
+    }
+
+    /// What to do about a sleep debt, by its size.
+    enum DebtAdvice: Equatable {
+        /// No debt worth acting on (inside the ledger's on-target band, or a surplus).
+        case caughtUp
+        /// Small enough to clear tonight: sleep this many minutes longer.
+        case tonight(minutes: Int)
+        /// More than one night should carry: earlier nights for a few days.
+        case severalNights
+    }
+
+    /// The advice for a ledger's debt. Up to the catch-up cap (`catchUpCapMinutes`, the most tonight's goal
+    /// adds) it can be cleared tonight; beyond it, built-up debt is repaid over several nights (Kitamura
+    /// 2016). One threshold for this advice and for tonight's goal, so the two never disagree.
+    static func debtAdvice(debtMinutes: Double, isDebt: Bool) -> DebtAdvice {
+        guard isDebt, debtMinutes.isFinite, debtMinutes >= SleepDebt.onTargetBandMin else { return .caughtUp }
+        let whole = Int(debtMinutes.rounded())
+        return whole < catchUpCapMinutes ? .tonight(minutes: whole) : .severalNights
+    }
+
+    /// How the later half of a run of nights compares with the earlier half, in minutes a night.
+    enum NightlyChange: Equatable {
+        case more(minutes: Int)
+        case less(minutes: Int)
+        case none
+    }
+
+    /// The change across a run of nightly durations (hours, oldest first): the later half's mean minus the
+    /// earlier half's, the same halves the full view's trend chip compares, in whole minutes. Nil with
+    /// fewer than four nights. A change that rounds to nothing is `.none`.
+    static func nightlyChange(hours: [Double]) -> NightlyChange? {
+        guard hours.count >= 4 else { return nil }
+        let midpoint = hours.count / 2
+        let earlier = hours.prefix(midpoint), later = hours.suffix(hours.count - midpoint)
+        guard !earlier.isEmpty, !later.isEmpty else { return nil }
+        let delta = later.reduce(0, +) / Double(later.count) - earlier.reduce(0, +) / Double(earlier.count)
+        let minutes = Int((delta * 60).rounded())
+        if minutes > 0 { return .more(minutes: minutes) }
+        if minutes < 0 { return .less(minutes: -minutes) }
+        return NightlyChange.none
+    }
+
+    /// The mean of a run of nightly durations (hours) in minutes: the average of the nights a chart shows,
+    /// so the figure beside it describes those nights and no others. Nil for no nights.
+    static func averageMinutes(hours: [Double]) -> Double? {
+        hours.isEmpty ? nil : hours.reduce(0, +) / Double(hours.count) * 60
+    }
 }
