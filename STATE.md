@@ -22,8 +22,15 @@ when they come, ahead of everything else. Chat 5 ended on 16 Nov at his request 
 was left half done.
 
 Open items, in order:
-- [ ] **Build step 2, "Tap a score, get an answer"** (the three score pages, Heart rate today). Not started.
-  Its way into the code is listed in [Simple mode → Next chat begins here](features/simple-mode.md#next-chat-begins-here-simple-mode-v6-the-most-user-friendly-noop).
+- [ ] **Step 2, "Tap a score, get an answer": built, stacked, phone build RUNNING (chat 6, 16 Nov).**
+  `8b59779a` on `feat/simple-mode`; on `testing-stack` `d8ad0466` (`verify.sh` all steps passed, logs
+  `~/Library/Caches/noop-handbook/verify/d8ad0466`; real-iPhone Release build ok); `testing-build` `9b5af016`
+  (stack + `fork/ships-template`, pushed as a merge over `ab72270c`). **GitHub run 43849689116** ("Testing build
+  (fork)", dispatched 16 Nov 10:31 UTC, about 30 minutes). Check: `gh run view 43849689116 --repo
+  UtkuDenizAltiok/noop`. Done when it ends in success AND the release checks pass (target `9b5af016`, five
+  files dated 16 Nov, the `.ipa` answers HTTP 200, its `de.lproj` holds "Im Vergleich zu dir"). Do not
+  dispatch a second run. Until then the releases page may be empty or hold `ab72270c`. Scratch worktree
+  `~/Developer/noop-stack2` (branches `tmp/stack-step2`, `tmp/build-step2`) is removed after the checks.
 - [ ] **Utku, whenever he tests (not a blocker):** step 1's three questions
   ([build plan](features/simple-mode.md#the-build-plan-one-step-at-a-time)): could he tell in five seconds how
   hard to go today; did "Tonight" give a bedtime that suits him; anything on Today he still does not

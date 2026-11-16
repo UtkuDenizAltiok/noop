@@ -34,8 +34,7 @@ comes.
   `SimpleModeShowAllRow`, as the six screens have.
 - Shared files compile for the Mac app too; build `Strand` as well as `NOOPiOS`.
 
-**Carried into the next chat, unverified:** F17 (the Charge card's Rest row); W40 (fitness age against VO₂max, on
-the phone); and **F19**, seen once in the simulator's demo: between midnight and the 04:00 day rollover the
+**Carried, unverified:** W40 (fitness age against VO₂max, on the phone); and **F19**, seen once in the simulator's demo: between midnight and the 04:00 day rollover the
 readings behind the same night's Charge changed (resting heart rate +11 → +10 points, "usually 57" → "usually
 56"). The baseline window may follow the calendar day while the screen follows the logical day
 (`ChargeBaselines.history`'s `anchorDay` against `Repository.logicalDayKey`). Check on real data before calling
@@ -318,6 +317,7 @@ row).
 | S5 | Steps and active calories against the wearer's own usual | presentation | Paluch 2022 for steps (said in the guide); no source for 800 kcal. |
 | S7 | Zone minutes for NOOP's own recorded sessions | analytics, both platforms, later | NOOP has the heart rate; today only imported sessions carry zones. |
 | S9, S10 | One adviser; debt advice by size | presentation | The walk; Kitamura 2016. |
+| S11 | **The Rest score everyone sees counts a fixed 8 h night and does not measure regularity** (found 16 Nov, building step 2) | analytics, both platforms, upstream candidate; with step 7 | The code: every shown Rest is `Rest.composite(daily:)` (Kotlin `RestScorer.restFromDaily`), called with its defaults: `defaultNeedHours` and no consistency, so the 10-point regularity part is the neutral 5 for every night and **no night can score above 95**. The engine works out a personal need and a regularity figure for the same night (`analyzeDay`'s `sleepNeedHours`, `sleepConsistency`) but only its own Charge term gets them. Step 2 says so on the Rest page and in the guide. A fix moves every Rest score, so it needs: the need settled first (S1b/S1c), the sleep-regularity literature read (not read yet), a stored value or a resolver both screens share, an oracle on both platforms. |
 
 Not copied and not possible: WHOOP's own sleep need (a personal baseline plus strain plus debt minus naps). Its
 formula is private. v6 gets the same behaviour, a goal that moves with debt and naps, from published work; it
@@ -371,6 +371,45 @@ Rules live in `SimpleDayPlan` (score words, early estimate, catch-up, usual wake
 Today and Sleep), `ChargeDriverDirectionBar`, `SimpleStrapStatus`. Tests: `SimpleTodayV6Tests` (12), each seen to
 fail with its rule broken. The warning's W1 is `4e7fd6f5` on `feat/high-hr-warning`
 ([its §12](high-hr-warning.md#12-hardware-evidence-utkus-whoop-50-12-and-14-nov)).
+
+### Step 2 as built (16 Nov, `feat/simple-mode` `8b59779a`)
+
+Built as designed, with these differences, each decided while building:
+- **One page, three scores** (`SimpleScorePageView`, rules in `SimpleScoreRules`, `Strand/Data/SimpleScorePage.swift`).
+  The page never works a score out. Today hands it a snapshot of what the ring and the cards under it showed
+  (`SimpleScoreSnapshot`, carried inside `TabRoute.scorePage`), so the page cannot show another number than the
+  ring it was opened from. It reads only the score's history and, for Rest, the night's row.
+- **"Compared with you" uses a usual range, not one usual value.** The design's "Higher than your usual 46"
+  called a one-point wobble a change (seen in the demo: Rest 93, "lower than your usual 94"). Now: the middle
+  half of the scored days in the 30 days before (quartiles, at least 7 days) is the usual range, drawn as a
+  band behind the seven bars, and the sentence is "In your usual range, 37–50." / "Higher than…" / "Lower
+  than…", judged on the printed numbers. Today's Effort reads "So far today 34. Your usual full day is 46–69."
+  because the day is not over. Step 4's Health rows ("usually 54–60") should use the same idea.
+- **Rest's four parts carry points that add up to the ring's number** (largest-remainder rounding), and say what
+  the score really counts: "Full marks at 8h 0m", and "Regular bed and wake times: 5 of 10. Not measured yet.
+  Every night gets half of these points for now, so the highest possible score is 95." (science finding S11).
+  When the Sleep tab's personal need differs from 8 h the page says both figures. A night whose score is WHOOP's
+  imported one shows the night's figures without points and says why. The guide's Rest entry was corrected.
+- **Charge:** every reading, Today's own rows. Bars and the level bar take the ring's green-to-red ramp, so a
+  medium Charge is not drawn green. **F17 is fixed for Simple mode:** the breakdown is handed the row's own
+  night of Rest (`SimpleScoreRules.chargeRowRest`), and a carried Charge names its night above the rows ("How
+  the readings from 14 Nov moved your Charge"). The classic sheet passes the on-screen Rest too (checked in
+  `TodayView.chargeBreakdown`), so F17 stays an upstream candidate for the full view.
+- **Effort:** the day's workouts, one sentence on what Effort adds up, and the suggested range drawn by the
+  view Today's card uses (`SimpleEffortPlanView`), only when Today shows one.
+- **What to do:** two or three sentences that end by pointing to "Your day" (or "Tonight"), so Today stays
+  the one adviser.
+- **Heart rate:** the screen is titled "Heart rate" (not "Heart rate today": it has a day stepper), opens on
+  heart rate alone, with Lowest / Average / Highest and units, a plain empty state, and the "Show everything
+  on this screen" row (the seventh screen with it). From an earlier day selected on Today it opens on that
+  day (`TabRoute.fullDayChartOn`).
+- **Not seen in the simulator:** the heart-rate line and its Lowest / Average / Highest row (the demo has no
+  heart-rate stream; the empty state was seen), and a ring tap itself (the tap tool does not reach the rings;
+  the page was opened with `--demo-open-score charge|effort|rest`, which hands over the ring's own snapshot).
+  The Rest parts were seen through a throwaway edit, restored byte-identical.
+
+Tests: `SimpleScorePageTests` (14), each seen to fail with its rule broken (`break_step2.py` kept beside the
+logs). 41 new strings in nine locales, one reworded (the guide's Rest entry).
 
 ## Ground rules and how to work
 
