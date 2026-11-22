@@ -21,11 +21,16 @@ struct HealthView: View {
     // `HealthFirstRunContent` leaf, which owns `live`/`model` itself. The common path (history present)
     // branches purely on `repo.days`, so a live tick re-renders only the `HeartRateSection` hero leaf.
 
+    /// Simple mode's subtitle says what the screen answers (Design v6, step 4). Read from the stored switch:
+    /// "Show everything" lives in the section stack below, and the question stays the same with it open.
+    @AppStorage(SimpleModePrefs.storageKey) private var simpleModeStored = SimpleModePrefs.defaultEnabled
+
     // MARK: - Body
 
     var body: some View {
         ScreenScaffold(title: "Health Monitor",
-                       subtitle: "Live vitals, streamed from the strap.",
+                       subtitle: simpleModeStored ? "Whether your body's readings look normal for you."
+                                                  : "Live vitals, streamed from the strap.",
                        // PERF (scroll): lazy column — byte-identical layout (LazyVStack == eager VStack
                        // alignment/spacing/header); builds the trailing vitals/skin-temp/age sections on
                        // demand instead of all up-front.
@@ -69,38 +74,57 @@ private struct HealthSectionsStack: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionGap) {
-            // Manual "Sync now" + honest sync status (#364). Its own view so the ~1Hz HR stream
-            // doesn't re-render it; depends on `live` (connection/backfill state) + `model`.
-            SyncStatusSection()
-            // The live HR section is its own view: it owns `live`/`profile`,
-            // so the ~1Hz HR stream re-renders only this subtree — the static
-            // vitals grid below does not re-render on each HR tick.
-            HeartRateSection()
-            // Fitness Age (weekly, computed by IntelligenceEngine and read back from the
-            // "fitness_age" metricSeries). Its own view depending only on `repo`/`profile`,
-            // so the live HR stream never re-renders it.
-            FitnessAgeSection()
-            // Vitality / Body Age (weekly, computed by IntelligenceEngine from the mortality-
-            // hazard model). Its own view depending only on repo/profile.
-            VitalitySection()
-            // Screen-5 recovery detail: the CONTRIBUTORS to today's recovery as
-            // labelled progress bars (HRV / Resting HR / Sleep / Respiratory), each
-            // scored against the on-device baseline. Depends only on `repo`.
-            if !simpleMode { RecoveryContributorsSection() }
-            // The static vitals grid is its own view depending only on `repo`,
-            // so it is unaffected by live HR ticks.
-            VitalsSection()
-            // v5 skin-temperature suite: the illness "heads-up", body clock, and (opt-in) cycle
-            // awareness, each driven by a pure StrandAnalytics engine result the analytics pass
-            // computed and AppModel publishes. Its own view depending on `model` + `repo`.
-            SkinTempSection()
-            // v5 deep-links: the records logbook + the multi-device fused record, reachable
-            // from their honest Health home as drill-in rows (not their own destinations).
-            if !simpleMode { HealthHubLinksSection() }
+            if simpleMode {
+                simpleStack
+            } else {
+                // Manual "Sync now" + honest sync status (#364). Its own view so the ~1Hz HR stream
+                // doesn't re-render it; depends on `live` (connection/backfill state) + `model`.
+                SyncStatusSection()
+                // The live HR section is its own view: it owns `live`/`profile`,
+                // so the ~1Hz HR stream re-renders only this subtree — the static
+                // vitals grid below does not re-render on each HR tick.
+                HeartRateSection()
+                // Fitness Age (weekly, computed by IntelligenceEngine and read back from the
+                // "fitness_age" metricSeries). Its own view depending only on `repo`/`profile`,
+                // so the live HR stream never re-renders it.
+                FitnessAgeSection()
+                // Vitality / Body Age (weekly, computed by IntelligenceEngine from the mortality-
+                // hazard model). Its own view depending only on repo/profile.
+                VitalitySection()
+                // Screen-5 recovery detail: the CONTRIBUTORS to today's recovery as
+                // labelled progress bars (HRV / Resting HR / Sleep / Respiratory), each
+                // scored against the on-device baseline. Depends only on `repo`.
+                RecoveryContributorsSection()
+                // The static vitals grid is its own view depending only on `repo`,
+                // so it is unaffected by live HR ticks.
+                VitalsSection()
+                // v5 skin-temperature suite: the illness "heads-up", body clock, and (opt-in) cycle
+                // awareness, each driven by a pure StrandAnalytics engine result the analytics pass
+                // computed and AppModel publishes. Its own view depending on `model` + `repo`.
+                SkinTempSection()
+                // v5 deep-links: the records logbook + the multi-device fused record, reachable
+                // from their honest Health home as drill-in rows (not their own destinations).
+                HealthHubLinksSection()
+            }
             // The last element while Simple mode is on, in both states, so what the calm Health screen leaves
             // out is one tap away here. Absent in the full view.
             if simpleModeStored { SimpleModeShowAllRow(showingAll: $showAll) }
         }
+    }
+
+    /// Simple mode's Health monitor (Design v6, step 4), in the order of the wearer's question: whether
+    /// anything looks off, then each reading against its range, then the live heart rate, the two long-term
+    /// estimates under one heading, the skin-temperature cards, and the strap sync at the foot. The same
+    /// sections as the full view, each a leaf owning what it reads; the illness card moves up into the
+    /// verdict, and the recovery contributors and the records links stay one tap away.
+    @ViewBuilder private var simpleStack: some View {
+        VitalsSection(simple: true)
+        HeartRateSection()
+        SimpleLongTermHeader()
+        FitnessAgeSection(simple: true)
+        VitalitySection(simple: true)
+        SkinTempSection(hidesHeadsUp: true)
+        SyncStatusSection()
     }
 }
 
@@ -737,6 +761,10 @@ private struct FitnessAgeSection: View {
     @EnvironmentObject var profile: ProfileStore
     /// Drives the not-ready card's "refresh Fitness Age" button (force an immediate recompute).
     @EnvironmentObject var intelligence: IntelligenceEngine
+    /// Simple mode: under the "Long-term estimates" heading, so no header of its own, no estimator
+    /// provenance line, and the band line says what the age compares and how rough it is.
+    var simple = false
+    init(simple: Bool = false) { self.simple = simple }
 
     /// Latest weekly Fitness Age (years) read from the "fitness_age" metricSeries, nil until loaded/computed.
     @State private var fitnessAge: Double?
@@ -793,8 +821,10 @@ private struct FitnessAgeSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Fitness Age", overline: "Weekly",
-                          trailing: fitnessAge != nil ? String(localized: "vs age \(profile.age)") : nil)
+            if !simple {
+                SectionHeader("Fitness Age", overline: "Weekly",
+                              trailing: fitnessAge != nil ? String(localized: "vs age \(profile.age)") : nil)
+            }
             content
         }
         .sheet(item: $fitnessSheet) { which in
@@ -933,9 +963,12 @@ private struct FitnessAgeSection: View {
                     }
                     VStack(alignment: .leading, spacing: NoopMetrics.space1) {
                         Text("Fitness Age").strandOverline()
+                        // Simple mode: "About the same as your age" in the plain text colour, not amber or green
+                        // from a fraction of a year (Design v6, rule 6: colour means something).
                         Text(ageDeltaLine(years: years, younger: younger, bound: bound))
                             .font(StrandFont.subhead)
-                            .foregroundStyle(younger ? StrandPalette.statusPositive : StrandPalette.statusWarning)
+                            .foregroundStyle(simple && years == 0 && bound.isEmpty ? StrandPalette.textSecondary
+                                             : (younger ? StrandPalette.statusPositive : StrandPalette.statusWarning))
                     }
                     Spacer(minLength: 0)
                     if let vo2 = vo2max {
@@ -947,9 +980,11 @@ private struct FitnessAgeSection: View {
                             Text("ml/kg/min")
                                 .font(StrandFont.footnote)
                                 .foregroundStyle(StrandPalette.textTertiary)
-                            Text("\(String(localized: "On-device")) · \(vo2MaxEstimatorDisplayName(vo2maxEstimator))")
-                                .font(StrandFont.footnote)
-                                .foregroundStyle(StrandPalette.textTertiary)
+                            if !simple {
+                                Text("\(String(localized: "On-device")) · \(vo2MaxEstimatorDisplayName(vo2maxEstimator))")
+                                    .font(StrandFont.footnote)
+                                    .foregroundStyle(StrandPalette.textTertiary)
+                            }
                         }
                     }
                     Image(systemName: "chevron.right")
@@ -980,9 +1015,19 @@ private struct FitnessAgeSection: View {
                     .foregroundStyle(StrandPalette.textTertiary)
             }
 
-            Text("± \(Int(FitnessAgeEngine.displayBandYears)) yr · a fitness comparison, not a biological age")
-                .font(StrandFont.footnote)
-                .foregroundStyle(StrandPalette.textTertiary)
+            // Simple mode says what the age compares and how rough it is, without the "± 5 yr": that band is a
+            // presentation constant, and the model's own error is far wider (`FitnessAgeEngine.displayBandYears`),
+            // so it is not stated as an accuracy.
+            if simple {
+                Text("Compares your resting heart rate and how active you are with people your age. A rough estimate: watch how it moves over months, not the exact number.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("± \(Int(FitnessAgeEngine.displayBandYears)) yr · a fitness comparison, not a biological age")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+            }
 
             Divider().overlay(StrandPalette.hairline)
 
@@ -1214,6 +1259,10 @@ private struct ReadinessChecklistCard: View {
 private struct VitalitySection: View {
     @EnvironmentObject var repo: Repository
     @EnvironmentObject var profile: ProfileStore
+    /// Simple mode: under the "Long-term estimates" heading, so no header of its own; its age is called what it
+    /// is, the score expressed as an age, so the screen does not show two ages that read alike (W37).
+    var simple = false
+    init(simple: Bool = false) { self.simple = simple }
     @State private var vitality: Double?
     @State private var bodyAge: Double?
     @State private var loaded = false
@@ -1242,8 +1291,10 @@ private struct VitalitySection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Vitality", overline: "Weekly",
-                          trailing: bodyAge != nil ? String(localized: "Body Age \(Int((bodyAge ?? 0).rounded()))") : nil)
+            if !simple {
+                SectionHeader("Vitality", overline: "Weekly",
+                              trailing: bodyAge != nil ? String(localized: "Body Age \(Int((bodyAge ?? 0).rounded()))") : nil)
+            }
             if let v = vitality, let ba = bodyAge {
                 hero(vitality: v, bodyAge: ba)
             } else if loaded {
@@ -1285,14 +1336,20 @@ private struct VitalitySection: View {
                 }
                 Spacer(minLength: 0)
                 VStack(alignment: .trailing, spacing: NoopMetrics.space1) {
-                    Text("Body Age").strandOverline()
+                    if simple {
+                        Text("Expressed as an age").strandOverline()
+                    } else {
+                        Text("Body Age").strandOverline()
+                    }
                     CountUpText(value: ba,
                                 format: { "\(Int($0.rounded()))" },
                                 font: StrandFont.number(34),
                                 color: StrandPalette.textPrimary)
+                    // Simple mode: "about your age" in the plain text colour (rule 6), as Fitness Age above.
                     Text(bodyAgeDeltaLine(yrs: yrs, younger: younger))
                         .font(StrandFont.footnote)
-                        .foregroundStyle(younger ? StrandPalette.statusPositive : StrandPalette.statusWarning)
+                        .foregroundStyle(simple && yrs == 0 ? StrandPalette.textSecondary
+                                         : (younger ? StrandPalette.statusPositive : StrandPalette.statusWarning))
                 }
             }
             if (best?.lnHazard ?? 0) < 0 || (worst?.lnHazard ?? 0) > 0 {
@@ -1306,8 +1363,14 @@ private struct VitalitySection: View {
                         .font(StrandFont.footnote).foregroundStyle(StrandPalette.statusWarning)
                 }
             }
-            Text("A wellness estimate from your habits, not a clinical biological age.")
-                .font(StrandFont.footnote).foregroundStyle(StrandPalette.textTertiary)
+            if simple {
+                Text("A weekly score of your sleep, activity and heart readings.")
+                    .font(StrandFont.footnote).foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("A wellness estimate from your habits, not a clinical biological age.")
+                    .font(StrandFont.footnote).foregroundStyle(StrandPalette.textTertiary)
+            }
         }
         .padding(NoopMetrics.space5)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1344,6 +1407,11 @@ private struct VitalitySection: View {
 /// not re-rendered by the ~1Hz live HR stream.
 private struct VitalsSection: View {
     @EnvironmentObject var repo: Repository
+    /// Simple mode (Design v6, step 4): the same readings as the verdict at the top of the screen and a row
+    /// each, instead of the tile grid. The verdict observes `AppModel` in a leaf of its own, so this section
+    /// still depends only on `repo` and never re-renders on a heart-rate tick.
+    var simple = false
+    init(simple: Bool = false) { self.simple = simple }
 
     // Temperature display preference (D#103). Skin temp is stored in °C (absolute or a ±deviation); the
     // toggle re-labels it to °F. Display-only — banding still runs on the stored °C value.
@@ -1369,27 +1437,35 @@ private struct VitalsSection: View {
             hrvOverCountByDay: hrvOverCountByDay,
             skinTempPreferred: SkinTempDisplay.Kind(rawValue: skinTempDisplayRaw) ?? .absolute   // #1846
         )
-        VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Vital Signs", overline: "Latest", trailing: BodyVitalSigns.latestDayLabel(readings))
-            LazyVGrid(
-                columns: [GridItem(.adaptive(minimum: 168), spacing: NoopMetrics.gap)],
-                alignment: .leading,
-                spacing: NoopMetrics.gap
-            ) {
-                ForEach(Array(readings.enumerated()), id: \.element.id) { idx, v in
-                    // Each headline vital is now a liquid tile: the signature LiquidVessel gauge tinted
-                    // to the metric's colour world (rose RHR, purple HRV, cyan SpO₂, amber skin temp),
-                    // filled to the metric's fraction, with the value counting up beside it and the same
-                    // banding caption + sparkline the classic tile carried. Every binding + accessibility
-                    // label is preserved — this is the liquid restyle of the flat StatTile.
-                    LiquidVitalTile(reading: v)
-                        .staggeredAppear(index: idx)
+        // Simple mode (Design v6, step 4): the verdict card, then the readings as rows, a section gap apart
+        // like the stack's other sections. The full view: the tile grid, unchanged.
+        VStack(alignment: .leading, spacing: simple ? NoopMetrics.sectionGap : NoopMetrics.gap) {
+            if simple {
+                let rows = SimpleHealthRules.rows(readings, todayKey: BodyVitalSigns.logicalDayKey(Date()))
+                SimpleHealthVerdict(rows: rows)
+                SimpleVitalRowsCard(readings: readings, rows: rows, fahrenheit: temperatureUnit == .fahrenheit)
+            } else {
+                SectionHeader("Vital Signs", overline: "Latest", trailing: BodyVitalSigns.latestDayLabel(readings))
+                LazyVGrid(
+                    columns: [GridItem(.adaptive(minimum: 168), spacing: NoopMetrics.gap)],
+                    alignment: .leading,
+                    spacing: NoopMetrics.gap
+                ) {
+                    ForEach(Array(readings.enumerated()), id: \.element.id) { idx, v in
+                        // Each headline vital is now a liquid tile: the signature LiquidVessel gauge tinted
+                        // to the metric's colour world (rose RHR, purple HRV, cyan SpO₂, amber skin temp),
+                        // filled to the metric's fraction, with the value counting up beside it and the same
+                        // banding caption + sparkline the classic tile carried. Every binding + accessibility
+                        // label is preserved — this is the liquid restyle of the flat StatTile.
+                        LiquidVitalTile(reading: v)
+                            .staggeredAppear(index: idx)
+                    }
                 }
+                Text("Once NOOP has 14 nights of history, in-range compares each vital to your own baseline (approximate, not medical advice); until then, typical adult ranges apply.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            Text("Once NOOP has 14 nights of history, in-range compares each vital to your own baseline (approximate, not medical advice); until then, typical adult ranges apply.")
-                .font(StrandFont.footnote)
-                .foregroundStyle(StrandPalette.textTertiary)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .task(id: PuffinExperiment.spo2CandidateDisplayEnabled) {
             // #1118: load the per-night HRV over-count flags (always — no toggle) so the HRV tile can
@@ -1504,6 +1580,10 @@ private struct SkinTempSection: View {
     /// here (the section falls back to the generic skin-temp state); reversible from Automations.
     @AppStorage(AppModel.cycleAwarenessHiddenKey) private var cycleHidden = false
     @State private var cycleTrackerPresented = false
+    /// Simple mode: the illness heads-up opens the screen as its verdict (`SimpleHealthVerdict`), so it is not
+    /// drawn a second time here, and the empty state no longer waits on it.
+    var hidesHeadsUp = false
+    init(hidesHeadsUp: Bool = false) { self.hidesHeadsUp = hidesHeadsUp }
 
     /// Whether the cycle-awareness opt-in is offered for this profile (#801). Delegates to the shared
     /// ``ProfileStore/cycleAwarenessApplies`` gate so Health + Automations stay in lockstep: cycle phase
@@ -1515,7 +1595,7 @@ private struct SkinTempSection: View {
             SectionHeader("Skin temperature", overline: "From your nightly sensor")
 
             // 1. Illness heads-up — only when the engine returned something worth surfacing.
-            if let illness = model.illnessSignal, illness.level != .quiet {
+            if !hidesHeadsUp, let illness = model.illnessSignal, illness.level != .quiet {
                 HeadsUpCard(result: illness, distance: model.illnessDistance)
             }
 
@@ -1558,7 +1638,7 @@ private struct SkinTempSection: View {
             // section can also be blank when the opt-in doesn't apply AND nothing else has data. Show
             // the empty state in either case (cycle ON but thin, OR opt-in hidden with no other signal).
             if (cycleEnabled || !cycleOptInApplies)
-                && model.illnessSignal == nil && model.circadianPhase == nil && model.cyclePhase == nil {
+                && (hidesHeadsUp || model.illnessSignal == nil) && model.circadianPhase == nil && model.cyclePhase == nil {
                 ComingSoon(what: "Wear the strap overnight and these read from your nightly skin temperature.",
                            symbol: "thermometer.medium")
             }

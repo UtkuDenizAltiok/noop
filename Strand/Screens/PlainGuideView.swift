@@ -186,7 +186,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .dayPlan:
             return String(localized: "What today's numbers suggest you do, and how hard to go.")
         case .stress:
-            return String(localized: "How “switched on” your body looked during the day, from 0 to 3.")
+            return String(localized: "How strained your body looks, from 0 to 3, judged from your heart readings.")
         case .heartRateZones:
             return String(localized: "Five bands of effort, from easy (zone 1) to all-out (zone 5).")
         case .estimates:
@@ -224,7 +224,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .dayPlan:
             return String(localized: "The headline of Your day and the sentence under it weigh your heart-rate variability, resting heart rate and breathing against your normal, plus how quickly your training has built up. The suggested Effort range comes from your Charge: a high Charge suggests a hard day, a middle one a moderate day, and a low one an easy day. The bar shows the range and how far today's Effort has got. It's a rule of thumb, not a target you must hit. The range is left out when today's Charge isn't ready yet, or when your Charge and your other signals point different ways; then go by the sentence.")
         case .stress:
-            return String(localized: "Based on your heart rate and heart-rate variability while you're awake. 0 is calm and 3 is very high. Exercise raises your heart rate too, so NOOP tries to leave workout time out. A busy day reading high is normal; several high days in a row are a sign to slow down.")
+            return String(localized: "The morning number compares the night's resting heart rate and HRV with the 30 days before: 1.5 is your normal, lower is calmer and higher is more strained. These are the readings behind your Charge too, so a high Charge usually comes with low stress. The line through the day is the part measured while you're awake; exercise raises your heart rate as well, so NOOP tries to leave workout time out. One high morning is common; several in a row are a sign to slow down.")
         case .heartRateZones:
             return String(localized: "They're worked out from your profile, such as your age. Time in higher zones adds more to your Effort.")
         case .estimates:

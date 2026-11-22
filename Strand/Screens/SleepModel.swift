@@ -569,18 +569,27 @@ extension SleepModel {
         let usable = days.filter { ($0.totalSleepMin ?? 0) > 0 }.map(\.day).sorted()
         guard let oldest = usable.suffix(SleepDebt.defaultWindowNights).first,
               let from = civilDay(oldest), let to = civilDay(todayKey) else { return margin }
-        let span = Calendar(identifier: .gregorian).dateComponents([.day], from: from, to: to).day ?? 0
+        // Counted on the same UTC calendar the two dates are made on. On the device's own calendar a span
+        // that crosses a daylight-saving change is an hour short of whole days, so `.day` came out one less
+        // (3 Oct to 2 Nov read 29 in Central Europe); the margin hid it, but the figure was wrong.
+        let span = civilCalendar.dateComponents([.day], from: from, to: to).day ?? 0
         return max(0, span) + margin
     }
 
-    /// A `yyyy-MM-dd` day key as a date at noon UTC, for whole-day differences only (noon keeps a
-    /// daylight-saving shift from moving a day). Nil for a key that is not three whole numbers.
+    /// The Gregorian calendar on UTC: day keys become dates on it and are differenced on it, so a whole-day
+    /// count never depends on the device's time zone.
+    private static let civilCalendar: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC") ?? .current
+        return calendar
+    }()
+
+    /// A `yyyy-MM-dd` day key as a date at noon UTC, for whole-day differences on `civilCalendar`. Nil for a
+    /// key that is not three whole numbers.
     private static func civilDay(_ key: String) -> Date? {
         let parts = key.split(separator: "-").compactMap { Int($0) }
         guard parts.count == 3 else { return nil }
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = TimeZone(identifier: "UTC") ?? .current
-        return calendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2], hour: 12))
+        return civilCalendar.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2], hour: 12))
     }
 
     // MARK: - Build
