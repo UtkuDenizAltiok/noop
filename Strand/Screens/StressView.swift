@@ -83,7 +83,10 @@ struct StressView: View {
     @State private var modelSignature: StressInputs?
 
     var body: some View {
-        ScreenScaffold(title: "Stress", subtitle: "How stressed your body seemed while you were awake, judged from your heart rate and heart-rate variability.",
+        ScreenScaffold(title: "Stress",
+                       // Simple mode says what the morning number is made of (Design v6, step 4; finding S2).
+                       subtitle: simpleModeStored ? "How strained your body looks, from your heart rate and heart-rate variability (HRV)."
+                                                  : "How stressed your body seemed while you were awake, judged from your heart rate and heart-rate variability.",
                        // PERF (scroll): lazy column — byte-identical layout (LazyVStack == eager VStack
                        // alignment/spacing/header). The content is one inner eager VStack, so the staggered
                        // section reveal is unchanged; this only defers building that stack until it scrolls in.
@@ -231,8 +234,11 @@ struct StressView: View {
         VStack(alignment: .leading, spacing: NoopMetrics.sectionSpacing) {
 
             // 1. HERO — the liquid stress-level vessel + band + one plain-English line, all in one card.
-            heroCard(model)
-                .staggeredAppear(index: 0)
+            //    Simple mode: "This morning", what the number is made of, and a sentence that describes.
+            Group {
+                if simpleMode { simpleHeroCard(model) } else { heroCard(model) }
+            }
+            .staggeredAppear(index: 0)
 
             // 1b. ADVANCED HRV readouts (additive, on-demand). A separate, clearly-labelled card
             //     that appears only when at least one engine returned a value. It sits BELOW the
@@ -242,12 +248,16 @@ struct StressView: View {
                     .staggeredAppear(index: 1)
             }
 
-            // 2. Today's numbers — uniform tiles in one grid.
+            // 2. Today's numbers — uniform tiles in one grid. Simple mode: the two readings behind the number
+            //    and the calm days, each said in words (the number's second copy stays in the full view).
             VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-                SectionHeader("Today", overline: "Markers",
-                              trailing: simpleMode ? String(localized: "vs your 30-day normal")
-                                                   : String(localized: "vs 30-day baseline"))
-                tileGrid(model)
+                if simpleMode {
+                    SectionHeader("Behind the number", trailing: String(localized: "vs your 30-day normal"))
+                    simpleMarkers(model)
+                } else {
+                    SectionHeader("Today", overline: "Markers", trailing: String(localized: "vs 30-day baseline"))
+                    tileGrid(model)
+                }
             }
             .staggeredAppear(index: 1)
 
@@ -309,7 +319,7 @@ struct StressView: View {
     @ViewBuilder
     private func daytimeLoading() -> some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Today's Timeline", overline: "Intraday")
+            daytimeHeader(trailing: nil)
             NoopCard(tint: StressRamp.calm) {
                 Text("Reading today's heart rate…")
                     .font(StrandFont.subhead)
@@ -323,8 +333,7 @@ struct StressView: View {
     @ViewBuilder
     private func daytimeSection(_ day: DaytimeStress.Result) -> some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Today's Timeline", overline: "Intraday",
-                          trailing: timelineTrailing(day))
+            daytimeHeader(trailing: timelineTrailing(day))
 
             NoopCard(tint: StressRamp.calm) {
                 VStack(alignment: .leading, spacing: NoopMetrics.cardInnerSpacing) {
@@ -388,6 +397,18 @@ struct StressView: View {
 
             // Sustained-high suggestion — only when the recent run stays in the HIGH band.
             if day.sustainedHigh { sustainedBreatheCard(day) }
+        }
+    }
+
+    /// The timeline's heading. Simple mode names it by what makes it different from the number above: it is
+    /// the one part of Stress measured while the wearer is awake (finding S2). Its peak sits inside the card,
+    /// so the full view's "avg 1.4 · 9h" summary is left to the full view.
+    @ViewBuilder
+    private func daytimeHeader(trailing: String?) -> some View {
+        if simpleMode {
+            SectionHeader("Through the day", overline: "While you're awake")
+        } else {
+            SectionHeader("Today's Timeline", overline: "Intraday", trailing: trailing)
         }
     }
 
@@ -482,6 +503,123 @@ struct StressView: View {
                     Spacer(minLength: 0)
                 }
             }
+        }
+    }
+
+    // MARK: 1 · Simple mode's first card and markers (Design v6, step 4; finding S2)
+
+    /// Simple mode's first card: the morning number with its band word, a sentence about the two readings it is
+    /// made of, what it is compared with, and where the training advice lives. The sentence describes and never
+    /// advises: only "Your day" on Today says how hard to go (rule 4), where the full view's sentence could say
+    /// "a great day to push" on a morning Today called a moderate day (W34).
+    private func simpleHeroCard(_ model: StressModel) -> some View {
+        NoopCard(tint: StressRamp.calm) {
+            VStack(alignment: .leading, spacing: NoopMetrics.cardInnerSpacing) {
+                if model.dayKey == Repository.logicalDayKey(Date()) {
+                    Text("This morning").strandOverline()
+                } else {
+                    Text("From \(TodayView.lastChargeDateFmt(model.dayKey))").strandOverline()
+                }
+                HStack(alignment: .center, spacing: NoopMetrics.space5) {
+                    StressHeroGauge(score: model.score, tint: StressRamp.color(model.score))
+                    VStack(alignment: .leading, spacing: NoopMetrics.space1) {
+                        Text(Self.simpleBandWord(model.band))
+                            .font(StrandFont.rounded(19))
+                            .foregroundStyle(StrandPalette.textPrimary)
+                        Text(Self.simpleSentence(model))
+                            .font(StrandFont.subhead)
+                            .foregroundStyle(StrandPalette.textSecondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer(minLength: 0)
+                }
+                Text(model.usingStored
+                     ? String(localized: "Worked out from the night's resting heart rate and HRV in your WHOOP import, compared with your average across it: 1.5 is your normal. These are the readings behind your Charge too, so a high Charge usually comes with low stress.")
+                     : String(localized: "Worked out from the night's resting heart rate and HRV, compared with the 30 days before: 1.5 is your normal. These are the readings behind your Charge too, so a high Charge usually comes with low stress."))
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text("How hard to train today is on Today, under Your day.")
+                    .font(StrandFont.footnote.weight(.semibold))
+                    .foregroundStyle(StrandPalette.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    /// The band in Simple mode's words: the same three bands, in sentence case.
+    static func simpleBandWord(_ band: StressBand) -> String {
+        switch band {
+        case .low:    return String(localized: "Low")
+        case .medium: return String(localized: "Medium")
+        case .high:   return String(localized: "High")
+        }
+    }
+
+    /// The sentence under the number (`SimpleStressRules.sentence`).
+    static func simpleSentence(_ model: StressModel) -> String {
+        switch SimpleStressRules.sentence(band: model.band, rhrDelta: model.rhrDelta, hrvDelta: model.hrvDelta) {
+        case .lowBoth:
+            return String(localized: "Your resting heart rate was lower and your HRV higher than your normal. Your body looks calm and recovered.")
+        case .lowHRV:
+            return String(localized: "Your HRV was higher than your normal, a sign of a relaxed body.")
+        case .lowRHR:
+            return String(localized: "Your resting heart rate was lower than your normal, a sign of a rested body.")
+        case .lowOther:
+            return String(localized: "Your readings lean calm.")
+        case .mediumRHR:
+            return String(localized: "Your resting heart rate was higher than your normal, but overall your readings are close to usual.")
+        case .mediumHRV:
+            return String(localized: "Your HRV was lower than your normal, but overall your readings are close to usual.")
+        case .mediumOther:
+            return String(localized: "About your normal: an ordinary night for your body.")
+        case .highBoth:
+            return String(localized: "Your resting heart rate was up and your HRV down: the two classic signs of a body under strain. One morning like this is common.")
+        case .highHRV:
+            return String(localized: "Your HRV was lower than your normal. That often follows a hard day, poor sleep, alcohol, stress or the start of an illness.")
+        case .highRHR:
+            return String(localized: "Your resting heart rate was higher than your normal: your body worked harder than usual overnight.")
+        case .highOther:
+            return String(localized: "Your readings lean toward strain.")
+        }
+    }
+
+    /// Simple mode's markers: each reading with its comparison in words, and the calm days as a count.
+    private func simpleMarkers(_ model: StressModel) -> some View {
+        LazyVGrid(
+            columns: [GridItem(.adaptive(minimum: 150), spacing: NoopMetrics.gap)],
+            alignment: .leading,
+            spacing: NoopMetrics.gap
+        ) {
+            let rhr = SimpleStressRules.marker(delta: model.rhrDelta, spread: model.rhrSpread, higherIsStress: true)
+            SimpleStressMarkerTile(label: "Resting heart rate",
+                                   value: model.rhrToday.map { String(localized: "\($0) bpm") } ?? "—",
+                                   comparison: Self.markerText(rhr, bpm: true),
+                                   tone: rhr?.tone ?? .neutral)
+            let hrv = SimpleStressRules.marker(delta: model.hrvDelta, spread: model.hrvSpread, higherIsStress: false)
+            SimpleStressMarkerTile(label: "HRV",
+                                   value: model.hrvToday.map { String(localized: "\(Int($0.rounded())) ms") } ?? "—",
+                                   comparison: Self.markerText(hrv, bpm: false),
+                                   tone: hrv?.tone ?? .neutral)
+            SimpleStressMarkerTile(label: "Calm days",
+                                   value: model.calmWindow > 0
+                                       ? String(localized: "\(model.calmDays) of \(model.calmWindow)") : "—",
+                                   comparison: model.calmWindow > 0
+                                       ? String(localized: "Mornings with low stress")
+                                       : String(localized: "Shows once NOOP has scored a few mornings."),
+                                   tone: .neutral)
+        }
+    }
+
+    /// "5 bpm lower than usual", nil when there is no comparison to make.
+    static func markerText(_ marker: SimpleStressRules.Marker?, bpm: Bool) -> String? {
+        guard let marker else { return nil }
+        switch (marker.direction, bpm) {
+        case (.same, _):        return String(localized: "Same as usual")
+        case (.higher, true):   return String(localized: "\(marker.amount) bpm higher than usual")
+        case (.lower, true):    return String(localized: "\(marker.amount) bpm lower than usual")
+        case (.higher, false):  return String(localized: "\(marker.amount) ms higher than usual")
+        case (.lower, false):   return String(localized: "\(marker.amount) ms lower than usual")
         }
     }
 
@@ -635,9 +773,11 @@ struct StressView: View {
 
     @ViewBuilder
     private func trendSection(_ model: StressModel) -> some View {
-        let points = windowedTrend(model)
+        // Simple mode offers the six ranges Trends offers and names the shown one in the chart's title.
+        let shown = simpleMode ? SimpleStressRules.shownRange(range) : range
+        let points = windowedTrend(model, range: shown)
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            SectionHeader("Stress Trend", overline: "History", trailing: range.name)
+            SectionHeader("Stress Trend", overline: "History", trailing: simpleMode ? nil : range.name)
             if points.count >= 2 {
                 let avg = points.map(\.value).reduce(0, +) / Double(points.count)
                 // Axis top = highest reading rounded up, plus a little headroom, so a peak curve and
@@ -647,7 +787,7 @@ struct StressView: View {
                 let peak = (points.map(\.value).max() ?? 3).rounded(.up)
                 let yTop = max(1, peak + 0.3)
                 ChartCard(
-                    title: "Stress · \(range.label)",
+                    title: "Stress · \(simpleMode ? Self.plainRangeName(shown) : range.label)",
                     subtitle: simpleMode ? String(localized: "Daily stress, from 0 (calm) to 3 (very high)")
                                          : String(localized: "Daily 0-3 proxy"),
                     trailing: String(localized: "avg \(StressTrace.formatLevel(avg))"),
@@ -672,9 +812,17 @@ struct StressView: View {
                 }
                 // The one segmented control. Its eight options use the shared adaptive-width mode so
                 // the control stays inside the same page gutter as the chart on compact iPhones.
-                SegmentedPillControl(ExploreRange.allCases, selection: $range,
-                                     adaptsToAvailableWidth: true) { $0.label }
-                    .frame(maxWidth: .infinity, alignment: .trailing)
+                if simpleMode {
+                    SegmentedPillControl(SimpleStressRules.ranges,
+                                         selection: Binding(get: { SimpleStressRules.shownRange(range) },
+                                                            set: { range = $0 }),
+                                         adaptsToAvailableWidth: true) { $0.label }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                } else {
+                    SegmentedPillControl(ExploreRange.allCases, selection: $range,
+                                         adaptsToAvailableWidth: true) { $0.label }
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             } else {
                 NoopCard(tint: StressRamp.calm) {
                     Text("Not enough recent days to chart a trend yet. Import a history or keep wearing your strap.")
@@ -687,9 +835,21 @@ struct StressView: View {
         }
     }
 
+    /// A shown range in words, for Simple mode's chart title ("Stress · Last 30 days").
+    static func plainRangeName(_ range: ExploreRange) -> String {
+        switch range {
+        case .week:    return String(localized: "Last 7 days")
+        case .month:   return String(localized: "Last 30 days")
+        case .quarter: return String(localized: "Last 3 months")
+        case .half:    return String(localized: "Last 6 months")
+        case .year:    return String(localized: "Last 12 months")
+        default:       return String(localized: "All time")
+        }
+    }
+
     /// The full daily proxy trend, sliced to the selected trailing window. Falls
     /// back to ALL when the trailing slice holds < 2 points.
-    private func windowedTrend(_ model: StressModel) -> [TrendPoint] {
+    private func windowedTrend(_ model: StressModel, range: ExploreRange) -> [TrendPoint] {
         let all = model.fullTrend
         guard let days = range.days, let last = all.last?.date else { return all }
         let cutoff = last.addingTimeInterval(-Double(days - 1) * 86_400)
@@ -902,6 +1062,16 @@ struct StressModel {
     let calmTimeValue: String    // e.g. "58%"
     let calmTimeCaption: String  // e.g. "of last 30 days"
     let usingStored: Bool        // true when today's value came from the stored series
+    /// The day the score belongs to: the newest day with signal, which is an earlier night when today has
+    /// none yet (#543). Simple mode names it rather than calling it "this morning".
+    let dayKey: String
+    /// The 30-day spreads (population standard deviations) behind the z-scores, 0 with no spread. Simple mode
+    /// colours a marker only when its delta reaches one of them (`SimpleStressRules.marker`).
+    let rhrSpread: Double
+    let hrvSpread: Double
+    /// "Calm time" as counts: of the last up-to-30 charted days, how many sat in the LOW band.
+    let calmDays: Int
+    let calmWindow: Int
 
     /// Last up-to-14 trend values, for the hero tile sparkline.
     var sparkValues: [Double] { Array(fullTrend.suffix(14)).map(\.value) }
@@ -963,6 +1133,9 @@ struct StressModel {
 
         let s = storedToday ?? derivedToday ?? 1.5
         self.usingStored = storedToday != nil
+        self.dayKey = today.day
+        self.rhrSpread = sdRHR
+        self.hrvSpread = sdHRV
         self.score = s
         self.band = StressBand(score: s)
         self.rhrToday = today.restingHr
@@ -1002,11 +1175,15 @@ struct StressModel {
         if recent.isEmpty {
             self.calmTimeValue = "—"
             self.calmTimeCaption = String(localized: "needs history")
+            self.calmDays = 0
+            self.calmWindow = 0
         } else {
             let calm = recent.filter { $0.value < 1.0 }.count
             let pct = Int((Double(calm) / Double(recent.count) * 100).rounded())
             self.calmTimeValue = "\(pct)%"
             self.calmTimeCaption = String(localized: "low-stress days · \(recent.count)d")
+            self.calmDays = calm
+            self.calmWindow = recent.count
         }
     }
 }
