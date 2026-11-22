@@ -198,6 +198,21 @@ final class SimpleTodayV6Tests: XCTestCase {
         XCTAssertEqual(SleepModel.debtLedgerLookbackDays(days: [], todayKey: "2026-11-02"), 3)
     }
 
+    /// The same count in a time zone with a clock change between the two nights. Counted on the device's
+    /// calendar, 3 Oct to 2 Nov was 29 days in Berlin or New York and 30 in Istanbul, so the test above passed
+    /// or failed by where the Mac was (it failed in Central Europe on 22 Nov). Pinned here so it cannot hide.
+    func testLedgerLookbackIgnoresTheDevicesClockChange() {
+        let saved = NSTimeZone.default
+        defer { NSTimeZone.default = saved }
+        let sparse = stride(from: 1, through: 29, by: 2).map {
+            v6FixtureDay(String(format: "2026-10-%02d", $0), sleepMin: 400)
+        }
+        for zone in ["Europe/Berlin", "America/New_York", "Europe/Istanbul"] {
+            NSTimeZone.default = TimeZone(identifier: zone) ?? saved
+            XCTAssertEqual(SleepModel.debtLedgerLookbackDays(days: sparse, todayKey: "2026-11-02"), 30 + 3, zone)
+        }
+    }
+
     // MARK: - Charge bars and the strap line
 
     func testDirectionBarLengthIsTheShareOfTheBiggestMover() {
