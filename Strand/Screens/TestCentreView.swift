@@ -164,6 +164,8 @@ struct TestCentreView: View {
         ScreenScaffold(title: "Test Centre",
                        subtitle: "Turn on a test for the thing that's wrong, wear the strap, then tap Report. All on \(Platform.deviceNounPhrase).") {
             VStack(alignment: .leading, spacing: NoopMetrics.sectionSpacing) {
+                // The developer loop (handbook features/lab.md): the developer file and the morning check-in.
+                DeveloperExportCard().staggeredAppear(index: 0)
                 domainModesCard.staggeredAppear(index: 0)
                 diagnosticToolsCard.staggeredAppear(index: 1)
                 if is5MG { rawDataCollectorCard.staggeredAppear(index: 2) }
