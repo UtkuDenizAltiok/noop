@@ -17,12 +17,15 @@ final class CheckInTests: XCTestCase {
         XCTAssertEqual(CheckIn.Item.allCases.map(\.comparedWith), ["recovery", "sleep_performance", "stress"])
     }
 
-    /// Offered only when switched on, from 04:00 to before 14:00, once a day, and never once answered.
+    /// Offered only when switched on and the app is open in front of the wearer, from 04:00 to before 14:00,
+    /// once a day, and never once answered.
     func testOfferedOnceInTheMorningWhenSwitchedOn() {
-        func offer(enabled: Bool = true, hour: Int = 7, last: String? = "2026-11-25", answered: Bool = false) -> Bool {
-            CheckIn.shouldOffer(enabled: enabled, hour: hour, lastOfferedDay: last, today: "2026-11-26",
-                                answeredToday: answered)
+        func offer(enabled: Bool = true, active: Bool = true, hour: Int = 7, last: String? = "2026-11-25",
+                   answered: Bool = false) -> Bool {
+            CheckIn.shouldOffer(enabled: enabled, appIsActive: active, hour: hour, lastOfferedDay: last,
+                                today: "2026-11-26", answeredToday: answered)
         }
+        XCTAssertFalse(offer(active: false), "a background launch must not use up the day's offer")
         XCTAssertTrue(offer())
         XCTAssertTrue(offer(hour: 4))
         XCTAssertTrue(offer(hour: 13))
