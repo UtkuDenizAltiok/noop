@@ -59,11 +59,13 @@ enum CheckIn {
     /// Asked later, the answer would describe the afternoon rather than the morning the scores describe.
     static let offerHours = 4..<14
 
-    /// Whether to offer the check-in now: switched on, inside the morning hours, not yet offered today, and not
-    /// yet answered today.
-    static func shouldOffer(enabled: Bool, hour: Int, lastOfferedDay: String?, today: String,
+    /// Whether to offer the check-in now: switched on, the app open in front of the wearer, inside the morning
+    /// hours, not yet offered today, and not yet answered today. "Open in front" matters on a phone: iOS wakes
+    /// NOOP in the background for the strap's syncs, and a check-in offered then would be marked as offered for
+    /// the day without anyone having seen it.
+    static func shouldOffer(enabled: Bool, appIsActive: Bool, hour: Int, lastOfferedDay: String?, today: String,
                             answeredToday: Bool) -> Bool {
-        enabled && offerHours.contains(hour) && lastOfferedDay != today && !answeredToday
+        enabled && appIsActive && offerHours.contains(hour) && lastOfferedDay != today && !answeredToday
     }
 
     /// Whether last night's detected sleep times were right: 1 right, 0 wrong. Stored like the answers, under a
