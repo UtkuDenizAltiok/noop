@@ -226,6 +226,12 @@ struct WorkoutsView: View {
                     // the heart-rate-recovery trend, the Current/Archived split, the sport/source/search
                     // filters and multi-select stay in the full view ("Show everything on this screen" below).
                     workoutActionRow
+                    // "Am I doing enough?" first (Design v6, step 5): the last seven days against the health
+                    // guidelines, independent of the range picked below.
+                    SimpleWorkoutWeekCard(
+                        week: SimpleWorkoutRules.week(rows: allRows, now: Date(), calendar: .current,
+                                                      maxHR: profile.effortHRmax),
+                        maxHR: profile.effortHRmax, age: profile.age)
                     rangeBar(rows: windowRows, effectiveRange: resolved, showsFilters: false)
                     if let postLogNote { postLogBanner(postLogNote) }
                     effortHero(rows: windowRows, effectiveRange: resolved, groups: groups)
@@ -294,6 +300,8 @@ struct WorkoutsView: View {
         // checkmarks and select on tap with no way out.
         .onChangeCompat(of: simpleMode) { simple in
             if simple { selectionMode = false; selected.removeAll() }
+            // Six months is offered in Simple mode only; the full view's nearest wider range takes over.
+            if !simple && range == .half { range = .year }
         }
         .task(id: simpleMode ? "simple" : recoveryTrendInputKey(rows: trendRows)) {
             // Simple mode does not show the recovery trend, so it skips the per-session heart-rate reads too.
@@ -539,11 +547,13 @@ struct WorkoutsView: View {
         let fellBack = effectiveRange != range
         let caption = rangeCaption(rows: rows, effectiveRange: effectiveRange, fellBack: fellBack)
         return VStack(alignment: .leading, spacing: 8) {
+            // Simple mode offers the six ranges, with the labels, that Trends and Stress offer (Design v6, one range
+            // picker everywhere); the full view keeps its five.
             SegmentedPillControl(
-                Range.allCases,
+                simpleMode ? Range.allCases : Range.fullViewCases,
                 selection: $range,
                 fillsAvailableWidth: true
-            ) { $0.label }
+            ) { simpleMode ? $0.simpleLabel : $0.label }
                 .frame(maxWidth: .infinity, alignment: .leading)
             if showsFilters { filterBar }
             Text(caption)
@@ -732,7 +742,12 @@ struct WorkoutsView: View {
 
     private func sessions(for r: Range) -> [WorkoutRow] {
         let windowed: [WorkoutRow]
-        if let days = r.days {
+        if let days = r.days, simpleMode {
+            // Simple mode counts calendar days ending today, the window its "Last 7 days" card uses
+            // (`SimpleWorkoutRules.window`), so the card and the list can never count different workouts.
+            guard let window = SimpleWorkoutRules.window(days: days, now: Date(), calendar: .current) else { return [] }
+            windowed = allRows.filter { window.contains($0.startTs) }
+        } else if let days = r.days {
             guard let last = latestTs else { return [] }
             let cutoff = last - days * 86_400
             windowed = allRows.filter { $0.startTs >= cutoff }
@@ -758,7 +773,7 @@ struct WorkoutsView: View {
     /// distinct and only an empty window widens.
     private var effectiveRange: Range {
         guard !allRows.isEmpty else { return range }
-        for r in range.widening where !sessions(for: r).isEmpty { return r }
+        for r in range.widening(simple: simpleMode) where !sessions(for: r).isEmpty { return r }
         return .all
     }
 
@@ -768,6 +783,18 @@ struct WorkoutsView: View {
     private func rangeCaption(rows: [WorkoutRow], effectiveRange: Range, fellBack: Bool) -> String {
         guard loaded, !allRows.isEmpty else { return "—" }
         let n = rows.count
+        if simpleMode {
+            // In words, with the window named, since the picker's labels are short.
+            let phrase = SimpleTrendRules.windowPhrase(days: effectiveRange.days)
+            switch (fellBack, n == 1) {
+            case (false, true): return String(localized: "1 workout \(phrase).")
+            case (false, false): return String(localized: "\(n) workouts \(phrase).")
+            case (true, true):
+                return String(localized: "No workouts in the range you picked, so this shows a longer one: 1 workout \(phrase).")
+            case (true, false):
+                return String(localized: "No workouts in the range you picked, so this shows a longer one: \(n) workouts \(phrase).")
+            }
+        }
         let suffix = filter.isActive ? String(localized: " · filtered") : ""
         if fellBack {
             return (n == 1
@@ -782,7 +809,15 @@ struct WorkoutsView: View {
     /// Pick the tightest range that still holds ≥2 sessions; otherwise show All.
     private func defaultRange(for source: [WorkoutRow]) -> Range {
         guard let last = source.map(\.startTs).max() else { return .all }
-        for r in Range.allCases where r.days != nil {
+        if simpleMode {
+            for r in Range.allCases {
+                guard let days = r.days,
+                      let window = SimpleWorkoutRules.window(days: days, now: Date(), calendar: .current) else { continue }
+                if source.filter({ window.contains($0.startTs) }).count >= 2 { return r }
+            }
+            return .all
+        }
+        for r in Range.fullViewCases where r.days != nil {
             let cutoff = last - (r.days ?? 0) * 86_400
             if source.filter({ $0.startTs >= cutoff }).count >= 2 { return r }
         }
@@ -829,7 +864,13 @@ struct WorkoutsView: View {
         let displayValue = UnitFormatter.effortValue(avgStrain, scale: effortScale)
         let fraction = max(0, min(1, displayValue / scaleMax))
         VStack(spacing: 18) {
-            Text("TYPICAL EFFORT")
+            Group {
+                if simpleMode {
+                    Text("Average workout Effort").textCase(.uppercase)
+                } else {
+                    Text("TYPICAL EFFORT")
+                }
+            }
                 .font(StrandFont.overline).tracking(StrandFont.overlineTracking)
                 .foregroundStyle(StrandPalette.effortColor)
             if hasData {
@@ -842,9 +883,11 @@ struct WorkoutsView: View {
                     VStack(spacing: 0) {
                         // `displayValue` is already on the selected scale (0–100 or 0–21), so the count-up
                         // interpolates it straight to one decimal — no re-scaling in the format closure.
+                        // Simple mode prints a 0–100 score as a whole number, like every other Simple screen.
+                        let whole = simpleMode && effortScale == .hundred
                         CountUpText(
                             value: displayValue,
-                            format: { String(format: "%.1f", $0) },
+                            format: { whole ? "\(Int($0.rounded()))" : String(format: "%.1f", $0) },
                             font: StrandFont.rounded(46),
                             color: StrandPalette.textPrimary
                         )
@@ -858,6 +901,12 @@ struct WorkoutsView: View {
                 .frame(maxWidth: .infinity)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(String(localized: "Typical effort \(UnitFormatter.effortDisplay(avgStrain, scale: effortScale))"))
+                if simpleMode {
+                    // The word for the average, the one Today's ring uses for a day of that Effort.
+                    Text(SimpleScoreWords.effort(stored: avgStrain, scale: effortScale))
+                        .font(StrandFont.headline)
+                        .foregroundStyle(StrandPalette.effortColor)
+                }
             } else {
                 // No strain data in the window — an empty vessel (posed, no fill) with a centred "No data",
                 // the honest liquid analogue of the old empty ring.
@@ -881,6 +930,9 @@ struct WorkoutsView: View {
     private func effortHeroStats(rows: [WorkoutRow], effectiveRange: Range,
                                  groups: [SportGroup], totalTimeH: Double) -> some View {
         let modal = modalSport(from: groups)
+        if simpleMode {
+            simpleHeroStats(rows: rows, effectiveRange: effectiveRange, modal: modal)
+        } else {
         VStack(alignment: .leading, spacing: 12) {
             Text("Effort this \(effectiveRange.heroWord)")
                 .font(StrandFont.headline)
@@ -902,6 +954,31 @@ struct WorkoutsView: View {
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+        }
+    }
+
+    /// Simple mode's stats beside the gauge: the window named in words, the count and the total time as a
+    /// duration ("8h 5m", never decimal hours), and the most frequent sport.
+    private func simpleHeroStats(rows: [WorkoutRow], effectiveRange: Range,
+                                 modal: (sport: String, count: Int)) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(SimpleTrendRules.windowName(days: effectiveRange.days))
+                .font(StrandFont.headline)
+                .foregroundStyle(StrandPalette.textPrimary)
+            HStack(spacing: NoopMetrics.gap) {
+                heroCountStat(String(localized: "Workouts"), value: Double(rows.count),
+                              format: { "\(Int($0.rounded()))" }, tint: StrandPalette.effortColor)
+                heroStat(String(localized: "Total time"),
+                         SimpleDayPlan.durationText(rows.compactMap(\.durationS).filter { $0 > 0 }.reduce(0, +) / 60),
+                         tint: StrandPalette.textPrimary)
+            }
+            if modal.count > 0 {
+                Text("Mostly \(WorkoutSource.displaySport(modal.sport)).")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
     }
 
@@ -1184,9 +1261,13 @@ struct WorkoutsView: View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
             SectionHeader(simpleMode ? "Heart-rate zones" : "HR Zones",
                           overline: simpleMode ? nil : "Whoop import",
-                          trailing: totalSessions == 1
-                              ? String(localized: "\(z.sessionsWithZones) of 1 session")
-                              : String(localized: "\(z.sessionsWithZones) of \(totalSessions) sessions"))
+                          trailing: simpleMode
+                              ? (totalSessions == 1
+                                  ? String(localized: "\(z.sessionsWithZones) of 1 workout")
+                                  : String(localized: "\(z.sessionsWithZones) of \(totalSessions) workouts"))
+                              : (totalSessions == 1
+                                  ? String(localized: "\(z.sessionsWithZones) of 1 session")
+                                  : String(localized: "\(z.sessionsWithZones) of \(totalSessions) sessions")))
             NoopCard(tint: StrandPalette.effortColor) {
                 VStack(alignment: .leading, spacing: 12) {
                     // Proportional stacked bar — same construction as SleepView's stage bar, with the
@@ -1222,7 +1303,7 @@ struct WorkoutsView: View {
                         // The same split in words, with the guide's zones entry one tap away.
                         Button { plainGuideTerm = .heartRateZones } label: {
                             HStack(alignment: .top, spacing: 6) {
-                                Text("How your workout time split across the five heart-rate zones, from easy (zone 1) to all-out (zone 5). Only sessions imported from WHOOP carry zones.")
+                                Text(simpleZoneWords(z))
                                     .font(StrandFont.footnote)
                                     .foregroundStyle(StrandPalette.textTertiary)
                                     .fixedSize(horizontal: false, vertical: true)
@@ -1246,6 +1327,22 @@ struct WorkoutsView: View {
         }
     }
 
+    /// One zone's share of the time as the strip prints it, whole percent.
+    static func zonePercent(minutes: Double, total: Double) -> Int {
+        Int((minutes / max(total, 0.001) * 100).rounded())
+    }
+
+    /// The zone split in three words: zones 1 and 2 easy, zone 3 moderate, zones 4 and 5 hard. Each share is
+    /// the sum of the percentages the strip prints above it, so the sentence never disagrees with the numbers
+    /// beside it (rounded separately, 20 % and 4 % could otherwise be summed up as "23 % hard").
+    private func simpleZoneWords(_ z: WorkoutZones.Summary) -> String {
+        guard z.minutes.count >= 5 else {
+            return String(localized: "Zones 1 and 2 are easy, zone 3 is moderate, zones 4 and 5 are hard. Only workouts imported from WHOOP carry zones.")
+        }
+        let shown = z.minutes.prefix(5).map { Self.zonePercent(minutes: $0, total: z.totalMinutes) }
+        return String(localized: "Zones 1 and 2 are easy, zone 3 is moderate, zones 4 and 5 are hard. In these workouts \(shown[0] + shown[1])% of the time was easy, \(shown[2])% moderate and \(shown[3] + shown[4])% hard. Only workouts imported from WHOOP carry zones.")
+    }
+
     private func zoneStat(_ zone: Int, minutes: Double, total: Double) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack(spacing: 5) {
@@ -1254,7 +1351,7 @@ struct WorkoutsView: View {
                     .frame(width: 9, height: 9)
                 Text("Z\(zone)" as String).strandOverline()
             }
-            Text("\(Int((minutes / max(total, 0.001) * 100).rounded()))%")
+            Text("\(Self.zonePercent(minutes: minutes, total: total))%")
                 .font(StrandFont.number(15))
                 .foregroundStyle(StrandPalette.textPrimary)
             Text(durationLabel(minutes * 60))
@@ -1279,9 +1376,13 @@ struct WorkoutsView: View {
     private func sessionsSection(rows: [WorkoutRow]) -> some View {
         VStack(alignment: .leading, spacing: NoopMetrics.gap) {
             HStack(alignment: .firstTextBaseline) {
-                SectionHeader("All Sessions",
-                              overline: "Log",
-                              trailing: String(localized: "\(rows.count) total"))
+                if simpleMode {
+                    SectionHeader("Your workouts", trailing: String(localized: "\(rows.count) total"))
+                } else {
+                    SectionHeader("All Sessions",
+                                  overline: "Log",
+                                  trailing: String(localized: "\(rows.count) total"))
+                }
                 // Multi-select (merge, bulk delete) is a full-view tool; each row's ••• menu stays.
                 if !simpleMode { selectPill(rows: rows) }
             }
@@ -1587,7 +1688,8 @@ struct WorkoutsView: View {
                             .foregroundStyle(StrandPalette.textPrimary)
                             .lineLimit(1)
                         Spacer(minLength: 0)
-                        Text(Self.effortCellLabel(strain: row.strain, scale: effortScale))
+                        Text(simpleMode ? simpleEffortLabel(row.strain)
+                                        : Self.effortCellLabel(strain: row.strain, scale: effortScale))
                             .font(StrandFont.number(15))
                             .foregroundStyle(row.strain != nil ? StrandPalette.effortColor : StrandPalette.textTertiary)
                     }
@@ -1652,8 +1754,30 @@ struct WorkoutsView: View {
         if selected.contains(key) { selected.remove(key) } else { selected.insert(key) }
     }
 
+    /// Simple mode's right-hand label: "Effort 40", printed like Today's ring (whole on 0–100), or a dash.
+    private func simpleEffortLabel(_ strain: Double?) -> String {
+        guard let strain else { return "–" }
+        return String(localized: "Effort \(SimpleDayPlan.effortText(stored: strain, scale: effortScale))")
+    }
+
+    /// Simple mode's second line: "Sun 15 Nov · 29m · 256 kcal" in the reader's own date format, with the year
+    /// only when it is not this year. The clock times and the heart rate are on the workout's own page.
+    private func simpleRowSubtitle(_ row: WorkoutRow) -> String {
+        let start = Date(timeIntervalSince1970: TimeInterval(row.startTs))
+        let sameYear = Calendar.current.isDate(start, equalTo: Date(), toGranularity: .year)
+        let date = sameYear
+            ? start.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated))
+            : start.formatted(.dateTime.weekday(.abbreviated).day().month(.abbreviated).year())
+        var parts = [date]
+        if let s = row.durationS, s > 0 { parts.append(SimpleDayPlan.durationText(s / 60)) }
+        if let k = row.energyKcal, k > 0 { parts.append(String(localized: "\(grouped(k)) kcal")) }
+        if let d = row.distanceM, d > 0 { parts.append(distanceLabel(row.distanceM)) }
+        return parts.joined(separator: " · ")
+    }
+
     /// The compact row's second line: "d MMM · HH:mm–HH:mm · 45m · 388 kcal · 118 bpm", nil fields omitted.
     private func compactRowSubtitle(_ row: WorkoutRow) -> String {
+        if simpleMode { return simpleRowSubtitle(row) }
         var parts: [String] = [dateLabel(row.startTs), timeRangeLabel(row.startTs, row.endTs)]
         if let d = durationLabelOrNil(row.durationS) { parts.append(d) }
         if let k = row.energyKcal, k > 0 { parts.append(String(localized: "\(grouped(k)) kcal")) }
@@ -1805,14 +1929,28 @@ struct WorkoutsView: View {
     // MARK: - Range model
 
     private enum Range: CaseIterable, Hashable {
-        case week, month, quarter, year, all
+        case week, month, quarter, half, year, all
+        /// The full view's five ranges, as they always were; Simple mode offers all six (`allCases`).
+        static let fullViewCases: [Range] = [.week, .month, .quarter, .year, .all]
         var label: String {
             switch self {
             case .week:    return String(localized: "7D")
             case .month:   return String(localized: "30D")
             case .quarter: return String(localized: "90D")
+            case .half:    return String(localized: "6M")
             case .year:    return String(localized: "1Y")
             case .all:     return String(localized: "All")
+            }
+        }
+        /// Simple mode's labels: the ones Trends and Stress show for the same six windows.
+        var simpleLabel: String {
+            switch self {
+            case .week:    return String(localized: "W")
+            case .month:   return String(localized: "M")
+            case .quarter: return String(localized: "3M")
+            case .half:    return String(localized: "6M")
+            case .year:    return String(localized: "1Y")
+            case .all:     return String(localized: "ALL")
             }
         }
         var caption: String {
@@ -1820,6 +1958,7 @@ struct WorkoutsView: View {
             case .week:    return String(localized: "last 7 days")
             case .month:   return String(localized: "last 30 days")
             case .quarter: return String(localized: "last 90 days")
+            case .half:    return SimpleTrendRules.windowPhrase(days: 180)
             case .year:    return String(localized: "last year")
             case .all:     return String(localized: "all time")
             }
@@ -1830,6 +1969,7 @@ struct WorkoutsView: View {
             case .week:    return String(localized: "week")
             case .month:   return String(localized: "month")
             case .quarter: return String(localized: "quarter")
+            case .half:    return String(localized: "6 months")
             case .year:    return String(localized: "year")
             case .all:     return String(localized: "log")
             }
@@ -1840,14 +1980,15 @@ struct WorkoutsView: View {
             case .week:    return 7
             case .month:   return 30
             case .quarter: return 90
+            case .half:    return 180
             case .year:    return 365
             case .all:     return nil
             }
         }
         /// This range plus every LARGER range, ascending — the auto-expand search
-        /// order when the selected window holds zero sessions.
-        var widening: [Range] {
-            let order: [Range] = [.week, .month, .quarter, .year, .all]
+        /// order when the selected window holds zero sessions. The full view's order is the one it always had.
+        func widening(simple: Bool) -> [Range] {
+            let order: [Range] = simple ? Range.allCases : Range.fullViewCases
             guard let i = order.firstIndex(of: self) else { return [.all] }
             return Array(order[i...])
         }

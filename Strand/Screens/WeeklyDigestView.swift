@@ -153,6 +153,13 @@ struct WeeklyDigestContent: View {
     let digest: WeeklyDigest
     var compact: Bool = false
     var showsHeader: Bool = true
+    /// Simple mode (Design v6, step 5): each gauge's comparison with last week in words, and the week's
+    /// sentences from `SimpleWeekRules` in place of the engine's focal points. Off by default, so every other
+    /// caller draws exactly what it did.
+    var simple: Bool = false
+    /// The week's sentences for the simple layout (`SimpleWeekRules.lines`), worked out by the caller, which
+    /// holds the day rows the training-against-Charge sentence needs.
+    var simpleLines: [SimpleWeekRules.Line] = []
 
     /// The Effort display scale (#268), so the Week-in-review Effort gauge matches the Today tile
     /// and the Trends small-multiple instead of being stuck on "of 100". Charge/Rest stay 0–100.
@@ -290,15 +297,44 @@ struct WeeklyDigestContent: View {
                         domain: domain(for: summary.metric),
                         deltaText: deltaText(summary),
                         deltaTone: chipTone(summary),
-                        accessibility: rowAccessibility(summary, effortScale: effortScale),
+                        accessibility: simple ? simpleAccessibility(summary)
+                            : rowAccessibility(summary, effortScale: effortScale),
                         effortScale: effortScale,
-                        presentation: presentation)
+                        presentation: presentation,
+                        simpleChip: simple
+                            ? SimpleWeekTexts.chip(SimpleWeekRules.chip(summary, scale: effortScale),
+                                                   metric: summary.metric, scale: effortScale)
+                            : nil,
+                        simple: simple)
     }
 
     // MARK: Detail card (focal points · secondary signals · footer)
 
     @ViewBuilder
     private var detailCard: some View {
+        if simple {
+            simpleDetailCard
+        } else {
+            standardDetailCard
+        }
+    }
+
+    /// The simple layout's sentences, one row each, in the focal rows' own style.
+    @ViewBuilder
+    private var simpleDetailCard: some View {
+        if !simpleLines.isEmpty {
+            NoopCard {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(simpleLines.enumerated()), id: \.offset) { _, line in
+                        focalRow(SimpleWeekTexts.line(line, scale: effortScale))
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var standardDetailCard: some View {
         let signals = secondarySignals
         let hasFocal = !digest.focalPoints.isEmpty
         if hasFocal || !signals.isEmpty || !compact {
@@ -485,6 +521,16 @@ struct WeeklyDigestContent: View {
     }
 
     private func fmt1(_ x: Double) -> String { String(format: "%.1f", x) }
+
+    /// VoiceOver's reading of a gauge in the simple layout: the week's average and the comparison as shown.
+    private func simpleAccessibility(_ s: WeeklyMetricSummary) -> String {
+        let mean = meanText(s, effortScale: effortScale)
+        guard let chip = SimpleWeekTexts.chip(SimpleWeekRules.chip(s, scale: effortScale),
+                                              metric: s.metric, scale: effortScale) else {
+            return String(localized: "\(s.metric.localizedName): \(mean) this week, no comparison.")
+        }
+        return String(localized: "\(s.metric.localizedName): \(mean) this week. \(chip.text)")
+    }
 }
 
 // MARK: - Rough-comparison chip contract (#463, testable mirror of Android)
@@ -523,6 +569,10 @@ private struct DigestScoreCard: View {
     /// 0–100 scores and ignore it, keeping their "of 100" caption and integer mean.
     var effortScale: EffortScale = .hundred
     let presentation: Presentation
+    /// Simple mode's comparison with last week in words (`SimpleWeekTexts.chip`), drawn in place of the
+    /// percentage chip; nil draws no comparison.
+    var simpleChip: (text: String, colour: Color)? = nil
+    var simple: Bool = false
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -542,6 +592,13 @@ private struct DigestScoreCard: View {
     }
     private var numberText: String {
         guard summary.thisWeek.n > 0 else { return "—" }
+        // Simple mode prints Effort the way Today's ring does (whole numbers on 0–100), the figure its
+        // comparison with last week is judged on (`SimpleWeekRules.printed`).
+        if isEffort && simple {
+            return SimpleWeekTexts.number(SimpleWeekRules.printed(summary.thisWeek.mean, metric: .effort,
+                                                                  scale: effortScale),
+                                          metric: .effort, scale: effortScale)
+        }
         return isEffort
             ? UnitFormatter.effortDisplay(summary.thisWeek.mean, scale: effortScale)
             : "\(Int(summary.thisWeek.mean.rounded()))"
@@ -587,7 +644,7 @@ private struct DigestScoreCard: View {
                 HStack {
                     metricLabel
                     Spacer(minLength: 0)
-                    if hasComparison {
+                    if hasComparison && !simple {
                         TrendChip(text: deltaSigned, color: deltaTone)
                     }
                 }
@@ -625,7 +682,16 @@ private struct DigestScoreCard: View {
                 .accessibilityElement(children: .combine)
                 .digestScalePopoverAdaptation()
             }
-            if isEmbedded && hasComparison {
+            if simple {
+                if let simpleChip {
+                    Text(simpleChip.text)
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(simpleChip.colour)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity)
+                }
+            } else if isEmbedded && hasComparison {
                 TrendChip(text: deltaSigned, color: deltaTone)
             }
         }
