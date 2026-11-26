@@ -326,11 +326,18 @@ struct TrendsView: View {
                             weekInReview(charge: metrics.recovery, effort: metrics.strain, rest: metrics.rest)
                                 .staggeredAppear(index: 1)
                         }
+                        // Simple mode puts the charts under their own heading, so the week above and the
+                        // range below are never read as one figure.
+                        if simpleMode {
+                            SectionHeader("Over time")
+                                .staggeredAppear(index: 2)
+                        }
                         rangeBar(recovery: metrics.recovery)
                             .staggeredAppear(index: 2)
                         heroRecovery(recovery: metrics.recovery)
                             .staggeredAppear(index: 3)
-                        smallMultiples(hrv: metrics.hrv, rhr: metrics.rhr, strain: metrics.strain)
+                        smallMultiples(hrv: metrics.hrv, rhr: metrics.rhr, strain: metrics.strain,
+                                       rest: metrics.rest)
                             .staggeredAppear(index: 4)
                         // Long-horizon training load (CTL/ATL/TSB). Uses the FULL history, not the
                         // range window — chronic load is inherently a 42-day horizon. Self-hides its
@@ -345,6 +352,10 @@ struct TrendsView: View {
                             .staggeredAppear(index: 6)
                         if !simpleMode {
                             exportReportRow
+                                .staggeredAppear(index: 7)
+                        } else {
+                            // The week's picture, at the foot in Simple mode: an action, not a reading.
+                            simpleShareRow
                                 .staggeredAppear(index: 7)
                         }
                     }
@@ -426,6 +437,12 @@ struct TrendsView: View {
                     DataPendingNote(
                         title: "No readings this week",
                         message: "Step to another week with the arrows above to see its review.")
+                } else if simpleMode {
+                    // Simple mode: the comparisons in words and the week's sentences (`SimpleWeekRules`).
+                    // Its share button sits at the foot of the screen.
+                    WeeklyDigestContent(digest: digest, compact: true, showsHeader: false,
+                                        simple: true, simpleLines: simpleWeekLines(digest))
+                        .padding(.top, NoopMetrics.space1)
                 } else {
                     WeeklyDigestContent(digest: digest, compact: true, showsHeader: false)
                         .padding(.top, NoopMetrics.space1)
@@ -450,7 +467,9 @@ struct TrendsView: View {
     private func weekNavBar(digest: WeeklyDigest) -> some View {
         let atOldest = weekOffset <= minWeekOffset
         let atNewest = weekOffset >= 0
-        let daysSummary = String(localized: "\(digest.daysWithData)/7 days")
+        let daysSummary = simpleMode
+            ? String(localized: "\(digest.daysWithData) of 7 days with readings")
+            : String(localized: "\(digest.daysWithData)/7 days")
         let daysAccessibility = String(localized: "\(digest.daysWithData) of 7 days had data")
         return HStack(spacing: NoopMetrics.cardInnerSpacing) {
             Button { stepWeek(-1) } label: {
@@ -494,6 +513,96 @@ struct TrendsView: View {
         let n = -weekOffset
         if n == 1 { return String(localized: "Last week") }
         return String(localized: "\(n) weeks ago")
+    }
+
+    // MARK: Simple mode's week and charts (Design v6, step 5)
+
+    /// The week's sentences: the engine's movers and sparse-week reasons, and the week's Effort against the
+    /// range each finished day's Charge suggested (`SimpleWeekRules`).
+    private func simpleWeekLines(_ digest: WeeklyDigest) -> [SimpleWeekRules.Line] {
+        let loads = SimpleWeekRules.dayLoads(days: repo.days, weekStart: digest.weekStart,
+                                             weekEnd: digest.weekEnd,
+                                             today: Repository.logicalDayKey(Date()))
+        return SimpleWeekRules.lines(digest, adherence: SimpleWeekRules.adherence(loads, scale: effortScale),
+                                     scale: effortScale)
+    }
+
+    /// Shares the selected week as a picture, the simple card as it is drawn. Shown only when the week holds
+    /// data, like the full view's button.
+    @ViewBuilder
+    private var simpleShareRow: some View {
+        let digest = WeeklyDigestSource.digest(from: repo.days, anchorDay: weekAnchorDay)
+        if !digest.isEmpty {
+            NoopButton("Share this week", systemImage: "square.and.arrow.up", kind: .secondary, fullWidth: true) {
+                let page = WeeklyDigestContent(digest: digest, compact: true, showsHeader: true,
+                                               simple: true, simpleLines: simpleWeekLines(digest))
+                    .frame(width: 380)
+                    .padding(24)
+                    .background(StrandPalette.surfaceBase)
+                    .environment(\.colorScheme, colorScheme)
+                TrendsReportRenderer.exportPNG(page: page, suggestedName: "noop-recap-\(weekAnchorDay).png")
+            }
+        }
+    }
+
+    /// The caption under the range picker in Simple mode: how many days of the window the charts rest on, in
+    /// words ("A Charge on 62 of the last 90 days."); a widened window says so on a line of its own.
+    private func simpleRangeCaption(_ recovery: ResolvedMetric) -> String {
+        let n = recovery.points.count
+        let count: String
+        if let days = recovery.effective.days {
+            count = n == 1 ? String(localized: "A Charge on 1 of the last \(days) days.")
+                           : String(localized: "A Charge on \(n) of the last \(days) days.")
+        } else {
+            count = n == 1 ? String(localized: "A Charge on 1 day so far.")
+                           : String(localized: "A Charge on \(n) days so far.")
+        }
+        guard recovery.widened else { return count }
+        return [String(localized: "Too few days in the range you picked, so these charts show a longer one."), count]
+            .joined(separator: "\n")
+    }
+
+    /// A value as a Simple chart prints it: Effort on the reader's scale, everything else as stored.
+    private func simpleShown(_ metric: SimpleTrendMetric, _ stored: Double) -> Double {
+        metric == .effort ? UnitFormatter.effortValue(stored, scale: effortScale) : stored
+    }
+
+    /// Decimals a Simple chart prints: one for Effort on 0–21, none otherwise (Design v6, one shape per number).
+    private func simpleDecimals(_ metric: SimpleTrendMetric) -> Int {
+        metric == .effort && effortScale == .whoop ? 1 : 0
+    }
+
+    /// A printed figure with its unit ("62 ms", "52 bpm", "47").
+    private func simpleNumber(_ metric: SimpleTrendMetric, _ shown: Double) -> String {
+        let figure = simpleDecimals(metric) == 1 ? String(format: "%.1f", shown) : "\(Int(shown.rounded()))"
+        switch metric {
+        case .hrv: return "\(figure) ms"
+        case .rhr: return "\(figure) bpm"
+        case .charge, .rest, .effort: return figure
+        }
+    }
+
+    /// The footer of a Simple chart: its verdict over the window (`SimpleTrendRules.verdict`, on the values as
+    /// drawn) and the window's average (with the score's word for the three scores), lowest and highest.
+    private func simpleFooter(_ metric: SimpleTrendMetric, points pts: [TrendPoint]) -> SimpleTrendFooter {
+        let shown = pts.map { simpleShown(metric, $0.value) }
+        let verdict = SimpleTrendRules.verdict(values: shown, decimals: simpleDecimals(metric))
+        let average: String = {
+            guard let stored = mean(pts) else { return "—" }
+            let figure = simpleNumber(metric, simpleShown(metric, stored))
+            switch metric {
+            case .charge: return [figure, SimpleScoreWords.charge(stored)].joined(separator: " · ")
+            case .rest: return [figure, SimpleScoreWords.rest(stored)].joined(separator: " · ")
+            case .effort:
+                return [figure, SimpleScoreWords.effort(stored: stored, scale: effortScale)].joined(separator: " · ")
+            case .hrv, .rhr: return figure
+            }
+        }()
+        return SimpleTrendFooter(metric: metric, verdict: verdict,
+                                 amountText: { simpleNumber(metric, $0) },
+                                 average: average,
+                                 lowest: shown.min().map { simpleNumber(metric, $0) } ?? "—",
+                                 highest: shown.max().map { simpleNumber(metric, $0) } ?? "—")
     }
 
     // MARK: Week in Review — the Charge / Effort / Rest trio in pip language
@@ -607,19 +716,27 @@ struct TrendsView: View {
     // MARK: Range control
 
     private func rangeBar(recovery: ResolvedMetric) -> some View {
-        let cap = recovery.caption
+        // Simple mode says the window and its days in one sentence under the picker; each chart names its own
+        // window, so the "Trailing 90 days" caption beside the picker is left out.
+        let cap = simpleMode ? simpleRangeCaption(recovery) : recovery.caption
         let isWide = recovery.widened
         return VStack(alignment: .leading, spacing: NoopMetrics.space2) {
             HStack(spacing: NoopMetrics.space2) {
                 // Six ranges plus the trailing-window caption need to share a compact iPhone row.
                 // Let the segmented control collapse to equal-width cells instead of squeezing the
                 // caption narrower than one word (which wrapped the final G in TRAILING by itself).
-                SegmentedPillControl(Range.allCases, selection: $range,
-                                     adaptsToAvailableWidth: true) { $0.label }
-                // Keep the caption's two lines internally leading-aligned, but anchor the whole
-                // caption column to the page's trailing edge.
-                Spacer(minLength: NoopMetrics.space2)
-                rangeCaption
+                if simpleMode {
+                    // Alone on its row in Simple mode, so it spans it, as on Workouts and Stress.
+                    SegmentedPillControl(Range.allCases, selection: $range,
+                                         fillsAvailableWidth: true) { $0.label }
+                } else {
+                    SegmentedPillControl(Range.allCases, selection: $range,
+                                         adaptsToAvailableWidth: true) { $0.label }
+                    // Keep the caption's two lines internally leading-aligned, but anchor the whole
+                    // caption column to the page's trailing edge.
+                    Spacer(minLength: NoopMetrics.space2)
+                    rangeCaption
+                }
             }
             Text(cap)
                 .font(StrandFont.footnote)
@@ -640,8 +757,10 @@ struct TrendsView: View {
             title: "Charge",
             // The range bar above already prints the authoritative reading-count caption;
             // the hero only names its window so the count isn't doubled in one card height.
-            subtitle: rangeSubtitle,
-            trailing: avg.map { "\(Int($0.rounded()))" },
+            // Simple mode names the window the chart actually draws, and leaves the average to the footer,
+            // where it carries its label and its word.
+            subtitle: simpleMode ? SimpleTrendRules.windowName(days: recovery.effective.days) : rangeSubtitle,
+            trailing: simpleMode ? nil : avg.map { "\(Int($0.rounded()))" },
             height: NoopMetrics.chartHeight,
             chart: {
                 if pts.count >= 2 {
@@ -658,6 +777,17 @@ struct TrendsView: View {
                 }
             },
             footer: {
+                if simpleMode {
+                    VStack(alignment: .leading, spacing: NoopMetrics.space2) {
+                        simpleFooter(.charge, points: pts)
+                        // Charge is read against the wearer's own recent normal, so a rising Charge means
+                        // better recovered, not fitter: say where fitness shows instead.
+                        Text("Charge shows how recovered you have been, compared with your own recent normal. For fitness, watch resting heart rate and HRV over months.")
+                            .font(StrandFont.footnote)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } else {
                 VStack(alignment: .leading, spacing: NoopMetrics.space2) {
                     HStack {
                         ChartFooter([
@@ -668,6 +798,7 @@ struct TrendsView: View {
                         ])
                         changeChip(pts, higherIsBetter: true, fmt: { "\(Int($0.rounded()))" })
                     }
+                }
                 }
             }
         )
@@ -682,42 +813,73 @@ struct TrendsView: View {
 
     // MARK: Small multiples — HRV / Resting HR / Day Strain
 
-    private func smallMultiples(hrv: ResolvedMetric, rhr: ResolvedMetric, strain: ResolvedMetric) -> some View {
+    private func smallMultiples(hrv: ResolvedMetric, rhr: ResolvedMetric, strain: ResolvedMetric,
+                                rest: ResolvedMetric) -> some View {
         let cols = [GridItem(.adaptive(minimum: 320), spacing: NoopMetrics.gap)]
         let hrvPts = hrv.points
         let rhrPts = rhr.points
         let strainPts = strain.points
+        // Simple mode names each chart's own window (a sparse reading may have widened further than the range).
+        func window(_ m: ResolvedMetric) -> String? {
+            simpleMode ? SimpleTrendRules.windowName(days: m.effective.days) : nil
+        }
 
         return VStack(alignment: .leading, spacing: NoopMetrics.gap) {
-            // No trailing window label — the range bar's overline already states it.
-            SectionHeader("Daily signals", overline: "Trends")
+            // No trailing window label — the range bar's overline already states it. Simple mode's "Over time"
+            // heading above the range already introduces these charts.
+            if !simpleMode {
+                SectionHeader("Daily signals", overline: "Trends")
+            }
             LazyVGrid(columns: cols, alignment: .leading, spacing: NoopMetrics.gap) {
                 // HRV / Resting HR are Charge sub-signals → the Charge (green) card world, each line
                 // keeping its established metric hue for legibility. Effort is the WHOOP blue strain world.
                 metricChart(
-                    title: "Heart rate variability", unit: "ms",
+                    // Simple mode gives HRV its full name with the letters the other screens use.
+                    title: simpleMode ? "Heart-rate variability (HRV)" : "Heart rate variability", unit: "ms",
                     accessibilityTitle: String(localized: "Heart rate variability"),
                     metricKey: "hrv",
                     points: hrvPts,
+                    subtitle: window(hrv),
                     gradient: gradient(StrandPalette.metricPurple),
                     tip: StrandPalette.metricPurple,
                     tint: nil,
                     higherIsBetter: true,
                     range: valueRange(hrvPts, fallback: 20...120),
-                    fmt: { "\(Int($0.rounded()))" }
+                    fmt: { "\(Int($0.rounded()))" },
+                    simpleMetric: .hrv
                 )
                 metricChart(
                     title: "Resting heart rate", unit: "bpm",
                     accessibilityTitle: String(localized: "Resting heart rate"),
                     metricKey: "rhr",
                     points: rhrPts,
+                    subtitle: window(rhr),
                     gradient: gradient(StrandPalette.metricRose),
                     tip: StrandPalette.metricRose,
                     tint: nil,
                     higherIsBetter: false,
                     range: valueRange(rhrPts, fallback: 40...80),
-                    fmt: { "\(Int($0.rounded()))" }
+                    fmt: { "\(Int($0.rounded()))" },
+                    simpleMetric: .rhr
                 )
+                // Simple mode adds Rest over time, so "am I sleeping better?" is answered here too. The
+                // series is the one the full view's week trio averages (`sleepPerfByDay`, #732).
+                if simpleMode {
+                    metricChart(
+                        title: "Rest", unit: "",
+                        accessibilityTitle: String(localized: "Rest"),
+                        metricKey: "sleep_performance",
+                        points: rest.points,
+                        subtitle: window(rest),
+                        gradient: gradient(StrandPalette.restColor),
+                        tip: StrandPalette.restColor,
+                        tint: StrandPalette.restColor,
+                        higherIsBetter: true,
+                        range: valueRange(rest.points, fallback: 0...100),
+                        fmt: { "\(Int($0.rounded()))" },
+                        simpleMetric: .rest
+                    )
+                }
                 metricChart(
                     // Plotted points + range stay on the stored 0–100 scale (line shape unchanged); only the
                     // displayed numbers + unit follow the Effort-scale toggle, converted inside `fmt`. (#268)
@@ -725,14 +887,22 @@ struct TrendsView: View {
                     accessibilityTitle: String(localized: "Effort"),
                     metricKey: "strain",
                     points: strainPts,
+                    subtitle: window(strain),
                     // WHOOP: Effort/Strain is always BLUE — a deep→bright blue line, not the amber ramp.
                     gradient: gradient(StrandPalette.effortColor),
                     tip: StrandPalette.effortColor,
                     tint: StrandPalette.effortColor,
                     higherIsBetter: nil,
                     range: valueRange(strainPts, fallback: 0...100),
-                    fmt: { UnitFormatter.effortDisplay($0, scale: effortScale) }
+                    fmt: { UnitFormatter.effortDisplay($0, scale: effortScale) },
+                    simpleMetric: .effort
                 )
+            }
+            if simpleMode {
+                Text("Each chart compares the later half of the period with the earlier half, and calls it a change only when the difference is bigger than your normal day-to-day ups and downs.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }
@@ -752,13 +922,16 @@ struct TrendsView: View {
         tint: Color?,
         higherIsBetter: Bool?,
         range: ClosedRange<Double>,
-        fmt: @escaping (Double) -> String
+        fmt: @escaping (Double) -> String,
+        // Which reading a Simple mode footer describes; nil keeps the full view's footer.
+        simpleMetric: SimpleTrendMetric? = nil
     ) -> some View {
         let avg = mean(pts)
+        let simple = simpleMode ? simpleMetric : nil
         let card = ChartCard(
             title: title,
             subtitle: subtitle,
-            trailing: avg.map(fmt),
+            trailing: simple == nil ? avg.map(fmt) : nil,
             height: NoopMetrics.chartHeight,
             tint: tint,
             chart: {
@@ -771,6 +944,9 @@ struct TrendsView: View {
                 }
             },
             footer: {
+                if let simple {
+                    simpleFooter(simple, points: pts)
+                } else {
                 HStack {
                     ChartFooter([
                         // Plain "MEAN" to match the bare MIN/MAX columns; the unit moves into
@@ -780,6 +956,7 @@ struct TrendsView: View {
                         ("Max", pts.map(\.value).max().map(fmt) ?? "—"),
                     ])
                     changeChip(pts, higherIsBetter: higherIsBetter, fmt: fmt)
+                }
                 }
             }
         )
@@ -801,9 +978,18 @@ struct TrendsView: View {
             return RecoveryDay(date: dt, score: d.recovery)
         }
         let title = (range == .all && repo.days.count > 365) ? String(localized: "Charge (all history)") : String(localized: "Charge (past year)")
+        let scored = recoveryDays.filter { $0.score != nil }.count
         return NoopCard {
             VStack(alignment: .leading, spacing: NoopMetrics.cardInnerSpacing) {
-                SectionHeader("\(title)", overline: "Calendar", trailing: String(localized: "\(recoveryDays.filter { $0.score != nil }.count) days"))
+                if simpleMode {
+                    // Simple mode: what the squares are, in words, and the Charge words on the scale's ends.
+                    SectionHeader("Charge, day by day",
+                                  trailing: (range == .all && repo.days.count > 365)
+                                      ? SimpleTrendRules.windowName(days: nil)
+                                      : SimpleTrendRules.windowName(days: 365))
+                } else {
+                    SectionHeader("\(title)", overline: "Calendar", trailing: String(localized: "\(scored) days"))
+                }
                 if recoveryDays.isEmpty {
                     sparsePlaceholder.frame(height: 120)
                 } else {
@@ -812,6 +998,14 @@ struct TrendsView: View {
                     }
                     Divider().overlay(StrandPalette.hairline)
                     legend
+                    if simpleMode {
+                        Text(scored == 1
+                             ? String(localized: "Each square is one day, coloured by its Charge. 1 day has a Charge.")
+                             : String(localized: "Each square is one day, coloured by its Charge. \(scored) days have a Charge."))
+                            .font(StrandFont.footnote)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
         }
@@ -819,7 +1013,7 @@ struct TrendsView: View {
 
     private var legend: some View {
         HStack(spacing: NoopMetrics.space2) {
-            Text("Depleted")
+            Group { if simpleMode { Text("Low") } else { Text("Depleted") } }
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
                 .fixedSize()
@@ -828,14 +1022,14 @@ struct TrendsView: View {
                 .frame(height: NoopMetrics.indicatorTrackHeight)
                 .clipShape(Capsule())
                 .accessibilityHidden(true)
-            Text("Peaked")
+            Group { if simpleMode { Text("High") } else { Text("Peaked") } }
                 .font(StrandFont.footnote)
                 .foregroundStyle(StrandPalette.textTertiary)
                 .fixedSize()
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Charge scale, depleted to peaked")
+        .accessibilityLabel(simpleMode ? "Charge scale, low to high" : "Charge scale, depleted to peaked")
     }
 
     // MARK: Shared bits
