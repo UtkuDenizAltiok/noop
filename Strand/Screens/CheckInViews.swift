@@ -203,15 +203,17 @@ struct CheckInPresenter: ViewModifier {
 
     @MainActor
     private func offerIfDue() async {
-        guard enabled, offered == nil else { return }
+        // Only while the app is open in front of the wearer (`CheckIn.shouldOffer`): a background launch for a
+        // strap sync must not use up the day's offer unseen.
+        guard enabled, offered == nil, scenePhase == .active else { return }
         let now = Date()
         let today = Repository.logicalDayKey(now)
         let hour = Calendar.current.component(.hour, from: now)
         let last = UserDefaults.standard.string(forKey: CheckIn.lastOfferedDayKey)
         guard CheckIn.offerHours.contains(hour), last != today else { return }
         let answered = CheckIn.isComplete(await repo.nativeJournalNumeric(day: today))
-        guard CheckIn.shouldOffer(enabled: enabled, hour: hour, lastOfferedDay: last, today: today,
-                                  answeredToday: answered) else { return }
+        guard CheckIn.shouldOffer(enabled: enabled, appIsActive: scenePhase == .active, hour: hour,
+                                  lastOfferedDay: last, today: today, answeredToday: answered) else { return }
         UserDefaults.standard.set(today, forKey: CheckIn.lastOfferedDayKey)
         // Read from the store, not `repo.sleeps`: at launch that cache may not be filled yet. A strap-only
         // wearer's nights are the computed ones, so those are read when no imported night is there.
