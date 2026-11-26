@@ -153,6 +153,9 @@ struct RootTabView: View {
             moreTab(path: $tabPaths[4], scrollSignal: scrollTop[4]).tag(4)
         }
         .tint(StrandPalette.accent)
+        // The developer's morning check-in (opt-in from the Test Centre, `CheckIn`): offered full screen before
+        // the scores are seen, once a day.
+        .offersMorningCheckIn()
         // Removing the Coach tab while STANDING on it (Coach switched off, or Simple mode switched on with no
         // provider) leaves `selectedTab` pointing at a tag no tab claims any more, which renders as an empty
         // tab rather than as an error. Send that wearer to Today, and only in that case, so a flip made from
