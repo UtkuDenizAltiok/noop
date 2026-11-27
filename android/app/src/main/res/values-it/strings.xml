@@ -2841,4 +2841,5 @@
     <string name="settings_sleep_need">Fabbisogno di sonno</string>
     <string name="settings_sleep_need_automatic">Automatico (%1$s)</string>
     <string name="settings_sleep_need_footnote">Automatico calcola il tuo fabbisogno dalla tua età e dalle notti in cui dormi di più. Oppure scegli il tuo: NOOP misurerà allora rispetto a esso il debito di sonno, l\'obiettivo di stanotte, il promemoria per andare a letto e il punteggio di riposo.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: una modalità semplice e calma, un sonno più fedele e il tuo fabbisogno di sonno</string>
 </resources>

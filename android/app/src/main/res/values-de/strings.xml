@@ -2886,4 +2886,5 @@
     <string name="settings_sleep_need">Schlafbedarf</string>
     <string name="settings_sleep_need_automatic">Automatisch (%1$s)</string>
     <string name="settings_sleep_need_footnote">Automatisch berechnet deinen Bedarf aus deinem Alter und den Nächten, in denen du am längsten schläfst. Oder wähle deinen eigenen: Dann misst NOOP deine Schlafschuld, das heutige Ziel, die Schlafenszeit-Erinnerung und deinen Erholungswert daran.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: ein ruhiger einfacher Modus, genauerer Schlaf und dein eigener Schlafbedarf</string>
 </resources>

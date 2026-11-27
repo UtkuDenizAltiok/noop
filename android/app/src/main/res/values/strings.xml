@@ -2902,4 +2902,5 @@
     <string name="settings_sleep_need">Sleep need</string>
     <string name="settings_sleep_need_automatic">Automatic (%1$s)</string>
     <string name="settings_sleep_need_footnote">Automatic works your need out from your age and the nights you sleep longest. Or choose your own: NOOP then measures your sleep debt, tonight\'s goal, the bedtime reminder and your Rest score against it.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: a calm Simple mode, truer sleep, and your own sleep need</string>
 </resources>

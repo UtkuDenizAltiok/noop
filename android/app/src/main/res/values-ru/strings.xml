@@ -2768,4 +2768,5 @@
     <string name="settings_sleep_need">Потребность во сне</string>
     <string name="settings_sleep_need_automatic">Автоматически (%1$s)</string>
     <string name="settings_sleep_need_footnote">«Автоматически» рассчитывает потребность по вашему возрасту и ночам, когда вы спите дольше всего. Или выберите свою: тогда NOOP будет измерять по ней недосып, цель на ночь, напоминание о сне и оценку отдыха.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: спокойный простой режим, более точный сон и ваша собственная потребность во сне</string>
 </resources>

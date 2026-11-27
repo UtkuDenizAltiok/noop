@@ -2889,4 +2889,5 @@
     <string name="settings_sleep_need">Zapotrzebowanie na sen</string>
     <string name="settings_sleep_need_automatic">Automatycznie (%1$s)</string>
     <string name="settings_sleep_need_footnote">Automatycznie wylicza Twoje zapotrzebowanie z wieku i nocy, w które śpisz najdłużej. Możesz też wybrać własne: NOOP mierzy wtedy według niego dług snu, cel na dzisiejszą noc, przypomnienie o pójściu spać i wynik odpoczynku.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: spokojny tryb prosty, wierniejszy sen i Twoja własna potrzeba snu</string>
 </resources>

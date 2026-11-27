@@ -2865,4 +2865,5 @@
     <string name="settings_sleep_need">Necessidade de sono</string>
     <string name="settings_sleep_need_automatic">Automático (%1$s)</string>
     <string name="settings_sleep_need_footnote">Automático calcula a tua necessidade a partir da tua idade e das noites em que dormes mais. Ou escolhe a tua: a NOOP passa a medir com ela a tua dívida de sono, o objetivo desta noite, o lembrete para deitar e a tua pontuação de descanso.</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13: um modo simples calmo, sono mais fiel e a tua própria necessidade de sono</string>
 </resources>

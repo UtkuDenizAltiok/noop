@@ -2843,4 +2843,5 @@
     <string name="settings_sleep_need">睡眠需求</string>
     <string name="settings_sleep_need_automatic">自动（%1$s）</string>
     <string name="settings_sleep_need_footnote">“自动”会根据你的年龄和你睡得最久的那些夜晚算出你的需求。你也可以自己选：之后 NOOP 会据此衡量你的睡眠负债、今晚的目标、睡前提醒和休息评分。</string>
+    <string name="l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7">NOOP 13：平静的简洁模式、更准确的睡眠，以及你自己的睡眠需求</string>
 </resources>

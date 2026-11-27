@@ -26,7 +26,7 @@ object AppChangelog {
      * Bump this when you add a release below. The "What's New" sheet shows automatically when the
      * stored last-seen version is behind this. (Decoupled from the bundle version on purpose.)
      */
-    const val CURRENT_VERSION = "12.0.0"
+    const val CURRENT_VERSION = "13.0.0"
 
     data class Release(
         val version: String,
@@ -37,6 +37,22 @@ object AppChangelog {
 
     /** Newest first. */
     val releases: List<Release> = listOf(
+        Release(
+            version = "13.0.0",
+            title = uiString(R.string.l10n_app_changelog_noop_13_a_calm_simple_mode_a11c4cf7),
+            date = "November 2026",
+            items = listOf(
+                "**NOOP 13 is its own project.** It continues NOOP 12.0.0 (ryanbr/noop, PolyForm Noncommercial 1.0.0) independently, with every original credit kept; all of NOOP's features are still here.",
+                "**Simple mode.** Each screen answers one question in plain words, compares every number with your own normal, and keeps everything else one tap away with \"Show everything on this screen\". Settings turns it off.",
+                "**Sleep, closer to a sleep lab.** Sleep starts at your first 10 minutes of unbroken sleep and ends at your last; short wakes inside the night are found by published rescoring rules (Webster 1982). On 31 lab nights the \"Woke\" time moved from 5.5 to 1 minute off, and sleep/wake agreement rose for 24 of 31 people.",
+                "**Fell asleep, woke, and naps.** The Sleep tab says when you fell asleep and woke, asks about likely naps instead of missing them, and the morning check-in lets you correct a night.",
+                "**One sleep need, yours or automatic.** Choose your own sleep need (7h to 9h 30m) or let NOOP use the expert range for your age; Rest, sleep debt, tonight's goal and the bedtime reminder all use the same one.",
+                "**Regular sleep counts.** After about 5 nights in a row the Rest score measures how regular your bed and wake times are with the Sleep Regularity Index (Phillips 2017) instead of a fixed half.",
+                "**Workouts against the WHO guideline.** The last 7 days count the minutes your heart rate spent at moderate and vigorous effort during workouts, and your days of strength training.",
+                "**Steps on the strap.** When the iPhone is with you on a walk it calibrates the strap's step count; days without the phone change nothing.",
+                "**A high heart rate warning, and a developer loop.** An optional strap buzz when your heart rate stays above a limit you set; a morning check-in and a developer export help improve NOOP from real nights.",
+            ),
+        ),
         Release(
             version = "12.0.0",
             title = uiString(R.string.l10n_app_changelog_today_your_way_heart_rate_any_5e1308b3),
