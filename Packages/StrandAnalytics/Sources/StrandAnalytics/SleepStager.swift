@@ -1751,7 +1751,7 @@ public enum SleepStager {
             }
         }
         let n = runSleep.count
-        func span(_ r: Int) -> Int { max(0, sorted[runLast[r]].end - sorted[runFirst[r]].start) }
+        let span: (Int) -> Int = { r in max(0, sorted[runLast[r]].end - sorted[runFirst[r]].start) }
         // Seconds of each sleep run Webster's rules make wake, from its start; Int.max = the whole run.
         var cut = [Int](repeating: 0, count: n)
         for r in 0..<n where runSleep[r] {
@@ -1769,25 +1769,27 @@ public enum SleepStager {
             for r in (keep + 1)..<n where runSleep[r] { cut[r] = Int.max }
         }
         guard cut.contains(where: { $0 > 0 }) else { return stages }
-        var out: [StageSegment] = []
-        func emit(_ start: Int, _ end: Int, _ stage: String) {
-            if let last = out.last, last.stage == stage, last.end == start {
-                out[out.count - 1].end = end
-            } else {
-                out.append(StageSegment(start: start, end: end, stage: stage))
-            }
-        }
+        // Each piece in order, as (start, end, stage); touching same-stage pieces are merged below.
+        var pieces: [StageSegment] = []
         for r in 0..<n {
             let boundary = cut[r] == Int.max ? Int.max : sorted[runFirst[r]].start + cut[r]
             for seg in sorted[runFirst[r]...runLast[r]] {
                 if !runSleep[r] || cut[r] == 0 || seg.start >= boundary {
-                    emit(seg.start, seg.end, seg.stage)
+                    pieces.append(seg)
                 } else if seg.end <= boundary {
-                    emit(seg.start, seg.end, "wake")
+                    pieces.append(StageSegment(start: seg.start, end: seg.end, stage: "wake"))
                 } else {
-                    emit(seg.start, boundary, "wake")
-                    emit(boundary, seg.end, seg.stage)
+                    pieces.append(StageSegment(start: seg.start, end: boundary, stage: "wake"))
+                    pieces.append(StageSegment(start: boundary, end: seg.end, stage: seg.stage))
                 }
+            }
+        }
+        var out: [StageSegment] = []
+        for piece in pieces {
+            if let last = out.last, last.stage == piece.stage, last.end == piece.start {
+                out[out.count - 1].end = piece.end
+            } else {
+                out.append(piece)
             }
         }
         return out

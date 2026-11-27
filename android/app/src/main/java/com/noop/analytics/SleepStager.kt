@@ -1930,7 +1930,7 @@ object SleepStager {
             }
         }
         val n = runSleep.size
-        fun span(r: Int): Long = maxOf(0L, sorted[runLast[r]].end - sorted[runFirst[r]].start)
+        val span = { r: Int -> maxOf(0L, sorted[runLast[r]].end - sorted[runFirst[r]].start) }
         // Seconds of each sleep run Webster's rules make wake, from its start; Long.MAX_VALUE = the whole run.
         val whole = Long.MAX_VALUE
         val cut = LongArray(n)
@@ -1959,27 +1959,29 @@ object SleepStager {
             for (r in keep + 1 until n) if (runSleep[r]) cut[r] = whole
         }
         if (cut.none { it > 0L }) return stages
-        val out = ArrayList<StageSegment>(sorted.size + n)
-        fun emit(start: Long, end: Long, stage: String) {
-            val last = out.lastOrNull()
-            if (last != null && last.stage == stage && last.end == start) {
-                out[out.size - 1] = StageSegment(start = last.start, end = end, stage = stage)
-            } else {
-                out.add(StageSegment(start = start, end = end, stage = stage))
-            }
-        }
+        // Each piece in order; touching same-stage pieces are merged below.
+        val pieces = ArrayList<StageSegment>(sorted.size + n)
         for (r in 0 until n) {
             val boundary = if (cut[r] == whole) whole else sorted[runFirst[r]].start + cut[r]
             for (k in runFirst[r]..runLast[r]) {
                 val seg = sorted[k]
                 if (!runSleep[r] || cut[r] == 0L || seg.start >= boundary) {
-                    emit(seg.start, seg.end, seg.stage)
+                    pieces.add(StageSegment(start = seg.start, end = seg.end, stage = seg.stage))
                 } else if (seg.end <= boundary) {
-                    emit(seg.start, seg.end, "wake")
+                    pieces.add(StageSegment(start = seg.start, end = seg.end, stage = "wake"))
                 } else {
-                    emit(seg.start, boundary, "wake")
-                    emit(boundary, seg.end, seg.stage)
+                    pieces.add(StageSegment(start = seg.start, end = boundary, stage = "wake"))
+                    pieces.add(StageSegment(start = boundary, end = seg.end, stage = seg.stage))
                 }
+            }
+        }
+        val out = ArrayList<StageSegment>(pieces.size)
+        for (piece in pieces) {
+            val last = out.lastOrNull()
+            if (last != null && last.stage == piece.stage && last.end == piece.start) {
+                out[out.size - 1] = StageSegment(start = last.start, end = piece.end, stage = piece.stage)
+            } else {
+                out.add(piece)
             }
         }
         return out

@@ -19,11 +19,11 @@
   },
   "authority": {
     "files": {"count": 512, "sha256": "da97ce4ff17f1f85c906e9a339db11dfd6a32647154d1f786457b54dd16e903e"},
-    "functions": {"count": 4587, "sha256": "01bf24e12b4696cceccee22052f74e1ab04e3e79fdf1b25e54523a29cc30b71f"},
+    "functions": {"count": 4589, "sha256": "62b4778e24160260010ff0cb80665d605dfc353283797b5f8bec937f81f1e15a"},
     "properties": {"count": 497, "sha256": "ce192d3899491dc70f823292b86c6ed7918be075b22de387776d3bfa01987d97"},
     "constants": {"count": 2055, "sha256": "1766cd12d0704f56bf952990b1d51193c85bbbfd9e16fcc2be6d04fd6f591ace"},
     "file_pairs": {"count": 83, "sha256": "7dfc688f01259ee4c6c9575922c5369d4ea8cca3325013d9f6066b42f1b59f41"},
-    "function_pairs": {"count": 249, "sha256": "d008ec4a392ba8e2d1e658c9b0747f460eca57acc695b83ccb6a919d732da4d9"},
+    "function_pairs": {"count": 250, "sha256": "eda1fc6582bd2e520e209f9067c5a6c58ecd8ca4070d73cc6f70f608d215a502"},
     "property_pairs": {"count": 168, "sha256": "612b3e4c9ef0da9d71b0c73e94f19ebca90308e7b1024db0e14c702d161327c7"},
     "constant_pairs": {"count": 731, "sha256": "bf2f00ec59e7d2a0f209e17c2fb7f0e3e5b4443b293fad56c459b62067de61de"},
     "unpaired_files": {"count": 368, "sha256": "93e3778ddc03298a57b847f2aa3700fd6c748fd487d2caf93ffe83ca8d61affd"},
