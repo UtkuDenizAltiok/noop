@@ -729,7 +729,8 @@ struct SleepView: View {
             usualWakeMinute: SimpleDayPlan.usualWakeMinute(
                 wakeTimes: repo.sleeps.map { Date(timeIntervalSince1970: TimeInterval($0.endTs)) },
                 calendar: .current),
-            lastNightNeedMin: lastNight?.need)
+            lastNightNeedMin: lastNight?.need,
+            onGuide: { plainGuideTerm = .tonightGoal })
     }
 
     /// The 24 h dial (#1680), or nothing at all.
@@ -2470,7 +2471,11 @@ struct SleepView: View {
     @ViewBuilder
     private var emptyState: some View {
         SleepFreshnessNote(latestWakeTs: nil)
-        if repo.loaded {
+        if repo.loaded, simpleMode {
+            // Design v6, step 6: a new wearer's first look at Sleep says what happens next, in words. The full
+            // view's text points to Data Sources and Intelligence, which Simple mode keeps under All features.
+            ComingSoon(what: "No nights yet. Wear the strap to bed tonight: tomorrow morning your night shows here, with your Rest score, how long you slept and your sleep stages. Have WHOOP data already? Bring it in under More → All features → Data Sources.")
+        } else if repo.loaded {
             ComingSoon(what: "No nights here yet. Import your WHOOP export in Data Sources to see every night, your sleep stages and trends straight away. Or open Intelligence to see last night computed from the strap after you wear it to bed.")
         } else {
             ComingSoon(what: "Loading your sleep history…")

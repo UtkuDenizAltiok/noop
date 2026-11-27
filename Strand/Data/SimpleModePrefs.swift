@@ -107,6 +107,8 @@ enum SimpleTodaySection: String, CaseIterable, Identifiable {
 
 /// One always-open group of Simple mode's More list, in render order.
 enum SimpleMoreGroup: String, CaseIterable {
+    /// The strap itself, first and without a heading (Design v6, step 6: More had no row for the strap, W47).
+    case strap
     case yourBody, training, dailyTools, yourData, help
 }
 
@@ -117,6 +119,8 @@ enum SimpleMoreGroup: String, CaseIterable {
 /// deciding where it leads, and cannot be dropped from the screen while it is still listed. Every row is
 /// also in the full More list; Simple mode chooses, it never removes.
 enum SimpleMoreEntry: String, CaseIterable, Identifiable {
+    /// "My strap": the Devices screen, its caption the strap's state ("Connected · 82%").
+    case myStrap
     case liveHeartRate, healthMonitor, stress
     case workouts, liftLog
     /// Daily tools: Alarms, then the high heart rate warning (`HighHRAlertView`), Breathe and Coach.
@@ -129,6 +133,7 @@ enum SimpleMoreEntry: String, CaseIterable, Identifiable {
 
     var group: SimpleMoreGroup {
         switch self {
+        case .myStrap: return .strap
         case .liveHeartRate, .healthMonitor, .stress: return .yourBody
         case .workouts, .liftLog: return .training
         case .alarms, .heartRateWarning, .breathe, .coach: return .dailyTools
