@@ -213,7 +213,7 @@ internal fun buildSleepModel(
             // truth the Today Rest score, the metric-detail overlay (below) and iOS SleepView
             // (AnalyticsEngine.Rest.composite(daily:)) read. The old hours-vs-need proxy ceilinged
             // live 5.0 nights at 100% here while every other surface showed the ~85% composite (#298).
-            ?: com.noop.analytics.RestScorer.composite(d, needHours = SleepNeed.currentHours(days))
+            ?: com.noop.analytics.RestScorer.composite(d, needHours = SleepNeed.currentHours(days), consistency = SleepRegularity.consistency)
     }
     val efficiency = metric(days, todayKey) { d ->
         d.efficiency?.let { if (it <= 1.0) it * 100.0 else it }

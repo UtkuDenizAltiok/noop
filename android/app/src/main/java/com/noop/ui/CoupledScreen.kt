@@ -172,7 +172,7 @@ fun CoupledScreen(
     // Sleep performance %: the imported figure when the export carried one, else the resolved Rest composite
     // (RestScorer.composite), the SAME single source of truth the Today Rest score + Sleep graph read.
     val sleepPerformance = todayRow?.let { d ->
-        importedPerf[d.day] ?: RestScorer.composite(d, needHours = SleepNeed.currentHours())
+        importedPerf[d.day] ?: RestScorer.composite(d, needHours = SleepNeed.currentHours(), consistency = SleepRegularity.consistency)
     }
 
     // On-device readiness, computed EXACTLY as Today does, so the one-word pill matches the home screen.

@@ -86,7 +86,7 @@ fun buildWeeklyDigest(
         d.recovery?.let { charge[d.day] = it }
         d.strain?.let { effort[d.day] = it }
         // Rest = the sleep-performance composite recomputed on the persisted day.
-        RestScorer.composite(d, needHours = SleepNeed.currentHours())?.let { rest[d.day] = it }
+        RestScorer.composite(d, needHours = SleepNeed.currentHours(), consistency = SleepRegularity.consistency)?.let { rest[d.day] = it }
         d.restingHr?.let { rhr[d.day] = it.toDouble() }
         d.avgHrv?.let { hrv[d.day] = it }
     }

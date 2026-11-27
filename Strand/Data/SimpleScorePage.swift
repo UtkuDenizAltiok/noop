@@ -189,7 +189,8 @@ enum SimpleScoreRules {
         case efficiency
         /// Deep and REM sleep as a share of the sleep.
         case restorative
-        /// Regular bed and wake times. Not measured for the score shown: see `RestBreakdown`.
+        /// Regular bed and wake times: the last week's Sleep Regularity Index (`SleepRegularity`), neutral until
+        /// there is one.
         case regularity
     }
 
@@ -205,9 +206,9 @@ enum SimpleScoreRules {
     ///
     /// It follows `AnalyticsEngine.Rest.composite(daily:)`, the function every screen's Rest score comes
     /// from, with that function's own inputs: a full night is the one sleep need the Sleep tab states
-    /// (`SleepNeed`, v6 step 7), and the regularity part is always the neutral half (`neutralConsistency`),
-    /// because the daily row carries no regularity figure. The page says both plainly instead of presenting
-    /// them as measurements; a test pins that the parts always add up to that function's score.
+    /// (`SleepNeed`, v6 step 7), and the regularity part is the last week's Sleep Regularity Index
+    /// (`SleepRegularity`), or the neutral half (`neutralConsistency`) until about five nights in a row exist.
+    /// The page says which; a test pins that the parts always add up to that function's score.
     struct RestBreakdown: Equatable {
         let parts: [RestPart]
         /// The score the parts add up to, as the ring prints it.
@@ -224,16 +225,20 @@ enum SimpleScoreRules {
         let restorativeTargetPct: Double
         /// Whether short deep sleep scaled the restorative part down.
         let deepWasShort: Bool
-        /// The highest score a night can reach while regularity is not measured.
+        /// The highest score a night can reach: 100, or less while regularity is not measured.
         let highestPossible: Int
+        /// The Sleep Regularity Index the regularity part comes from, rounded, or nil while it is not measured.
+        let regularityIndex: Int?
     }
 
     /// The breakdown of a day row's Rest score, or nil when the row has no sleep to score (the same rows
     /// `Rest.composite(daily:)` returns nil for).
-    static func restBreakdown(daily d: DailyMetric, needHours: Double = SleepNeed.currentHours()) -> RestBreakdown? {
+    static func restBreakdown(daily d: DailyMetric, needHours: Double = SleepNeed.currentHours(),
+                              regularityIndex: Double? = SleepRegularity.index) -> RestBreakdown? {
         typealias Rest = AnalyticsEngine.Rest
+        let consistency = SleepRegularityIndex.consistency(regularityIndex)
         guard let tstMin = d.totalSleepMin, tstMin > 0, let eff = d.efficiency,
-              let score = Rest.composite(daily: d, needHours: needHours) else { return nil }
+              let score = Rest.composite(daily: d, needHours: needHours, consistency: consistency) else { return nil }
         func clamp01(_ x: Double) -> Double { max(0.0, min(1.0, x)) }
         let needMin = max(needHours, 0.1) * 60.0
         let deepMin = d.deepMin ?? 0
@@ -246,7 +251,7 @@ enum SimpleScoreRules {
             (.efficiency, Rest.wEfficiency * clamp01(eff), Rest.wEfficiency),
             (.restorative, Rest.wRestorative * clamp01((restorativeMin / tstMin) / Rest.restorativeTarget) * deepFactor,
              Rest.wRestorative),
-            (.regularity, Rest.wConsistency * clamp01(Rest.neutralConsistency), Rest.wConsistency),
+            (.regularity, Rest.wConsistency * clamp01(consistency ?? Rest.neutralConsistency), Rest.wConsistency),
         ]
         let printedScore = Int(score.rounded())
         let points = wholePoints(exact.map { $0.1 * 100.0 }, total: printedScore)
@@ -260,7 +265,8 @@ enum SimpleScoreRules {
             restorativeMin: restorativeMin, restorativeSharePct: restorativeMin / tstMin * 100.0,
             restorativeTargetPct: Rest.restorativeTarget * 100.0,
             deepWasShort: d.deepMin != nil && deepFactor < 1.0,
-            highestPossible: Int((100.0 - Rest.wConsistency * 100.0 + neutralPoints).rounded()))
+            highestPossible: consistency == nil ? Int((100.0 - Rest.wConsistency * 100.0 + neutralPoints).rounded()) : 100,
+            regularityIndex: regularityIndex.map { Int($0.rounded()) })
     }
 
     /// Whole-number points for `exact` that add up to `total`: each part rounded down, then the points still

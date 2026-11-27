@@ -902,6 +902,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     init {
         // v6 step 7: the one sleep need every screen reads ([SleepNeed]) needs the profile preferences.
         SleepNeed.attach(app)
+        SleepRegularity.attach(app)
         // Multi-source coordinator (Phase 1B): reconcile the live source against the registry's active
         // device ONCE at launch. DORMANT for a single-WHOOP install (the default) — it no-ops and the
         // existing WHOOP flow below runs unchanged; it only acts when a non-WHOOP strap is the active
@@ -1070,7 +1071,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             // otherwise the midnight rollover re-fires last night's recap for late-nighters (#567).
                             reportDay = todayRow.day,
                             chargePct = todayRow.recovery.scorePctOrNull(),
-                            restPct = RestScorer.composite(todayRow, needHours = SleepNeed.currentHours()).scorePctOrNull(),
+                            restPct = RestScorer.composite(todayRow, needHours = SleepNeed.currentHours(), consistency = SleepRegularity.consistency).scorePctOrNull(),
                         )
                     }
                     // #593: once-a-day optimal-strain-reached nudge. Convert the stored 0-100 Effort to the
@@ -1142,7 +1143,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             recoveryPct = anchorRow?.recovery?.roundToInt(),
                             // Rest = the sleep_performance composite from THIS row's banked stage figures
                             // (pure, honest-null until last night is scored); Effort = the 0–100 strain. (#516)
-                            restPct = anchorRow?.let { RestScorer.composite(it, needHours = SleepNeed.currentHours())?.roundToInt() },
+                            restPct = anchorRow?.let { RestScorer.composite(it, needHours = SleepNeed.currentHours(), consistency = SleepRegularity.consistency)?.roundToInt() },
                             effortPct = anchorRow?.strain?.roundToInt(),
                             heartRate = live.heartRate,
                             // The ACTIVE device's charge (#2075): a ring reports its own and does not

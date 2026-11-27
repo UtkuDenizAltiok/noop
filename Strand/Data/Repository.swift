@@ -2593,7 +2593,8 @@ final class Repository: ObservableObject {
         case "sleep_deep_min", "deep_min": return d.deepMin
         case "sleep_rem_min", "rem_min":   return d.remMin
         case "sleep_light_min", "core_min": return d.lightMin
-        case "sleep_performance": return AnalyticsEngine.Rest.composite(daily: d, needHours: SleepNeed.currentHours())
+        case "sleep_performance": return AnalyticsEngine.Rest.composite(daily: d, needHours: SleepNeed.currentHours(),
+                                                                           consistency: SleepRegularity.consistency)
         case "steps":            return d.steps.map(Double.init)
         case "active_kcal", "energy_kcal": return d.activeKcalEst
         default:                 return nil

@@ -495,7 +495,11 @@ struct SimpleScorePageView: View {
             }
         case .regularity:
             name = String(localized: "Regular bed and wake times")
-            lines.append(String(localized: "Not measured yet. Every night gets half of these points for now, so the highest possible score is \(breakdown.highestPossible)."))
+            if let index = breakdown.regularityIndex {
+                lines.append(String(localized: "Your regularity over the last week: \(index) of 100. Most adults score around 80; the same bed and wake times every day raise it."))
+            } else {
+                lines.append(String(localized: "Measured after about 5 nights in a row with the strap on. Until then every night gets half of these points, so the highest possible score is \(breakdown.highestPossible)."))
+            }
         }
         return VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline) {

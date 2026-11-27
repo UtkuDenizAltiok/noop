@@ -78,7 +78,7 @@ internal fun recoveryChargeDrivers(
 
     // sleepPerf: the Rest COMPOSITE (/100) when stages exist, else raw efficiency, the SAME derivation
     // recomputeRecovery uses, so the Sleep driver scores against the headline's own input.
-    val sleepPerf = RestScorer.composite(day, needHours = SleepNeed.currentHours())?.let { it / 100.0 } ?: day.efficiency
+    val sleepPerf = RestScorer.composite(day, needHours = SleepNeed.currentHours(), consistency = SleepRegularity.consistency)?.let { it / 100.0 } ?: day.efficiency
 
     return RecoveryDrivers.chargeDrivers(
         hrv = hrv,

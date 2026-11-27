@@ -128,7 +128,8 @@ internal class NotifyDayStateCache(
         val state = NotifyDayState(
             todayRecovery = todayRow?.recovery,
             widgetRecovery = anchorRow?.recovery?.roundToInt(),
-            widgetRest = anchorRow?.let { RestScorer.composite(it, needHours = com.noop.ui.SleepNeed.currentHours())?.roundToInt() },
+            widgetRest = anchorRow?.let { RestScorer.composite(it, needHours = com.noop.ui.SleepNeed.currentHours(),
+                consistency = com.noop.ui.SleepRegularity.consistency)?.roundToInt() },
             widgetEffort = anchorRow?.strain?.roundToInt(),
             illness = if (illnessEnabled && todayRow != null && days.lastOrNull()?.day == todayRow.day) {
                 illnessEvaluator(days)
