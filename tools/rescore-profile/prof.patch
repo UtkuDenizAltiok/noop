@@ -1,0 +1,37 @@
+diff --git a/Strand/App/AppModel.swift b/Strand/App/AppModel.swift
+index 20e3785a..0dd7a85d 100644
+--- a/Strand/App/AppModel.swift
++++ b/Strand/App/AppModel.swift
+@@ -261,7 +261,7 @@ final class AppModel: ObservableObject {
+         // subsystem writes to (PII-scrubbed by `live.append(log:)`), so a bug report ships proof of what
+         // was computed per day. `live` is captured strongly (created just above) , the engine outlives the
+         // app session, so there's no retain-cycle risk worth a weak dance here. (Sleep overhaul §2.5.)
+-        self.intelligence.diagnosticSink = { [live] line, domain in live.append(log: line, domain: domain) }
++        self.intelligence.diagnosticSink = { [live] line, domain in NSLog("PROFLOG %@", line); live.append(log: line, domain: domain) }
+         // Workouts & GPS test mode (Test Centre): wire the Repository (auto-detect inputs/why + cross-source
+         // dedup decisions) and the GPS recorder (fix-progress) tagged sinks to the SAME shareable strap log.
+         // Each emitter re-checks `TestCentre.active(.workouts)` before building a line, so these wirings are
+@@ -498,6 +498,23 @@ final class AppModel: ObservableObject {
+             // history once, so any deep-history rows an older build left on the 0–21 axis regenerate on
+             // the 0–100 axis. Guarded by a persisted flag, so this is a no-op on every subsequent launch.
+             await self.intelligence.runEffortRescoreIfNeeded()
++            // PROF (throwaway, never committed): three forced passes back to back, the first cold, then warm.
++            NSLog("PROF: waiting 25 s for the profiler")
++            try? await Task.sleep(nanoseconds: 25_000_000_000)
++            for i in 0..<8 {
++                if i > 0, let store = await self.repo.storeHandle() {
++                    // An "offload": ten minutes of new 1 Hz HR and R-R for now, under the device the data belongs to.
++                    let now = Int(Date().timeIntervalSince1970) - i * 600
++                    let dev = self.repo.deviceId
++                    let hr = (0..<600).map { HRSample(ts: now - 600 + $0, bpm: 62 + $0 % 5) }
++                    let rr = (0..<600).map { RRInterval(ts: now - 600 + $0, rrMs: 940 + $0 % 7, srcChannel: .whoop5Historical) }
++                    _ = try? await store.insert(Streams(hr: hr, rr: rr), deviceId: dev)
++                    NSLog("PROF: inserted 600 s under \(dev)")
++                }
++                NSLog("PROF: pass \(i) start")
++                await self.intelligence.analyzeRecent(force: true)
++                NSLog("PROF: pass \(i) end")
++            }
+             while !Task.isCancelled {
+                 // #547 RE-POLLUTION: a sync since the last tick may have armed a re-heal (its ingest gate
+                 // dropped bad-clock records). `runTimestampHealIfNeeded` honours the pending flag even after

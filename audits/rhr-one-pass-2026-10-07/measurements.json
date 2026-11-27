@@ -1,0 +1,562 @@
+[
+  {
+    "round": 0,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.078711,
+        "wall": 1.0791756249964237,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.140593,
+        "wall": 1.14082245832833,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.05193800000000026,
+        "wall": 0.05200170833268203,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.118064,
+        "wall": 1.1182064166641794,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 10977280,
+    "footprint": 6947272
+  },
+  {
+    "round": 0,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.029710999999999998,
+        "wall": 0.029722166662395466,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.070771,
+        "wall": 0.07077804167056456,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006379999999999997,
+        "wall": 0.006385416665580124,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030079999999999982,
+        "wall": 0.030083166668191552,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  },
+  {
+    "round": 1,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030472,
+        "wall": 0.03047629166394472,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.06961,
+        "wall": 0.06961879166192375,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006103999999999998,
+        "wall": 0.00610387499909848,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030717000000000008,
+        "wall": 0.03072141666780226,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  },
+  {
+    "round": 1,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.11467,
+        "wall": 1.1150914166646544,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.1663780000000001,
+        "wall": 1.1665801666676998,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.053673000000000304,
+        "wall": 0.05369250000512693,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.123736,
+        "wall": 1.1239181666605873,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 10977280,
+    "footprint": 6947272
+  },
+  {
+    "round": 2,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.124811,
+        "wall": 1.1251008333347272,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.171688,
+        "wall": 1.1719745000009425,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.05478100000000019,
+        "wall": 0.05479083333193557,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.1788890000000003,
+        "wall": 1.2325322916658479,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 12189696,
+    "footprint": 8159688
+  },
+  {
+    "round": 2,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.032091,
+        "wall": 0.032112958331708796,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.07536399999999999,
+        "wall": 0.07561525000346592,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006624999999999992,
+        "wall": 0.00666891667060554,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.031853000000000006,
+        "wall": 0.03190270833147224,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  },
+  {
+    "round": 3,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.031852,
+        "wall": 0.03194745833025081,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.075094,
+        "wall": 0.07528362499579089,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006299000000000013,
+        "wall": 0.00632200000109151,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030988,
+        "wall": 0.031059374996402767,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9781248,
+    "footprint": 5751240
+  },
+  {
+    "round": 3,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.1752559999999999,
+        "wall": 1.1775185000005877,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.1909880000000002,
+        "wall": 1.1916214166631107,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.05589300000000019,
+        "wall": 0.055925000000570435,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.1449509999999998,
+        "wall": 1.1453849999961676,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 11452416,
+    "footprint": 7422408
+  },
+  {
+    "round": 4,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.137121,
+        "wall": 1.1373801250010729,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.1808620000000003,
+        "wall": 1.1811419166697306,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.054386000000000045,
+        "wall": 0.05440262499905657,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.1537250000000001,
+        "wall": 1.1540138750060578,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 10977280,
+    "footprint": 6947272
+  },
+  {
+    "round": 4,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030907999999999998,
+        "wall": 0.03091145833604969,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.071713,
+        "wall": 0.07176500000059605,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006374000000000005,
+        "wall": 0.006373166666890029,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030568000000000012,
+        "wall": 0.030578666664951015,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  },
+  {
+    "round": 5,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030402000000000002,
+        "wall": 0.03044575000240002,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.07195299999999999,
+        "wall": 0.0719635416608071,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006088999999999997,
+        "wall": 0.0060886666615260765,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.030585000000000015,
+        "wall": 0.03058858332951786,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  },
+  {
+    "round": 5,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.137077,
+        "wall": 1.1372489999994286,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.179368,
+        "wall": 1.1797245833367924,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.054470999999999936,
+        "wall": 0.05448945833632024,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.154731,
+        "wall": 1.1550683333334746,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 10977280,
+    "footprint": 6947272
+  },
+  {
+    "round": 6,
+    "variant": "before",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.155365,
+        "wall": 1.1588623333300347,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 1.2498950000000002,
+        "wall": 1.2734124999988126,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.0834290000000002,
+        "wall": 0.2520620833383873,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 1.223925,
+        "wall": 1.2434237499983283,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 12206080,
+    "footprint": 8176072
+  },
+  {
+    "round": 6,
+    "variant": "after",
+    "cases": [
+      {
+        "case": "dense-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.03175,
+        "wall": 0.03191233333200216,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "dense-54h-read",
+        "rows": 194102,
+        "repeats": 420,
+        "cpu": 0.074937,
+        "wall": 0.07528624999395106,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=49 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "sparse-night",
+        "rows": 952,
+        "repeats": 420,
+        "cpu": 0.006164000000000003,
+        "wall": 0.006165500002680346,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      },
+      {
+        "case": "reversed-night",
+        "rows": 28502,
+        "repeats": 420,
+        "cpu": 0.031599,
+        "wall": 0.03168829166679643,
+        "output": "55|rhr bins day=synthetic bins=96 thin=1 implausible=0 winnerN=2 ungated=46 gated=55 shipped=55 gateMoved=true"
+      }
+    ],
+    "rss": 9764864,
+    "footprint": 5734856
+  }
+]

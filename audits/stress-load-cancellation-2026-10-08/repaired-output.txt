@@ -1,0 +1,8 @@
+series: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+hr: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+rr: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+gravity: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+mode: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+core: fresh=series=2.0,core=2,index=2,freq=2,personal=false late=series=2.0,core=2,index=2,freq=2,personal=false preserved=true
+advanced: fresh=series=2.0,core=0,index=-1,freq=-1,personal=true late=series=2.0,core=0,index=-1,freq=-1,personal=true preserved=true
+control: series=2.0,core=2,index=2,freq=2,personal=false
