@@ -108,7 +108,8 @@ struct StressView: View {
         }
         .onAppear { rebuildModelIfNeeded() }
         .onChangeCompat(of: repo.days) { _ in rebuildModelIfNeeded() }
-        .task(id: repo.refreshSeq) { await load() }
+        // The id carries `simpleMode` so "Show everything on this screen" loads what the full view shows (F12).
+        .task(id: "\(repo.refreshSeq)-\(simpleMode)") { await load() }
     }
 
     private func load() async {
@@ -194,6 +195,14 @@ struct StressView: View {
         // Publish the mode with the timeline it describes, after the same cancellation check.
         if case .baselineRelative = mode { daytimeUsesPersonalBaseline = true }
         else { daytimeUsesPersonalBaseline = false }
+        // Simple mode never shows the advanced readouts (`hasAdvancedReadouts && !simpleMode`), so it does not
+        // compute them either (F12): on a day of beats (34,000 to 84,000 R-R) they cost 0.03 to 0.08 s of CPU per
+        // open on a Mac, more on a phone. Showing everything re-runs this load (see the task's id).
+        guard !simpleMode else {
+            stressIndex = nil
+            freqHRV = nil
+            return
+        }
 
         // ADDITIVE advanced readouts, computed on-demand from the SAME `rr` (no extra fetch, no
         // DB / schema change, and no effect on the 0..3 score above). Each engine returns nil when
