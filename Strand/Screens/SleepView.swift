@@ -1000,6 +1000,8 @@ struct SleepView: View {
             // to the same honest stage-less stub path the navigated browse uses, instead of drawing
             // a zeroed stage card. History stays browsable and the edit pencil stays reachable.
             if nightOffset == 0, !model.isStubNight {
+                // A likely nap NOOP saw today, as a question (`NapQuestionCard`); nothing shows without one.
+                NapQuestionCard()
                 nightNavHeader(trailing: model.night.spanLabel)
                 sleepWindowRow(model.night)
                 stageCard(model.night, intervals: model.intervals)
