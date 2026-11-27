@@ -385,6 +385,20 @@ enum LabSnapshot {
                            "effortHRmax": profile.effortHRmax ?? NSNull()] as [String: Any]
         root["strap"] = ["model": UserDefaults.standard.string(forKey: "selectedWhoopModel") ?? NSNull()] as [String: Any]
 
+        // The iPhone step calibration (`StepCalibration`): the divisor in use, the last result and the paired
+        // windows behind it, so the developer can check the ratio against the strap's own records.
+        let windows = UserDefaults.standard.data(forKey: StepCalibration.windowsKey)
+            .flatMap { try? JSONDecoder().decode([StepCalibration.Pair].self, from: $0) } ?? []
+        var calibration: [String: Any] = ["enabled": StepCalibration.isEnabled,
+                                          "phoneStepsAllowed": StepCalibration.phoneStepsAllowed,
+                                          "ticksPerStepInUse": profile.stepTicksPerStep,
+                                          "windows": windows.map { [$0.start, $0.phoneSteps, $0.strapTicks] }]
+        if let result = StepCalibration.lastResult {
+            calibration["result"] = ["ticksPerStep": result.ticksPerStep, "windows": result.windows,
+                                     "phoneSteps": result.phoneSteps, "at": result.at] as [String: Any]
+        }
+        root["stepCalibration"] = calibration
+
         // Check-ins so far.
         let series = await repo.numericJournalSeries()
         let sleepAnswers = series[CheckIn.sleepTimesQuestion] ?? [:]

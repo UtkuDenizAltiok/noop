@@ -560,6 +560,10 @@ struct SettingsView: View {
                     .foregroundStyle(StrandPalette.textTertiary)
                     .fixedSize(horizontal: false, vertical: true)
                 rowDivider
+                // The iPhone calibration of that divisor (`StepCalibration`): on by default on iPhone; the manual
+                // divisor below stays for the Mac, for Android parity, and for anyone who turns the switch off.
+                StepCalibrationSettings()
+                rowDivider
                 // Step calibration (#139/#132): daily steps = @57 counter ticks ÷ this divisor.
                 // 1.0 = raw pass-through until the true 5/MG tick rate is known. The divisor goes
                 // up to 30 because a 5/MG motion counter can overcount by ~24×; the stepper uses a
