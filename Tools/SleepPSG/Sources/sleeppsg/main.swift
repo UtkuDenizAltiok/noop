@@ -28,7 +28,7 @@ while let k = it.next() {
     case "--seed": a.seed = UInt64(it.next() ?? "") ?? a.seed
     case "-h", "--help":
         print("""
-        usage: sleeppsg --dataset <root> [--section all|port|baseline|strata|rem|variants|priors|rsa]
+        usage: sleeppsg --dataset <root> [--section all|port|baseline|strata|rem|variants|priors|rsa|onset|waso]
                         [--subjects N] [--csv <path>] [--seed <n>]
 
           --dataset   PhysioNet sleep-accel v1.0.0 (a folder with labels/) or DREAMT (a folder with data_64Hz/
@@ -594,6 +594,11 @@ if want("priors") {
 // 9. Sleep onset and the final awakening (sleep-accel only: DREAMT's loader keeps no hours around the night).
 if want("onset") && !isDreamt {
     OnsetReport.run(root: root, ids: ids)
+}
+
+// 10. Wake inside the night: where the extra sleep sits, and published rules that might take it back.
+if want("waso") && !isDreamt {
+    WasoReport.run(root: root, ids: ids)
 }
 
 if want("rsa") && subjects.contains(where: { !$0.rr.isEmpty }) {

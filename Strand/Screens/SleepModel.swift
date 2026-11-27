@@ -440,7 +440,8 @@ extension SleepModel {
         let need = SleepNeed.currentHours(days: days)   // once, not per day (`SleepNeed`, v6 step 7)
         return metric(days: days) { d in
             if let p = imported[d.day]?.performancePct { return p }   // export-verbatim
-            return AnalyticsEngine.Rest.composite(daily: d, needHours: need) // real resolved Rest composite
+            return AnalyticsEngine.Rest.composite(daily: d, needHours: need,
+                                                 consistency: SleepRegularity.consistency) // real resolved Rest composite
         }
     }
 

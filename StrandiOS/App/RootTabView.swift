@@ -162,6 +162,8 @@ struct RootTabView: View {
         .offersMorningCheckIn()
         // The strap's step divisor, learned from the iPhone's pedometer once a day (`StepCalibration`).
         .calibratesStepsWithPhone()
+        // Likely naps become questions on the Sleep tab (`NapQuestions`); none is added without a Yes.
+        .asksAboutNaps()
         // Removing the Coach tab while STANDING on it (Coach switched off, or Simple mode switched on with no
         // provider) leaves `selectedTab` pointing at a tag no tab claims any more, which renders as an empty
         // tab rather than as an error. Send that wearer to Today, and only in that case, so a flip made from

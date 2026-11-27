@@ -2,8 +2,9 @@ import XCTest
 import WhoopStore
 @testable import Strand
 
-/// The sleep habits every day is scored against are learned from finished nights only, so the night still
-/// being synced cannot change them pass after pass and drop the whole day cache.
+/// The sleep habits every day is scored against (the habitual midsleep, the nightly durations and the Sleep
+/// Regularity Index) are learned from finished nights only, so the night still being synced cannot change them
+/// pass after pass and drop the whole day cache.
 @MainActor
 final class HabitualSleepFinishedNightsTests: XCTestCase {
     func testTonightsGrowingSessionIsNotLearnedFrom() async throws {
@@ -14,7 +15,7 @@ final class HabitualSleepFinishedNightsTests: XCTestCase {
                                efficiency: 0.9, restingHr: 55, avgHrv: 80, stagesJSON: nil)
         }
         _ = try await store.upsertSleepSessions(nights, deviceId: "my-whoop-noop")
-        func learn() async -> (Int?, [Double]) {
+        func learn() async -> (Int?, [Double], Double?) {
             await IntelligenceEngine.computeHabitualSleep(
                 store: store, importedId: "my-whoop", computedId: "my-whoop-noop",
                 windowStart: midnight - 30 * 86_400, windowEnd: midnight + 86_400,
@@ -30,7 +31,10 @@ final class HabitualSleepFinishedNightsTests: XCTestCase {
             let now = await learn()
             XCTAssertEqual(now.0, before.0)
             XCTAssertEqual(now.1, before.1)
+            XCTAssertEqual(now.2, before.2)
         }
         XCTAssertEqual(before.1.count, 5)
+        // Five identical finished nights: the Sleep Regularity Index has its four pairs and they all agree.
+        XCTAssertEqual(before.2, 100)
     }
 }

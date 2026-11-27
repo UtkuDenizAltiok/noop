@@ -33,8 +33,11 @@ final class SimpleScorePageTests: XCTestCase {
                     for rem in [0.0, 33.0, 96.0, 141.0] where deep + rem <= asleep {
                         let night = scorePageFixtureNight(asleep: asleep, efficiency: efficiency, deep: deep, rem: rem)
                         let need = [7.0, 7.5, 8.0, 8.75, 9.5][nights % 5]
-                        guard let score = AnalyticsEngine.Rest.composite(daily: night, needHours: need),
-                              let breakdown = SimpleScoreRules.restBreakdown(daily: night, needHours: need) else {
+                        let index: Double? = [nil, 81.4, 37.0, -12.0, 99.6, 64.5][nights % 6]
+                        guard let score = AnalyticsEngine.Rest.composite(
+                                  daily: night, needHours: need, consistency: SleepRegularityIndex.consistency(index)),
+                              let breakdown = SimpleScoreRules.restBreakdown(daily: night, needHours: need,
+                                                                             regularityIndex: index) else {
                             return XCTFail("no score for \(asleep) min asleep")
                         }
                         nights += 1
@@ -55,11 +58,11 @@ final class SimpleScorePageTests: XCTestCase {
         XCTAssertGreaterThan(nights, 1000)
     }
 
-    /// The regularity part is not measured for the score shown: it is the neutral half for every night, so
-    /// the page may say so, and the highest score it names is the score a perfect night really gets.
+    /// Before there is a Sleep Regularity Index the regularity part is the neutral half for every night, so the
+    /// page may say so, and the highest score it names is the score a perfect night really gets.
     func testRestRegularityIsTheNeutralHalfAndCapsTheScore() {
         let perfect = scorePageFixtureNight(asleep: 600, efficiency: 1.0, deep: 150, rem: 150)
-        guard let breakdown = SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8) else {
+        guard let breakdown = SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8, regularityIndex: nil) else {
             return XCTFail("no breakdown")
         }
         XCTAssertEqual(breakdown.parts.last?.kind, .regularity)
@@ -69,11 +72,30 @@ final class SimpleScorePageTests: XCTestCase {
         XCTAssertEqual(breakdown.printedScore, breakdown.highestPossible)
         // A full night is the one sleep need (v6 step 7), the need the score function is handed.
         XCTAssertEqual(breakdown.fullNightMin, 8 * 60)
-        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: perfect, needHours: 7.5)?.fullNightMin, 450)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: perfect, needHours: 7.5, regularityIndex: nil)?.fullNightMin,
+                       450)
         let short = scorePageFixtureNight(asleep: 300, efficiency: 0.8, deep: 10, rem: 60)
-        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8)?.parts.last?.points, 5)
-        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8)?.deepWasShort, true)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8, regularityIndex: nil)?.parts.last?.points,
+                       5)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8, regularityIndex: nil)?.deepWasShort,
+                       true)
         XCTAssertEqual(breakdown.deepWasShort, false)
+        XCTAssertNil(breakdown.regularityIndex)
+    }
+
+    /// With a Sleep Regularity Index the regularity part is that index on its own scale, the page names it, and a
+    /// perfect week of perfect nights can reach 100.
+    func testRestRegularityFollowsTheSleepRegularityIndex() {
+        let perfect = scorePageFixtureNight(asleep: 600, efficiency: 1.0, deep: 150, rem: 150)
+        let typical = SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8, regularityIndex: 81.4)
+        XCTAssertEqual(typical?.parts.last?.points, 8)
+        XCTAssertEqual(typical?.regularityIndex, 81)
+        XCTAssertEqual(typical?.highestPossible, 100)
+        XCTAssertEqual(typical?.printedScore, 98)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8, regularityIndex: 100)?.printedScore, 100)
+        // An irregular week (an index at or below 0) earns none of the part.
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8, regularityIndex: -12)?.parts.last?.points,
+                       0)
     }
 
     /// A night with no sleep has no score and so no parts.

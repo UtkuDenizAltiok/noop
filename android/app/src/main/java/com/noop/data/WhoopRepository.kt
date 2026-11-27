@@ -2850,7 +2850,8 @@ class WhoopRepository(
             "sleep_deep_min", "deep_min" -> d.deepMin
             "sleep_rem_min", "rem_min" -> d.remMin
             "sleep_light_min", "core_min" -> d.lightMin
-            "sleep_performance" -> com.noop.analytics.RestScorer.composite(d, needHours = com.noop.ui.SleepNeed.currentHours())
+            "sleep_performance" -> com.noop.analytics.RestScorer.composite(d, needHours = com.noop.ui.SleepNeed.currentHours(),
+                consistency = com.noop.ui.SleepRegularity.consistency)
             "steps" -> d.steps?.toDouble()
             "active_kcal", "energy_kcal" -> d.activeKcalEst
             else -> null

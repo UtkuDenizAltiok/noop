@@ -631,7 +631,8 @@ struct SleepView: View {
         let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
         if let p = repo.importedSleep[wakeDay]?.performancePct { return p }
         guard let daily = repo.days.last(where: { $0.day == wakeDay }) else { return nil }
-        return AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours(days: repo.days))
+        return AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours(days: repo.days),
+                                             consistency: SleepRegularity.consistency)
     }
 
     /// Dispatch a reorderable Sleep section to its card. Naps rides with `.stages` (drawn inside the stages
@@ -1000,6 +1001,8 @@ struct SleepView: View {
             // to the same honest stage-less stub path the navigated browse uses, instead of drawing
             // a zeroed stage card. History stays browsable and the edit pencil stays reachable.
             if nightOffset == 0, !model.isStubNight {
+                // A likely nap NOOP saw today, as a question (`NapQuestionCard`); nothing shows without one.
+                NapQuestionCard()
                 nightNavHeader(trailing: model.night.spanLabel)
                 sleepWindowRow(model.night)
                 stageCard(model.night, intervals: model.intervals)

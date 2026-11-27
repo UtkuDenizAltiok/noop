@@ -128,6 +128,8 @@ object IntelligenceEngine {
     @Volatile private var persistAutomaticSleepNeedForRun: (Double) -> Unit = {}
     /** The current pass's resolved sleep need, for Rest in the recompute helpers. */
     @Volatile private var sleepNeedHoursForRun: Double? = null
+    /** The current pass's Rest regularity part ([SleepRegularityIndex.consistency]), set by [computeHabitualSleep]. */
+    @Volatile private var regularityConsistencyForRun: Double? = null
 
     /**
      * v6 step 7: THE sleep need of a pass, kept out of the bytecode-budgeted [analyzeRecentOnCpu]: hands the
@@ -821,7 +823,8 @@ object IntelligenceEngine {
         // window for regularity (a recent-behaviour signal); full history for the need's upper-quartile
         // "unrestricted nights" estimate. Both degrade honestly on thin history (consistency → null →
         // neutral term; need → population default), so cold-start is unchanged. Mirrors Swift.
-        val sleepConsistency = VitalityEngine.sleepConsistency(nightlyHours.takeLast(28))
+        // Regularity is the last week's Sleep Regularity Index ([computeHabitualSleep] works it out and keeps it).
+        val sleepConsistency = regularityConsistencyForRun
         // Two spelling differences from Swift, neither of which changes a number: Swift's
         // `AnalyticsEngine.Rest` is Kotlin's top-level `RestScorer` object, and Kotlin's
         // `UserProfile.age` is a Double where Swift's `ProfileStore.age` is already floored whole
@@ -1730,7 +1733,7 @@ object IntelligenceEngine {
             if (recoveryTraceSink != null) {
                 for (line in recoveryTraceLines(daily, baselines2)) recoveryTraceSink(line)
             }
-            RestScorer.composite(daily, sleepNeedHours)?.let { rest ->
+            RestScorer.composite(daily, sleepNeedHours, sleepConsistency)?.let { rest ->
                 restRows.add(MetricSeriesRow(deviceId = computedId, day = daily.day, key = "sleep_performance", value = rest))
             }
             // #103: persist the SpO₂ candidate @82 nightly mean to metricSeries as "spo2_candidate" so the
@@ -1956,7 +1959,7 @@ object IntelligenceEngine {
                     } else {
                         source
                     }
-                RestScorer.composite(scored, sleepNeedHours)?.let { rest ->
+                RestScorer.composite(scored, sleepNeedHours, sleepConsistency)?.let { rest ->
                     restRows.add(MetricSeriesRow(deviceId = computedId, day = w.day, key = "sleep_performance", value = rest))
                 }
                 out.add(
@@ -2411,7 +2414,8 @@ object IntelligenceEngine {
         // Charge enrichment: feed the Rest COMPOSITE (÷100) as the sleep-quality term instead of raw
         // efficiency, and fold in the night's skin-temp deviation (both from persisted daily fields).
         // Mirrors the Swift recomputeRecovery. (Charge/Effort/Rest scoring redesign.)
-        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours,
+            consistency = regularityConsistencyForRun)?.let { it / 100.0 } ?: daily.efficiency
         return RecoveryScorer.recovery(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),
@@ -2517,7 +2521,8 @@ object IntelligenceEngine {
                 "charge day=${daily.day} nilScore reason=missingInput (hrv/rhr/hrvBaseline required)",
             )
         }
-        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours,
+            consistency = regularityConsistencyForRun)?.let { it / 100.0 } ?: daily.efficiency
         val (_, trace) = RecoveryScorerTrace.recoveryTrace(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),
@@ -2637,6 +2642,11 @@ object IntelligenceEngine {
         val midsleep = SleepStageTotals.habitualMidsleepSec(blocks, offsetSec)
         // Chronological (day-key string sort == date order) so a recent-window suffix is well-defined.
         val nightlyHours = longestByDay.keys.sorted().mapNotNull { longestByDay[it]?.second }
+        // The Sleep Regularity Index over every kept session (main nights and naps), in the same time zone: kept
+        // for this pass's Rest and handed to the screens, so the Rest they show is the Rest stored. Mirrors Swift.
+        val regularity = SleepRegularityIndex.compute(merged.map { it.effectiveStartTs to it.endTs }, offsetSec)
+        regularityConsistencyForRun = SleepRegularityIndex.consistency(regularity)
+        com.noop.ui.SleepRegularity.store(regularity)
         return midsleep to nightlyHours
     }
 

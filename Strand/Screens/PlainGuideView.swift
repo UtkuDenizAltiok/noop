@@ -231,7 +231,7 @@ enum PlainGuideTerm: String, CaseIterable, Identifiable {
         case .effort:
             return String(localized: "Counts workouts and everyday activity, from 0 to 100 (or 0 to 21 if you chose that scale in Settings). It only goes up during the day and starts fresh each day. There's no perfect number: aim higher when your Charge is good, and lower when it's low. A score near 100 is rare.")
         case .rest:
-            return String(localized: "A score from 0 to 100. The biggest part is how long you slept compared with a full night. It also looks at how much of your time in bed was sleep, and how much was deep and REM sleep. A last small part, for regular bed and wake times, is not measured yet: every night gets half of it. Higher is better.")
+            return String(localized: "A score from 0 to 100. The biggest part is how long you slept compared with a full night. It also looks at how much of your time in bed was sleep, how much was deep and REM sleep, and, once there are about 5 nights in a row, how regular your bed and wake times were. Higher is better.")
         case .hrv:
             return String(localized: "Measured in milliseconds (ms) while you sleep. Everyone's normal is different, so only compare it with your own. Alcohol, late meals, stress, illness and hard training usually push it down for a night or two.")
         case .restingHeartRate:
