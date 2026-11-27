@@ -257,7 +257,7 @@ struct SimpleWorkoutWeekCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 let bpm = SimpleWorkoutRules.thresholdBPM(maxHR: maxHR)
-                Text("Judged from each workout's average heart rate: moderate from \(bpm.moderate) bpm, vigorous from \(bpm.vigorous) bpm, for your maximum of \(Int(maxHR.rounded())).")
+                Text("Counted from the minutes your heart rate spent at each level during workouts (a workout without its own readings by its average): moderate from \(bpm.moderate) bpm, vigorous from \(bpm.vigorous) bpm, for your maximum of \(Int(maxHR.rounded())).")
                     .font(StrandFont.footnote)
                     .foregroundStyle(StrandPalette.textTertiary)
                     .fixedSize(horizontal: false, vertical: true)

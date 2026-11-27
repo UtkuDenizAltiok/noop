@@ -1,6 +1,7 @@
 import Foundation
 import StrandAnalytics
 import WhoopStore
+import WhoopProtocol
 
 /// Simple mode's "Am I improving?" (Design v6, step 5): the Trends charts and the week in words, and the
 /// Workouts summary measured against the health guidelines.
@@ -332,10 +333,11 @@ enum SimpleWorkoutRules {
         let totalSeconds: Double
         /// Workouts in the seven days before those.
         let previousCount: Int
-        /// Minutes of workouts whose average heart rate was moderate, and vigorous, against `maxHR`.
+        /// Minutes at moderate and at vigorous effort against `maxHR`: counted from each workout's own heart-rate
+        /// readings where NOOP has them (S7), else the whole workout by its average heart rate.
         let moderateMinutes: Double
         let vigorousMinutes: Double
-        /// Workouts with a duration but no average heart rate, which cannot be judged.
+        /// Workouts with a duration but neither readings nor an average heart rate, which cannot be judged.
         let withoutHeartRate: Int
         /// Calendar days with at least one strength workout.
         let strengthDays: Int
@@ -355,10 +357,38 @@ enum SimpleWorkoutRules {
         return Int(start.timeIntervalSince1970)..<Int(end.timeIntervalSince1970)
     }
 
+    /// One workout's minutes at moderate and at vigorous effort, counted from its own heart-rate readings.
+    struct EffortMinutes: Equatable {
+        let moderate: Double
+        let vigorous: Double
+    }
+
+    /// The minutes `samples` spent at moderate effort (from `thresholdBPM`'s moderate bpm up to its vigorous bpm)
+    /// and at vigorous effort (from the vigorous bpm), by `HRZones.timeInZone`, the rule the workout's own zone
+    /// split uses, so an interval session's hard minutes count even when its average is low (S7). nil without
+    /// readings or a maximum.
+    static func effortMinutes(samples: [HRSample], maxHR: Double) -> EffortMinutes? {
+        guard maxHR > 0, !samples.isEmpty else { return nil }
+        let bpm = thresholdBPM(maxHR: maxHR)
+        let bands = HRZoneSet(zones: [
+            HRZone(number: 1, lower: Double(bpm.moderate), upper: Double(bpm.vigorous),
+                   lowerPct: moderateFraction * 100, upperPct: vigorousFraction * 100),
+            HRZone(number: 5, lower: Double(bpm.vigorous), upper: maxHR,
+                   lowerPct: vigorousFraction * 100, upperPct: 100),
+        ], maxHR: maxHR, source: "who-effort")
+        let time = HRZones.timeInZone(samples, zoneSet: bands)
+        return EffortMinutes(moderate: time.seconds(inZone: 1) / 60, vigorous: time.seconds(inZone: 5) / 60)
+    }
+
+    /// The key `week(rows:now:calendar:maxHR:effort:)` finds a workout's counted minutes under.
+    static func effortKey(_ row: WorkoutRow) -> String { "\(row.startTs)|\(row.endTs)|\(row.source)" }
+
     /// The week ending today, on the reader's calendar (`window(days: 7)`), against the seven days before it.
     /// `maxHR` nil (no age and no override) leaves both effort sums at zero and counts every workout as unjudged:
-    /// there is nothing to judge them against.
-    static func week(rows: [WorkoutRow], now: Date, calendar: Calendar, maxHR: Double?) -> Week {
+    /// there is nothing to judge them against. `effort` holds the minutes counted from each workout's own
+    /// readings (`effortMinutes`, keyed by `effortKey`); a workout without them is judged by its average.
+    static func week(rows: [WorkoutRow], now: Date, calendar: Calendar, maxHR: Double?,
+                     effort: [String: EffortMinutes]) -> Week {
         guard let current = window(days: 7, now: now, calendar: calendar),
               let fortnight = window(days: 14, now: now, calendar: calendar) else {
             return Week(count: 0, totalSeconds: 0, previousCount: 0, moderateMinutes: 0, vigorousMinutes: 0,
@@ -375,6 +405,11 @@ enum SimpleWorkoutRules {
                 strengthDays.insert(calendar.startOfDay(for: Date(timeIntervalSince1970: TimeInterval(row.startTs))))
             }
             guard let seconds = row.durationS, seconds > 0 else { continue }
+            if thresholds != nil, let counted = effort[effortKey(row)] {
+                moderate += counted.moderate
+                vigorous += counted.vigorous
+                continue
+            }
             guard let thresholds, let average = row.avgHr, average > 0 else { unjudged += 1; continue }
             // Judged against the very bpm the card prints, so "vigorous from 147 bpm" never sits beside a
             // 146 bpm workout counted as vigorous, or the other way round.

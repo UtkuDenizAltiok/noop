@@ -467,7 +467,10 @@ enum LabSnapshot {
 
         // Workouts: the "Last 7 days" card's figures.
         let workouts = await repo.workoutRows(days: 30)
-        let week = SimpleWorkoutRules.week(rows: workouts, now: now, calendar: .current, maxHR: profile.effortHRmax)
+        let effort = await repo.weekEffortMinutes(rows: workouts, now: now, calendar: .current,
+                                                  maxHR: profile.effortHRmax)
+        let week = SimpleWorkoutRules.week(rows: workouts, now: now, calendar: .current, maxHR: profile.effortHRmax,
+                                           effort: effort)
         root["workouts"] = ["last7Count": week.count, "last7Minutes": week.totalSeconds / 60,
                             "previous7Count": week.previousCount, "moderateMinutes": week.moderateMinutes,
                             "vigorousMinutes": week.vigorousMinutes, "guidelineMinutes": week.guidelineMinutes,

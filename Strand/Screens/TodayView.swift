@@ -349,6 +349,9 @@ struct TodayView: View {
     // "Rest" tile shows THIS, formatted like Charge/Effort, with hours-in-bed kept as the caption, the
     // tile previously showed hours where the score belonged (#248). nil until loaded / no night yet.
     @State private var restScore: Double?
+    /// Each day's Rest from the same merged series, so the Charge breakdown's Rest row reads the night of the
+    /// row it describes (F17), not the Rest now on the ring when either score is carried.
+    @State private var restByDayForCharge: [String: Double] = [:]
 
     // The raw per-day merge winners remain available for watch-specific confidence behavior.
     @State private var provenanceByMetric: [String: String] = [:]
@@ -847,7 +850,10 @@ struct TodayView: View {
     private func chargeBreakdown() -> (drivers: [ChargeDriver], confidence: ScoreConfidence)? {
         guard let row = chargeBreakdownRow else { return nil }
         guard let baselines = repo.chargeBaselines else { return nil }
-        return ChargeBreakdownWiring.breakdown(baselines: baselines, row: row, sleepPerfPercent: restScore)
+        // F17: the Rest row describes the same night as the other rows: the row's own Rest, not the ring's.
+        return ChargeBreakdownWiring.breakdown(
+            baselines: baselines, row: row,
+            sleepPerfPercent: SimpleScoreRules.chargeRowRest(rowDayKey: row.day, restByDay: restByDayForCharge))
     }
 
     /// The night's relative skin-temp marker for the displayed row (A5), or nil. Surfaced verbatim from
@@ -4856,6 +4862,7 @@ struct TodayView: View {
     private func restoreDayScoped(_ c: TodayDayScopedCache) {
         sparks["sleep_performance"] = c.restSpark
         restScore = c.restScore
+        restByDayForCharge = c.restByDay
         provenanceByMetric = c.provenanceByMetric
         providerByMetric = c.providerByMetric
         hrPoints = c.hrPoints
@@ -4941,6 +4948,7 @@ struct TodayView: View {
         let restSeries = await restSeriesA
         let dayCycleSeries = await dayCycleSeriesA
         let restByDay = Dictionary(restSeries.map { ($0.day, $0.value) }, uniquingKeysWith: { _, last in last })
+        restByDayForCharge = restByDay
         // The Rest TILE's sparkline (#614 follow-up). The tile's number is `restScore` (the Rest composite,
         // 0–100) but its mini-graph used to plot raw sleep MINUTES (`sparks["sleep_total_min"]`), so the
         // trend didn't track the score it sat under. Plot the SAME merged `sleep_performance` 0–100 series
@@ -5112,6 +5120,7 @@ struct TodayView: View {
         repo.todayDayScopedCache = TodayDayScopedCache(
             restSpark: restSparkLocal,
             restScore: restScoreLocal,
+            restByDay: restByDay,
             provenanceByMetric: provenance,
             providerByMetric: providers,
             hrPoints: hrPointsLocal,
@@ -5477,6 +5486,8 @@ struct TodayHistoryWideCache {
 struct TodayDayScopedCache {
     let restSpark: [Double]
     let restScore: Double?
+    /// Each day's Rest, for the Charge breakdown's Rest row (F17).
+    let restByDay: [String: Double]
     let provenanceByMetric: [String: String]
     let providerByMetric: [String: ScoreInputProvider]
     let hrPoints: [TrendPoint]

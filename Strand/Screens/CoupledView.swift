@@ -99,8 +99,12 @@ struct CoupledView: View {
     /// Sleep performance % for the day, the SAME single source of truth the Today Rest score and the Sleep
     /// detail graph read: the imported figure when the export carried one, else the resolved Rest composite.
     /// Never a local hours-vs-need approximation (keeps the coupled read in agreement with Today's Rest).
-    private var sleepPerformance: Double? {
-        guard let d = day else { return nil }
+    private var sleepPerformance: Double? { restPercent(for: day) }
+
+    /// A day row's own Rest by that same rule, so the Charge breakdown below reads the night of the row it
+    /// describes (F17), not the selected day's when the Charge is carried.
+    private func restPercent(for row: DailyMetric?) -> Double? {
+        guard let d = row else { return nil }
         if let p = repo.importedSleep[d.day]?.performancePct { return p }
         return AnalyticsEngine.Rest.composite(daily: d, needHours: SleepNeed.currentHours(),
                                              consistency: SleepRegularity.consistency)
@@ -530,7 +534,7 @@ struct CoupledView: View {
     private func chargeBreakdown() -> (drivers: [ChargeDriver], confidence: ScoreConfidence)? {
         guard let row = breakdownRow else { return nil }
         guard let baselines = repo.chargeBaselines else { return nil }
-        return ChargeBreakdownWiring.breakdown(baselines: baselines, row: row, sleepPerfPercent: sleepPerformance)
+        return ChargeBreakdownWiring.breakdown(baselines: baselines, row: row, sleepPerfPercent: restPercent(for: row))
     }
 
     @ViewBuilder
