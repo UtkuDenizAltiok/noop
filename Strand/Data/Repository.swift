@@ -3382,6 +3382,34 @@ final class Repository: ObservableObject {
         return minutes.contains(where: { $0 > 0 }) ? minutes : nil
     }
 
+    /// One workout's minutes at moderate and at vigorous effort for Simple mode's weekly guideline card (S7),
+    /// from the same heart-rate rows the workout's chart, zone split and Avg HR read (#856), or nil when the
+    /// window carries no heart rate (the card then judges the workout by its average).
+    func workoutEffortMinutes(_ row: WorkoutRow, maxHR: Double) async -> SimpleWorkoutRules.EffortMinutes? {
+        guard row.endTs > row.startTs else { return nil }
+        let ids = Self.workoutHrDeviceIds(source: row.source, activeStrapId: deviceId, importedIds: importedReadIds)
+        let samples = await hrSamples(deviceIds: ids, from: row.startTs, to: row.endTs)
+        return SimpleWorkoutRules.effortMinutes(samples: samples, maxHR: maxHR)
+    }
+
+    /// The counted minutes of every workout the guideline card's week holds (`SimpleWorkoutRules.window(days: 7)`),
+    /// keyed by `SimpleWorkoutRules.effortKey`: the one read the card and the developer export share, so they
+    /// state the same minutes. Empty without a maximum.
+    func weekEffortMinutes(rows: [WorkoutRow], now: Date, calendar: Calendar,
+                           maxHR: Double?) async -> [String: SimpleWorkoutRules.EffortMinutes] {
+        guard let maxHR, maxHR > 0, let window = SimpleWorkoutRules.window(days: 7, now: now, calendar: calendar) else {
+            return [:]
+        }
+        var counted: [String: SimpleWorkoutRules.EffortMinutes] = [:]
+        for row in rows where window.contains(row.startTs) {
+            if Task.isCancelled { break }
+            if let minutes = await workoutEffortMinutes(row, maxHR: maxHR) {
+                counted[SimpleWorkoutRules.effortKey(row)] = minutes
+            }
+        }
+        return counted
+    }
+
     /// HRR for one workout (#516), derived from the final five minutes of recorded effort plus the five
     /// post-workout minutes. This is a narrow read (at most ~10 minutes), not a whole-workout scan, and the
     /// pure engine owns every eligibility/coverage guard. Missing post-workout HR therefore returns nil

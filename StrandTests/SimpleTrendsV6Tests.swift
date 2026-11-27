@@ -1,6 +1,7 @@
 import XCTest
 import StrandAnalytics
 import WhoopStore
+import WhoopProtocol
 @testable import Strand
 
 /// Pins the rules behind Design v6's step 5, "Am I improving?": a Trends chart calls a change only when it is
@@ -260,7 +261,7 @@ final class SimpleTrendsV6Tests: XCTestCase {
             trendsV6Row(trendsV6Date(calendar, 13, 9), seconds: 3600, avgHr: 140),
             trendsV6Row(trendsV6Date(calendar, 12, 23), seconds: 3600, avgHr: 140),
         ]
-        let week = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: 190)
+        let week = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: 190, effort: [:])
         XCTAssertEqual(week.count, 5)
         XCTAssertEqual(week.previousCount, 2)
         XCTAssertEqual(week.totalSeconds, 3600 + 1800 + 900 + 2400 + 1200)
@@ -271,7 +272,7 @@ final class SimpleTrendsV6Tests: XCTestCase {
         XCTAssertEqual(week.strengthDays, 2)
 
         // Without a maximum heart rate nothing can be judged.
-        let unjudged = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: nil)
+        let unjudged = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: nil, effort: [:])
         XCTAssertEqual(unjudged.guidelineMinutes, 0)
         XCTAssertEqual(unjudged.withoutHeartRate, 5)
     }
@@ -290,7 +291,7 @@ final class SimpleTrendsV6Tests: XCTestCase {
             return XCTFail("no window")
         }
         XCTAssertEqual(rows.filter { window.contains($0.startTs) }.count, 2)
-        let week = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: 190)
+        let week = SimpleWorkoutRules.week(rows: rows, now: now, calendar: calendar, maxHR: 190, effort: [:])
         XCTAssertEqual(week.count, 2)
         XCTAssertEqual(week.previousCount, 1)
     }
@@ -304,13 +305,42 @@ final class SimpleTrendsV6Tests: XCTestCase {
         let now = trendsV6Date(calendar, 26, 15)
         func minutes(_ bpm: Int) -> (Double, Double) {
             let w = SimpleWorkoutRules.week(rows: [trendsV6Row(trendsV6Date(calendar, 26, 8), seconds: 600, avgHr: bpm)],
-                                            now: now, calendar: calendar, maxHR: 190)
+                                            now: now, calendar: calendar, maxHR: 190, effort: [:])
             return (w.moderateMinutes, w.vigorousMinutes)
         }
         XCTAssertTrue(minutes(121) == (0, 0))
         XCTAssertTrue(minutes(122) == (10, 0))
         XCTAssertTrue(minutes(146) == (10, 0))
         XCTAssertTrue(minutes(147) == (0, 10))
+    }
+
+    /// S7: a workout's minutes are counted from its own heart rate when NOOP has it, by the zone split's own
+    /// rule, so an interval session's hard minutes count although its average stays moderate; a workout without
+    /// readings is still judged by its average.
+    func testWorkoutMinutesAreCountedFromTheirOwnHeartRate() {
+        // 20 minutes: 10 at 110 bpm (below moderate for a maximum of 190), 5 at 130 (moderate), 5 at 160 (vigorous),
+        // one reading a second. The average, 127.5, alone would call all 20 minutes moderate.
+        let start = 1_800_000_000
+        let samples = (0..<1_200).map { i in
+            HRSample(ts: start + i, bpm: i < 600 ? 110 : (i < 900 ? 130 : 160))
+        }
+        guard let counted = SimpleWorkoutRules.effortMinutes(samples: samples, maxHR: 190) else {
+            return XCTFail("no minutes")
+        }
+        XCTAssertEqual(counted.moderate, 5, accuracy: 0.001)
+        XCTAssertEqual(counted.vigorous, 5, accuracy: 0.001)
+        XCTAssertNil(SimpleWorkoutRules.effortMinutes(samples: [], maxHR: 190))
+        XCTAssertNil(SimpleWorkoutRules.effortMinutes(samples: samples, maxHR: 0))
+
+        let calendar = trendsV6Calendar()
+        let now = trendsV6Date(calendar, 26, 15)
+        let measured = trendsV6Row(trendsV6Date(calendar, 26, 8), seconds: 1_200, avgHr: 128)
+        let averaged = trendsV6Row(trendsV6Date(calendar, 25, 8), seconds: 600, avgHr: 150)
+        let week = SimpleWorkoutRules.week(rows: [measured, averaged], now: now, calendar: calendar, maxHR: 190,
+                                           effort: [SimpleWorkoutRules.effortKey(measured): counted])
+        XCTAssertEqual(week.moderateMinutes, 5, accuracy: 0.001)
+        XCTAssertEqual(week.vigorousMinutes, 5 + 10, accuracy: 0.001)
+        XCTAssertEqual(week.withoutHeartRate, 0)
     }
 
     /// Strength is found in the Lift Log's own name, WHOOP's run-together names and lifting imports, and not in

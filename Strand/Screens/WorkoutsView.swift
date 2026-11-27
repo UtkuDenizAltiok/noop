@@ -124,6 +124,9 @@ struct WorkoutsView: View {
     /// workout ranges intentionally keep this trend capped at 90 days so opening a deep history never
     /// launches hundreds of raw-HR reads.
     @State private var recoveryTrend: [WorkoutRecoveryTrendPoint] = []
+    /// S7: the last seven days' workouts' minutes at moderate and vigorous effort, counted from their own heart
+    /// rate for Simple mode's guideline card (`SimpleWorkoutRules.effortMinutes`). Empty in the full view.
+    @State private var weekEffort: [String: SimpleWorkoutRules.EffortMinutes] = [:]
 
     // MARK: - Filters + selection (#64)
 
@@ -230,7 +233,7 @@ struct WorkoutsView: View {
                     // guidelines, independent of the range picked below.
                     SimpleWorkoutWeekCard(
                         week: SimpleWorkoutRules.week(rows: allRows, now: Date(), calendar: .current,
-                                                      maxHR: profile.effortHRmax),
+                                                      maxHR: profile.effortHRmax, effort: weekEffort),
                         maxHR: profile.effortHRmax, age: profile.age)
                     rangeBar(rows: windowRows, effectiveRange: resolved, showsFilters: false)
                     if let postLogNote { postLogBanner(postLogNote) }
@@ -302,6 +305,10 @@ struct WorkoutsView: View {
             if simple { selectionMode = false; selected.removeAll() }
             // Six months is offered in Simple mode only; the full view's nearest wider range takes over.
             if !simple && range == .half { range = .year }
+        }
+        .task(id: weekEffortTaskKey) {
+            // Only Simple mode's guideline card reads these; the full view pays nothing.
+            await loadWeekEffort()
         }
         .task(id: simpleMode ? "simple" : recoveryTrendInputKey(rows: trendRows)) {
             // Simple mode does not show the recovery trend, so it skips the per-session heart-rate reads too.
@@ -389,6 +396,23 @@ struct WorkoutsView: View {
     private var recoveryTrendCaption: String {
         if let days = effectiveRange.days, days <= 90 { return effectiveRange.caption }
         return String(localized: "last 90 days")
+    }
+
+    /// The week's workouts the guideline card counts, with the maximum they are counted against, as the task's
+    /// identity: it reloads when a workout in the last seven days or the maximum changes, never in the full view.
+    private var weekEffortTaskKey: String {
+        guard simpleMode, let maxHR = profile.effortHRmax, maxHR > 0,
+              let window = SimpleWorkoutRules.window(days: 7, now: Date(), calendar: .current) else { return "" }
+        return allRows.filter { window.contains($0.startTs) }.map(SimpleWorkoutRules.effortKey)
+            .joined(separator: ",") + "@\(Int(maxHR.rounded()))"
+    }
+
+    /// Reads each of the week's workouts' heart rate once and counts its minutes at moderate and vigorous effort.
+    private func loadWeekEffort() async {
+        guard simpleMode else { weekEffort = [:]; return }
+        let counted = await repo.weekEffortMinutes(rows: allRows, now: Date(), calendar: .current,
+                                                   maxHR: profile.effortHRmax)
+        if !Task.isCancelled { weekEffort = counted }
     }
 
     private func loadRecoveryTrend(rows: [WorkoutRow]) async {
