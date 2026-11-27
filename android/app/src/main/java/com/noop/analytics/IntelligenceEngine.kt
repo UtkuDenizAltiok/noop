@@ -123,6 +123,13 @@ object IntelligenceEngine {
     private var stepsMotionCache = HashMap<String, Pair<String, Double>>()
 
     // Guarded by analyzeGate; kept as state to avoid another parameter on the bytecode-budgeted pass.
+    /** v6 step 7: the chosen sleep need of the current pass in minutes (0 = Automatic), set by [analyzeRecent]. */
+    @Volatile private var chosenSleepNeedMinutesForRun: Int = 0
+    /** Where the current pass hands back its automatic sleep need ([com.noop.ui.SleepNeed] keeps it). */
+    @Volatile private var persistAutomaticSleepNeedForRun: (Double) -> Unit = {}
+    /** The current pass's resolved sleep need, for Rest in the per-day writes and the recompute helpers. */
+    @Volatile private var sleepNeedHoursForRun: Double? = null
+
     private var preserveUnscoredHistoryForRun = false
 
     /** One reused night: its per-day cache [key], the scored [res], and everything the pass-1 loop otherwise
@@ -503,6 +510,11 @@ object IntelligenceEngine {
         stepsMotionCacheGet: (() -> String?)? = null,
         stepsMotionCacheSet: ((String) -> Unit)? = null,
         preserveUnscoredHistory: Boolean = false,
+        // v6 step 7: the wearer's chosen sleep need in minutes (0 = Automatic), read from preferences by the
+        // Context-aware caller, and where the automatic need is handed back for the screens
+        // ([com.noop.ui.SleepNeed]). Defaults keep every existing caller on the automatic need.
+        chosenSleepNeedMinutes: Int = 0,
+        persistAutomaticSleepNeed: (Double) -> Unit = {},
     ): List<Computed> = withContext(Dispatchers.Default) {
         // #1005: time the whole pass so a re-score STORM is visible in the strap log (the trigger lines
         // record WHY each pass runs; this records how many nights and how long — the CPU cost per run).
@@ -521,6 +533,8 @@ object IntelligenceEngine {
             // wrapper, never in `analyzeRecentOnCpu`, whose ratchet margin has no room for either.
             StoreProbeTally.reset()
             preserveUnscoredHistoryForRun = preserveUnscoredHistory
+            chosenSleepNeedMinutesForRun = chosenSleepNeedMinutes
+            persistAutomaticSleepNeedForRun = persistAutomaticSleepNeed
             if (!stepsMotionCacheLoaded && stepsMotionCacheGet != null) {
                 stepsMotionCacheLoaded = true
                 val raw = stepsMotionCacheGet()
@@ -801,7 +815,10 @@ object IntelligenceEngine {
         // `UserProfile.age` is a Double where Swift's `ProfileStore.age` is already floored whole
         // years — `toInt()` truncates to the same integer, and the need floor only branches on
         // `<= 0` / `< 18`, so the two platforms land on the identical floor.
-        val sleepNeedHours = RestScorer.personalizedNeedHours(nightlyHours, profile.age.toInt())
+        // v6 step 7: THE need: the wearer's choice, else the automatic need with their age (kept for the screens).
+        persistAutomaticSleepNeedForRun(RestScorer.personalizedNeedHours(nightlyHours, profile.age.toInt()))
+        val sleepNeedHours = RestScorer.resolvedNeedHours(chosenSleepNeedMinutesForRun, nightlyHours, profile.age.toInt())
+        sleepNeedHoursForRun = sleepNeedHours
 
         // #970 read efficiency, skin-temp leg: [RegistryDayOwnerSource.skinTempFamily] resolves the family
         // via registry.all() — a Room query — and the loop below wants it once per DAY, so a 21-day scan
@@ -1703,7 +1720,7 @@ object IntelligenceEngine {
             if (recoveryTraceSink != null) {
                 for (line in recoveryTraceLines(daily, baselines2)) recoveryTraceSink(line)
             }
-            RestScorer.restFromDaily(daily)?.let { rest ->
+            RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { rest ->
                 restRows.add(MetricSeriesRow(deviceId = computedId, day = daily.day, key = "sleep_performance", value = rest))
             }
             // #103: persist the SpO₂ candidate @82 nightly mean to metricSeries as "spo2_candidate" so the
@@ -1929,7 +1946,7 @@ object IntelligenceEngine {
                     } else {
                         source
                     }
-                RestScorer.restFromDaily(scored)?.let { rest ->
+                RestScorer.composite(scored, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { rest ->
                     restRows.add(MetricSeriesRow(deviceId = computedId, day = w.day, key = "sleep_performance", value = rest))
                 }
                 out.add(
@@ -2384,7 +2401,7 @@ object IntelligenceEngine {
         // Charge enrichment: feed the Rest COMPOSITE (÷100) as the sleep-quality term instead of raw
         // efficiency, and fold in the night's skin-temp deviation (both from persisted daily fields).
         // Mirrors the Swift recomputeRecovery. (Charge/Effort/Rest scoring redesign.)
-        val restQuality = RestScorer.restFromDaily(daily)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
         return RecoveryScorer.recovery(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),
@@ -2490,7 +2507,7 @@ object IntelligenceEngine {
                 "charge day=${daily.day} nilScore reason=missingInput (hrv/rhr/hrvBaseline required)",
             )
         }
-        val restQuality = RestScorer.restFromDaily(daily)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
         val (_, trace) = RecoveryScorerTrace.recoveryTrace(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),

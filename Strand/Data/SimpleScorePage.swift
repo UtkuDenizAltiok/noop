@@ -204,8 +204,8 @@ enum SimpleScoreRules {
     /// the score as the ring prints it, and the night's own figures behind them.
     ///
     /// It follows `AnalyticsEngine.Rest.composite(daily:)`, the function every screen's Rest score comes
-    /// from, with that function's own inputs: a full night is `Rest.defaultNeedHours` (not the personal sleep
-    /// need the Sleep tab states), and the regularity part is always the neutral half (`neutralConsistency`),
+    /// from, with that function's own inputs: a full night is the one sleep need the Sleep tab states
+    /// (`SleepNeed`, v6 step 7), and the regularity part is always the neutral half (`neutralConsistency`),
     /// because the daily row carries no regularity figure. The page says both plainly instead of presenting
     /// them as measurements; a test pins that the parts always add up to that function's score.
     struct RestBreakdown: Equatable {
@@ -230,12 +230,12 @@ enum SimpleScoreRules {
 
     /// The breakdown of a day row's Rest score, or nil when the row has no sleep to score (the same rows
     /// `Rest.composite(daily:)` returns nil for).
-    static func restBreakdown(daily d: DailyMetric) -> RestBreakdown? {
+    static func restBreakdown(daily d: DailyMetric, needHours: Double = SleepNeed.currentHours()) -> RestBreakdown? {
         typealias Rest = AnalyticsEngine.Rest
         guard let tstMin = d.totalSleepMin, tstMin > 0, let eff = d.efficiency,
-              let score = Rest.composite(daily: d) else { return nil }
+              let score = Rest.composite(daily: d, needHours: needHours) else { return nil }
         func clamp01(_ x: Double) -> Double { max(0.0, min(1.0, x)) }
-        let needMin = max(Rest.defaultNeedHours, 0.1) * 60.0
+        let needMin = max(needHours, 0.1) * 60.0
         let deepMin = d.deepMin ?? 0
         let restorativeMin = deepMin + (d.remMin ?? 0)
         let deepFactor = Rest.deepShareTarget > 0

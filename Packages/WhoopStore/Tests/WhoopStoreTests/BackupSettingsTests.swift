@@ -214,4 +214,16 @@ final class BackupSettingsTests: XCTestCase {
         suites = []
         super.tearDown()
     }
+
+    /// v6 step 7: the wearer's own sleep need travels as Int minutes (0 = Automatic), the same canonical key and
+    /// kind as Android's `BackupSettingsCodec`, stored under the same name.
+    func testTheChosenSleepNeedTravelsAsIntMinutes() {
+        XCTAssertEqual(BackupSettings.whitelist["profile.sleepNeedMinutes"], .int)
+        XCTAssertEqual(BackupSettings.appleDefaultsKey["profile.sleepNeedMinutes"], "profile.sleepNeedMinutes")
+        let suite = "backup-sleep-need-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        defaults.set(510, forKey: "profile.sleepNeedMinutes")
+        XCTAssertEqual(BackupSettings.snapshot(from: defaults)["profile.sleepNeedMinutes"] as? Int, 510)
+    }
 }

@@ -344,6 +344,11 @@ class ProfileStore(private val prefs: SharedPreferences) {
         get() = prefs.getBoolean(KEY_STEPS_HAS_MOTION, false)
         set(v) = prefs.edit().putBoolean(KEY_STEPS_HAS_MOTION, v).apply()
 
+    /** The wearer's own sleep need in minutes (v6 step 7), 0 = Automatic. Read through [SleepNeed]. */
+    var sleepNeedMinutes: Int
+        get() = com.noop.analytics.RestScorer.normalizedChosenNeedMinutes(prefs.getInt(KEY_SLEEP_NEED, 0))
+        set(v) = prefs.edit().putInt(KEY_SLEEP_NEED, com.noop.analytics.RestScorer.normalizedChosenNeedMinutes(v)).apply()
+
     /** The auto (Tanaka) HR-max for the current age. */
     val hrMaxAuto: Int get() = Zones.hrMaxTanaka(age)
 
@@ -410,6 +415,7 @@ class ProfileStore(private val prefs: SharedPreferences) {
         if (prefs.contains(KEY_HEIGHT)) out["profile.heightCm"] = heightCm
         if (prefs.contains(KEY_WAIST)) out["profile.waistCm"] = waistCm
         if (prefs.contains(KEY_HRMAX)) out["profile.hrMax"] = hrMaxOverride
+        if (prefs.contains(KEY_SLEEP_NEED)) out["profile.sleepNeedMinutes"] = sleepNeedMinutes
         if (prefs.contains(KEY_HR_ZONE_THRESHOLDS)) {
             hrZoneThresholds?.let { out["profile.hrZoneThresholds"] = it.joinToString(",") }
         }
@@ -431,19 +437,22 @@ class ProfileStore(private val prefs: SharedPreferences) {
         (values["profile.heightCm"] as? Number)?.let { heightCm = it.toDouble() }
         (values["profile.waistCm"] as? Number)?.let { waistCm = it.toDouble() }
         (values["profile.hrMax"] as? Number)?.let { hrMaxOverride = it.toInt() }
+        (values["profile.sleepNeedMinutes"] as? Number)?.let { sleepNeedMinutes = it.toInt() }
         (values["profile.hrZoneThresholds"] as? String)?.let {
             hrZoneThresholds = it.split(",").mapNotNull(String::toIntOrNull)
         }
     }
 
     companion object {
-        internal const val PREFS = "noop_profile"
+        const val PREFS = "noop_profile"
         /** Date of birth as epoch millis — the #146 source of truth for [age]. */
         private const val KEY_DOB = "date_of_birth"
         /** Pre-#146 age key, now kept mirrored from the DOB so the `.noopbak` whitelist (Int age)
          *  keeps round-tripping unchanged. */
         private const val KEY_AGE = "age"
         private const val KEY_SEX = "sex"
+        /** The wearer's own sleep need in minutes, 0 = Automatic ([com.noop.analytics.SleepNeed]). */
+        const val KEY_SLEEP_NEED = "sleep_need_minutes"
         private const val KEY_WEIGHT = "weight_kg"
         private const val KEY_USE_HC_WEIGHT = "use_health_connect_weight"
         private const val KEY_HC_WEIGHT_DAY = "health_connect_weight_day"
@@ -1186,6 +1195,27 @@ fun SettingsScreen(
                         )
                     }
                 }
+                SettingsRowDivider()
+                // v6 step 7: the one sleep need ([SleepNeed]): Automatic, or the wearer's own figure, stepped
+                // through the same choices as the Swift `SleepNeedMenu`.
+                SettingsFormRow(label = uiString(R.string.settings_sleep_need)) {
+                    val choices = SleepNeed.choices
+                    val index = choices.indexOf(profile.sleepNeedMinutes).coerceAtLeast(0)
+                    val shown = if (profile.sleepNeedMinutes > 0) hoursMinutes(profile.sleepNeedMinutes.toDouble())
+                        else uiString(R.string.settings_sleep_need_automatic, hoursMinutes(SleepNeed.automaticHours() * 60.0))
+                    StepperField(
+                        value = shown,
+                        accessibility = shown,
+                        valueColor = if (profile.sleepNeedMinutes > 0) Palette.textPrimary else Palette.textTertiary,
+                        onMinus = { mutate { vm.chooseSleepNeed(choices[(index - 1).coerceAtLeast(0)]) } },
+                        onPlus = { mutate { vm.chooseSleepNeed(choices[(index + 1).coerceAtMost(choices.size - 1)]) } },
+                    )
+                }
+                Text(
+                    uiString(R.string.settings_sleep_need_footnote),
+                    style = NoopType.footnote,
+                    color = Palette.textTertiary,
+                )
                 SettingsRowDivider()
                 // Custom HR zones (#531, @kavemang): five personalized inclusive BPM lower bounds that
                 // replace the conventional %HRmax bands. Off -> the effective set stays conventional.

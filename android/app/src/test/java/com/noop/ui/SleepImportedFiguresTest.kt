@@ -82,13 +82,13 @@ class SleepImportedFiguresTest {
     @Test
     fun uncoveredDaysUseTheRestComposite() {
         // Imported covers only day 1; day 2 (the latest) must use the REAL Rest composite
-        // (RestScorer.restFromDaily) — the SAME single source of truth the Today Rest score,
+        // (RestScorer.composite) — the SAME single source of truth the Today Rest score,
         // the metric-detail overlay and iOS SleepView read — NOT the old hours-vs-need proxy
         // that ceilinged live 5.0 nights at ~100% while every other surface showed ~85% (#298).
         val days = listOf(day("2026-06-01", 420.0), day("2026-06-02", 410.0))
         val imported = ImportedSleepSeries(performance = mapOf("2026-06-01" to 85.0))
         val m = buildSleepModel(days, session = null, imported = imported, todayKey = pinnedToday)!!
-        assertEquals(RestScorer.restFromDaily(days[1])!!, m.performance.latest!!, 1e-9)
+        assertEquals(RestScorer.composite(days[1])!!, m.performance.latest!!, 1e-9)
         // …and it is NOT the retired asleep/need approximation.
         assertNotEquals(410.0 / 450.0 * 100.0, m.performance.latest, 1e-6)
         // …and the imported day still carries the verbatim figure inside the series.
@@ -112,7 +112,7 @@ class SleepImportedFiguresTest {
             night,
         )
         val m = buildSleepModel(days, session = null, todayKey = pinnedToday)!!
-        val composite = RestScorer.restFromDaily(night)!!
+        val composite = RestScorer.composite(night)!!
         assertEquals(composite, m.performance.latest!!, 1e-9)
         assertTrue("composite should be below the 100% proxy ceiling", composite < 100.0)
         assertNotEquals(100.0, m.performance.latest, 1e-6)

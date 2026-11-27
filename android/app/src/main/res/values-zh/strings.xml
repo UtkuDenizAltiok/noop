@@ -2840,4 +2840,7 @@
     <string name="sleep_debt_from_whoop">来自 WHOOP</string>
     <string name="sleep_window_fell_asleep">入睡时间</string>
     <string name="sleep_window_in_bed_from_to">在床时间：%1$s 至 %2$s</string>
+    <string name="settings_sleep_need">睡眠需求</string>
+    <string name="settings_sleep_need_automatic">自动（%1$s）</string>
+    <string name="settings_sleep_need_footnote">“自动”会根据你的年龄和你睡得最久的那些夜晚算出你的需求。你也可以自己选：之后 NOOP 会据此衡量你的睡眠负债、今晚的目标、睡前提醒和休息评分。</string>
 </resources>

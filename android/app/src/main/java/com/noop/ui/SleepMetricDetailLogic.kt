@@ -40,9 +40,8 @@ internal fun buildSleepMetricPoints(
 ): List<Pair<String, Double>> {
     val needMin = max(450.0, days.mapNotNull { it.totalSleepMin?.takeIf { m -> m > 0.0 } }.average().let { if (it.isNaN()) 480.0 else it })
     if (key == "sleep_debt") {
-        val debtNeedMin = RestScorer.personalizedNeedHours(
-            days.mapNotNull { it.totalSleepMin?.let { minutes -> minutes / 60.0 } }, null,
-        ) * 60.0
+        // v6 step 7: THE need ([SleepNeed]): the wearer's choice, else the engine's automatic need.
+        val debtNeedMin = SleepNeed.currentHours(days) * 60.0
         return SleepDebt.debtSeries(
             series = days.map { day ->
                 day.day to SleepDebt.creditedSleepMin(
@@ -57,10 +56,10 @@ internal fun buildSleepMetricPoints(
     return days.mapNotNull { d ->
         val v: Double? = when (key) {
             // The Rest detail graph reads the REAL resolved Rest composite per day — the same single
-            // source of truth the Today Rest score uses (RestScorer.restFromDaily, the composite the
+            // source of truth the Today Rest score uses (RestScorer.composite, the composite the
             // sleep_performance series carries) — not a local hours-vs-need approximation. Keeps the
             // graph and the score in agreement. (#614 follow-up)
-            "performance" -> RestScorer.restFromDaily(d)?.takeIf { it in 0.0..100.0 }
+            "performance" -> RestScorer.composite(d, needHours = SleepNeed.currentHours())?.takeIf { it in 0.0..100.0 }
             "efficiency"  -> d.efficiency?.let { if (it <= 1.0) it * 100.0 else it }
             "consistency" -> {
                 val idx = days.indexOf(d)

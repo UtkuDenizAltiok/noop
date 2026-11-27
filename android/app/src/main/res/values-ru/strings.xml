@@ -2765,4 +2765,7 @@
     <string name="sleep_debt_from_whoop">Данные WHOOP</string>
     <string name="sleep_window_fell_asleep">Засыпание</string>
     <string name="sleep_window_in_bed_from_to">В постели с %1$s до %2$s</string>
+    <string name="settings_sleep_need">Потребность во сне</string>
+    <string name="settings_sleep_need_automatic">Автоматически (%1$s)</string>
+    <string name="settings_sleep_need_footnote">«Автоматически» рассчитывает потребность по вашему возрасту и ночам, когда вы спите дольше всего. Или выберите свою: тогда NOOP будет измерять по ней недосып, цель на ночь, напоминание о сне и оценку отдыха.</string>
 </resources>

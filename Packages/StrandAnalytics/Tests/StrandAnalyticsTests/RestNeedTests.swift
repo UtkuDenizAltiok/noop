@@ -50,4 +50,47 @@ final class RestNeedTests: XCTestCase {
         let nights = [0.0, -1.0, 7.5, 8.0, 7.8, 8.2, 7.6, 8.1, 7.9, 8.3, 0.0]
         XCTAssertGreaterThanOrEqual(Rest.personalizedNeedHours(nightlyHours: nights, age: 30), 7.5)
     }
+
+    // MARK: - The one need (v6 step 7): age targets, the wearer's choice, and the Kotlin oracle
+
+    func testOlderAdultsTargetSevenAndAHalfHours() {
+        XCTAssertEqual(Rest.populationNeedFloorHours(age: 64), 8.0)
+        XCTAssertEqual(Rest.populationNeedFloorHours(age: 65), 7.5)
+        XCTAssertEqual(Rest.populationNeedFloorHours(age: 17), 9.0)
+        XCTAssertEqual(Rest.personalizedNeedHours(nightlyHours: [7.0, 7.2], age: 70), 7.5)
+    }
+
+    func testAChosenNeedWinsAndIsClamped() {
+        let nights = [Double](repeating: 9.0, count: 10)
+        XCTAssertEqual(Rest.resolvedNeedHours(chosenMinutes: 0, nightlyHours: nights, age: 30), 9.0)
+        XCTAssertEqual(Rest.resolvedNeedHours(chosenMinutes: 435, nightlyHours: nights, age: 30), 7.25)
+        XCTAssertEqual(Rest.resolvedNeedHours(chosenMinutes: 400, nightlyHours: nights, age: 30), 7.0)
+        XCTAssertEqual(Rest.resolvedNeedHours(chosenMinutes: 600, nightlyHours: nights, age: 30), 9.5)
+    }
+
+    private var needLcg: UInt64 = 0x2545F4914F6CDD1D
+
+    private func needNext(_ n: Int) -> Int {
+        needLcg = needLcg &* 6364136223846793005 &+ 1442695040888963407
+        return Int((needLcg >> 33) % UInt64(n))
+    }
+
+    func testResolvedNeedMatchesTheKotlinOracle() {
+        let ages: [Int?] = [nil, 0, 12, 17, 18, 30, 64, 65, 80]
+        let chosen = [0, -5, 400, 420, 435, 480, 570, 600]
+        var lines: [String] = []
+        for i in 0..<400 {
+            let n = needNext(14)
+            let nights = (0..<n).map { _ in Double(needNext(1200)) / 100.0 - (needNext(10) == 0 ? 3.0 : 0) }
+            let age = ages[needNext(ages.count)]
+            let c = chosen[needNext(chosen.count)]
+            let r = Rest.resolvedNeedHours(chosenMinutes: c, nightlyHours: nights, age: age)
+            lines.append("\(i):\(String(r.bitPattern, radix: 16))")
+        }
+        var h: UInt64 = 0xcbf29ce484222325
+        for l in lines { for b in l.utf8 { h ^= UInt64(b); h = h &* 0x100000001b3 }; h ^= 0x0A; h = h &* 0x100000001b3 }
+        XCTAssertEqual(lines.prefix(5).joined(separator: " "),
+                       "0:401c000000000000 1:4020000000000000 2:4023000000000000 3:401c000000000000 4:401c000000000000")
+        XCTAssertEqual(String(format: "%016llx", h), "438d833811016adb")
+    }
 }

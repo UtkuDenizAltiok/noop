@@ -631,7 +631,7 @@ struct SleepView: View {
         let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
         if let p = repo.importedSleep[wakeDay]?.performancePct { return p }
         guard let daily = repo.days.last(where: { $0.day == wakeDay }) else { return nil }
-        return AnalyticsEngine.Rest.composite(daily: daily)
+        return AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours(days: repo.days))
     }
 
     /// Dispatch a reorderable Sleep section to its card. Naps rides with `.stages` (drawn inside the stages
@@ -688,6 +688,8 @@ struct SleepView: View {
                     Text("Your sleep need").strandOverline()
                         .foregroundStyle(StrandPalette.textSecondary)
                     Spacer(minLength: 8)
+                    // v6 step 7: choose your own need, or go back to Automatic (`SleepNeedMenu`).
+                    SleepNeedMenu()
                     Button { plainGuideTerm = .sleepNeed } label: {
                         Image(systemName: "info.circle")
                             .font(StrandFont.subhead.weight(.semibold))
@@ -701,6 +703,12 @@ struct SleepView: View {
                     .foregroundStyle(StrandPalette.textPrimary)
                 Group {
                     switch SimpleDayPlan.sleepNeedOrigin(needMin: model.normativeNeedMin) {
+                    case .chosen:
+                        Text("You chose this yourself. NOOP measures your sleep debt, tonight's goal and your Rest score against it. Experts recommend 7 to 9 hours a night for adults, 7 to 8 from 65.")
+                    case .standard where (SleepNeed.storedAge ?? 30) >= 65:
+                        Text("The usual target from 65: experts recommend 7 to 8 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
+                    case .standard where (SleepNeed.storedAge ?? 30) < 18:
+                        Text("The usual target under 18: experts recommend 8 to 10 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
                     case .standard:
                         Text("The usual target for adults: experts recommend 7 to 9 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
                     case .raised:

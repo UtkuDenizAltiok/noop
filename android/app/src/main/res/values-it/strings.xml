@@ -2838,4 +2838,7 @@
     <string name="sleep_debt_from_whoop">Da WHOOP</string>
     <string name="sleep_window_fell_asleep">Addormentamento</string>
     <string name="sleep_window_in_bed_from_to">A letto dalle %1$s alle %2$s</string>
+    <string name="settings_sleep_need">Fabbisogno di sonno</string>
+    <string name="settings_sleep_need_automatic">Automatico (%1$s)</string>
+    <string name="settings_sleep_need_footnote">Automatico calcola il tuo fabbisogno dalla tua età e dalle notti in cui dormi di più. Oppure scegli il tuo: NOOP misurerà allora rispetto a esso il debito di sonno, l\'obiettivo di stanotte, il promemoria per andare a letto e il punteggio di riposo.</string>
 </resources>

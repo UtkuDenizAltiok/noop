@@ -400,9 +400,8 @@ extension SleepModel {
     /// engine. (#242; need-unification from #464 by @vishk23. Hours vs needed used to divide by the
     /// descriptive mean instead, so the same screen measured one night against two different needs.)
     static func debtNeedMin(days: [DailyMetric]) -> Double {
-        AnalyticsEngine.Rest.personalizedNeedHours(
-            nightlyHours: days.compactMap { $0.totalSleepMin.map { $0 / 60.0 } },
-            age: nil) * 60.0
+        // v6 step 7: THE need (`SleepNeed`): the wearer's choice, else the engine's automatic need with their age.
+        SleepNeed.currentHours(days: days) * 60.0
     }
 
     // MARK: Per-tile series (latest, typical mean, sparkline history)
@@ -438,9 +437,10 @@ extension SleepModel {
     /// else the REAL resolved Rest composite for that day. (#614 follow-up)
     static func performanceSeries(days: [DailyMetric], importedSleep: [String: ImportedSleepFigures]) -> Metric {
         let imported = importedSleep
+        let need = SleepNeed.currentHours(days: days)   // once, not per day (`SleepNeed`, v6 step 7)
         return metric(days: days) { d in
             if let p = imported[d.day]?.performancePct { return p }   // export-verbatim
-            return AnalyticsEngine.Rest.composite(daily: d)            // real resolved Rest composite
+            return AnalyticsEngine.Rest.composite(daily: d, needHours: need) // real resolved Rest composite
         }
     }
 

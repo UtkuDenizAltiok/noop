@@ -997,8 +997,13 @@ final class IntelligenceEngine: ObservableObject {
         // "unrestricted nights" estimate. Both degrade honestly on thin history (consistency → nil →
         // neutral term; need → population default), so cold-start is unchanged.
         let sleepConsistency = VitalityEngine.sleepConsistency(nightlyHours: Array(nightlyHours.suffix(28)))
-        let sleepNeedHours = AnalyticsEngine.Rest.personalizedNeedHours(nightlyHours: nightlyHours,
-                                                                        age: profile.age)
+        // v6 step 7: THE need (`SleepNeed`): the wearer's choice, else the automatic need with their age. The
+        // automatic figure is kept for the screens, so they state and score against the same number.
+        SleepNeed.storeAutomatic(AnalyticsEngine.Rest.personalizedNeedHours(nightlyHours: nightlyHours,
+                                                                            age: profile.age))
+        let sleepNeedHours = AnalyticsEngine.Rest.resolvedNeedHours(chosenMinutes: SleepNeed.chosenMinutes,
+                                                                    nightlyHours: nightlyHours,
+                                                                    age: profile.age)
 
         // ── FIX 1 (main-actor jank): run the ENTIRE per-day enumeration OFF the main actor ───────────
         // Every `await store.…` read inside this loop has its continuation RESUME on the main actor
@@ -2312,7 +2317,7 @@ final class IntelligenceEngine: ObservableObject {
             // same `night.nightlySkin` the line above takes the deviation from — so the two can never
             // describe different nights, and no second derivation exists to drift.
             dailies.append(daily)
-            if let rest = AnalyticsEngine.Rest.composite(daily: daily) {
+            if let rest = AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours()) {
                 restPoints.append(MetricPoint(day: daily.day, key: "sleep_performance", value: rest))
             }
             if let onset = physiologicalSteps.onsetByWakeDay[daily.day] {
@@ -2477,7 +2482,7 @@ final class IntelligenceEngine: ObservableObject {
                 dailies.append(scored)
                 importScoredDays.insert(w.day)
                 resolvedScoreOwnerByDay[w.day] = source
-                if let rest = AnalyticsEngine.Rest.composite(daily: scored) {
+                if let rest = AnalyticsEngine.Rest.composite(daily: scored, needHours: SleepNeed.currentHours()) {
                     restPoints.append(MetricPoint(day: w.day, key: "sleep_performance", value: rest))
                 }
                 out.append(Computed(day: w.day, recovery: recovery, strain: scored.strain,
@@ -3287,7 +3292,7 @@ final class IntelligenceEngine: ObservableObject {
         // Charge enrichment: feed the Rest COMPOSITE (÷100) as the sleep-quality term instead of raw
         // efficiency, and fold in the night's skin-temp deviation. Both come from the persisted daily
         // fields (the raw streams are gone in pass 2). (Charge/Effort/Rest scoring redesign.)
-        let restQuality = AnalyticsEngine.Rest.composite(daily: daily).map { $0 / 100.0 } ?? daily.efficiency
+        let restQuality = AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours()).map { $0 / 100.0 } ?? daily.efficiency
         return RecoveryScorer.recovery(hrv: hrvVal, rhr: Double(rhrVal), resp: daily.respRateBpm,
                                        hrvBaseline: hrvBase, rhrBaseline: baselines.restingHR,
                                        respBaseline: baselines.resp, sleepPerf: restQuality,
@@ -3305,7 +3310,7 @@ final class IntelligenceEngine: ObservableObject {
         guard let hrvVal = daily.avgHrv, let rhrVal = daily.restingHr, let hrvBase = baselines.hrv else {
             return []
         }
-        let restQuality = AnalyticsEngine.Rest.composite(daily: daily).map { $0 / 100.0 } ?? daily.efficiency
+        let restQuality = AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours()).map { $0 / 100.0 } ?? daily.efficiency
         return RecoveryScorer.chargeDrivers(hrv: hrvVal, rhr: Double(rhrVal), resp: daily.respRateBpm,
                                             hrvBaseline: hrvBase, rhrBaseline: baselines.restingHR,
                                             respBaseline: baselines.resp, sleepPerf: restQuality,
@@ -3323,7 +3328,7 @@ final class IntelligenceEngine: ObservableObject {
             return ["charge day=\(daily.day) nilScore reason=missingInput "
                 + "(hrv/rhr/hrvBaseline required)"]
         }
-        let restQuality = AnalyticsEngine.Rest.composite(daily: daily).map { $0 / 100.0 } ?? daily.efficiency
+        let restQuality = AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours()).map { $0 / 100.0 } ?? daily.efficiency
         let (_, trace) = RecoveryScorer.recoveryTrace(
             hrv: hrvVal, rhr: Double(rhrVal), resp: daily.respRateBpm,
             hrvBaseline: hrvBase, rhrBaseline: baselines.restingHR,

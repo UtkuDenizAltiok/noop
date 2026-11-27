@@ -37,17 +37,25 @@ final class SimpleSleepV6Tests: XCTestCase {
     /// that rule returns: a need above the floor was raised, anything else is the target itself.
     func testSleepNeedOriginFollowsTheRuleThatSetsTheNeed() {
         let floorMin = AnalyticsEngine.Rest.populationNeedFloorHours(age: nil) * 60
-        XCTAssertEqual(SimpleDayPlan.standardSleepNeedMinutes, Int(floorMin.rounded()))
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: floorMin), .standard)
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: floorMin + 0.4), .standard)
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: floorMin + 1), .raised)
+        XCTAssertEqual(SimpleDayPlan.standardSleepNeedMinutes(age: nil), Int(floorMin.rounded()))
+        XCTAssertEqual(SimpleDayPlan.standardSleepNeedMinutes(age: 70), 450)
+        func origin(_ need: Double, chosen: Int = 0, age: Int? = nil) -> SimpleDayPlan.SleepNeedOrigin {
+            SimpleDayPlan.sleepNeedOrigin(needMin: need, chosenMinutes: chosen, age: age)
+        }
+        XCTAssertEqual(origin(floorMin), .standard)
+        XCTAssertEqual(origin(floorMin + 0.4), .standard)
+        XCTAssertEqual(origin(floorMin + 1), .raised)
+        XCTAssertEqual(origin(480, age: 70), .raised, "8 h is above the 7.5 h target from 65")
+        // A need the wearer chose says so, whatever its size.
+        XCTAssertEqual(origin(450, chosen: 450), .chosen)
+        XCTAssertEqual(origin(540, chosen: 540), .chosen)
         // A short sleeper's need stays the target; a long sleeper's is raised; too few nights is the target.
         let short = AnalyticsEngine.Rest.personalizedNeedHours(nightlyHours: Array(repeating: 6.2, count: 14), age: nil) * 60
         let long = AnalyticsEngine.Rest.personalizedNeedHours(nightlyHours: Array(repeating: 8.9, count: 14), age: nil) * 60
         let few = AnalyticsEngine.Rest.personalizedNeedHours(nightlyHours: [9.2, 9.1, 9.3], age: nil) * 60
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: short), .standard)
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: long), .raised)
-        XCTAssertEqual(SimpleDayPlan.sleepNeedOrigin(needMin: few), .standard)
+        XCTAssertEqual(origin(short), .standard)
+        XCTAssertEqual(origin(long), .raised)
+        XCTAssertEqual(origin(few), .standard)
     }
 
     /// The night's line names WHOOP as the source of its need only when there is an imported need and it

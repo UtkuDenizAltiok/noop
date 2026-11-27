@@ -2869,4 +2869,7 @@
     <string name="sleep_debt_from_whoop">De WHOOP</string>
     <string name="sleep_window_fell_asleep">Endormissement</string>
     <string name="sleep_window_in_bed_from_to">Au lit de %1$s à %2$s</string>
+    <string name="settings_sleep_need">Besoin de sommeil</string>
+    <string name="settings_sleep_need_automatic">Automatique (%1$s)</string>
+    <string name="settings_sleep_need_footnote">Automatique calcule votre besoin à partir de votre âge et des nuits où vous dormez le plus. Ou choisissez le vôtre : NOOP mesure alors votre dette de sommeil, l\'objectif de cette nuit, le rappel du coucher et votre score de repos par rapport à lui.</string>
 </resources>

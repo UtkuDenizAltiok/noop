@@ -32,8 +32,9 @@ final class SimpleScorePageTests: XCTestCase {
                 for deep in [0.0, 12.0, 41.0, 77.0, 118.0] {
                     for rem in [0.0, 33.0, 96.0, 141.0] where deep + rem <= asleep {
                         let night = scorePageFixtureNight(asleep: asleep, efficiency: efficiency, deep: deep, rem: rem)
-                        guard let score = AnalyticsEngine.Rest.composite(daily: night),
-                              let breakdown = SimpleScoreRules.restBreakdown(daily: night) else {
+                        let need = [7.0, 7.5, 8.0, 8.75, 9.5][nights % 5]
+                        guard let score = AnalyticsEngine.Rest.composite(daily: night, needHours: need),
+                              let breakdown = SimpleScoreRules.restBreakdown(daily: night, needHours: need) else {
                             return XCTFail("no score for \(asleep) min asleep")
                         }
                         nights += 1
@@ -58,17 +59,20 @@ final class SimpleScorePageTests: XCTestCase {
     /// the page may say so, and the highest score it names is the score a perfect night really gets.
     func testRestRegularityIsTheNeutralHalfAndCapsTheScore() {
         let perfect = scorePageFixtureNight(asleep: 600, efficiency: 1.0, deep: 150, rem: 150)
-        guard let breakdown = SimpleScoreRules.restBreakdown(daily: perfect) else { return XCTFail("no breakdown") }
+        guard let breakdown = SimpleScoreRules.restBreakdown(daily: perfect, needHours: 8) else {
+            return XCTFail("no breakdown")
+        }
         XCTAssertEqual(breakdown.parts.last?.kind, .regularity)
         XCTAssertEqual(breakdown.parts.last?.points, 5)
         XCTAssertEqual(breakdown.highestPossible, 95)
         XCTAssertEqual(AnalyticsEngine.Rest.composite(daily: perfect), 95)
         XCTAssertEqual(breakdown.printedScore, breakdown.highestPossible)
-        // A full night is the hours the score function counts, whatever the Sleep tab's personal need says.
-        XCTAssertEqual(breakdown.fullNightMin, AnalyticsEngine.Rest.defaultNeedHours * 60)
+        // A full night is the one sleep need (v6 step 7), the need the score function is handed.
+        XCTAssertEqual(breakdown.fullNightMin, 8 * 60)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: perfect, needHours: 7.5)?.fullNightMin, 450)
         let short = scorePageFixtureNight(asleep: 300, efficiency: 0.8, deep: 10, rem: 60)
-        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short)?.parts.last?.points, 5)
-        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short)?.deepWasShort, true)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8)?.parts.last?.points, 5)
+        XCTAssertEqual(SimpleScoreRules.restBreakdown(daily: short, needHours: 8)?.deepWasShort, true)
         XCTAssertEqual(breakdown.deepWasShort, false)
     }
 

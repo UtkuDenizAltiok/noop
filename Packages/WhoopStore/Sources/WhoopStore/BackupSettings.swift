@@ -54,6 +54,9 @@ public enum BackupSettings {
         "profile.waistCm": .double,
         "profile.hrMax": .int,
         "profile.hrZoneThresholds": .string,
+        // v6 step 7: the wearer's own sleep need in minutes, 0 = Automatic. A choice about the person, so it
+        // travels; Int minutes on both platforms.
+        "profile.sleepNeedMinutes": .int,
         "units.system": .string,
         "units.distance": .string,
         "units.temperature": .string,
@@ -80,6 +83,7 @@ public enum BackupSettings {
         "profile.waistCm": "profile.waistCm",
         "profile.hrMax": "profile.hrMaxOverride",
         "profile.hrZoneThresholds": "profile.hrZoneThresholds",
+        "profile.sleepNeedMinutes": "profile.sleepNeedMinutes",
         "units.system": "units.system",
         "units.distance": "units.distance",
         "units.temperature": "units.temperature",

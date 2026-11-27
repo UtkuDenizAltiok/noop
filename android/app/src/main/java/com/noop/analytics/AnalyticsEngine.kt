@@ -1578,7 +1578,12 @@ object RestScorer {
      */
     fun populationNeedFloorHours(age: Int?): Double {
         if (age == null || age <= 0) return 8.0   // unknown → adult target
-        return if (age < 18) 9.0 else 8.0         // children/teens ~9 (NSF 8–12); adults & older ~8 (NSF 7–9)
+        return when {
+            age < 18 -> 9.0     // children/teens ~9 (NSF 8–12)
+            // Older adults: NSF recommends 7–8 h from 65 (Hirshkowitz et al., Sleep Health 2015), target 7.5.
+            age >= 65 -> 7.5
+            else -> 8.0         // adults 18–64 ~8 (NSF 7–9)
+        }
     }
 
     /**
@@ -1594,15 +1599,44 @@ object RestScorer {
     fun personalizedNeedHours(nightlyHours: List<Double>, age: Int?): Double {
         val floor = populationNeedFloorHours(age)
         val xs = nightlyHours.filter { it > 0.0 }.sorted()
-        if (xs.size < minNeedNights) {
-            return minOf(maxOf(defaultSleepNeedHours, floor), maxNeedHours)
-        }
+        // Cold start: the age target itself (8 h for adults, 9 under 18, 7.5 from 65).
+        if (xs.size < minNeedNights) return minOf(floor, maxNeedHours)
         // Linear-interpolated 75th percentile — the "unrestricted" nights.
         val pos = 0.75 * (xs.size - 1)
         val lo = pos.toInt()
         val hi = minOf(lo + 1, xs.size - 1)
         val q = xs[lo] + (pos - lo) * (xs[hi] - xs[lo])
         return minOf(maxOf(q, floor), maxNeedHours)
+    }
+
+    /**
+     * The shortest sleep need a wearer may choose, 7h 0m (the AASM/SRS adult floor). Swift twin:
+     * `AnalyticsEngine.Rest.chosenNeedMinMinutes`, whose doc carries the sources.
+     */
+    const val CHOSEN_NEED_MIN_MINUTES: Int = 420
+
+    /** The longest need a wearer may choose: [maxNeedHours] in minutes. Swift twin: `AnalyticsEngine.Rest.chosenNeedMaxMinutes`. */
+    const val CHOSEN_NEED_MAX_MINUTES: Int = 570
+
+    /**
+     * THE sleep need: the wearer's own choice when they made one ([chosenMinutes] > 0, clamped to
+     * [CHOSEN_NEED_MIN_MINUTES]..[CHOSEN_NEED_MAX_MINUTES]), else the automatic [personalizedNeedHours] with their age. One resolver for the
+     * debt, tonight's goal, the bedtime reminder and Rest's duration term. Byte-identical to Swift
+     * `AnalyticsEngine.Rest.resolvedNeedHours` (oracle in `RestResolvedNeedTest`).
+     */
+    fun resolvedNeedHours(chosenMinutes: Int, nightlyHours: List<Double>, age: Int?): Double {
+        if (chosenMinutes <= 0) return personalizedNeedHours(nightlyHours, age)
+        return normalizedChosenNeedMinutes(chosenMinutes) / 60.0
+    }
+
+    /**
+     * A chosen need as stored: 0 (Automatic) for zero or less, else the nearest 15 minutes from
+     * [CHOSEN_NEED_MIN_MINUTES] to [CHOSEN_NEED_MAX_MINUTES]. Swift twin: `AnalyticsEngine.Rest.normalizedChosenNeedMinutes`.
+     */
+    fun normalizedChosenNeedMinutes(minutes: Int): Int {
+        if (minutes <= 0) return 0
+        val stepped = ((minutes + 7) / 15) * 15
+        return stepped.coerceIn(CHOSEN_NEED_MIN_MINUTES, CHOSEN_NEED_MAX_MINUTES)
     }
 
     /**
@@ -1766,7 +1800,12 @@ object RestScorer {
      * truth so the persisted sleep_performance series and the Charge "Rest quality" term agree. Mirrors
      * Swift `AnalyticsEngine.Rest.composite(daily:)`.
      */
-    fun restFromDaily(daily: DailyMetric, consistency: Double? = null): Double? {
+    /**
+     * Rest [0, 100] from a persisted day row against [needHours] (v6 step 7: the one sleep need,
+     * `com.noop.ui.SleepNeed`), nil when the row has no sleep. Byte-identical to Swift
+     * `AnalyticsEngine.Rest.composite(daily:needHours:consistency:)`.
+     */
+    fun composite(daily: DailyMetric, needHours: Double = defaultSleepNeedHours, consistency: Double? = null): Double? {
         val tstMin = daily.totalSleepMin ?: return null
         val eff = daily.efficiency ?: return null
         if (tstMin <= 0.0) return null
@@ -1775,7 +1814,7 @@ object RestScorer {
             efficiency = eff,
             deepSeconds = (daily.deepMin ?: 0.0) * 60.0,
             remSeconds = (daily.remMin ?: 0.0) * 60.0,
-            sleepNeedHours = null,
+            sleepNeedHours = needHours,
             consistency = consistency,
         )
     }

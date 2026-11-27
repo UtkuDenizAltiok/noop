@@ -507,6 +507,15 @@ struct SettingsView: View {
                     }
                 }
                 rowDivider
+                // v6 step 7: the one sleep need (`SleepNeed`): Automatic, or the wearer's own figure.
+                FormRow(label: "Sleep need") {
+                    SleepNeedSettingValue()
+                }
+                Text("Automatic works your need out from your age and the nights you sleep longest. Or choose your own: NOOP then measures your sleep debt, tonight's goal, the bedtime reminder and your Rest score against it.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+                rowDivider
                 // Custom HR zones (#531, @kavemang): replace the conventional %HRmax bands with five
                 // personalized inclusive BPM lower bounds. Off = the effective set stays conventional.
                 FormRow(label: "Custom HR zones") {

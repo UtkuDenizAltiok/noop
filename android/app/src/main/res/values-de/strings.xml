@@ -2883,4 +2883,7 @@
     <string name="sleep_debt_from_whoop">Von WHOOP</string>
     <string name="sleep_window_fell_asleep">Eingeschlafen</string>
     <string name="sleep_window_in_bed_from_to">Im Bett von %1$s bis %2$s</string>
+    <string name="settings_sleep_need">Schlafbedarf</string>
+    <string name="settings_sleep_need_automatic">Automatisch (%1$s)</string>
+    <string name="settings_sleep_need_footnote">Automatisch berechnet deinen Bedarf aus deinem Alter und den Nächten, in denen du am längsten schläfst. Oder wähle deinen eigenen: Dann misst NOOP deine Schlafschuld, das heutige Ziel, die Schlafenszeit-Erinnerung und deinen Erholungswert daran.</string>
 </resources>
