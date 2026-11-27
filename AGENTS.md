@@ -1,5 +1,21 @@
 # AGENTS.md — working on NOOP
 
+## This project: NOOP 13
+
+NOOP 13 is Utku Deniz Altiok's own continuation of NOOP 12.0.0 ([ryanbr/noop](https://github.com/ryanbr/noop),
+PolyForm Noncommercial 1.0.0), maintained independently at
+[UtkuDenizAltiok/noop](https://github.com/UtkuDenizAltiok/noop) since 27 Nov 2026, with the original license and
+every credit kept. `main` is the product (13.0.0). The original repository is no longer followed; where this file
+speaks of upstream maintainers, pull requests to them or their CI rotas, read it as history and apply the
+engineering rules to this repository.
+
+**The project handbook** (state, the owner's decisions, workflow, history, feature contracts) is the `handbook`
+branch of this repository. On the owner's Mac it is checked out at `~/Developer/noop/handbook` and linked here as
+`dist/` (ignored). Read `dist/AGENTS.md` (or the `handbook` branch's `AGENTS.md` on GitHub) after this file.
+Nothing personal of the owner is ever committed to either branch (`dist/WORKFLOW.md` → Privacy).
+
+---
+
 Guidance for anyone (human or AI agent) submitting a pull request. This is the high-signal map;
 [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) is the full guide (BLE safety contract, design-system
 rules, add-a-metric/screen/command recipes), [`docs/BUILD.md`](docs/BUILD.md) covers signing/pairing,

@@ -4,6 +4,11 @@
 
 <h1 align="center">NOOP</h1>
 
+> **NOOP 13** is Utku Deniz Altiok's own continuation of NOOP 12.0.0
+> ([ryanbr/noop](https://github.com/ryanbr/noop)), maintained independently since 27 Nov 2026 under the same
+> PolyForm Noncommercial 1.0.0 license with every credit kept. What is new: [CHANGELOG](CHANGELOG.md) (13.0.0).
+> The project handbook is on the [`handbook`](https://github.com/UtkuDenizAltiok/noop/tree/handbook) branch.
+
 <p align="center"><b>Your strap. Your data. Your machine. Offline, on-device, no cloud.</b></p>
 
 <p align="center"><sub>Now in the all-new <b>Liquid Metal</b> design: one living look across iPhone, Android and Mac.</sub></p>

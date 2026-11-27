@@ -118,3 +118,5 @@ tools/linux-capture/*.db
 tools/linux-capture/*.db-wal
 tools/linux-capture/*.db-shm
 tools/linux-capture/captures/
+# The handbook link on the owner's Mac (app/dist -> ../handbook); dist/ above matches only a folder.
+/dist
