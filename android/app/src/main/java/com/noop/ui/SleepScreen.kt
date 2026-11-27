@@ -899,6 +899,7 @@ fun SleepScreen(
                 groupInBedMin = night?.groupInBedMin,
                 windowOnsetTs = night?.heroOnsetTs,
                 windowWakeTs = night?.heroWakeTs,
+                clock = night?.clock,
             )
                     }
                     }
@@ -1375,6 +1376,9 @@ private fun Hero(
     // to the session window below, byte-identical to before.
     windowOnsetTs: Long? = null,
     windowWakeTs: Long? = null,
+    // The night's clock times ([SleepClockTimes]): the row shows fell asleep and woke, and says in bed / up
+    // under them when those differ. Null keeps the window above.
+    clock: SleepClockTimes? = null,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Metrics.gap)) {
         NightNavHeader(nightOffset, nightLabel, lastIndex, clock, onNavigate, session,
@@ -1387,7 +1391,10 @@ private fun Hero(
         // stub, where it's the only thing the hero can say). Mirrors iOS SleepView.sleepWindowRow.
         // #345: the row shows the WHOLE night's window — on a split night the session (edit anchor)
         // ends mid-night and its endTs contradicted the header pill two lines above.
-        session?.let { SleepWindowRow(windowOnsetTs ?: it.effectiveStartTs, windowWakeTs ?: it.endTs) }
+        session?.let {
+            SleepWindowRow(clock?.fellAsleep ?: windowOnsetTs ?: it.effectiveStartTs,
+                clock?.woke ?: windowWakeTs ?: it.endTs, clock)
+        }
         if (display == null) {
             // Honest fallback: this night recorded no usable stage data — never silently
             // substitute another night's hypnogram. (#160)

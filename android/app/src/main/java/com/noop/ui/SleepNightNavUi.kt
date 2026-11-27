@@ -66,7 +66,7 @@ import com.noop.analytics.ClockFormat
  * combined into one TalkBack element. Mirrors iOS SleepView.sleepWindowRow (PR #289).
  */
 @Composable
-internal fun SleepWindowRow(onsetTs: Long, wakeTs: Long) {
+internal fun SleepWindowRow(onsetTs: Long, wakeTs: Long, clock: SleepClockTimes? = null) {
     // #1821: the reader's chosen clock. Read here rather than threaded, because this is a composable and
     // LocalContext is the idiomatic source; the label helpers stay pure.
     val is24h = ClockPrefs.uses24Hour(LocalContext.current)
@@ -81,8 +81,9 @@ internal fun SleepWindowRow(onsetTs: Long, wakeTs: Long) {
         padding = Metrics.space14,
         tint = Palette.restColor,
     ) {
+        Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            SleepTime(icon = Icons.Filled.Bedtime, label = uiString(R.string.l10n_sleep_screen_asleep_b9692bbe), value = asleep)
+            SleepTime(icon = Icons.Filled.Bedtime, label = uiString(R.string.sleep_window_fell_asleep), value = asleep)
             Spacer(Modifier.width(Metrics.space12))
             Box(
                 modifier = Modifier
@@ -93,6 +94,17 @@ internal fun SleepWindowRow(onsetTs: Long, wakeTs: Long) {
             Spacer(Modifier.width(Metrics.space12))
             SleepTime(icon = Icons.Filled.WbSunny, label = uiString(R.string.l10n_sleep_screen_woke_cfbb59a8), value = woke)
             Spacer(Modifier.weight(1f))
+        }
+        // Getting into bed and falling asleep are different moments ([SleepClockTimes]): say both.
+        if (clock != null && (clock.fellAsleep - clock.inBed >= 60 || clock.up - clock.woke >= 60)) {
+            Spacer(Modifier.height(Metrics.space8))
+            Text(
+                uiString(R.string.sleep_window_in_bed_from_to, clockTimeLabel(clock.inBed, is24h),
+                    clockTimeLabel(clock.up, is24h)),
+                style = NoopType.footnote,
+                color = Palette.textTertiary,
+            )
+        }
         }
     }
 }

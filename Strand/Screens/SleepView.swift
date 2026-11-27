@@ -1545,15 +1545,22 @@ struct SleepView: View {
         NoopCard(padding: NoopMetrics.cardInnerPadding, tint: StrandPalette.restColor) {
             VStack(alignment: .leading, spacing: NoopMetrics.rowSpacing) {
                 HStack(spacing: 0) {
-                    sleepTime(icon: "moon.zzz.fill", label: "Asleep", value: night.onsetText)
+                    sleepTime(icon: "moon.zzz.fill", label: "Fell asleep", value: night.fellAsleepText)
                     Spacer(minLength: 12)
                     Rectangle().fill(StrandPalette.hairline).frame(width: 1, height: 30)
                     Spacer(minLength: 12)
-                    sleepTime(icon: "sun.max.fill", label: "Woke", value: night.wakeText)
+                    sleepTime(icon: "sun.max.fill", label: "Woke", value: night.wokeText)
                     Spacer(minLength: 8)
                     wakeEditButton(night)
                 }
                 .frame(maxWidth: .infinity)
+                // Getting into bed and falling asleep are different moments (`SleepClockTimes`): say both.
+                if let note = night.inBedNote {
+                    Text(note)
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 // Provenance (C4) + the "why this is your main sleep" explainer (C1). The badge names the
                 // REAL per-day merge winner; the info button reveals the foundation reason for the pick.
                 Divider().overlay(StrandPalette.hairline)
@@ -1665,9 +1672,13 @@ struct SleepView: View {
         if let target = night.editTarget {
             let isEdited = target.userEdited
             Button {
+                // Seed the editor with the times the row shows (fell asleep, woke) when they fall inside
+                // the block being edited, so the wearer corrects what they read.
+                let window = target.effectiveStartTs..<target.endTs
                 wakeEdit = WakeEdit(detectedStartTs: target.startTs,
-                                    bedTs: target.effectiveStartTs,
-                                    wakeTs: target.endTs,
+                                    bedTs: window.contains(night.fellAsleepTs) ? night.fellAsleepTs
+                                        : target.effectiveStartTs,
+                                    wakeTs: window.contains(night.wokeTs - 1) ? night.wokeTs : target.endTs,
                                     stagesJSON: target.stagesJSON,
                                     userEdited: isEdited)
             } label: {
@@ -3170,8 +3181,8 @@ private struct SleepTimeEditor: View {
     /// action; `deleteLabel` lets the nap editor say "Delete this nap".
     init(bedTs: Int, wakeTs: Int,
          title: LocalizedStringKey = "Edit sleep times",
-         blurb: LocalizedStringKey = "Correct when you went to bed and woke. Stages are re-derived from your data; the edit is kept through the next strap sync.",
-         bedLabel: LocalizedStringKey = "Asleep",
+         blurb: LocalizedStringKey = "Correct when you fell asleep and when you woke. NOOP works out the stages again for the new times and keeps your correction through the next strap sync.",
+         bedLabel: LocalizedStringKey = "Fell asleep",
          wakeLabel: LocalizedStringKey = "Woke",
          deleteLabel: LocalizedStringKey = "Delete this sleep",
          coverage: ClosedRange<Int>? = nil,

@@ -2836,4 +2836,6 @@
     <string name="workouts_screen_subtitle">Tutti i tuoi allenamenti in un unico posto, registrati dalla fascia o importati.</string>
     <string name="intelligence_screen_subtitle">La tua Carica, Sforzo e Riposo di ogni giorno, calcolati da NOOP stesso su questo dispositivo. Non viene inviato nulla online.</string>
     <string name="sleep_debt_from_whoop">Da WHOOP</string>
+    <string name="sleep_window_fell_asleep">Addormentamento</string>
+    <string name="sleep_window_in_bed_from_to">A letto dalle %1$s alle %2$s</string>
 </resources>
