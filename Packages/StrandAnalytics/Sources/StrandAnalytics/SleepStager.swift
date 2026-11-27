@@ -688,8 +688,9 @@ public enum SleepStager {
             if p.stage != "sleep" { continue }
             longestSleepS = max(longestSleepS, p.end - p.start)
             if (p.end - p.start) < minMinutes * 60 { continue }
-            let stages = SleepStagerV2.stageSession(start: p.start, end: p.end, grav: [],
-                                                    hr: hrS, rr: rrS, resp: resp)
+            // Sleep starts at the first persistent sleep, as on the motion path (`applyPersistentOnset`).
+            let stages = applyPersistentOnset(SleepStagerV2.stageSession(start: p.start, end: p.end, grav: [],
+                                                                         hr: hrS, rr: rrS, resp: resp))
             staged += 1
             if stages.isEmpty { continue }
             // #1884: MEASURED, not nilled. The bounds here are inferred from heart rate, which is why
@@ -1589,8 +1590,10 @@ public enum SleepStager {
             // (`bandSleepState`) scored "asleep". No-op when the band is absent (WHOOP 4.0) or the flag is
             // off; stager-agnostic (corrects whichever hypnogram V1/V2 produced). Efficiency below is then
             // computed on the corrected stages, so a night NOOP over-called wake on reports true efficiency.
-            let stages = applyBandStateWakeVeto(rawStages, start: p.start, end: p.end,
-                                                bandSleepState: bandSleepState)
+            // Then the night's sleep starts at its first persistent sleep (`applyPersistentOnset`): staged
+            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep.
+            let stages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start: p.start, end: p.end,
+                                                                     bandSleepState: bandSleepState))
             let eff = efficiency(start: p.start, end: p.end, stages: stages)
             let avgHrv = sessionAvgHRV(start: p.start, end: p.end, rr: rrS)
             sessions.append(SleepSession(start: p.start, end: p.end, efficiency: eff,
@@ -1607,9 +1610,11 @@ public enum SleepStager {
                 // `cutoffTs: 0` on purpose: the shadow measures the FULL veto potential across EVERY banded
                 // night (history included) to build the validation distribution, independent of whatever
                 // new-nights cutoff the eventual flip uses.
-                let shadowStages = applyBandStateWakeVeto(rawStages, start: p.start, end: p.end,
-                                                          bandSleepState: bandSleepState,
-                                                          enabled: true, cutoffTs: 0)
+                // The persistent onset applies to the shadow too, so the difference is the veto's alone.
+                let shadowStages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start: p.start,
+                                                                               end: p.end,
+                                                                               bandSleepState: bandSleepState,
+                                                                               enabled: true, cutoffTs: 0))
                 let shadowEff = efficiency(start: p.start, end: p.end, stages: shadowStages)
                 let recoveredMin = (shadowEff - eff) * Double(p.end - p.start) / 60.0
                 if recoveredMin >= 1.0 {
@@ -1643,6 +1648,58 @@ public enum SleepStager {
         let wake = stages.filter { SleepStageVocabulary.isWake($0.stage) }.reduce(0.0) { $0 + Double($1.end - $1.start) }
         let asleep = max(0.0, inBed - wake)
         return min(1.0, asleep / inBed)
+    }
+
+    // MARK: - Sleep onset: the first persistent sleep
+
+    /// Minutes of unbroken staged sleep that mark sleep onset: latency to persistent sleep, the clinical
+    /// definition (the first 10 minutes of continuous sleep), chosen a priori rather than fitted.
+    ///
+    /// Why it exists: a detected night starts when the wrist goes still, which is when the wearer got into
+    /// bed, not when they fell asleep (Marino et al., Sleep 2013: wrist immobility begins the actigraphy sleep
+    /// period while the brain's sleep starts later). On PhysioNet sleep-accel (31 PSG nights, true onset 2 to
+    /// 41 minutes after lights out) the detected start was 15.5 minutes before PSG sleep onset on average
+    /// (MAE 15.5; 19 of 31 within 15 minutes). The first 10 minutes of persistent staged sleep cut that to a
+    /// bias of -8.1 and an MAE of 9.2 (25 of 31), and total sleep's overestimate from +22.3 to +20.7 minutes.
+    /// Heart rate alone cannot place onset: it fell a median of only 2 bpm from quiet wake in bed to the first
+    /// 20 minutes of sleep. Reproduce with `Tools/SleepPSG --section onset`.
+    public static let persistentSleepMin: Int = 10
+
+    /// Re-label as wake every staged sleep segment before the night's first `minPersistS` of unbroken sleep,
+    /// so the hypnogram, total sleep and the shown "fell asleep" time all start at the same instant. A wake
+    /// segment of any length breaks a run. Touching same-stage segments are merged afterwards so neighbours
+    /// always differ. A night with no persistent run is returned unchanged: this rule moves an onset, it
+    /// never deletes a night. Pure; Kotlin twin `SleepStager.applyPersistentOnset`.
+    public static func applyPersistentOnset(_ stages: [StageSegment],
+                                            minPersistS: Int = persistentSleepMin * 60) -> [StageSegment] {
+        let sorted = stages.enumerated().sorted {
+            $0.element.start == $1.element.start ? $0.offset < $1.offset : $0.element.start < $1.element.start
+        }.map(\.element)
+        var onset: Int? = nil
+        var runStart: Int? = nil
+        for seg in sorted {
+            if SleepStageVocabulary.isWake(seg.stage) {
+                runStart = nil
+                continue
+            }
+            let begin = runStart ?? seg.start
+            runStart = begin
+            if seg.end - begin >= minPersistS {
+                onset = begin
+                break
+            }
+        }
+        guard let onset, let first = sorted.first, onset > first.start else { return stages }
+        var out: [StageSegment] = []
+        for seg in sorted {
+            let stage = seg.start < onset ? "wake" : seg.stage
+            if let last = out.last, last.stage == stage, last.end == seg.start {
+                out[out.count - 1].end = seg.end
+            } else {
+                out.append(StageSegment(start: seg.start, end: seg.end, stage: stage))
+            }
+        }
+        return out
     }
 
     // MARK: - Stage 1–3: staging over a 30 s epoch grid

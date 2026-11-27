@@ -591,6 +591,11 @@ if want("priors") {
 // The RSA term, live against silenced (DREAMT: the only dataset here with beat-to-beat intervals)
 // ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
+// 9. Sleep onset and the final awakening (sleep-accel only: DREAMT's loader keeps no hours around the night).
+if want("onset") && !isDreamt {
+    OnsetReport.run(root: root, ids: ids)
+}
+
 if want("rsa") && subjects.contains(where: { !$0.rr.isEmpty }) {
     print("""
 

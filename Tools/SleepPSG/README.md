@@ -235,6 +235,28 @@ REM (the term's slope there is 2 × respWeight) and 0.35 for light against REM (
 weight of about 0.29–0.35, not 0.6. "Regular breathing only" fixes the REM share but floods deep; "REM side
 only" keeps the REM over-call. sleep-accel has no R-R, so every other section is unchanged by the weight.
 
+### 9. Sleep onset and the final awakening
+
+Every section above stages a window it is handed. `--section onset` runs the **whole detection**,
+`SleepStager.detectSleep` with V2 staging as the app runs it, over each lab night with 6 hours before and 3
+after, and compares three readouts with PSG: *in bed* (the session start, when the wrist went still), *fell
+asleep* (the first sleep segment, after `SleepStager.applyPersistentOnset`) and *woke* (the end of the last
+sleep segment). PSG onset is the first of three consecutive non-wake epochs; lights out is the first scored
+epoch, placed at 23:00 local because the dataset carries no clock times.
+
+| readout (31 nights, PSG latency 2–41 min, median 11) | bias | MAE | within 15 min |
+|---|---|---|---|
+| in bed (what "Asleep" used to show) vs PSG onset | −15.5 min | 15.5 min | 19 / 31 |
+| **fell asleep** (first 10 min of persistent sleep) vs PSG onset | −8.1 min | 9.2 min | 25 / 31 |
+| woke vs PSG final awakening | +14.3 min | 14.8 min | 20 / 31 |
+| sleep inside the lights-out window vs PSG | +20.7 min | 22.1 min | 15 / 31 |
+
+The 10 minutes is the clinical latency-to-persistent-sleep definition, chosen before the run; 15 scored a
+little better here (MAE 8.0) and was not taken, so the rule is not fitted to these 31 nights. Heart rate is no
+substitute: from quiet wake in bed to the first 20 minutes of sleep it fell a median of 2 bpm (27 of 31
+subjects). What remains is the wrist's known limit: a wearer lying still and awake for a long time still reads
+as asleep (the two longest latencies, 36 and 41 min, are 24 and 33 min early).
+
 ---
 
 ## The self-check, and what it found
