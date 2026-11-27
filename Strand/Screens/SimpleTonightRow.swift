@@ -150,6 +150,8 @@ struct SimpleTonightCard: View {
     let debtMin: Double
     let usualWakeMinute: Int?
     let lastNightNeedMin: Double?
+    /// Opens the guide's "Tonight's goal" entry from the card's ⓘ (step 6: a card explains itself).
+    let onGuide: () -> Void
 
     @AppStorage(SimpleDayPlan.ReminderKeys.enabled) private var windDownEnabledMirror = false
     @AppStorage(SimpleDayPlan.ReminderKeys.wake) private var windDownWakeMirror = 0
@@ -165,10 +167,20 @@ struct SimpleTonightCard: View {
         return Group {
             if tonight.hasSomethingToSay {
                 NoopCard(tint: StrandPalette.restColor) {
-                    SimpleSleepRow(icon: "bed.double.fill", title: String(localized: "Tonight")) {
-                        SimpleTonightLines(tonight: tonight)
+                    HStack(alignment: .top, spacing: 8) {
+                        SimpleSleepRow(icon: "bed.double.fill", title: String(localized: "Tonight")) {
+                            SimpleTonightLines(tonight: tonight)
+                        }
+                        .accessibilityElement(children: .combine)
+                        Spacer(minLength: 0)
+                        Button(action: onGuide) {
+                            Image(systemName: "info.circle")
+                                .font(StrandFont.subhead.weight(.semibold))
+                                .foregroundStyle(StrandPalette.textTertiary)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("What the numbers mean")
                     }
-                    .accessibilityElement(children: .combine)
                 }
             }
         }

@@ -47,6 +47,10 @@ struct RootTabView: View {
     @State private var quickAction: QuickAction?
     /// Presents the Devices manager (pair / switch bands) when a screen asks the shell to open it.
     @State private var showDevices = false
+    /// "How to read NOOP" (Design v6, step 6), offered once over Today in Simple mode (`SimpleWelcome`).
+    @AppStorage(SimpleWelcome.seenKey) private var simpleWelcomeSeen = false
+    @State private var showsSimpleWelcome = false
+    @Environment(\.scenePhase) private var scenePhase
     /// A routed v5 pillar screen (Insights hub / Lab Book / fused record / Rhythm) presented as a sheet
     /// when a hub row deep-links to it via NavRouter. nil = closed.
     @State private var routedPillar: NavRouter.Destination?
@@ -214,6 +218,12 @@ struct RootTabView: View {
         .sheet(item: $routedPillar) { dest in
             pillarScreen(dest)
         }
+        // "How to read NOOP": once, over Today, in Simple mode. Marked seen when it closes (Got it, the close
+        // button or a swipe), so a launch that ends before it was read offers it again.
+        .sheet(isPresented: $showsSimpleWelcome, onDismiss: { simpleWelcomeSeen = true }) {
+            SimpleWelcomeSheet(onClose: { showsSimpleWelcome = false })
+        }
+        .task(id: simpleWelcomeTrigger) { await offerSimpleWelcomeIfDue() }
         // Honour a router request: Devices keeps its dedicated sheet; the v5 pillars route through the
         // shared pillar sheet. Cleared so the same tap can fire again later.
         .onChange(of: router.requestedDestination) { _, dest in
@@ -431,6 +441,41 @@ struct RootTabView: View {
                     }
                 }
         }
+    }
+
+    /// Re-runs the welcome offer whenever one of its conditions changes.
+    private var simpleWelcomeTrigger: String {
+        "\(simpleMode)-\(simpleWelcomeSeen)-\(homeScreenQuickActionsEnabled)-\(selectedTab)-\(scenePhase == .active)"
+    }
+
+    /// Offers "How to read NOOP" when `SimpleWelcome.shouldOffer` allows. It first lets Today draw for a moment,
+    /// then waits out any other sheet or cover (What's New, a quick action, the developer's morning check-in)
+    /// with one look a second for at most a minute, rather than racing it: two presentations at once and the
+    /// second is silently dropped. Any other unmet condition ends the wait until the trigger changes.
+    @MainActor
+    private func offerSimpleWelcomeIfDue() async {
+        for _ in 0..<60 {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            guard !Task.isCancelled else { return }
+            let otherSheet = Self.anotherSheetIsUp()
+            let due = SimpleWelcome.shouldOffer(simpleMode: simpleMode, seen: simpleWelcomeSeen,
+                                                firstRunDone: homeScreenQuickActionsEnabled,
+                                                todaySelected: selectedTab == 0, appActive: scenePhase == .active,
+                                                anotherSheetUp: otherSheet)
+            if due {
+                showsSimpleWelcome = true
+                return
+            }
+            guard otherSheet else { return }
+        }
+    }
+
+    /// True while anything is presented over the shell: the welcome then waits rather than racing it.
+    private static func anotherSheetIsUp() -> Bool {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .contains { $0.isKeyWindow && $0.rootViewController?.presentedViewController != nil }
     }
 
     /// The Devices manager wrapped in its own nav stack + Done button (mirrors `quickScreen`, but
@@ -657,7 +702,7 @@ private struct SimpleMoreIndex: View {
         ForEach(SimpleMoreGroup.allCases, id: \.self) { group in
             let groupEntries = entries.filter { $0.group == group }
             if !groupEntries.isEmpty {
-                simpleSection(title(group)) {
+                simpleSection(title(group), caption(group)) {
                     ForEach(groupEntries) { row($0) }
                 }
             }
@@ -669,6 +714,7 @@ private struct SimpleMoreIndex: View {
     @ViewBuilder
     private func row(_ entry: SimpleMoreEntry) -> some View {
         switch entry {
+        case .myStrap:       SimpleMyStrapRow()
         case .liveHeartRate: MoreRow("Live heart rate", "waveform.path.ecg", .live)
         case .healthMonitor: MoreRow("Health monitor", "heart.text.square.fill", .health)
         case .stress:        MoreRow("Stress", "bolt.heart.fill", .stress)
@@ -686,9 +732,10 @@ private struct SimpleMoreIndex: View {
         }
     }
 
-    /// Each group's overline. Exhaustive, like `row(_:)`.
-    private func title(_ group: SimpleMoreGroup) -> LocalizedStringKey {
+    /// Each group's overline, or nil for the strap row, which needs none. Exhaustive, like `row(_:)`.
+    private func title(_ group: SimpleMoreGroup) -> LocalizedStringKey? {
         switch group {
+        case .strap:      return nil
         case .yourBody:   return "Your body"
         case .training:   return "Training"
         case .dailyTools: return "Daily tools"
@@ -697,11 +744,35 @@ private struct SimpleMoreIndex: View {
         }
     }
 
-    /// A titled group that is always open: with three rows or fewer each, collapsing would only add taps.
-    private func simpleSection<Rows: View>(_ title: LocalizedStringKey,
+    /// One line under each heading saying what the group is for (Design v6, step 6: no row said what it is
+    /// for, W47). Under the heading rather than under each row, so no row changes and the Lift Log row stays
+    /// exactly as it is.
+    private func caption(_ group: SimpleMoreGroup) -> LocalizedStringKey? {
+        switch group {
+        case .strap:      return nil
+        case .yourBody:   return "How your body is doing right now."
+        case .training:   return "Your workouts and gym sessions."
+        case .dailyTools: return "Alarms, reminders and breathing."
+        case .yourData:   return "Bring data in and keep it safe."
+        case .help:       return "What things mean, reporting a problem, and settings."
+        }
+    }
+
+    /// A group that is always open: with three rows or fewer each, collapsing would only add taps.
+    private func simpleSection<Rows: View>(_ title: LocalizedStringKey?, _ caption: LocalizedStringKey?,
                                            @ViewBuilder rows: @escaping () -> Rows) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title).strandOverline()
+            if let title {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title).strandOverline()
+                    if let caption {
+                        Text(caption)
+                            .font(StrandFont.caption)
+                            .foregroundStyle(StrandPalette.textTertiary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
             NoopCard(padding: 0) {
                 VStack(spacing: 0) { rows() }
                     .clipShape(RoundedRectangle(cornerRadius: NoopMetrics.cardRadius, style: .continuous))
@@ -740,6 +811,71 @@ private struct SimpleMoreIndex: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// More's "My strap" row (Design v6, step 6): the Devices screen, with the strap's state as its caption. A leaf
+/// of its own, so the live state re-renders this row alone. The caption comes from the funnel Today's header ring
+/// draws from (`SimpleStrapStatus.caption`), so the two cannot disagree.
+private struct SimpleMyStrapRow: View {
+    @EnvironmentObject private var live: LiveState
+    @EnvironmentObject private var router: NavRouter
+
+    private var caption: SimpleStrapStatus.Caption? {
+        SimpleStrapStatus.caption(.resolve(
+            activeIsWhoop: live.activeIsWhoop, connected: live.connected, batteryPct: live.batteryPct,
+            charging: live.charging, ringPct: live.ouraBatteryPct,
+            ringCharging: live.ouraWearState == .charging))
+    }
+
+    var body: some View {
+        Button { router.openDevices() } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "antenna.radiowaves.left.and.right")
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundStyle(StrandPalette.accent)
+                    .frame(width: 26, alignment: .center)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("My strap")
+                        .font(StrandFont.body)
+                        .foregroundStyle(StrandPalette.textPrimary)
+                    captionText
+                        .font(StrandFont.caption)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .accessibilityHidden(true)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(minHeight: 44)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+    }
+
+    @ViewBuilder
+    private var captionText: some View {
+        switch caption {
+        case .notConnected:
+            Text("Not connected")
+        case .connected:
+            Text("Connected")
+        case .battery(let percent, let charging):
+            if charging {
+                Text("Connected · \(percent)% · charging")
+            } else {
+                Text("Connected · \(percent)%")
+            }
+        case nil:
+            Text("Pair, switch or check your strap")
+        }
     }
 }
 
