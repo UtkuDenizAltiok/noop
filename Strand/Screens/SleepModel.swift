@@ -46,6 +46,9 @@ struct Night {
     /// the hero and the analytics rollup did, for a shift/late sleeper too. nil = cold-start band. (#547)
     var habitualMidsleepSec: Int? = nil
 
+    /// The night's four clock times (`SleepClockTimes.of`), worked out once when the night is built.
+    var clock: SleepClockTimes.Times? = nil
+
     /// The real stored block a sleep-time edit writes against — the day's MAIN block, resolved by the
     /// SAME shared selector (`SleepView.mainNightSession` → `SleepStageTotals.mainNightIndex`) the hero,
     /// the naps card, and `AnalyticsEngine.analyzeDay` use, so all of them and the edit affordance agree
@@ -94,8 +97,18 @@ struct Night {
         return out
     }
 
-    var onsetText: String { Night.timeFmt.string(from: Date(timeIntervalSince1970: TimeInterval(session.effectiveStartTs))) }
-    var wakeText: String { Night.timeFmt.string(from: Date(timeIntervalSince1970: TimeInterval(session.endTs))) }
+    /// When the wearer fell asleep and woke (`SleepClockTimes`, the one funnel every readout of these times
+    /// uses), falling back to the night's own start and end when it carries no sleep timeline.
+    var fellAsleepTs: Int { clock?.fellAsleep ?? session.effectiveStartTs }
+    var wokeTs: Int { clock?.woke ?? session.endTs }
+    var fellAsleepText: String { Night.clockString(fellAsleepTs) }
+    var wokeText: String { Night.clockString(wokeTs) }
+    /// "In bed from 00:02 to 08:05", shown under the two times when getting into bed or up differs from
+    /// falling asleep or waking by a minute or more; nil otherwise (an imported or corrected night).
+    var inBedNote: String? {
+        guard let clock, clock.fellAsleep - clock.inBed >= 60 || clock.up - clock.woke >= 60 else { return nil }
+        return String(localized: "In bed from \(Night.clockString(clock.inBed)) to \(Night.clockString(clock.up))")
+    }
     var dateLabel: String { Night.dateFmt.string(from: Date(timeIntervalSince1970: TimeInterval(session.effectiveStartTs))) }
 
     /// Date label that becomes a span when the night crosses midnight (onset on a different
@@ -335,7 +348,8 @@ extension SleepModel {
                                        restingHr: nil, avgHrv: nil, stagesJSON: nil)
         let realSegs = segs.count >= 2 ? segs.sorted { $0.start < $1.start } : nil
         return Night(session: synth, stages: stages, realSegments: realSegs, sourceBlocks: sessions,
-                     motionEpochs: motion, habitualMidsleepSec: habitualMidsleepSec)
+                     motionEpochs: motion, habitualMidsleepSec: habitualMidsleepSec,
+                     clock: SleepClockTimes.of(Array(group)))
     }
 
     /// The merged Night for the DAY `offset` stops back from the most recent (0 = last night).
@@ -386,9 +400,8 @@ extension SleepModel {
     /// engine. (#242; need-unification from #464 by @vishk23. Hours vs needed used to divide by the
     /// descriptive mean instead, so the same screen measured one night against two different needs.)
     static func debtNeedMin(days: [DailyMetric]) -> Double {
-        AnalyticsEngine.Rest.personalizedNeedHours(
-            nightlyHours: days.compactMap { $0.totalSleepMin.map { $0 / 60.0 } },
-            age: nil) * 60.0
+        // v6 step 7: THE need (`SleepNeed`): the wearer's choice, else the engine's automatic need with their age.
+        SleepNeed.currentHours(days: days) * 60.0
     }
 
     // MARK: Per-tile series (latest, typical mean, sparkline history)
@@ -424,9 +437,10 @@ extension SleepModel {
     /// else the REAL resolved Rest composite for that day. (#614 follow-up)
     static func performanceSeries(days: [DailyMetric], importedSleep: [String: ImportedSleepFigures]) -> Metric {
         let imported = importedSleep
+        let need = SleepNeed.currentHours(days: days)   // once, not per day (`SleepNeed`, v6 step 7)
         return metric(days: days) { d in
             if let p = imported[d.day]?.performancePct { return p }   // export-verbatim
-            return AnalyticsEngine.Rest.composite(daily: d)            // real resolved Rest composite
+            return AnalyticsEngine.Rest.composite(daily: d, needHours: need) // real resolved Rest composite
         }
     }
 
@@ -646,5 +660,64 @@ extension SleepModel {
             trendPoints: durationTrendPoints(days: inputs.days),
             sleepDebtLedger: debtLedger(days: inputs.days, napSleepMinByDay: napSleepMinByDay),
             normativeNeedMin: debtNeedMin(days: inputs.days))
+    }
+}
+
+// MARK: - The night's clock times
+
+/// The four clock times of one night, from ONE place, so the Sleep tab, the morning check-in and anything else
+/// that prints them cannot disagree ("Two readouts of one fact", AGENTS.md).
+///
+/// - in bed: the night's start, when the wrist went still;
+/// - fell asleep: the first sleep stage on the night's timeline. On a night NOOP detected, the detection starts
+///   sleep at its first persistent sleep (`SleepStager.applyPersistentOnset`, evidence in its doc);
+/// - woke: the end of the last sleep stage (on PSG nights 5.5 minutes after the final awakening at the median,
+///   against 12.8 for the moment the wearer started moving, `Tools/SleepPSG --section onset`);
+/// - up: the night's end.
+///
+/// A night the wearer corrected keeps the wearer's times for both pairs, and a night with no timeline (an
+/// imported night carries stage totals only) uses its start and end.
+enum SleepClockTimes {
+
+    struct Times: Equatable {
+        let inBed: Int
+        let fellAsleep: Int
+        let woke: Int
+        let up: Int
+    }
+
+    /// The times of a night made of `blocks` (one night's fragments, in any order). Nil for no blocks.
+    static func of(_ blocks: [CachedSleepSession]) -> Times? {
+        let sorted = blocks.sorted { $0.effectiveStartTs < $1.effectiveStartTs }
+        guard let first = sorted.first, let up = sorted.map(\.endTs).max() else { return nil }
+        let inBed = first.effectiveStartTs
+        if sorted.contains(where: { $0.userEdited }) {
+            return Times(inBed: inBed, fellAsleep: inBed, woke: up, up: up)
+        }
+        var asleepFrom: Int?
+        var asleepTo: Int?
+        for block in sorted {
+            for segment in sleepSegments(block.stagesJSON, from: block.effectiveStartTs, to: block.endTs) {
+                asleepFrom = min(asleepFrom ?? segment.start, segment.start)
+                asleepTo = max(asleepTo ?? segment.end, segment.end)
+            }
+        }
+        guard let asleepFrom, let asleepTo, asleepTo > asleepFrom else {
+            return Times(inBed: inBed, fellAsleep: inBed, woke: up, up: up)
+        }
+        return Times(inBed: inBed, fellAsleep: asleepFrom, woke: asleepTo, up: up)
+    }
+
+    /// The sleep (non-wake) segments of a stored timeline, clipped to the block's own window. Empty for a
+    /// stage-totals night or no JSON.
+    static func sleepSegments(_ json: String?, from start: Int, to end: Int) -> [(start: Int, end: Int)] {
+        guard let json, let data = json.data(using: .utf8),
+              let array = (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]] else { return [] }
+        return array.compactMap { segment in
+            guard let s = (segment["start"] as? NSNumber)?.intValue, let e = (segment["end"] as? NSNumber)?.intValue,
+                  let stage = segment["stage"] as? String, !SleepStageVocabulary.isWake(stage) else { return nil }
+            let clippedStart = max(s, start), clippedEnd = min(e, end)
+            return clippedEnd > clippedStart ? (clippedStart, clippedEnd) : nil
+        }
     }
 }

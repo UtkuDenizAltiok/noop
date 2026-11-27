@@ -19,14 +19,15 @@ final class WindDownSleepNeedTests: XCTestCase {
         super.setUp()
         // Keep the wearer's own settings out of the way and restore them afterwards; the nudge stays OFF
         // so no test schedules a real notification.
-        for key in [needKey, enabledKey, leadKey, wakeKey] {
+        // The one sleep need's stored inputs (`SleepNeed`, v6 step 7) too, so the need follows the test's nights.
+        for key in [needKey, enabledKey, leadKey, wakeKey, SleepNeed.chosenMinutesKey, SleepNeed.automaticHoursKey] {
             if let value = UserDefaults.standard.object(forKey: key) { saved[key] = value }
             UserDefaults.standard.removeObject(forKey: key)
         }
     }
 
     override func tearDown() {
-        for key in [needKey, enabledKey, leadKey, wakeKey] {
+        for key in [needKey, enabledKey, leadKey, wakeKey, SleepNeed.chosenMinutesKey, SleepNeed.automaticHoursKey] {
             if let value = saved[key] { UserDefaults.standard.set(value, forKey: key) }
             else { UserDefaults.standard.removeObject(forKey: key) }
         }

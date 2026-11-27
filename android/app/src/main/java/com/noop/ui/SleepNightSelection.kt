@@ -1,5 +1,7 @@
 package com.noop.ui
 
+import com.noop.analytics.SleepStageVocabulary
+
 import com.noop.analytics.AnalyticsEngine
 import com.noop.analytics.SleepStageTotals
 import com.noop.data.DailyMetric
@@ -118,7 +120,42 @@ internal fun selectNight(
         heroGroup.sumOf { (it.endTs - it.effectiveStartTs).coerceAtLeast(0L) } / 60.0
     } else null
     return HeroNight(session, dayKey, segments, clockLabelFor(heroOnsetTs, heroWakeTs, is24h), napBlocks, groupStages,
-        groupSegments, groupMotion, groupInBedMin, heroOnsetTs, heroWakeTs, heroGroup)
+        groupSegments, groupMotion, groupInBedMin, heroOnsetTs, heroWakeTs, heroGroup,
+        SleepClockTimes.of(heroGroup.ifEmpty { listOf(session) }))
+}
+
+/**
+ * The four clock times of one night, from ONE place, so every readout agrees: in bed (the night's start, when
+ * the wrist went still), fell asleep (the first sleep stage on the timeline: detection starts sleep at its
+ * first persistent sleep, [com.noop.analytics.SleepStager.applyPersistentOnset]), woke (the end of the last
+ * sleep stage) and up (the night's end). A night the wearer corrected keeps the wearer's times for both pairs;
+ * a night with no timeline (an imported night) uses its start and end. Swift twin: `SleepClockTimes` in
+ * Strand/Screens/SleepModel.swift.
+ */
+internal data class SleepClockTimes(val inBed: Long, val fellAsleep: Long, val woke: Long, val up: Long) {
+    companion object {
+        fun of(blocks: List<SleepSession>): SleepClockTimes? {
+            val sorted = blocks.sortedBy { it.effectiveStartTs }
+            val first = sorted.firstOrNull() ?: return null
+            val up = sorted.maxOf { it.endTs }
+            val inBed = first.effectiveStartTs
+            if (sorted.any { it.userEdited }) return SleepClockTimes(inBed, inBed, up, up)
+            var from: Long? = null
+            var to: Long? = null
+            for (block in sorted) {
+                for (seg in parsePersistedSegments(block.stagesJSON).orEmpty()) {
+                    if (SleepStageVocabulary.isWake(seg.stage)) continue
+                    val s = maxOf(seg.start, block.effectiveStartTs)
+                    val e = minOf(seg.end, block.endTs)
+                    if (e <= s) continue
+                    from = minOf(from ?: s, s)
+                    to = maxOf(to ?: e, e)
+                }
+            }
+            if (from == null || to == null || to <= from) return SleepClockTimes(inBed, inBed, up, up)
+            return SleepClockTimes(inBed, from, to, up)
+        }
+    }
 }
 
 /**

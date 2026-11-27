@@ -2574,7 +2574,7 @@ final class Repository: ObservableObject {
     /// `AnalyticsEngine.Rest.composite(daily:)` , the SAME composite the series carries (what
     /// IntelligenceEngine projects) , so the day resolves to its own Rest. Consistency is left to the
     /// scorer's neutral default here (the daily row carries no regularity term). Mirrors Android
-    /// WhoopRepository.dailyColumn / RestScorer.restFromDaily.
+    /// WhoopRepository.dailyColumn / RestScorer.composite.
     ///
     /// Internal + nonisolated (not private) so the pure `EditMergePrecedenceTests` can exercise the #614
     /// derivation directly off the main actor, the same way Android's `internal fun dailyColumn` is
@@ -2593,7 +2593,7 @@ final class Repository: ObservableObject {
         case "sleep_deep_min", "deep_min": return d.deepMin
         case "sleep_rem_min", "rem_min":   return d.remMin
         case "sleep_light_min", "core_min": return d.lightMin
-        case "sleep_performance": return AnalyticsEngine.Rest.composite(daily: d)
+        case "sleep_performance": return AnalyticsEngine.Rest.composite(daily: d, needHours: SleepNeed.currentHours())
         case "steps":            return d.steps.map(Double.init)
         case "active_kcal", "energy_kcal": return d.activeKcalEst
         default:                 return nil

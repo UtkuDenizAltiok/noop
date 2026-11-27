@@ -353,17 +353,25 @@ enum SimpleDayPlan {
         case standard
         /// Raised above that target because the wearer regularly sleeps longer (`Rest.personalizedNeedHours`).
         case raised
+        /// The wearer chose it (`SleepNeed`, v6 step 7).
+        case chosen
     }
 
     /// The usual target the need starts from, in whole minutes: the floor `Rest.personalizedNeedHours`
-    /// applies for the age the Sleep tab passes (none).
-    static var standardSleepNeedMinutes: Int {
-        Int((AnalyticsEngine.Rest.populationNeedFloorHours(age: nil) * 60).rounded())
+    /// applies for the wearer's age (`SleepNeed.storedAge`; 8 h when unknown).
+    static var standardSleepNeedMinutes: Int { standardSleepNeedMinutes(age: SleepNeed.storedAge) }
+
+    /// The usual target for an age, in whole minutes.
+    static func standardSleepNeedMinutes(age: Int?) -> Int {
+        Int((AnalyticsEngine.Rest.populationNeedFloorHours(age: age) * 60).rounded())
     }
 
-    /// Whether a need is the usual target or was raised above it, judged in whole minutes as both print.
-    static func sleepNeedOrigin(needMin: Double) -> SleepNeedOrigin {
-        Int(needMin.rounded()) > standardSleepNeedMinutes ? .raised : .standard
+    /// Whether a need was chosen by the wearer, is the usual target, or was raised above it, judged in whole
+    /// minutes as both print.
+    static func sleepNeedOrigin(needMin: Double, chosenMinutes: Int = SleepNeed.chosenMinutes,
+                                age: Int? = SleepNeed.storedAge) -> SleepNeedOrigin {
+        if chosenMinutes > 0 { return .chosen }
+        return Int(needMin.rounded()) > standardSleepNeedMinutes(age: age) ? .raised : .standard
     }
 
     /// Whether the need a night's line states is WHOOP's imported figure rather than NOOP's own: there is

@@ -900,6 +900,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     init {
+        // v6 step 7: the one sleep need every screen reads ([SleepNeed]) needs the profile preferences.
+        SleepNeed.attach(app)
         // Multi-source coordinator (Phase 1B): reconcile the live source against the registry's active
         // device ONCE at launch. DORMANT for a single-WHOOP install (the default) — it no-ops and the
         // existing WHOOP flow below runs unchanged; it only acts when a non-WHOOP strap is the active
@@ -1068,7 +1070,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             // otherwise the midnight rollover re-fires last night's recap for late-nighters (#567).
                             reportDay = todayRow.day,
                             chargePct = todayRow.recovery.scorePctOrNull(),
-                            restPct = RestScorer.restFromDaily(todayRow).scorePctOrNull(),
+                            restPct = RestScorer.composite(todayRow, needHours = SleepNeed.currentHours()).scorePctOrNull(),
                         )
                     }
                     // #593: once-a-day optimal-strain-reached nudge. Convert the stored 0-100 Effort to the
@@ -1140,7 +1142,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                             recoveryPct = anchorRow?.recovery?.roundToInt(),
                             // Rest = the sleep_performance composite from THIS row's banked stage figures
                             // (pure, honest-null until last night is scored); Effort = the 0–100 strain. (#516)
-                            restPct = anchorRow?.let { RestScorer.restFromDaily(it)?.roundToInt() },
+                            restPct = anchorRow?.let { RestScorer.composite(it, needHours = SleepNeed.currentHours())?.roundToInt() },
                             effortPct = anchorRow?.strain?.roundToInt(),
                             heartRate = live.heartRate,
                             // The ACTIVE device's charge (#2075): a ring reports its own and does not
@@ -1286,6 +1288,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                         // re-folds (see StepsMotionCache).
                         stepsMotionCacheGet = { NoopPrefs.stepsMotionCache(appContext) },
                         stepsMotionCacheSet = { NoopPrefs.setStepsMotionCache(appContext, it) },
+                        // v6 step 7: the wearer's chosen sleep need, and the automatic need kept for screens.
+                        chosenSleepNeedMinutes = SleepNeed.chosenMinutes,
+                        persistAutomaticSleepNeed = { SleepNeed.storeAutomatic(it) },
                         // Manual "Recalibrate baseline" anchor (Settings → Charge advanced). The analytics
                         // layer is Context-free, so read the epoch (whole seconds, written as a Long by the
                         // button) here and thread it down — foldHistory drops every HRV night before it.
@@ -2007,6 +2012,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         return com.noop.data.NapStore.remove(appContext, com.noop.data.NapStore.idFor(candidate))
     }
 
+    /**
+     * v6 step 7: choose the one sleep need ([SleepNeed]; 0 = Automatic) and re-score, because Rest measures a
+     * night against it. Twin of the Swift `SleepNeedMenu`.
+     */
+    fun chooseSleepNeed(minutes: Int) {
+        profileStore.sleepNeedMinutes = minutes
+        viewModelScope.launch { rescoreAfterEdit() }
+    }
+
     /** Dismiss a detected nap: drop it AND remember the window so a re-detect can't re-queue it. */
     fun dismissDetectedNap(candidate: com.noop.analytics.NapCandidate): List<com.noop.analytics.NapCandidate> =
         com.noop.data.NapStore.dismiss(appContext, com.noop.data.NapStore.idFor(candidate))
@@ -2035,6 +2049,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 maxHROverride = profileStore.hrMaxOverride
                     .takeIf { it > 0 }?.toDouble(),
                 ownerSource = RegistryDayOwnerSource(noopApp.deviceRegistry),
+                // v6 step 7: the wearer's chosen sleep need, and the automatic need kept for screens.
+                chosenSleepNeedMinutes = SleepNeed.chosenMinutes,
+                persistAutomaticSleepNeed = { SleepNeed.storeAutomatic(it) },
                 manualStepCoefficient = profileStore.stepsManualOverride,
                 persistStepsCalibration = { cal ->
                     profileStore.stepsCalibrationCoefficient = cal.coefficient

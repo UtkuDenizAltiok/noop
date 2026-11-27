@@ -436,6 +436,24 @@
       "identity_sha256": "6aa52285ae46cf0ae75a690feee01765f9401825b6c9845c146163fdf5b2bb3e",
       "platform": "swift",
       "rationale": "A LOCAL binding inside the private v16 ECG decoder (#2847), not a static constant. The ledger's Swift rule treats any four-space `let` in a file-scope function as a candidate `static let`, which is how it finds file-scope constants without parsing, so a local in a top-level `private func` lands in the inventory. The Kotlin twin's equivalent is a local `val` in its own decodeWhoop5HistoricalV16, which the Kotlin rule never inventories because it matches `const val` only, and a Set-valued or object-valued local cannot be `const` in Kotlin at all. There is nothing to pair and nothing to change in either decoder."
+    },
+    {
+      "type": "out_of_scope_twin",
+      "kind": "add-unpaired-function",
+      "identity": "kotlin\u0000android/app/src/main/java/com/noop/analytics/IntelligenceEngine.kt::analyzeRecent/29#1",
+      "identity_sha256": "94e7c1b91268f6c50724a6a747bbcbd6e09f4f240aa8c70f0708fce29c9152ea",
+      "platform": "kotlin",
+      "rationale": "The added chosenSleepNeedMinutes and persistAutomaticSleepNeed arguments (v6 step 7, the one sleep need) match the role of analyzeRecent in the excluded Swift app layer, which reads the same choice through SleepNeed and keeps the automatic need there. This records the new Kotlin orchestration signature, not a byte-identity claim.",
+      "twin_path": "Strand/Data/IntelligenceEngine.swift"
+    },
+    {
+      "type": "out_of_scope_twin",
+      "kind": "add-unpaired-function",
+      "identity": "kotlin\u0000android/app/src/main/java/com/noop/analytics/IntelligenceEngine.kt::resolveSleepNeedForRun/2#1",
+      "identity_sha256": "07c908e13cc3887295edf810c2701d3bcba161b2a59c73f70dc4df3b1d369906",
+      "platform": "kotlin",
+      "rationale": "v6 step 7: resolves the pass's sleep need outside the JaCoCo-budgeted analyzeRecentOnCpu. Swift resolves the same need inline in the excluded app-layer analyzeRecent (SleepNeed.storeAutomatic and Rest.resolvedNeedHours); the shared arithmetic is the governed pair RestScorer.resolvedNeedHours / Rest.resolvedNeedHours.",
+      "twin_path": "Strand/Data/IntelligenceEngine.swift"
     }
   ]
 }

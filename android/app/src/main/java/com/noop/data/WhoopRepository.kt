@@ -2833,7 +2833,7 @@ class WhoopRepository(
          * night's totals banked on the DailyMetric row while the metricSeries point is still missing.
          * Without this case the resolver returned no Rest for that day and Today borrowed the latest
          * historical value (#614). Derive it on the fly from the same banked totals via the single
-         * source of truth [com.noop.analytics.RestScorer.restFromDaily] (the SAME composite the series
+         * source of truth [com.noop.analytics.RestScorer.composite] (the SAME composite the series
          * carries), so the day resolves to its own Rest. Consistency is left to the scorer's neutral
          * default here (the daily row carries no regularity term).
          */
@@ -2850,7 +2850,7 @@ class WhoopRepository(
             "sleep_deep_min", "deep_min" -> d.deepMin
             "sleep_rem_min", "rem_min" -> d.remMin
             "sleep_light_min", "core_min" -> d.lightMin
-            "sleep_performance" -> com.noop.analytics.RestScorer.restFromDaily(d)
+            "sleep_performance" -> com.noop.analytics.RestScorer.composite(d, needHours = com.noop.ui.SleepNeed.currentHours())
             "steps" -> d.steps?.toDouble()
             "active_kcal", "energy_kcal" -> d.activeKcalEst
             else -> null

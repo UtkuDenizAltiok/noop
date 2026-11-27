@@ -132,7 +132,7 @@ class EditMergePrecedenceTest {
     fun sleepPerformance_dailyColumn_derivesRestFromTotals() {
         val d = full("2026-06-12", 480.0, 90.0, 110.0, 280.0, 0.92, 80.0, 9.0, "my-whoop-noop")
         // Matches IntelligenceEngine's persisted sleep_performance projection (same single source of truth).
-        val expected = RestScorer.restFromDaily(d)
+        val expected = RestScorer.composite(d)
         assertNotNull(expected)
         assertEquals(expected!!, WhoopRepository.dailyColumn("sleep_performance", d)!!, 0.0)
     }

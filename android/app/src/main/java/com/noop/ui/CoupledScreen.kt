@@ -170,9 +170,9 @@ fun CoupledScreen(
     val dayStrain21 = todayRow?.strain?.let { UnitFormatter.effortValue(it, EffortScale.WHOOP) }
 
     // Sleep performance %: the imported figure when the export carried one, else the resolved Rest composite
-    // (RestScorer.restFromDaily), the SAME single source of truth the Today Rest score + Sleep graph read.
+    // (RestScorer.composite), the SAME single source of truth the Today Rest score + Sleep graph read.
     val sleepPerformance = todayRow?.let { d ->
-        importedPerf[d.day] ?: RestScorer.restFromDaily(d)
+        importedPerf[d.day] ?: RestScorer.composite(d, needHours = SleepNeed.currentHours())
     }
 
     // On-device readiness, computed EXACTLY as Today does, so the one-word pill matches the home screen.
@@ -664,7 +664,7 @@ internal fun strainBandWord(fraction: Double): String = when {
  */
 private fun sleepNeedForDay(day: DailyMetric?, days: List<DailyMetric>, importedNeed: Map<String, Double>): Double {
     day?.day?.let { key -> importedNeed[key]?.takeIf { it > 0 }?.let { return it } }
-    return RestScorer.personalizedNeedHours(days.mapNotNull { it.totalSleepMin?.let { m -> m / 60.0 } }, null) * 60.0
+    return SleepNeed.currentHours(days) * 60.0
 }
 
 /**

@@ -631,7 +631,7 @@ struct SleepView: View {
         let wakeDay = Repository.localDayKey(Date(timeIntervalSince1970: TimeInterval(night.session.endTs)))
         if let p = repo.importedSleep[wakeDay]?.performancePct { return p }
         guard let daily = repo.days.last(where: { $0.day == wakeDay }) else { return nil }
-        return AnalyticsEngine.Rest.composite(daily: daily)
+        return AnalyticsEngine.Rest.composite(daily: daily, needHours: SleepNeed.currentHours(days: repo.days))
     }
 
     /// Dispatch a reorderable Sleep section to its card. Naps rides with `.stages` (drawn inside the stages
@@ -688,6 +688,8 @@ struct SleepView: View {
                     Text("Your sleep need").strandOverline()
                         .foregroundStyle(StrandPalette.textSecondary)
                     Spacer(minLength: 8)
+                    // v6 step 7: choose your own need, or go back to Automatic (`SleepNeedMenu`).
+                    SleepNeedMenu()
                     Button { plainGuideTerm = .sleepNeed } label: {
                         Image(systemName: "info.circle")
                             .font(StrandFont.subhead.weight(.semibold))
@@ -701,6 +703,12 @@ struct SleepView: View {
                     .foregroundStyle(StrandPalette.textPrimary)
                 Group {
                     switch SimpleDayPlan.sleepNeedOrigin(needMin: model.normativeNeedMin) {
+                    case .chosen:
+                        Text("You chose this yourself. NOOP measures your sleep debt, tonight's goal and your Rest score against it. Experts recommend 7 to 9 hours a night for adults, 7 to 8 from 65.")
+                    case .standard where (SleepNeed.storedAge ?? 30) >= 65:
+                        Text("The usual target from 65: experts recommend 7 to 8 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
+                    case .standard where (SleepNeed.storedAge ?? 30) < 18:
+                        Text("The usual target under 18: experts recommend 8 to 10 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
                     case .standard:
                         Text("The usual target for adults: experts recommend 7 to 9 hours a night. NOOP raises yours if you regularly sleep longer when you can.")
                     case .raised:
@@ -1545,15 +1553,22 @@ struct SleepView: View {
         NoopCard(padding: NoopMetrics.cardInnerPadding, tint: StrandPalette.restColor) {
             VStack(alignment: .leading, spacing: NoopMetrics.rowSpacing) {
                 HStack(spacing: 0) {
-                    sleepTime(icon: "moon.zzz.fill", label: "Asleep", value: night.onsetText)
+                    sleepTime(icon: "moon.zzz.fill", label: "Fell asleep", value: night.fellAsleepText)
                     Spacer(minLength: 12)
                     Rectangle().fill(StrandPalette.hairline).frame(width: 1, height: 30)
                     Spacer(minLength: 12)
-                    sleepTime(icon: "sun.max.fill", label: "Woke", value: night.wakeText)
+                    sleepTime(icon: "sun.max.fill", label: "Woke", value: night.wokeText)
                     Spacer(minLength: 8)
                     wakeEditButton(night)
                 }
                 .frame(maxWidth: .infinity)
+                // Getting into bed and falling asleep are different moments (`SleepClockTimes`): say both.
+                if let note = night.inBedNote {
+                    Text(note)
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 // Provenance (C4) + the "why this is your main sleep" explainer (C1). The badge names the
                 // REAL per-day merge winner; the info button reveals the foundation reason for the pick.
                 Divider().overlay(StrandPalette.hairline)
@@ -1665,9 +1680,13 @@ struct SleepView: View {
         if let target = night.editTarget {
             let isEdited = target.userEdited
             Button {
+                // Seed the editor with the times the row shows (fell asleep, woke) when they fall inside
+                // the block being edited, so the wearer corrects what they read.
+                let window = target.effectiveStartTs..<target.endTs
                 wakeEdit = WakeEdit(detectedStartTs: target.startTs,
-                                    bedTs: target.effectiveStartTs,
-                                    wakeTs: target.endTs,
+                                    bedTs: window.contains(night.fellAsleepTs) ? night.fellAsleepTs
+                                        : target.effectiveStartTs,
+                                    wakeTs: window.contains(night.wokeTs - 1) ? night.wokeTs : target.endTs,
                                     stagesJSON: target.stagesJSON,
                                     userEdited: isEdited)
             } label: {
@@ -3170,8 +3189,8 @@ private struct SleepTimeEditor: View {
     /// action; `deleteLabel` lets the nap editor say "Delete this nap".
     init(bedTs: Int, wakeTs: Int,
          title: LocalizedStringKey = "Edit sleep times",
-         blurb: LocalizedStringKey = "Correct when you went to bed and woke. Stages are re-derived from your data; the edit is kept through the next strap sync.",
-         bedLabel: LocalizedStringKey = "Asleep",
+         blurb: LocalizedStringKey = "Correct when you fell asleep and when you woke. NOOP works out the stages again for the new times and keeps your correction through the next strap sync.",
+         bedLabel: LocalizedStringKey = "Fell asleep",
          wakeLabel: LocalizedStringKey = "Woke",
          deleteLabel: LocalizedStringKey = "Delete this sleep",
          coverage: ClosedRange<Int>? = nil,

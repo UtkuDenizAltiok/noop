@@ -3242,6 +3242,9 @@ class WhoopBleClient(
                         ownerSource = (context.applicationContext as? NoopApplication)
                             ?.deviceRegistry?.let { RegistryDayOwnerSource(it) },
                         maxHROverride = profileStore.hrMaxOverride.takeIf { it > 0 }?.toDouble(),
+                        // v6 step 7: the wearer's chosen sleep need, and the automatic need kept for screens.
+                        chosenSleepNeedMinutes = com.noop.ui.SleepNeed.also { it.attach(context) }.chosenMinutes,
+                        persistAutomaticSleepNeed = { com.noop.ui.SleepNeed.storeAutomatic(it) },
                         // Steps-estimate calibration: honor the user's manual override and persist the fit
                         // after a backfill too, so the Settings/Steps screen reflects the latest data.
                         manualStepCoefficient = profileStore.stepsManualOverride,

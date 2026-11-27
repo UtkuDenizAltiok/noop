@@ -11,20 +11,41 @@ import ZIPFoundation
 // MARK: - The morning check-in sheet
 
 /// Three questions on 1-to-5 scales (`CheckIn`), asked full screen before the wearer sees the morning's scores so
-/// the answers are not anchored to them, then whether NOOP's sleep times for last night were right.
+/// the answers are not anchored to them, then whether NOOP's times for last night were right, with the right times
+/// one step away when they were not: a sleep diary beside the strap, the way sleep clinics pair actigraphy with a
+/// diary (Smith et al., AASM clinical practice guideline on actigraphy, J Clin Sleep Med 2018).
 struct CheckInSheet: View {
     @EnvironmentObject var repo: Repository
+    @EnvironmentObject var intelligence: IntelligenceEngine
     /// The logical day the answers belong to (the journal's own convention: the night and day into this morning).
     let day: String
-    /// Last night's detected sleep, when NOOP saw one (`CheckIn.lastNight`).
-    let lastNight: (start: Int, end: Int)?
-    let onClose: () -> Void
+    /// Last night as NOOP saw it (`CheckIn.lastNight`), when it saw one.
+    let night: (blocks: [CachedSleepSession], times: SleepClockTimes.Times)?
+    let onClose: (Outcome) -> Void
+
+    /// How the sheet was left: answered, "Not now" (ask again later) or "Skip today".
+    enum Outcome { case saved, snoozed, skipped }
 
     @State private var answers: [CheckIn.Item: Int] = [:]
     @State private var sleepTimesRight: Bool?
+    @State private var fellAsleepAt = Date()
+    @State private var wokeAt = Date()
     @State private var saving = false
 
     private var complete: Bool { answers.count == CheckIn.Item.allCases.count }
+
+    /// The corrected times, when the wearer said NOOP's were wrong: each picked clock time placed on the day
+    /// nearest to NOOP's own time (`CheckIn.resolveClock`). Nil until "Wrong" is chosen.
+    private var corrected: (fellAsleep: Int, woke: Int)? {
+        guard sleepTimesRight == false, let times = night?.times else { return nil }
+        return (CheckIn.resolveClock(fellAsleepAt, near: times.fellAsleep), CheckIn.resolveClock(wokeAt, near: times.woke))
+    }
+
+    /// A correction must leave a night of at least half an hour, woken after falling asleep.
+    private var correctionIsValid: Bool {
+        guard let corrected else { return true }
+        return corrected.woke - corrected.fellAsleep >= 30 * 60
+    }
 
     var body: some View {
         NavigationStack {
@@ -37,16 +58,23 @@ struct CheckInSheet: View {
                     ForEach(CheckIn.Item.allCases) { item in
                         question(item)
                     }
-                    if let lastNight {
-                        sleepTimes(lastNight)
+                    if let times = night?.times {
+                        sleepTimes(times)
                     }
                     Text("Your answers stay on this phone, in your journal. They travel only inside a developer file you choose to share.")
                         .font(StrandFont.footnote)
                         .foregroundStyle(StrandPalette.textTertiary)
                         .fixedSize(horizontal: false, vertical: true)
                     NoopButton("Save", systemImage: "checkmark", kind: .primary, fullWidth: true) { save() }
-                        .disabled(!complete || saving)
-                        .opacity(complete ? 1 : NoopButtonMetrics.disabledOpacity)
+                        .disabled(!complete || saving || !correctionIsValid)
+                        .opacity(complete && correctionIsValid ? 1 : NoopButtonMetrics.disabledOpacity)
+                    Button { onClose(.skipped) } label: {
+                        Text("Skip today")
+                            .font(StrandFont.subhead)
+                            .foregroundStyle(StrandPalette.textSecondary)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(NoopMetrics.cardPadding)
             }
@@ -57,8 +85,15 @@ struct CheckInSheet: View {
             #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Not now") { onClose() }
+                    // Not now: asked again in an hour (`CheckIn.snoozeMinutes`), not lost for the day.
+                    Button("Not now") { onClose(.snoozed) }
                 }
+            }
+        }
+        .onAppear {
+            if let times = night?.times {
+                fellAsleepAt = Date(timeIntervalSince1970: TimeInterval(times.fellAsleep))
+                wokeAt = Date(timeIntervalSince1970: TimeInterval(times.woke))
             }
         }
     }
@@ -85,12 +120,11 @@ struct CheckInSheet: View {
         .background(NoopPanelSurface(cornerRadius: NoopMetrics.cardRadius))
     }
 
-    private func sleepTimes(_ night: (start: Int, end: Int)) -> some View {
-        let formatter = AppClock.hourMinuteFormatter()
-        let start = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(night.start)))
-        let end = formatter.string(from: Date(timeIntervalSince1970: TimeInterval(night.end)))
+    private func sleepTimes(_ times: SleepClockTimes.Times) -> some View {
+        let asleep = Night.clockString(times.fellAsleep)
+        let woke = Night.clockString(times.woke)
         return VStack(alignment: .leading, spacing: NoopMetrics.space2) {
-            Text("NOOP saw you asleep from \(start) to \(end). Is that about right?")
+            Text("NOOP saw you fall asleep at \(asleep) and wake at \(woke). Is that about right?")
                 .font(StrandFont.subhead.weight(.semibold))
                 .foregroundStyle(StrandPalette.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -99,10 +133,21 @@ struct CheckInSheet: View {
                 choice(text: String(localized: "Wrong"), chosen: sleepTimesRight == false) { sleepTimesRight = false }
             }
             if sleepTimesRight == false {
-                Text("You can correct it on the Sleep tab: open last night and change its times. NOOP keeps its own times beside yours, so the developer can see how far off it was.")
-                    .font(StrandFont.footnote)
-                    .foregroundStyle(StrandPalette.textTertiary)
-                    .fixedSize(horizontal: false, vertical: true)
+                DatePicker("When did you fall asleep?", selection: $fellAsleepAt, displayedComponents: .hourAndMinute)
+                    .font(StrandFont.subhead)
+                DatePicker("When did you wake up?", selection: $wokeAt, displayedComponents: .hourAndMinute)
+                    .font(StrandFont.subhead)
+                if correctionIsValid {
+                    Text("Saving also corrects last night on the Sleep tab. NOOP keeps its own times beside yours, so the developer can see how far off it was.")
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.textTertiary)
+                        .fixedSize(horizontal: false, vertical: true)
+                } else {
+                    Text("Waking should come at least half an hour after falling asleep.")
+                        .font(StrandFont.footnote)
+                        .foregroundStyle(StrandPalette.statusWarning)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
         .padding(NoopMetrics.cardPadding)
@@ -147,20 +192,59 @@ struct CheckInSheet: View {
     }
 
     private func save() {
-        guard complete else { return }
+        guard complete, correctionIsValid else { return }
         saving = true
+        let correction = corrected
         Task {
             for item in CheckIn.Item.allCases {
                 if let value = answers[item] {
                     await repo.saveJournalNumeric(day: day, question: item.journalQuestion, value: Double(value))
                 }
             }
-            if lastNight != nil, let right = sleepTimesRight {
+            if night != nil, let right = sleepTimesRight {
                 await repo.saveJournalNumeric(day: day, question: CheckIn.sleepTimesQuestion, value: right ? 1 : 0)
             }
+            if let correction, let night, await Self.applyCorrection(correction, to: night, repo: repo) {
+                // Re-score so the morning's numbers use the corrected night, as the Sleep tab's editor does.
+                await intelligence.analyzeRecent()
+                await repo.refresh()
+            }
             saving = false
-            onClose()
+            onClose(.saved)
         }
+    }
+
+    /// Write the wearer's times through the Sleep tab's own edit path (`Repository.editSleepTimes`): the first
+    /// fragment's start becomes "fell asleep" and the last fragment's end becomes "woke" (one call when the night
+    /// is one block). The detected times stay beside the correction in the store. Returns whether anything was
+    /// written: a time within a minute of NOOP's is left alone.
+    @MainActor
+    static func applyCorrection(_ corrected: (fellAsleep: Int, woke: Int),
+                                to night: (blocks: [CachedSleepSession], times: SleepClockTimes.Times),
+                                repo: Repository) async -> Bool {
+        let blocks = night.blocks.sorted { $0.effectiveStartTs < $1.effectiveStartTs }
+        guard let first = blocks.first, let last = blocks.max(by: { $0.endTs < $1.endTs }) else { return false }
+        let moveStart = abs(corrected.fellAsleep - night.times.fellAsleep) >= 60
+        let moveEnd = abs(corrected.woke - night.times.woke) >= 60
+        guard moveStart || moveEnd else { return false }
+        if first.startTs == last.startTs {
+            await repo.editSleepTimes(detectedStartTs: first.startTs, oldEndTs: first.endTs,
+                                      storedStagesJSON: first.stagesJSON,
+                                      newStartTs: moveStart ? corrected.fellAsleep : first.effectiveStartTs,
+                                      newEndTs: moveEnd ? corrected.woke : first.endTs)
+            return true
+        }
+        if moveStart, corrected.fellAsleep < first.endTs {
+            await repo.editSleepTimes(detectedStartTs: first.startTs, oldEndTs: first.endTs,
+                                      storedStagesJSON: first.stagesJSON,
+                                      newStartTs: corrected.fellAsleep, newEndTs: first.endTs)
+        }
+        if moveEnd, corrected.woke > last.effectiveStartTs {
+            await repo.editSleepTimes(detectedStartTs: last.startTs, oldEndTs: last.endTs,
+                                      storedStagesJSON: last.stagesJSON,
+                                      newStartTs: last.effectiveStartTs, newEndTs: corrected.woke)
+        }
+        return true
     }
 }
 
@@ -169,60 +253,85 @@ struct CheckInSheet: View {
 /// The morning a check-in is being asked for, as an `Identifiable` for `.fullScreenCover(item:)`.
 struct CheckInMorning: Identifiable {
     let day: String
-    let lastNight: (start: Int, end: Int)?
+    let night: (blocks: [CachedSleepSession], times: SleepClockTimes.Times)?
     var id: String { day }
 }
 
-/// Offers the morning check-in once a day, in the morning, when it is switched on and not yet answered
-/// (`CheckIn.shouldOffer`), full screen, so it comes before the scores. Attached once, at the app's root.
+/// Offers the morning check-in (`CheckIn.shouldOffer`): switched on, in the morning but not before about an hour
+/// and a half ahead of the wearer's usual wake, not yet answered, skipped or snoozed today; full screen, so it
+/// comes before the scores. "Not now" asks again in an hour; the Test Centre's button opens it at any time.
+/// Attached once, at the app's root.
 struct CheckInPresenter: ViewModifier {
     @EnvironmentObject var repo: Repository
+    @EnvironmentObject var intelligence: IntelligenceEngine
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(CheckIn.enabledKey) private var enabled = false
+    @AppStorage(CheckIn.requestKey) private var requestedAt: Double = 0
     @State private var offered: CheckInMorning?
 
     func body(content: Content) -> some View {
         content
-            .task { await offerIfDue() }
+            .task { await offerIfDue(force: false) }
             .onChangeCompat(of: scenePhase) { phase in
-                if phase == .active { Task { await offerIfDue() } }
+                if phase == .active { Task { await offerIfDue(force: false) } }
+            }
+            .onChangeCompat(of: requestedAt) { _ in
+                Task { await offerIfDue(force: true) }
             }
             #if os(iOS)
             .fullScreenCover(item: $offered) { morning in
-                CheckInSheet(day: morning.day, lastNight: morning.lastNight) { offered = nil }
+                CheckInSheet(day: morning.day, night: morning.night) { finish($0, day: morning.day) }
                     .environmentObject(repo)
+                    .environmentObject(intelligence)
             }
             #else
             .sheet(item: $offered) { morning in
-                CheckInSheet(day: morning.day, lastNight: morning.lastNight) { offered = nil }
+                CheckInSheet(day: morning.day, night: morning.night) { finish($0, day: morning.day) }
                     .environmentObject(repo)
+                    .environmentObject(intelligence)
                     .frame(minWidth: 460, minHeight: 620)
             }
             #endif
     }
 
+    private func finish(_ outcome: CheckInSheet.Outcome, day: String) {
+        switch outcome {
+        case .saved: break
+        case .snoozed:
+            UserDefaults.standard.set(Date().timeIntervalSince1970 + Double(CheckIn.snoozeMinutes * 60),
+                                      forKey: CheckIn.snoozedUntilKey)
+        case .skipped:
+            UserDefaults.standard.set(day, forKey: CheckIn.skippedDayKey)
+        }
+        offered = nil
+    }
+
+    /// `force` is the wearer's own request (the Test Centre's button): it opens the check-in whatever the time,
+    /// snooze or skip say.
     @MainActor
-    private func offerIfDue() async {
-        // Only while the app is open in front of the wearer (`CheckIn.shouldOffer`): a background launch for a
-        // strap sync must not use up the day's offer unseen.
+    private func offerIfDue(force: Bool) async {
         guard enabled, offered == nil, scenePhase == .active else { return }
         let now = Date()
         let today = Repository.logicalDayKey(now)
-        let hour = Calendar.current.component(.hour, from: now)
-        let last = UserDefaults.standard.string(forKey: CheckIn.lastOfferedDayKey)
-        guard CheckIn.offerHours.contains(hour), last != today else { return }
+        let parts = Calendar.current.dateComponents([.hour, .minute], from: now)
+        let minuteOfDay = (parts.hour ?? 0) * 60 + (parts.minute ?? 0)
+        let skipped = UserDefaults.standard.string(forKey: CheckIn.skippedDayKey) == today
+        let snoozed = now.timeIntervalSince1970 < UserDefaults.standard.double(forKey: CheckIn.snoozedUntilKey)
+        guard force || (CheckIn.offerHours.contains(minuteOfDay / 60) && !skipped && !snoozed) else { return }
         let answered = CheckIn.isComplete(await repo.nativeJournalNumeric(day: today))
-        guard CheckIn.shouldOffer(enabled: enabled, appIsActive: scenePhase == .active, hour: hour,
-                                  lastOfferedDay: last, today: today, answeredToday: answered) else { return }
-        UserDefaults.standard.set(today, forKey: CheckIn.lastOfferedDayKey)
         // Read from the store, not `repo.sleeps`: at launch that cache may not be filled yet. A strap-only
         // wearer's nights are the computed ones, so those are read when no imported night is there.
         let nowTs = Int(now.timeIntervalSince1970)
-        var sessions = await repo.sleepSessions(from: nowTs - 48 * 3600, to: nowTs)
-        if sessions.isEmpty { sessions = await repo.computedSleepSessions(from: nowTs - 48 * 3600, to: nowTs) }
-        let night = CheckIn.lastNight((sessions + repo.sleeps).map { ($0.startTsAdjusted ?? $0.startTs, $0.endTs) },
-                                      now: now)
-        offered = CheckInMorning(day: today, lastNight: night)
+        var sessions = await repo.sleepSessions(from: nowTs - 15 * 86_400, to: nowTs)
+        if sessions.isEmpty { sessions = await repo.computedSleepSessions(from: nowTs - 15 * 86_400, to: nowTs) }
+        let offset = TimeZone.current.secondsFromGMT(for: now)
+        let earliest = CheckIn.earliestOfferMinute(
+            usualWakeMinute: CheckIn.usualWakeMinute(CheckIn.wakeMinutes(sessions, offsetSec: offset)))
+        guard force || CheckIn.shouldOffer(enabled: enabled, appIsActive: scenePhase == .active,
+                                           minuteOfDay: minuteOfDay, earliestMinute: earliest,
+                                           skippedToday: skipped, snoozed: snoozed, answeredToday: answered)
+        else { return }
+        offered = CheckInMorning(day: today, night: CheckIn.lastNight(sessions, now: now, offsetSec: offset))
     }
 }
 
@@ -275,6 +384,20 @@ enum LabSnapshot {
                            "weightKg": profile.weightKg, "hrMaxOverride": profile.hrMaxOverride,
                            "effortHRmax": profile.effortHRmax ?? NSNull()] as [String: Any]
         root["strap"] = ["model": UserDefaults.standard.string(forKey: "selectedWhoopModel") ?? NSNull()] as [String: Any]
+
+        // The iPhone step calibration (`StepCalibration`): the divisor in use, the last result and the paired
+        // windows behind it, so the developer can check the ratio against the strap's own records.
+        let windows = UserDefaults.standard.data(forKey: StepCalibration.windowsKey)
+            .flatMap { try? JSONDecoder().decode([StepCalibration.Pair].self, from: $0) } ?? []
+        var calibration: [String: Any] = ["enabled": StepCalibration.isEnabled,
+                                          "phoneStepsAllowed": StepCalibration.phoneStepsAllowed,
+                                          "ticksPerStepInUse": profile.stepTicksPerStep,
+                                          "windows": windows.map { [$0.start, $0.phoneSteps, $0.strapTicks] }]
+        if let result = StepCalibration.lastResult {
+            calibration["result"] = ["ticksPerStep": result.ticksPerStep, "windows": result.windows,
+                                     "phoneSteps": result.phoneSteps, "at": result.at] as [String: Any]
+        }
+        root["stepCalibration"] = calibration
 
         // Check-ins so far.
         let series = await repo.numericJournalSeries()
@@ -462,6 +585,7 @@ struct DeveloperExportCard: View {
     @EnvironmentObject var model: AppModel
     @EnvironmentObject var live: LiveState
     @AppStorage(CheckIn.enabledKey) private var checkInEnabled = false
+    @AppStorage(CheckIn.requestKey) private var requestedAt: Double = 0
     @State private var checkInDays = 0
     @State private var making = false
     @State private var status: String?
@@ -501,6 +625,14 @@ struct DeveloperExportCard: View {
                     .font(StrandFont.subhead)
                     .foregroundStyle(StrandPalette.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
+                Text("It comes when you open NOOP in the morning, not in the middle of the night. Not now asks again an hour later.")
+                    .font(StrandFont.footnote)
+                    .foregroundStyle(StrandPalette.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if checkInEnabled {
+                    NoopButton("Answer this morning's check-in", systemImage: "sun.horizon", kind: .secondary,
+                               fullWidth: true) { requestedAt = Date().timeIntervalSince1970 }
+                }
                 Text(checkInDays == 1
                      ? String(localized: "1 morning answered so far.")
                      : String(localized: "\(checkInDays) mornings answered so far."))

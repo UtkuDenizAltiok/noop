@@ -113,7 +113,7 @@ internal fun sleepDurationTrend(days: List<DailyMetric>): Pair<List<Double>, Lis
  * `SleepModel.debtNeedMin(days:)`.
  */
 internal fun debtNeedMin(days: List<DailyMetric>): Double =
-    RestScorer.personalizedNeedHours(days.mapNotNull { it.totalSleepMin?.let { m -> m / 60.0 } }, null) * 60.0
+    SleepNeed.currentHours(days) * 60.0
 
 /**
  * Build the whole model from the cached daily metrics + the latest sleep session + the
@@ -209,11 +209,11 @@ internal fun buildSleepModel(
     // (metricSeries), it wins per day; the on-device recomputation fills the rest.
     val performance = metric(days, todayKey) { d ->
         imported.performance[d.day]                       // WHOOP's own 0–100 figure wins per day
-            // else the REAL Rest composite (RestScorer.restFromDaily) — the SAME single source of
+            // else the REAL Rest composite (RestScorer.composite) — the SAME single source of
             // truth the Today Rest score, the metric-detail overlay (below) and iOS SleepView
             // (AnalyticsEngine.Rest.composite(daily:)) read. The old hours-vs-need proxy ceilinged
             // live 5.0 nights at 100% here while every other surface showed the ~85% composite (#298).
-            ?: com.noop.analytics.RestScorer.restFromDaily(d)
+            ?: com.noop.analytics.RestScorer.composite(d, needHours = SleepNeed.currentHours(days))
     }
     val efficiency = metric(days, todayKey) { d ->
         d.efficiency?.let { if (it <= 1.0) it * 100.0 else it }

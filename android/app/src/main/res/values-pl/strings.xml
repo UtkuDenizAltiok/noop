@@ -2884,4 +2884,9 @@
     <string name="workouts_screen_subtitle">Wszystkie Twoje treningi w jednym miejscu, zarejestrowane przez opaskę lub zaimportowane.</string>
     <string name="intelligence_screen_subtitle">Twoja Energia, Wysiłek i Odpoczynek dla każdego dnia, wyliczane przez sam NOOP na tym urządzeniu. Nic nie jest wysyłane do sieci.</string>
     <string name="sleep_debt_from_whoop">Z WHOOP</string>
+    <string name="sleep_window_fell_asleep">Zaśnięcie</string>
+    <string name="sleep_window_in_bed_from_to">W łóżku od %1$s do %2$s</string>
+    <string name="settings_sleep_need">Zapotrzebowanie na sen</string>
+    <string name="settings_sleep_need_automatic">Automatycznie (%1$s)</string>
+    <string name="settings_sleep_need_footnote">Automatycznie wylicza Twoje zapotrzebowanie z wieku i nocy, w które śpisz najdłużej. Możesz też wybrać własne: NOOP mierzy wtedy według niego dług snu, cel na dzisiejszą noc, przypomnienie o pójściu spać i wynik odpoczynku.</string>
 </resources>

@@ -195,4 +195,12 @@ class BackupSettingsCodecTest {
 
         assertEquals(DataBackup.StageResult.NO_DB_IN_ZIP, result)
     }
+
+    /** v6 step 7: the wearer's own sleep need travels as Int minutes (0 = Automatic), as on Apple. */
+    @Test
+    fun theChosenSleepNeedTravelsAsIntMinutes() {
+        org.junit.Assert.assertEquals(BackupSettingsCodec.Kind.INT, BackupSettingsCodec.WHITELIST["profile.sleepNeedMinutes"])
+        val json = BackupSettingsCodec.encode(mapOf("profile.sleepNeedMinutes" to 510))
+        org.junit.Assert.assertEquals(510, BackupSettingsCodec.decode(json!!)["profile.sleepNeedMinutes"])
+    }
 }

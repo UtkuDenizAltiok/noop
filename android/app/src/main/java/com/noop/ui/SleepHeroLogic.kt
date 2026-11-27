@@ -109,7 +109,7 @@ internal fun heroPerformanceScore(
     val wakeDay = night?.dayKey ?: return null
     imported.performance[wakeDay]?.let { return it }
     val daily = days.lastOrNull { it.day == wakeDay } ?: return null
-    return RestScorer.restFromDaily(daily)
+    return RestScorer.composite(daily, needHours = SleepNeed.currentHours())
 }
 
 /**

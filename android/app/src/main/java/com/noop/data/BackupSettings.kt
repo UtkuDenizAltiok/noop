@@ -55,6 +55,8 @@ object BackupSettingsCodec {
         "profile.waistCm" to Kind.DOUBLE,
         "profile.hrMax" to Kind.INT,
         "profile.hrZoneThresholds" to Kind.STRING,
+        // v6 step 7: the wearer's own sleep need in minutes, 0 = Automatic (Int minutes, as on Apple).
+        "profile.sleepNeedMinutes" to Kind.INT,
         "units.system" to Kind.STRING,
         "units.distance" to Kind.STRING,
         "units.temperature" to Kind.STRING,

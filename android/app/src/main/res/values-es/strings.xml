@@ -2868,4 +2868,9 @@
     <string name="workouts_screen_subtitle">Todos tus entrenamientos en un solo lugar, registrados por tu banda o importados.</string>
     <string name="intelligence_screen_subtitle">Tu Carga, Esfuerzo y Descanso de cada día, calculados por el propio NOOP en este dispositivo. No se envía nada a internet.</string>
     <string name="sleep_debt_from_whoop">De WHOOP</string>
+    <string name="sleep_window_fell_asleep">Se durmió</string>
+    <string name="sleep_window_in_bed_from_to">En la cama de %1$s a %2$s</string>
+    <string name="settings_sleep_need">Necesidad de sueño</string>
+    <string name="settings_sleep_need_automatic">Automático (%1$s)</string>
+    <string name="settings_sleep_need_footnote">Automático calcula tu necesidad a partir de tu edad y de las noches en que más duermes. O elige la tuya: NOOP medirá entonces con ella tu deuda de sueño, el objetivo de esta noche, el aviso para acostarte y tu puntuación de descanso.</string>
 </resources>

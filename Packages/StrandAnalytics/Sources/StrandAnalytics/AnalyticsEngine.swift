@@ -1247,7 +1247,11 @@ public enum AnalyticsEngine {
             guard let age, age > 0 else { return 8.0 }   // unknown → adult target
             switch age {
             case ..<18: return 9.0     // children/teens need more (NSF 8–12; target ~9)
-            default: return 8.0        // adults (18–64) & older (65+): NSF 7–9, target ~8 (the app default)
+            // Older adults: the National Sleep Foundation recommends 7 to 8 hours from 65 (Hirshkowitz et
+            // al., Sleep Health 2015;1:40-43), so the target is the midpoint, 7.5; holding them to 8 read a
+            // healthy 7.5-hour night as short.
+            case 65...: return 7.5
+            default: return 8.0        // adults 18–64: NSF 7–9, target ~8 (the app default)
             }
         }
 
@@ -1261,14 +1265,41 @@ public enum AnalyticsEngine {
         public static func personalizedNeedHours(nightlyHours: [Double], age: Int?) -> Double {
             let floor = populationNeedFloorHours(age: age)
             let xs = nightlyHours.filter { $0 > 0 }.sorted()
-            guard xs.count >= minNeedNights else {
-                return min(max(defaultNeedHours, floor), maxNeedHours)
-            }
+            // Cold start: the age target itself (8 h for adults, 9 under 18, 7.5 from 65).
+            guard xs.count >= minNeedNights else { return min(floor, maxNeedHours) }
             // Linear-interpolated 75th percentile — the "unrestricted" nights.
             let pos = 0.75 * Double(xs.count - 1)
             let lo = Int(pos), hi = min(lo + 1, xs.count - 1)
             let q = xs[lo] + (pos - Double(lo)) * (xs[hi] - xs[lo])
             return min(max(q, floor), maxNeedHours)
+        }
+
+        /// The minutes a wearer may choose as their own sleep need (Settings, or the Sleep need card): 7h 0m,
+        /// the AASM and Sleep Research Society floor for adults (Watson et al., Sleep 2015;38:843-844), to
+        /// `maxNeedHours`, in 15-minute steps. Needs differ by about two hours between healthy adults (Kitamura
+        /// et al., Sci Rep 2016;6:35812: 7.29 to 9.26 h) and ordinary nights cannot measure them, so the wearer is
+        /// the one source that can say. Kotlin twins: `RestScorer.CHOSEN_NEED_MIN_MINUTES`,
+        /// `RestScorer.CHOSEN_NEED_MAX_MINUTES`.
+        public static let chosenNeedMinMinutes: Int = 420
+        /// The longest need a wearer may choose: `maxNeedHours` in minutes. Kotlin twin:
+        /// `RestScorer.CHOSEN_NEED_MAX_MINUTES`.
+        public static let chosenNeedMaxMinutes: Int = 570
+
+        /// THE sleep need: the wearer's own choice when they made one (`chosenMinutes` > 0, clamped to
+        /// `chosenNeedMinMinutes`...`chosenNeedMaxMinutes`), else the automatic `personalizedNeedHours` with their age. One resolver for
+        /// the debt, tonight's goal, the bedtime reminder and Rest's duration term. Kotlin twin:
+        /// `RestScorer.resolvedNeedHours`.
+        public static func resolvedNeedHours(chosenMinutes: Int, nightlyHours: [Double], age: Int?) -> Double {
+            guard chosenMinutes > 0 else { return personalizedNeedHours(nightlyHours: nightlyHours, age: age) }
+            return Double(normalizedChosenNeedMinutes(chosenMinutes)) / 60.0
+        }
+
+        /// A chosen need as stored: 0 (Automatic) for zero or less, else the nearest 15 minutes inside
+        /// `chosenNeedMinMinutes`...`chosenNeedMaxMinutes`. Kotlin twin: `RestScorer.normalizedChosenNeedMinutes`.
+        public static func normalizedChosenNeedMinutes(_ minutes: Int) -> Int {
+            guard minutes > 0 else { return 0 }
+            let stepped = ((minutes + 7) / 15) * 15
+            return min(max(stepped, chosenNeedMinMinutes), chosenNeedMaxMinutes)
         }
 
         /// Build the composite. `tstSeconds` = total sleep time, `restorativeSeconds` = deep+REM
@@ -1306,6 +1337,8 @@ public enum AnalyticsEngine {
             return (weighted * 10000.0).rounded() / 100.0
         }
 
+        /// Kotlin twin: `RestScorer.composite`.
+        ///
         /// Rest composite [0,100] derived from a persisted `DailyMetric` (the pass-2 / display path —
         /// the raw streams are gone, but the night's totals remain). nil when there's no sleep.
         /// Single source of truth so the persisted `sleep_performance` series and the Charge

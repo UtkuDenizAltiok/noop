@@ -766,7 +766,8 @@ object SleepStager {
             if (p.stage != "sleep") continue
             longestSleepS = maxOf(longestSleepS, p.end - p.start)
             if ((p.end - p.start) < minMinutes * 60L) continue
-            val stages = SleepStagerV2.stageSession(p.start, p.end, emptyList(), hrS, rrS, resp)
+            // Sleep starts at the first persistent sleep, as on the motion path ([applyPersistentOnset]).
+            val stages = applyPersistentOnset(SleepStagerV2.stageSession(p.start, p.end, emptyList(), hrS, rrS, resp))
             staged++
             if (stages.isEmpty()) continue
             out.add(
@@ -1772,8 +1773,10 @@ object SleepStager {
             // ([bandSleepState]) scored "asleep". No-op when the band is absent (WHOOP 4.0) or the flag is
             // off; stager-agnostic (corrects whichever hypnogram V1/V2 produced). Efficiency below is then
             // computed on the corrected stages, so a night NOOP over-called wake on reports true efficiency.
-            val stages = applyBandStateWakeVeto(rawStages, start = p.start, end = p.end,
-                bandSleepState = bandSleepState)
+            // Then the night's sleep starts at its first persistent sleep ([applyPersistentOnset]): staged
+            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep.
+            val stages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start = p.start, end = p.end,
+                bandSleepState = bandSleepState))
             val eff = efficiency(start = p.start, end = p.end, stages = stages)
             val avgHrv = sessionAvgHRV(start = p.start, end = p.end, rr = rrS)
             sessions.add(
@@ -1794,8 +1797,9 @@ object SleepStager {
                 // cutoffTs = 0 on purpose: the shadow measures the FULL veto potential across EVERY banded
                 // night (history included) to build the validation distribution, independent of whatever
                 // new-nights cutoff the eventual flip uses.
-                val shadowStages = applyBandStateWakeVeto(rawStages, start = p.start, end = p.end,
-                    bandSleepState = bandSleepState, enabled = true, cutoffTs = 0L)
+                // The persistent onset applies to the shadow too, so the difference is the veto's alone.
+                val shadowStages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start = p.start,
+                    end = p.end, bandSleepState = bandSleepState, enabled = true, cutoffTs = 0L))
                 val shadowEff = efficiency(start = p.start, end = p.end, stages = shadowStages)
                 val recoveredMin = (shadowEff - eff) * (p.end - p.start).toDouble() / 60.0
                 if (recoveredMin >= 1.0) {
@@ -1831,6 +1835,62 @@ object SleepStager {
         val wake = stages.filter { SleepStageVocabulary.isWake(it.stage) }.sumOf { (it.end - it.start).toDouble() }
         val asleep = maxOf(0.0, inBed - wake)
         return minOf(1.0, asleep / inBed)
+    }
+
+    // ── Sleep onset: the first persistent sleep ──────────────────────────────
+
+    /**
+     * Minutes of unbroken staged sleep that mark sleep onset: latency to persistent sleep, the clinical
+     * definition (the first 10 minutes of continuous sleep), chosen a priori rather than fitted.
+     *
+     * A detected night starts when the wrist goes still, which is when the wearer got into bed, not when
+     * they fell asleep (Marino et al., Sleep 2013). On PhysioNet sleep-accel (31 PSG nights) the detected
+     * start was 15.5 minutes before PSG sleep onset on average; the first 10 minutes of persistent staged
+     * sleep cut the error to an MAE of 9.2 minutes. Swift twin: `SleepStager.persistentSleepMin`, whose doc
+     * carries the full evidence. Reproduce with `Tools/SleepPSG --section onset`.
+     */
+    const val PERSISTENT_SLEEP_MIN: Int = 10
+
+    /**
+     * Re-label as wake every staged sleep segment before the night's first [minPersistS] of unbroken sleep,
+     * so the hypnogram, total sleep and the shown "fell asleep" time all start at the same instant. A wake
+     * segment of any length breaks a run. Touching same-stage segments are merged afterwards so neighbours
+     * always differ. A night with no persistent run is returned unchanged. Pure; Swift twin
+     * `SleepStager.applyPersistentOnset`, byte-identical (oracle in `SleepPersistentOnsetTest`).
+     */
+    fun applyPersistentOnset(
+        stages: List<StageSegment>,
+        minPersistS: Long = PERSISTENT_SLEEP_MIN * 60L,
+    ): List<StageSegment> {
+        // sortedBy is stable, like the Swift twin's offset tie-break.
+        val sorted = stages.sortedBy { it.start }
+        var onset: Long? = null
+        var runStart: Long? = null
+        for (seg in sorted) {
+            if (SleepStageVocabulary.isWake(seg.stage)) {
+                runStart = null
+                continue
+            }
+            val begin = runStart ?: seg.start
+            runStart = begin
+            if (seg.end - begin >= minPersistS) {
+                onset = begin
+                break
+            }
+        }
+        val first = sorted.firstOrNull() ?: return stages
+        if (onset == null || onset <= first.start) return stages
+        val out = ArrayList<StageSegment>(sorted.size)
+        for (seg in sorted) {
+            val stage = if (seg.start < onset) "wake" else seg.stage
+            val last = out.lastOrNull()
+            if (last != null && last.stage == stage && last.end == seg.start) {
+                out[out.size - 1] = StageSegment(start = last.start, end = seg.end, stage = stage)
+            } else {
+                out.add(StageSegment(start = seg.start, end = seg.end, stage = stage))
+            }
+        }
+        return out
     }
 
     // ── Stage 1–3: staging over a 30 s epoch grid ────────────────────────────

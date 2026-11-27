@@ -2838,4 +2838,9 @@
     <string name="workouts_screen_subtitle">你所有的训练都在这里，无论是手环记录的还是导入的。</string>
     <string name="intelligence_screen_subtitle">你每天的充能、负荷和恢复，由 NOOP 在本设备上自行计算。不会上传任何数据。</string>
     <string name="sleep_debt_from_whoop">来自 WHOOP</string>
+    <string name="sleep_window_fell_asleep">入睡时间</string>
+    <string name="sleep_window_in_bed_from_to">在床时间：%1$s 至 %2$s</string>
+    <string name="settings_sleep_need">睡眠需求</string>
+    <string name="settings_sleep_need_automatic">自动（%1$s）</string>
+    <string name="settings_sleep_need_footnote">“自动”会根据你的年龄和你睡得最久的那些夜晚算出你的需求。你也可以自己选：之后 NOOP 会据此衡量你的睡眠负债、今晚的目标、睡前提醒和休息评分。</string>
 </resources>

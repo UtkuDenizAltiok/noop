@@ -122,6 +122,25 @@ object IntelligenceEngine {
      *  config signature. Pruned to the calibration window each pass so it cannot grow without bound. */
     private var stepsMotionCache = HashMap<String, Pair<String, Double>>()
 
+    /** v6 step 7: the chosen sleep need of the current pass in minutes (0 = Automatic), set by [analyzeRecent]. */
+    @Volatile private var chosenSleepNeedMinutesForRun: Int = 0
+    /** Where the current pass hands back its automatic sleep need ([com.noop.ui.SleepNeed] keeps it). */
+    @Volatile private var persistAutomaticSleepNeedForRun: (Double) -> Unit = {}
+    /** The current pass's resolved sleep need, for Rest in the recompute helpers. */
+    @Volatile private var sleepNeedHoursForRun: Double? = null
+
+    /**
+     * v6 step 7: THE sleep need of a pass, kept out of the bytecode-budgeted [analyzeRecentOnCpu]: hands the
+     * automatic need (with the age) back to the caller for the screens, resolves the wearer's choice, and keeps
+     * the result for the recompute helpers. Swift does the same in its engine through `SleepNeed`.
+     */
+    private fun resolveSleepNeedForRun(nightlyHours: List<Double>, age: Int): Double {
+        persistAutomaticSleepNeedForRun(RestScorer.personalizedNeedHours(nightlyHours, age))
+        val need = RestScorer.resolvedNeedHours(chosenSleepNeedMinutesForRun, nightlyHours, age)
+        sleepNeedHoursForRun = need
+        return need
+    }
+
     // Guarded by analyzeGate; kept as state to avoid another parameter on the bytecode-budgeted pass.
     private var preserveUnscoredHistoryForRun = false
 
@@ -503,6 +522,11 @@ object IntelligenceEngine {
         stepsMotionCacheGet: (() -> String?)? = null,
         stepsMotionCacheSet: ((String) -> Unit)? = null,
         preserveUnscoredHistory: Boolean = false,
+        // v6 step 7: the wearer's chosen sleep need in minutes (0 = Automatic), read from preferences by the
+        // Context-aware caller, and where the automatic need is handed back for the screens
+        // ([com.noop.ui.SleepNeed]). Defaults keep every existing caller on the automatic need.
+        chosenSleepNeedMinutes: Int = 0,
+        persistAutomaticSleepNeed: (Double) -> Unit = {},
     ): List<Computed> = withContext(Dispatchers.Default) {
         // #1005: time the whole pass so a re-score STORM is visible in the strap log (the trigger lines
         // record WHY each pass runs; this records how many nights and how long — the CPU cost per run).
@@ -521,6 +545,8 @@ object IntelligenceEngine {
             // wrapper, never in `analyzeRecentOnCpu`, whose ratchet margin has no room for either.
             StoreProbeTally.reset()
             preserveUnscoredHistoryForRun = preserveUnscoredHistory
+            chosenSleepNeedMinutesForRun = chosenSleepNeedMinutes
+            persistAutomaticSleepNeedForRun = persistAutomaticSleepNeed
             if (!stepsMotionCacheLoaded && stepsMotionCacheGet != null) {
                 stepsMotionCacheLoaded = true
                 val raw = stepsMotionCacheGet()
@@ -801,7 +827,8 @@ object IntelligenceEngine {
         // `UserProfile.age` is a Double where Swift's `ProfileStore.age` is already floored whole
         // years — `toInt()` truncates to the same integer, and the need floor only branches on
         // `<= 0` / `< 18`, so the two platforms land on the identical floor.
-        val sleepNeedHours = RestScorer.personalizedNeedHours(nightlyHours, profile.age.toInt())
+        // v6 step 7: THE need ([resolveSleepNeedForRun], outside this budgeted method).
+        val sleepNeedHours = resolveSleepNeedForRun(nightlyHours, profile.age.toInt())
 
         // #970 read efficiency, skin-temp leg: [RegistryDayOwnerSource.skinTempFamily] resolves the family
         // via registry.all() — a Room query — and the loop below wants it once per DAY, so a 21-day scan
@@ -1703,7 +1730,7 @@ object IntelligenceEngine {
             if (recoveryTraceSink != null) {
                 for (line in recoveryTraceLines(daily, baselines2)) recoveryTraceSink(line)
             }
-            RestScorer.restFromDaily(daily)?.let { rest ->
+            RestScorer.composite(daily, sleepNeedHours)?.let { rest ->
                 restRows.add(MetricSeriesRow(deviceId = computedId, day = daily.day, key = "sleep_performance", value = rest))
             }
             // #103: persist the SpO₂ candidate @82 nightly mean to metricSeries as "spo2_candidate" so the
@@ -1929,7 +1956,7 @@ object IntelligenceEngine {
                     } else {
                         source
                     }
-                RestScorer.restFromDaily(scored)?.let { rest ->
+                RestScorer.composite(scored, sleepNeedHours)?.let { rest ->
                     restRows.add(MetricSeriesRow(deviceId = computedId, day = w.day, key = "sleep_performance", value = rest))
                 }
                 out.add(
@@ -2384,7 +2411,7 @@ object IntelligenceEngine {
         // Charge enrichment: feed the Rest COMPOSITE (÷100) as the sleep-quality term instead of raw
         // efficiency, and fold in the night's skin-temp deviation (both from persisted daily fields).
         // Mirrors the Swift recomputeRecovery. (Charge/Effort/Rest scoring redesign.)
-        val restQuality = RestScorer.restFromDaily(daily)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
         return RecoveryScorer.recovery(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),
@@ -2490,7 +2517,7 @@ object IntelligenceEngine {
                 "charge day=${daily.day} nilScore reason=missingInput (hrv/rhr/hrvBaseline required)",
             )
         }
-        val restQuality = RestScorer.restFromDaily(daily)?.let { it / 100.0 } ?: daily.efficiency
+        val restQuality = RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { it / 100.0 } ?: daily.efficiency
         val (_, trace) = RecoveryScorerTrace.recoveryTrace(
             hrv = hrvVal,
             rhr = rhrVal.toDouble(),

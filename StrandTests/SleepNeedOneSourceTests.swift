@@ -10,6 +10,39 @@ import WhoopStore
 /// `hoursVsNeededUsesTheNormativeNeedWithoutAnImport`.
 final class SleepNeedOneSourceTests: XCTestCase {
 
+    /// The need's two stored inputs (`SleepNeed`): the wearer's choice and the engine's last automatic figure.
+    /// Cleared for each test so the need is worked out from the test's own nights, and put back afterwards.
+    private var storedNeedInputs: [String: Any] = [:]
+
+    override func setUp() {
+        super.setUp()
+        for key in [SleepNeed.chosenMinutesKey, SleepNeed.automaticHoursKey] {
+            storedNeedInputs[key] = UserDefaults.standard.object(forKey: key)
+            UserDefaults.standard.removeObject(forKey: key)
+        }
+    }
+
+    override func tearDown() {
+        for key in [SleepNeed.chosenMinutesKey, SleepNeed.automaticHoursKey] {
+            if let value = storedNeedInputs[key] { UserDefaults.standard.set(value, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        super.tearDown()
+    }
+
+    /// v6 step 7: once the engine has stored its automatic need, every screen states that one figure, whatever
+    /// nights the screen happens to hold; a need the wearer chose overrides it.
+    func testTheEngineFigureAndThenTheChoiceAreTheNeedEveryScreenStates() {
+        let days = nightsFixture(asleepMin: 390, count: 10)
+        XCTAssertEqual(SleepModel.debtNeedMin(days: days), 480, accuracy: 1e-9)
+        SleepNeed.storeAutomatic(8.75)
+        XCTAssertEqual(SleepModel.debtNeedMin(days: days), 525, accuracy: 1e-9)
+        UserDefaults.standard.set(450, forKey: SleepNeed.chosenMinutesKey)
+        XCTAssertEqual(SleepModel.debtNeedMin(days: days), 450, accuracy: 1e-9)
+        UserDefaults.standard.set(452, forKey: SleepNeed.chosenMinutesKey)   // stored off-step: nearest 15 minutes
+        XCTAssertEqual(SleepModel.debtNeedMin(days: days), 450, accuracy: 1e-9)
+    }
+
     private func nightsFixture(asleepMin: Double, count: Int) -> [DailyMetric] {
         // Dated back from today's logical day so the tile's staleness-bounded `latest` reads the newest.
         let cal = Calendar.current
