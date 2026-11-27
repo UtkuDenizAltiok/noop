@@ -90,6 +90,10 @@ struct RecipeConfig: Equatable {
     /// see `Variants.preNine30Guard`. It is a diagnostic, not a candidate.
     var remLatencyMode: RemLatencyMode = .gradedFromOnset
 
+    /// Whether a still wrist's raised heart rate is held back from voting an epoch awake (`motionQuiescent`).
+    /// Shipped: on. Off is a diagnostic for section 10, never a shipped state.
+    var motionQuiescentClamp: Bool = true
+
     /// The shipped recipe, as of `Packages/StrandAnalytics/Sources/StrandAnalytics/SleepStagerV2.swift`.
     static let shipped = RecipeConfig(
         priorLight: log(0.50), priorDeep: log(0.15), priorRem: log(0.22), priorAwake: log(0.10),
@@ -450,7 +454,7 @@ enum V2Recipe {
             let gate = cfg.deepGateSlope * max(0.0, fpct(f.hrFlat11) - cfg.deepGateThresh)
             let awakeCardiac0 = cfg.awakeZhv * dz(zhvv, cfg.awakeDeadzone)
                 + cfg.awakeZhr * dz(zhrv, cfg.awakeDeadzone)
-            let awakeCardiac = motionQuiescent(f, cfg) ? min(0.0, awakeCardiac0) : awakeCardiac0
+            let awakeCardiac = (cfg.motionQuiescentClamp && motionQuiescent(f, cfg)) ? min(0.0, awakeCardiac0) : awakeCardiac0
             var em: [String: Double] = [
                 "deep": cfg.deepZhv * zhvv + cfg.deepZhr * zhrv + cfg.deepZmv * zmvv - gate + prior["deep"]!,
                 "rem": cfg.remZhv * zhvv + cfg.remZmv * zmvv + cfg.remZhr * zhrv + prior["rem"]!,

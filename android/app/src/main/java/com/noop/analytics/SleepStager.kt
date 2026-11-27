@@ -766,8 +766,10 @@ object SleepStager {
             if (p.stage != "sleep") continue
             longestSleepS = maxOf(longestSleepS, p.end - p.start)
             if ((p.end - p.start) < minMinutes * 60L) continue
-            // Sleep starts at the first persistent sleep, as on the motion path ([applyPersistentOnset]).
-            val stages = applyPersistentOnset(SleepStagerV2.stageSession(p.start, p.end, emptyList(), hrS, rrS, resp))
+            // Sleep starts at the first persistent sleep and ends at the last, as on the motion path
+            // ([applyPersistentOnset], [applyWakeRescoring]).
+            val stages = applyWakeRescoring(
+                applyPersistentOnset(SleepStagerV2.stageSession(p.start, p.end, emptyList(), hrS, rrS, resp)))
             staged++
             if (stages.isEmpty()) continue
             out.add(
@@ -1774,9 +1776,10 @@ object SleepStager {
             // off; stager-agnostic (corrects whichever hypnogram V1/V2 produced). Efficiency below is then
             // computed on the corrected stages, so a night NOOP over-called wake on reports true efficiency.
             // Then the night's sleep starts at its first persistent sleep ([applyPersistentOnset]): staged
-            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep.
-            val stages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start = p.start, end = p.end,
-                bandSleepState = bandSleepState))
+            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep. Wake inside
+            // the night and the final awakening follow ([applyWakeRescoring]).
+            val stages = applyWakeRescoring(applyPersistentOnset(applyBandStateWakeVeto(rawStages, start = p.start,
+                end = p.end, bandSleepState = bandSleepState)))
             val eff = efficiency(start = p.start, end = p.end, stages = stages)
             val avgHrv = sessionAvgHRV(start = p.start, end = p.end, rr = rrS)
             sessions.add(
@@ -1797,9 +1800,10 @@ object SleepStager {
                 // cutoffTs = 0 on purpose: the shadow measures the FULL veto potential across EVERY banded
                 // night (history included) to build the validation distribution, independent of whatever
                 // new-nights cutoff the eventual flip uses.
-                // The persistent onset applies to the shadow too, so the difference is the veto's alone.
-                val shadowStages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start = p.start,
-                    end = p.end, bandSleepState = bandSleepState, enabled = true, cutoffTs = 0L))
+                // The persistent onset and the wake rescoring apply to the shadow too, so the difference is
+                // the veto's alone.
+                val shadowStages = applyWakeRescoring(applyPersistentOnset(applyBandStateWakeVeto(rawStages,
+                    start = p.start, end = p.end, bandSleepState = bandSleepState, enabled = true, cutoffTs = 0L)))
                 val shadowEff = efficiency(start = p.start, end = p.end, stages = shadowStages)
                 val recoveredMin = (shadowEff - eff) * (p.end - p.start).toDouble() / 60.0
                 if (recoveredMin >= 1.0) {
@@ -1888,6 +1892,94 @@ object SleepStager {
                 out[out.size - 1] = StageSegment(start = last.start, end = seg.end, stage = stage)
             } else {
                 out.add(StageSegment(start = seg.start, end = seg.end, stage = stage))
+            }
+        }
+        return out
+    }
+
+    // ── Wake inside the night and the final awakening ────────────────────────
+
+    /**
+     * Two rules for the wake a wrist under-reads, applied after [applyPersistentOnset], both chosen before
+     * measuring and neither fitted: Webster's rescoring rules (Webster et al., Sleep 1982;5:389-399: after
+     * at least 4, 10 or 15 minutes of wake the next 1, 3 or 4 minutes of staged sleep are wake; a sleep run
+     * of 6 minutes or less inside at least 10 minutes of wake on both sides, or of 10 or less inside 20, is
+     * wake), then the night's final awakening at the end of its last [minPersistS] of unbroken sleep. On
+     * PhysioNet sleep-accel (31 PSG nights) they raise per-subject sleep/wake agreement for 24 subjects and
+     * lower it for 3, and move the shown "woke" time from a median of 5.5 minutes after PSG's final
+     * awakening to 0.7. Swift twin `SleepStager.applyWakeRescoring`, whose doc carries the full evidence;
+     * byte-identical (oracle in `SleepWakeRescoringTest`). Reproduce with `Tools/SleepPSG --section waso`.
+     */
+    fun applyWakeRescoring(
+        stages: List<StageSegment>,
+        minPersistS: Long = PERSISTENT_SLEEP_MIN * 60L,
+    ): List<StageSegment> {
+        // sortedBy is stable, like the Swift twin's offset tie-break.
+        val sorted = stages.sortedBy { it.start }
+        if (sorted.isEmpty()) return stages
+        // Maximal runs of one class over the sorted segments: [first, last] indices, wall-clock span.
+        val runFirst = ArrayList<Int>()
+        val runLast = ArrayList<Int>()
+        val runSleep = ArrayList<Boolean>()
+        for ((i, seg) in sorted.withIndex()) {
+            val asleep = !SleepStageVocabulary.isWake(seg.stage)
+            if (runSleep.isNotEmpty() && runSleep.last() == asleep) {
+                runLast[runLast.size - 1] = i
+            } else {
+                runFirst.add(i); runLast.add(i); runSleep.add(asleep)
+            }
+        }
+        val n = runSleep.size
+        fun span(r: Int): Long = maxOf(0L, sorted[runLast[r]].end - sorted[runFirst[r]].start)
+        // Seconds of each sleep run Webster's rules make wake, from its start; Long.MAX_VALUE = the whole run.
+        val whole = Long.MAX_VALUE
+        val cut = LongArray(n)
+        for (r in 0 until n) {
+            if (!runSleep[r]) continue
+            val before = if (r > 0) span(r - 1) else 0L
+            val after = if (r + 1 < n) span(r + 1) else 0L
+            val length = span(r)
+            cut[r] = if ((length <= 360L && before >= 600L && after >= 600L) ||
+                (length <= 600L && before >= 1_200L && after >= 1_200L)
+            ) {
+                whole
+            } else if (before >= 900L) {
+                240L
+            } else if (before >= 600L) {
+                180L
+            } else if (before >= 240L) {
+                60L
+            } else {
+                0L
+            }
+        }
+        // The final awakening: the last run still holding minPersistS of sleep after Webster ends the night.
+        val keep = (0 until n).lastOrNull { runSleep[it] && cut[it] != whole && span(it) - cut[it] >= minPersistS }
+        if (keep != null) {
+            for (r in keep + 1 until n) if (runSleep[r]) cut[r] = whole
+        }
+        if (cut.none { it > 0L }) return stages
+        val out = ArrayList<StageSegment>(sorted.size + n)
+        fun emit(start: Long, end: Long, stage: String) {
+            val last = out.lastOrNull()
+            if (last != null && last.stage == stage && last.end == start) {
+                out[out.size - 1] = StageSegment(start = last.start, end = end, stage = stage)
+            } else {
+                out.add(StageSegment(start = start, end = end, stage = stage))
+            }
+        }
+        for (r in 0 until n) {
+            val boundary = if (cut[r] == whole) whole else sorted[runFirst[r]].start + cut[r]
+            for (k in runFirst[r]..runLast[r]) {
+                val seg = sorted[k]
+                if (!runSleep[r] || cut[r] == 0L || seg.start >= boundary) {
+                    emit(seg.start, seg.end, seg.stage)
+                } else if (seg.end <= boundary) {
+                    emit(seg.start, seg.end, "wake")
+                } else {
+                    emit(seg.start, boundary, "wake")
+                    emit(boundary, seg.end, seg.stage)
+                }
             }
         }
         return out

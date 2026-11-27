@@ -688,9 +688,11 @@ public enum SleepStager {
             if p.stage != "sleep" { continue }
             longestSleepS = max(longestSleepS, p.end - p.start)
             if (p.end - p.start) < minMinutes * 60 { continue }
-            // Sleep starts at the first persistent sleep, as on the motion path (`applyPersistentOnset`).
-            let stages = applyPersistentOnset(SleepStagerV2.stageSession(start: p.start, end: p.end, grav: [],
-                                                                         hr: hrS, rr: rrS, resp: resp))
+            // Sleep starts at the first persistent sleep and ends at the last, as on the motion path
+            // (`applyPersistentOnset`, `applyWakeRescoring`).
+            let stages = applyWakeRescoring(applyPersistentOnset(SleepStagerV2.stageSession(start: p.start, end: p.end,
+                                                                                            grav: [], hr: hrS,
+                                                                                            rr: rrS, resp: resp)))
             staged += 1
             if stages.isEmpty { continue }
             // #1884: MEASURED, not nilled. The bounds here are inferred from heart rate, which is why
@@ -1591,9 +1593,11 @@ public enum SleepStager {
             // off; stager-agnostic (corrects whichever hypnogram V1/V2 produced). Efficiency below is then
             // computed on the corrected stages, so a night NOOP over-called wake on reports true efficiency.
             // Then the night's sleep starts at its first persistent sleep (`applyPersistentOnset`): staged
-            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep.
-            let stages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start: p.start, end: p.end,
-                                                                     bandSleepState: bandSleepState))
+            // sleep before it is quiet wakefulness in bed, which the wrist cannot tell from sleep. Wake inside
+            // the night and the final awakening follow (`applyWakeRescoring`).
+            let stages = applyWakeRescoring(applyPersistentOnset(applyBandStateWakeVeto(rawStages, start: p.start,
+                                                                                        end: p.end,
+                                                                                        bandSleepState: bandSleepState)))
             let eff = efficiency(start: p.start, end: p.end, stages: stages)
             let avgHrv = sessionAvgHRV(start: p.start, end: p.end, rr: rrS)
             sessions.append(SleepSession(start: p.start, end: p.end, efficiency: eff,
@@ -1610,11 +1614,14 @@ public enum SleepStager {
                 // `cutoffTs: 0` on purpose: the shadow measures the FULL veto potential across EVERY banded
                 // night (history included) to build the validation distribution, independent of whatever
                 // new-nights cutoff the eventual flip uses.
-                // The persistent onset applies to the shadow too, so the difference is the veto's alone.
-                let shadowStages = applyPersistentOnset(applyBandStateWakeVeto(rawStages, start: p.start,
-                                                                               end: p.end,
-                                                                               bandSleepState: bandSleepState,
-                                                                               enabled: true, cutoffTs: 0))
+                // The persistent onset and the wake rescoring apply to the shadow too, so the difference is
+                // the veto's alone.
+                let shadowStages = applyWakeRescoring(applyPersistentOnset(applyBandStateWakeVeto(rawStages,
+                                                                                                  start: p.start,
+                                                                                                  end: p.end,
+                                                                                                  bandSleepState: bandSleepState,
+                                                                                                  enabled: true,
+                                                                                                  cutoffTs: 0)))
                 let shadowEff = efficiency(start: p.start, end: p.end, stages: shadowStages)
                 let recoveredMin = (shadowEff - eff) * Double(p.end - p.start) / 60.0
                 if recoveredMin >= 1.0 {
@@ -1697,6 +1704,90 @@ public enum SleepStager {
                 out[out.count - 1].end = seg.end
             } else {
                 out.append(StageSegment(start: seg.start, end: seg.end, stage: stage))
+            }
+        }
+        return out
+    }
+
+    // MARK: - Wake inside the night and the final awakening
+
+    /// Two rules for the wake a wrist under-reads, applied after `applyPersistentOnset`, both chosen before
+    /// measuring and neither fitted:
+    ///
+    /// 1. Webster's rescoring rules (Webster et al., Sleep 1982;5:389-399; parameters as restated by Fisher,
+    ///    arXiv 2104.14291, 2021): after at least 4, 10 or 15 minutes of wake, the next 1, 3 or 4 minutes of
+    ///    staged sleep are wake; a sleep run of 6 minutes or less with at least 10 minutes of wake before and
+    ///    after it, or of 10 minutes or less with at least 20 on both sides, is wake. After lying awake the
+    ///    wrist goes still before sleep returns, so staged sleep resumes early: the onset error again, inside
+    ///    the night. All rules read the hypnogram as staged, so they do not cascade.
+    /// 2. The night's final awakening: the night ends where its last `minPersistS` of unbroken sleep end, and
+    ///    shorter sleep after that is wake (the mirror of the persistent onset). Brief wakes inside the night
+    ///    stay inside it; the main wake-up is the end.
+    ///
+    /// Against PSG (PhysioNet sleep-accel, 31 nights, `Tools/SleepPSG --section waso`), the night's total sleep
+    /// was 20.8 minutes too high on average: 7.8 before sleep onset, 14.8 of wake inside the night called
+    /// sleep (NOOP found 27 % of that wake; 71 % of the missed wake came with no wrist movement at all), 3.7
+    /// after the final awakening, less 5.6 of sleep called wake. Together the two rules raise per-subject
+    /// sleep/wake agreement (Cohen's kappa) for 24 of 31 subjects and lower it for 3 (mean 0.401 to 0.439),
+    /// lower the total-sleep overestimate to 18.5 minutes, and move the shown "woke" time from a median of 5.5
+    /// minutes after PSG's final awakening to 0.7 (mean 14.3 to 10.6). The final rule gives the same result
+    /// at 5 or 15 minutes. Quiet wakefulness stays the wrist's limit (Marino et al., Sleep 2013); the morning
+    /// check-in's correction exists for it. A night with no persistent run keeps its sleep: these rules move
+    /// wake, they never delete a night. Pure; Kotlin twin `SleepStager.applyWakeRescoring`.
+    public static func applyWakeRescoring(_ stages: [StageSegment],
+                                          minPersistS: Int = persistentSleepMin * 60) -> [StageSegment] {
+        let sorted = stages.enumerated().sorted {
+            $0.element.start == $1.element.start ? $0.offset < $1.offset : $0.element.start < $1.element.start
+        }.map(\.element)
+        guard !sorted.isEmpty else { return stages }
+        // Maximal runs of one class over the sorted segments: [first, last] indices, wall-clock span.
+        var runFirst: [Int] = [], runLast: [Int] = [], runSleep: [Bool] = []
+        for (i, seg) in sorted.enumerated() {
+            let asleep = !SleepStageVocabulary.isWake(seg.stage)
+            if let s = runSleep.last, s == asleep {
+                runLast[runLast.count - 1] = i
+            } else {
+                runFirst.append(i); runLast.append(i); runSleep.append(asleep)
+            }
+        }
+        let n = runSleep.count
+        func span(_ r: Int) -> Int { max(0, sorted[runLast[r]].end - sorted[runFirst[r]].start) }
+        // Seconds of each sleep run Webster's rules make wake, from its start; Int.max = the whole run.
+        var cut = [Int](repeating: 0, count: n)
+        for r in 0..<n where runSleep[r] {
+            let before = r > 0 ? span(r - 1) : 0
+            let after = r + 1 < n ? span(r + 1) : 0
+            let length = span(r)
+            if (length <= 360 && before >= 600 && after >= 600) || (length <= 600 && before >= 1_200 && after >= 1_200) {
+                cut[r] = Int.max
+            } else {
+                cut[r] = before >= 900 ? 240 : before >= 600 ? 180 : before >= 240 ? 60 : 0
+            }
+        }
+        // The final awakening: the last run still holding `minPersistS` of sleep after Webster ends the night.
+        if let keep = (0..<n).last(where: { runSleep[$0] && cut[$0] != Int.max && span($0) - cut[$0] >= minPersistS }) {
+            for r in (keep + 1)..<n where runSleep[r] { cut[r] = Int.max }
+        }
+        guard cut.contains(where: { $0 > 0 }) else { return stages }
+        var out: [StageSegment] = []
+        func emit(_ start: Int, _ end: Int, _ stage: String) {
+            if let last = out.last, last.stage == stage, last.end == start {
+                out[out.count - 1].end = end
+            } else {
+                out.append(StageSegment(start: start, end: end, stage: stage))
+            }
+        }
+        for r in 0..<n {
+            let boundary = cut[r] == Int.max ? Int.max : sorted[runFirst[r]].start + cut[r]
+            for seg in sorted[runFirst[r]...runLast[r]] {
+                if !runSleep[r] || cut[r] == 0 || seg.start >= boundary {
+                    emit(seg.start, seg.end, seg.stage)
+                } else if seg.end <= boundary {
+                    emit(seg.start, seg.end, "wake")
+                } else {
+                    emit(seg.start, boundary, "wake")
+                    emit(boundary, seg.end, seg.stage)
+                }
             }
         }
         return out

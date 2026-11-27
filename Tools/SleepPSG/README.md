@@ -58,7 +58,7 @@ swift run -c release sleeppsg --dataset ~/datasets/motion-and-heart-rate-*-1.0.0
 | flag | meaning |
 |---|---|
 | `--dataset PATH` | the extracted `sleep-accel` root, or the DREAMT folder holding `data_64Hz/`. Required for every section except `port`. |
-| `--section S` | `all` (default), or one of `port`, `baseline`, `strata`, `rem`, `variants`, `priors`, `rsa` (DREAMT only). |
+| `--section S` | `all` (default), or one of `port`, `baseline`, `strata`, `rem`, `variants`, `priors`, `rsa` (DREAMT only), `onset` (section 9: the shipped detection's fell-asleep and woke times against PSG onset and final awakening), `waso` (section 10: where the detection's extra sleep sits in the night, and the wake rules `applyWakeRescoring` ships; both sleep-accel only). |
 | `--subjects N` | score only the first N subject ids — a fast smoke run. |
 | `--csv PATH` | write the per-variant table as CSV. |
 | `--seed N` | the port-validation corpus seed. |
