@@ -1796,13 +1796,9 @@ object RestScorer {
 
     /**
      * Rest composite [0,100] derived from a persisted [DailyMetric] (the pass-2 / display path — raw
-     * streams are gone but the night's totals remain). null when there's no sleep. Single source of
-     * truth so the persisted sleep_performance series and the Charge "Rest quality" term agree. Mirrors
-     * Swift `AnalyticsEngine.Rest.composite(daily:)`.
-     */
-    /**
-     * Rest [0, 100] from a persisted day row against [needHours] (v6 step 7: the one sleep need,
-     * `com.noop.ui.SleepNeed`), nil when the row has no sleep. Byte-identical to Swift
+     * streams are gone but the night's totals remain), against [needHours] (v6 step 7: the one sleep need,
+     * `com.noop.ui.SleepNeed`). null when there's no sleep. Single source of truth so the persisted
+     * sleep_performance series and the Charge "Rest quality" term agree. Byte-identical to Swift
      * `AnalyticsEngine.Rest.composite(daily:needHours:consistency:)`.
      */
     fun composite(daily: DailyMetric, needHours: Double = defaultSleepNeedHours, consistency: Double? = null): Double? {

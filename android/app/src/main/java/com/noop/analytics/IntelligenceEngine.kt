@@ -122,14 +122,26 @@ object IntelligenceEngine {
      *  config signature. Pruned to the calibration window each pass so it cannot grow without bound. */
     private var stepsMotionCache = HashMap<String, Pair<String, Double>>()
 
-    // Guarded by analyzeGate; kept as state to avoid another parameter on the bytecode-budgeted pass.
     /** v6 step 7: the chosen sleep need of the current pass in minutes (0 = Automatic), set by [analyzeRecent]. */
     @Volatile private var chosenSleepNeedMinutesForRun: Int = 0
     /** Where the current pass hands back its automatic sleep need ([com.noop.ui.SleepNeed] keeps it). */
     @Volatile private var persistAutomaticSleepNeedForRun: (Double) -> Unit = {}
-    /** The current pass's resolved sleep need, for Rest in the per-day writes and the recompute helpers. */
+    /** The current pass's resolved sleep need, for Rest in the recompute helpers. */
     @Volatile private var sleepNeedHoursForRun: Double? = null
 
+    /**
+     * v6 step 7: THE sleep need of a pass, kept out of the bytecode-budgeted [analyzeRecentOnCpu]: hands the
+     * automatic need (with the age) back to the caller for the screens, resolves the wearer's choice, and keeps
+     * the result for the recompute helpers. Swift does the same in its engine through `SleepNeed`.
+     */
+    private fun resolveSleepNeedForRun(nightlyHours: List<Double>, age: Int): Double {
+        persistAutomaticSleepNeedForRun(RestScorer.personalizedNeedHours(nightlyHours, age))
+        val need = RestScorer.resolvedNeedHours(chosenSleepNeedMinutesForRun, nightlyHours, age)
+        sleepNeedHoursForRun = need
+        return need
+    }
+
+    // Guarded by analyzeGate; kept as state to avoid another parameter on the bytecode-budgeted pass.
     private var preserveUnscoredHistoryForRun = false
 
     /** One reused night: its per-day cache [key], the scored [res], and everything the pass-1 loop otherwise
@@ -815,10 +827,8 @@ object IntelligenceEngine {
         // `UserProfile.age` is a Double where Swift's `ProfileStore.age` is already floored whole
         // years — `toInt()` truncates to the same integer, and the need floor only branches on
         // `<= 0` / `< 18`, so the two platforms land on the identical floor.
-        // v6 step 7: THE need: the wearer's choice, else the automatic need with their age (kept for the screens).
-        persistAutomaticSleepNeedForRun(RestScorer.personalizedNeedHours(nightlyHours, profile.age.toInt()))
-        val sleepNeedHours = RestScorer.resolvedNeedHours(chosenSleepNeedMinutesForRun, nightlyHours, profile.age.toInt())
-        sleepNeedHoursForRun = sleepNeedHours
+        // v6 step 7: THE need ([resolveSleepNeedForRun], outside this budgeted method).
+        val sleepNeedHours = resolveSleepNeedForRun(nightlyHours, profile.age.toInt())
 
         // #970 read efficiency, skin-temp leg: [RegistryDayOwnerSource.skinTempFamily] resolves the family
         // via registry.all() — a Room query — and the loop below wants it once per DAY, so a 21-day scan
@@ -1720,7 +1730,7 @@ object IntelligenceEngine {
             if (recoveryTraceSink != null) {
                 for (line in recoveryTraceLines(daily, baselines2)) recoveryTraceSink(line)
             }
-            RestScorer.composite(daily, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { rest ->
+            RestScorer.composite(daily, sleepNeedHours)?.let { rest ->
                 restRows.add(MetricSeriesRow(deviceId = computedId, day = daily.day, key = "sleep_performance", value = rest))
             }
             // #103: persist the SpO₂ candidate @82 nightly mean to metricSeries as "spo2_candidate" so the
@@ -1946,7 +1956,7 @@ object IntelligenceEngine {
                     } else {
                         source
                     }
-                RestScorer.composite(scored, needHours = sleepNeedHoursForRun ?: RestScorer.defaultSleepNeedHours)?.let { rest ->
+                RestScorer.composite(scored, sleepNeedHours)?.let { rest ->
                     restRows.add(MetricSeriesRow(deviceId = computedId, day = w.day, key = "sleep_performance", value = rest))
                 }
                 out.add(
