@@ -142,9 +142,16 @@ struct SmartAlarmView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                Text(windDownOn
-                     ? "A calm nudge \(WindDownNudge.offsetHoursMinutes.hours)h \(WindDownNudge.offsetHoursMinutes.minutes)m before your usual wake time."
-                     : "Turn on the wind-down reminder below to land at your usual wake time rested.")
+                Group {
+                    if windDownOn {
+                        Text("A calm nudge \(WindDownNudge.offsetHoursMinutes.hours)h \(WindDownNudge.offsetHoursMinutes.minutes)m before your usual wake time.")
+                    } else if simpleMode {
+                        // Design v6, step 6 (W46): what the reminder does for the wearer, in plain words.
+                        Text("Turn on the wind-down reminder below and NOOP will tell you when to start getting ready for bed.")
+                    } else {
+                        Text("Turn on the wind-down reminder below to land at your usual wake time rested.")
+                    }
+                }
                     .font(StrandFont.footnote)
                     .foregroundStyle(StrandPalette.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)

@@ -140,7 +140,8 @@ struct LiquidTodayView: View {
     @State private var demoScoreOpened = false
     #endif
     /// Nights the Charge baseline has learned from (the HRV fold's valid-night count, the figure the engine
-    /// trusts a baseline on), for Simple mode's "Early estimate" line. Resolved in `load()`, today only.
+    /// trusts a baseline on, `SimpleWelcome.learnedNights`), for Simple mode's "Getting to know you" card.
+    /// Resolved in `load()`, today only.
     @State private var cachedBaselineNights: Int?
     /// Simple mode's inputs for tonight's goal, resolved in `load()` for today only: the sleep debt the Sleep
     /// tab's ledger shows (minutes; the same sessions, nap credit and need), the Sleep tab's need in whole
@@ -1440,7 +1441,7 @@ struct LiquidTodayView: View {
                 if selectedDayOffset == 0 { SimpleStrapLine() }
                 heroCard
             }
-            simpleEarlyEstimateLine
+            simpleGettingToKnowYouCard
             if chargeLegacyRRGap { ChargeLegacyRRGapNote() }
         case .summary:
             simpleDaySection
@@ -1566,29 +1567,21 @@ struct LiquidTodayView: View {
         effortStrain(displayDay).map { SimpleScoreWords.effort(stored: $0, scale: effortScale) }
     }
 
-    /// Under the scores, only while today's own Charge rests on a baseline NOOP does not fully trust yet: how
-    /// many nights it has learned from. Taps through to the guide's entry on how sure NOOP is. Nothing once
-    /// the baseline is trusted: a sure score needs no label.
+    /// Under the scores for the first two weeks (step 6): what arrives when, and how many nights NOOP has learned
+    /// from (`SimpleWelcome`). It replaces step 1's "Early estimate" line, whose night count it now carries, and
+    /// the count "Your day" used to repeat. Its ⓘ opens the guide's entry on how sure NOOP is. Today only, and
+    /// gone once the baseline is trusted.
     @ViewBuilder
-    private var simpleEarlyEstimateLine: some View {
-        if let nights = SimpleDayPlan.earlyEstimateNights(validNights: cachedBaselineNights,
-                                                          chargeIsTodaysOwn: simpleTodaysOwnCharge != nil) {
-            Button { plainGuideTerm = .confidence } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "info.circle")
-                        .font(StrandFont.footnote)
-                        .foregroundStyle(StrandPalette.textTertiary)
-                        .accessibilityHidden(true)
-                    Text("Early estimate: \(nights) of \(Baselines.minNightsTrust) nights so far.")
-                        .font(StrandFont.footnote)
-                        .foregroundStyle(StrandPalette.textSecondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
-                }
-                .padding(.horizontal, 4)
-                .contentShape(Rectangle())
+    private var simpleGettingToKnowYouCard: some View {
+        if SimpleWelcome.showsCard(learnedNights: cachedBaselineNights, isToday: selectedDayOffset == 0),
+           let nights = cachedBaselineNights {
+            card {
+                SimpleGettingToKnowYou(
+                    learnedNights: nights, hasRest: restScore != nil,
+                    chargeIsEarlyEstimate: SimpleDayPlan.earlyEstimateNights(
+                        validNights: nights, chargeIsTodaysOwn: simpleTodaysOwnCharge != nil) != nil,
+                    onGuide: { plainGuideTerm = .confidence })
             }
-            .buttonStyle(.plain)
         }
     }
 
@@ -1807,7 +1800,7 @@ struct LiquidTodayView: View {
     /// values and tap-through details) the full view's Key Metrics grid draws for them.
     private var simpleActivitySection: some View {
         VStack(spacing: 8) {
-            sectionHead("ACTIVITY")
+            sectionHead("ACTIVITY", guide: .activity)
             HStack(alignment: .top, spacing: NoopMetrics.gap) {
                 // v6: each number against the wearer's own usual day, and a bar that is full at that usual.
                 // The full view's tiles fill toward fixed goals nobody chose (10,000 steps, 800 kcal); here a
@@ -2187,12 +2180,22 @@ struct LiquidTodayView: View {
     /// `trailing` is optional so a section can omit it entirely rather than carry a caption for
     /// something it is not drawing (the Key Metrics window label, when the trend graphs are off).
     /// Matches the Android twin, whose `SectionHeader` already takes `trailing: String? = null`.
-    private func sectionHead(_ title: String, trailing: String? = nil) -> some View {
+    /// `guide` (Simple mode only) adds an ⓘ that opens that entry of the plain guide, so the card explains itself.
+    private func sectionHead(_ title: String, trailing: String? = nil, guide: PlainGuideTerm? = nil) -> some View {
         HStack(alignment: .firstTextBaseline) {
             Text(LocalizedStringKey(title)).font(StrandFont.overline).tracking(1.6).foregroundStyle(StrandPalette.textTertiary)
             Spacer()
             if let trailing {
                 Text(LocalizedStringKey(trailing)).font(StrandFont.caption).foregroundStyle(StrandPalette.textTertiary)
+            }
+            if let guide {
+                Button { plainGuideTerm = guide } label: {
+                    Image(systemName: "info.circle")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(StrandPalette.textTertiary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("What the numbers mean")
             }
         }
         .padding(.horizontal, 2)
@@ -2365,15 +2368,14 @@ struct LiquidTodayView: View {
         } else {
             cachedSimpleSleep = nil
         }
-        // Simple mode's "Early estimate" line and tonight's goal, for today only. The debt is the Sleep tab's
-        // own: the same ledger (`SleepModel.debtLedger`) over the same day rows, the same nap credit from the
-        // same session blocks and habitual midsleep, so Today and Sleep can never state two debts. The
+        // Simple mode's "Getting to know you" card and tonight's goal, for today only. The debt is the Sleep
+        // tab's own: the same ledger (`SleepModel.debtLedger`) over the same day rows, the same nap credit from
+        // the same session blocks and habitual midsleep, so Today and Sleep can never state two debts. The
         // session read is windowed to the days the ledger can reach; a day's nap credit depends on that
         // day's blocks alone, so the window changes nothing inside it.
         if simpleMode, selectedDayOffset == 0 {
             cachedBaselineNights = repo.chargeBaselines.map {
-                Baselines.foldHistory($0.hrvHistory.values, dayKeys: $0.hrvHistory.dayKeys,
-                                      cfg: Baselines.hrvCfg).nValid
+                SimpleWelcome.learnedNights(hrv: $0.hrvHistory.values, dayKeys: $0.hrvHistory.dayKeys)
             }
             cachedTonightNeedMin = Int(SleepModel.debtNeedMin(days: repo.days).rounded())
             let ledgerDays = SleepModel.debtLedgerLookbackDays(days: repo.days, todayKey: tkey)
@@ -2618,11 +2620,12 @@ struct LiquidTodayView: View {
         return labels.isEmpty ? nil : labels.joined(separator: " + ")
     }
 
-    /// Simple mode's calibration progress for the summary card: the same night count as
-    /// `ChargeDisplay.calibrationDetail`, said without "baseline". Nil unless the baseline is calibrating.
+    /// Simple mode's "Your day" sentence while the Charge baseline is still forming: why there is no advice yet.
+    /// No night count (step 6): "Getting to know you", just above, says how far NOOP has got, from the same
+    /// count. Nil unless the baseline is calibrating.
     private var simpleCalibrationDetail: String? {
-        guard case .calibrating(let nights) = chargeDisplay else { return nil }
-        return String(localized: "Learning what's normal for you: \(nights) of \(Baselines.minNightsSeed) nights so far. Keep wearing the strap to bed and your scores fill in.")
+        guard case .calibrating = chargeDisplay else { return nil }
+        return String(localized: "Advice for your day starts with your Charge, which needs \(Baselines.minNightsSeed) nights of sleep with the strap. Until then, go by how you feel.")
     }
 
     /// Simple mode's second line under the Charge ring when it shows an earlier day's score: the day it
