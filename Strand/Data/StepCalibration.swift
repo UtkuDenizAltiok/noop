@@ -83,25 +83,65 @@ enum StepCalibration {
 
     static var isEnabled: Bool { UserDefaults.standard.object(forKey: enabledKey) as? Bool ?? true }
 
+    /// What iOS lets NOOP do with the phone's step counter (Motion & Fitness), in a form the macOS build shares.
+    enum PhoneAccess: Equatable {
+        /// The device has no step counter (or this is the Mac).
+        case unavailable
+        /// iOS has not asked yet: it asks the first time NOOP reads the steps ("Calibrate now").
+        case notAsked
+        /// The wearer said no, or the phone restricts it: only the iPhone's Settings can change that.
+        case denied
+        case allowed
+    }
+
     #if os(iOS)
-    /// Whether iOS lets NOOP read the phone's steps (Motion & Fitness).
-    static var phoneStepsAllowed: Bool {
-        CMPedometer.isStepCountingAvailable() && CMPedometer.authorizationStatus() == .authorized
+    static var phoneAccess: PhoneAccess {
+        guard CMPedometer.isStepCountingAvailable() else { return .unavailable }
+        switch CMPedometer.authorizationStatus() {
+        case .authorized: return .allowed
+        case .notDetermined: return .notAsked
+        default: return .denied
+        }
     }
     #else
-    static var phoneStepsAllowed: Bool { false }
+    static var phoneAccess: PhoneAccess { .unavailable }
     #endif
+
+    /// Whether iOS lets NOOP read the phone's steps (Motion & Fitness).
+    static var phoneStepsAllowed: Bool { phoneAccess == .allowed }
+
+    /// The sentence the Settings row shows under the switch: always the real reason. Permission comes first,
+    /// because without it no amount of walking can calibrate anything; "not enough walking" is said only when
+    /// NOOP could read the phone and still found under two hours of paired walking.
+    enum Note: Equatable { case learned, askOnce, denied, notEnough, explain, unavailable }
+
+    static func note(access: PhoneAccess, hasResult: Bool, lastRunFound: Bool?) -> Note {
+        switch access {
+        case .unavailable: return .unavailable
+        case .denied: return .denied
+        case .notAsked: return hasResult ? .learned : .askOnce
+        case .allowed: return hasResult ? .learned : (lastRunFound == false ? .notEnough : .explain)
+        }
+    }
 
     /// Run once a day when switched on and allowed: pair the windows, store the result, and when the divisor moves
     /// by 0.02 or more, set it and re-score. `force` ignores the once-a-day spacing (the Settings button), and is
-    /// also what asks iOS for permission the first time. Returns the result, or nil.
+    /// also what asks iOS for permission the first time: it asks with one small read and waits for the answer
+    /// before pairing, so a first run is never cut short by the question. Returns the result, or nil.
     @MainActor
     @discardableResult
     static func runIfDue(repo: Repository, profile: ProfileStore, intelligence: IntelligenceEngine,
                          force: Bool = false) async -> Result? {
         #if os(iOS)
         guard isEnabled, CMPedometer.isStepCountingAvailable() else { return nil }
-        if !force { guard phoneStepsAllowed else { return nil } }
+        if force, phoneAccess == .notAsked {
+            // The first read is what makes iOS ask; its answer arrives with the read's result.
+            let probeEnd = Int(Date().timeIntervalSince1970)
+            _ = await WorkoutPedometer.steps(fromSec: probeEnd - 60, toSec: probeEnd)
+            // If the read returned before the wearer answered, wait for the answer (at most 30 s, a tap's work).
+            for _ in 0..<60 where phoneAccess == .notAsked { try? await Task.sleep(nanoseconds: 500_000_000) }
+        }
+        guard phoneStepsAllowed else { return nil }
         let now = Int(Date().timeIntervalSince1970)
         if !force, now - UserDefaults.standard.integer(forKey: lastRunKey) < minimumIntervalSeconds { return nil }
         UserDefaults.standard.set(now, forKey: lastRunKey)

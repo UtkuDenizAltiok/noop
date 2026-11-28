@@ -62,15 +62,23 @@ struct StepCalibrationSettings: View {
     }
 
     private var statusText: String {
-        if let result = StepCalibration.lastResult {
+        let result = StepCalibration.lastResult
+        switch StepCalibration.note(access: StepCalibration.phoneAccess, hasResult: result != nil,
+                                    lastRunFound: lastRunFound) {
+        case .learned:
+            guard let result else { return "" }
             let day = result.at > 0
                 ? Date(timeIntervalSince1970: TimeInterval(result.at)).formatted(.dateTime.day().month(.abbreviated)) : ""
             return String(localized: "\(String(format: "%.2f", result.ticksPerStep)) strap ticks per step, learned from \(result.windows) quarter-hours of walking with your iPhone (\(day)). Your steps still come from the strap alone, all day, phone or not.")
-        }
-        if lastRunFound == false {
+        case .askOnce:
+            return String(localized: "Tap Calibrate now once: iOS will ask whether NOOP may read your iPhone's steps (Motion & Fitness). After that it calibrates by itself once a day when you open NOOP.")
+        case .denied:
+            return String(localized: "NOOP may not read your iPhone's steps, so it cannot calibrate. To allow it: iPhone Settings → Privacy & Security → Motion & Fitness → switch NOOP on. Your steps still come from the strap.")
+        case .notEnough:
             return String(localized: "Not enough yet: NOOP needs about two hours of walking with your iPhone in a pocket over the last week, with the strap on. Until then it keeps the divisor below.")
+        case .explain, .unavailable:
+            return String(localized: "When you walk with your iPhone in a pocket, NOOP compares the two counts and learns how many strap ticks make one of your steps. Your steps still come from the strap alone, all day, phone or not. It needs Motion & Fitness access.")
         }
-        return String(localized: "When you walk with your iPhone in a pocket, NOOP compares the two counts and learns how many strap ticks make one of your steps. Your steps still come from the strap alone, all day, phone or not. It needs Motion & Fitness access.")
     }
 
     private func calibrateNow() {

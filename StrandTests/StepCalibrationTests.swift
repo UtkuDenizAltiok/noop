@@ -30,6 +30,21 @@ final class StepCalibrationTests: XCTestCase {
         XCTAssertEqual(StepCalibration.windowSeconds, 900)
     }
 
+    /// The Settings note always names the real reason: without Motion & Fitness permission it says how to give it
+    /// (asking once, or where to switch it on after a no) and never blames "not enough walking"; that is said only
+    /// when NOOP could read the phone and still found under two hours of paired walking.
+    func testTheNoteNamesTheRealReason() {
+        typealias Cal = StepCalibration
+        XCTAssertEqual(Cal.note(access: .denied, hasResult: false, lastRunFound: false), .denied)
+        XCTAssertEqual(Cal.note(access: .denied, hasResult: true, lastRunFound: nil), .denied)
+        XCTAssertEqual(Cal.note(access: .notAsked, hasResult: false, lastRunFound: false), .askOnce)
+        XCTAssertEqual(Cal.note(access: .notAsked, hasResult: false, lastRunFound: nil), .askOnce)
+        XCTAssertEqual(Cal.note(access: .allowed, hasResult: false, lastRunFound: false), .notEnough)
+        XCTAssertEqual(Cal.note(access: .allowed, hasResult: false, lastRunFound: nil), .explain)
+        XCTAssertEqual(Cal.note(access: .allowed, hasResult: true, lastRunFound: false), .learned)
+        XCTAssertEqual(Cal.note(access: .unavailable, hasResult: false, lastRunFound: false), .unavailable)
+    }
+
     func testAnImplausibleOrInconsistentSetChangesNothing() {
         // A strap counting four ticks a step is outside 0.5 to 3.
         XCTAssertNil(StepCalibration.calibrate((0..<10).map { calPair(1000, 4000, $0) }, now: 0))
