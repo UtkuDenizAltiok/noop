@@ -20,6 +20,13 @@ When he returns he may use a different AI; everything needed is in this handbook
   minutes from heart rate, the iPhone step calibration, F17, F12, and every fix listed in History since September.
 - **Install:** a fresh start (delete NOOP, install the `.ipa` from the release with AltStore, set up, no backup
   restored). Later builds are "just update".
+- **What the owner was asked to collect for the session after the two weeks (28 Nov):** the developer file at the end
+  (Test Centre → Developer export → "Make the developer file", made in a morning after the check-in with the strap
+  synced, AirDropped into `noop-private-utku/inbox/`); the **morning check-in switched on** on that screen (off by
+  default) and answered each morning, with "Wrong" when the sleep times are off; a strap log saved on any day
+  something looks wrong (the file's own log covers only about the last day); optionally a short note of unusual days
+  (illness, alcohol, travel, very late nights, hard training, days without the strap). Apple Health and WHOOP exports
+  were not asked for.
 
 ### Open work, in order
 
