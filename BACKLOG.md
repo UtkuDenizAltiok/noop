@@ -10,6 +10,8 @@ cheaper, never less work (`RULES.md`, 28 Sep).
 No data from Utku until he offers it (Rules, 27 Nov): each item is decided from public evidence (PSG datasets in
 `~/datasets/`, `Tools/SleepPSG`) and checked on his developer file only later.
 
+**Step counting (28 Nov): the analysis and the ordered plan live in [Steps](features/steps.md); do it first.**
+
 Done in chat 11 (details in [Simple mode → Chat 11](features/simple-mode.md)): wake inside the night and the final
 awakening (`applyWakeRescoring`), S11's regularity half (the Sleep Regularity Index), REM measured (no change).
 

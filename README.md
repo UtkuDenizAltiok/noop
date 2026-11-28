@@ -12,6 +12,7 @@ public `handbook` branch. Start with [AGENTS.md](AGENTS.md); it says what NOOP 1
 | What to build next, with its evidence | [Backlog](BACKLOG.md) |
 | What was done, by date | [History](HISTORY.md) |
 | Simple mode: design v6, how each step was built, the science table | [Simple mode](features/simple-mode.md), its [diary](features/simple-mode-diary.md) |
+| Step counting: how it works, edge cases, the decided next work | [Steps](features/steps.md) |
 | Feature contracts | [Lift Log](features/lift-log.md), [Live HR banner](features/live-hr-banner.md), [High heart rate warning](features/high-hr-warning.md), [Developer loop](features/lab.md) |
 | Audits with runnable evidence (synthetic data) | [`audits/`](audits/) |
 | Commands and helpers | [`tools/`](tools/) (`tools/retired/`: kept, no longer used) |

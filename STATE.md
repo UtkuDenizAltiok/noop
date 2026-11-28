@@ -23,6 +23,11 @@ When he returns he may use a different AI; everything needed is in this handbook
 
 ### Open work, in order
 
+0. **Step counting first (Utku, 28 Nov: "the AI should consider this step counting" in the session after his two
+   weeks).** Follow [Steps](features/steps.md) → "Gaps found" in order: (1) finish and verify the drafted
+   permission/honest-note change on branch `fix/step-calibration-permission` `e2552574` (not verified) and ship it as
+   "just update"; (2) pair only windows the strap has synced; (3) check how a divisor change reaches old days; (4)
+   decide thresholds only from his developer file's calibration windows.
 1. **F11, one-decimal parity** (cosmetic): 97 Swift and 80 Kotlin sites print one-decimal figures; at a value just
    under a half (0.15 is stored as 0.1499…) Swift's `%.1f` and Java's `String.format` can print different last
    digits. No score or stored value is affected; the iPhone shows the Swift side. Pair the shared figures, one
@@ -62,6 +67,8 @@ When he returns he may use a different AI; everything needed is in this handbook
 - **The release the owner installs from:** `https://github.com/UtkuDenizAltiok/noop/releases/tag/testing-latest`
   (bundle `com.noopapp.noop`, "NOOP Staging"; five files: iPhone `.ipa`, Mac `.zip`, two Android `.apk`, the Lift
   Log program template).
+- **Open branch:** `fix/step-calibration-permission` `e2552574` (a draft, not verified; item 0). The app checkout's
+  Xcode project was regenerated on 28 Nov after the move; run `xcodegen generate` whenever `project.yml` or files change.
 - **On the owner's Mac:** `~/Developer/noop/` holds `app/` (main), `handbook/` (this branch; linked as
   `app/dist`), `noop-private-utku/` (his private files, never published; its `README.md` lists them; reached as
   `handbook/private`), `datasets/` (PhysioNet sleep-accel). Build products and logs: `~/Library/Caches/noop-handbook/`.
